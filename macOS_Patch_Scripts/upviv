@@ -14,12 +14,22 @@ cp /Users/acid/Desktop/VivalArc/moddings/chroma.min.js "$findPath"/Resources/viv
 cp /Users/acid/Desktop/VivalArc/moddings/easy-files.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivalArc/moddings/element-capture.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivalArc/moddings/global-media-controls.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivalArc/moddings/widgets.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivalArc/moddings/yb_address_bar.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivalArc/moddings/ClickAddBlockList.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivalArc/moddings/AdaptiveWebPanelHeaders.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivalArc/moddings/vivaldi-dashboard-camo.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivalArc/moddings/autoHidePanel.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivalArc/moddings/ClickAddBlockList.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivalArc/moddings/colorful_loading_top_bar.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivalArc/moddings/feedIcon.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivalArc/moddings/mdNotes.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivalArc/moddings/dialogTab.js "$findPath"/Resources/vivaldi/
+# cp /Users/acid/Desktop/VivalArc/moddings/moreFuncInWebPanel.js "$findPath"/Resources/vivaldi/
+# cp /Users/acid/Desktop/VivalArc/moddings/widgets.js "$findPath"/Resources/vivaldi/
+# cp /Users/acid/Desktop/VivalArc/moddings/yb_address_bar.js "$findPath"/Resources/vivaldi/
+
+########################################################################################################################
+cp /Users/acid/Desktop/VivalArc/moddings/Follower-Tabs.js "$findPath"/Resources/vivaldi/user_files
+cp /Users/acid/Desktop/VivalArc/moddings/Picture-in-Picture.js "$findPath"/Resources/vivaldi/components/picture-in-picture
 
 # Save path to browser.html as variable
 browserHtml="$findPath"/Resources/vivaldi/window.html
@@ -42,12 +52,15 @@ sed -i '' -e '/<\/body>/i\
 <script src="easy-files.js"></script>\
 <script src="element-capture.js"></script>\
 <script src="global-media-controls.js"></script>\
-<script src="widgets.js"></script>\
-<script src="yb_address_bar.js"></script>\
-<script src="ClickAddBlockList.js"></script>\
 <script src="AdaptiveWebPanelHeaders.js"></script>\
 <script src="vivaldi-dashboard-camo.js"></script>\
 <script src="autoHidePanel.js"></script>\
+<script src="ClickAddBlockList.js"></script>\
+<script src="colorful_loading_top_bar.js"></script>\
+<script src="feedIcon.js"></script>\
+<script src="mdNotes.js"></script>\
+<script src="yb_address_bar.js"></script>\
+<script src="dialogTab.js"></script>\
 ' "$browserHtml"
 
 # Pause script
@@ -59,4 +72,3 @@ read -rsp $'Press [Enter] to restart Vivaldi...\n'
 
 # Open Vivaldi
 open /Applications/Vivaldi.app --args --debug-packed-apps --silent-debugger-extension-api
-
