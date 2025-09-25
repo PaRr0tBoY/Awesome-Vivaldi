@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/acid/Desktop/VivalArc/Moddings/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

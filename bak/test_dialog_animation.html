@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dialog Peek Animation Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            min-height: 200vh; /* 为了测试滚动效果 */
+        }
+
+        .test-section {
+            margin: 60px 0;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .test-section h2 {
+            margin-top: 0;
+            color: #333;
+            font-size: 24px;
+        }
+
+        .test-link {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            font-weight: 500;
+        }
+
+        .test-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .big-link {
+            font-size: 28px;
+            padding: 20px 40px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+        }
+
+        .small-link {
+            font-size: 14px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        .test-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+        }
+
+        .special-test {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            box-shadow: 0 8px 25px rgba(250, 112, 154, 0.4);
+            font-weight: 600;
+            z-index: 100;
+        }
+
+        .info {
+            margin-top: 40px;
+            padding: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .info h3 {
+            margin-top: 0;
+            font-size: 20px;
+        }
+
+        .info ul {
+            padding-left: 20px;
+        }
+
+        .info li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .demo-container {
+            position: relative;
+            height: 300px;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 12px;
+            margin: 30px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .demo-link {
+            position: absolute;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            text-decoration: none;
+            border-radius: 20px;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .demo-link:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .demo-link-1 { top: 50px; left: 50px; }
+        .demo-link-2 { top: 50px; right: 50px; }
+        .demo-link-3 { bottom: 50px; left: 50px; }
+        .demo-link-4 { bottom: 50px; right: 50px; }
+        .demo-link-5 { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
+        .status-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .status-indicator.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-indicator" id="statusIndicator">状态: 等待测试...</div>
+
+    <h1>Dialog Peek Animation Test</h1>
+    <p style="color: #666; margin-bottom: 40px;">测试类似Arc浏览器的peek效果 - 从链接位置直接弹出</p>
+
+    <div class="test-section">
+        <h2>普通链接测试</h2>
+        <a href="https://www.example.com" class="test-link">Example.com</a>
+        <a href="https://www.google.com" class="test-link">Google</a>
+        <a href="https://www.github.com" class="test-link">GitHub</a>
+        <button class="test-button" data-url="https://www.stackoverflow.com">Stack Overflow</button>
+    </div>
+
+    <div class="test-section">
+        <h2>不同大小链接测试</h2>
+        <a href="https://www.wikipedia.org" class="test-link big-link">Wikipedia 大号链接</a>
+        <a href="https://www.mozilla.org" class="test-link small-link">Mozilla 小号链接</a>
+        <br><br>
+        <a href="https://www.microsoft.com" class="test-link">Microsoft</a>
+        <a href="https://www.apple.com" class="test-link">Apple</a>
+    </div>
+
+    <div class="test-section">
+        <h2>滚动页面测试</h2>
+        <p style="color: #666; margin-bottom: 20px;">滚动页面后点击下方链接，测试从不同位置的弹出效果</p>
+        <div style="height: 400px; background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); border-radius: 12px; margin: 20px 0; display: flex; align-items: center; justify-content: center;">
+            <span style="color: #666; font-size: 18px;">滚动内容区域</span>
+        </div>
+        <a href="https://www.youtube.com" class="test-link">YouTube (在页面下方)</a>
+        <a href="https://www.twitch.tv" class="test-link">Twitch (在页面下方)</a>
+    </div>
+
+    <div class="demo-container">
+        <h3 style="color: #666; margin: 0;">演示区域 - 测试不同位置的弹出</h3>
+        <a href="https://www.linkedin.com" class="demo-link demo-link-1">LinkedIn</a>
+        <a href="https://www.twitter.com" class="demo-link demo-link-2">Twitter</a>
+        <a href="https://www.instagram.com" class="demo-link demo-link-3">Instagram</a>
+        <a href="https://www.reddit.com" class="demo-link demo-link-4">Reddit</a>
+        <a href="https://www.discord.com" class="demo-link demo-link-5">Discord</a>
+    </div>
+
+    <a href="https://www.netflix.com" class="special-test">Netflix (固定位置)</a>
+
+    <div class="info">
+        <h3>测试说明</h3>
+        <ul>
+            <li>点击各个链接和按钮，观察dialog弹窗是否从链接位置直接"弹出"到中心</li>
+            <li>检查动画是否具有弹性效果，使用cubic-bezier(0.34, 1.56, 0.64, 1)缓动函数</li>
+            <li>点击关闭时，检查弹窗是否收缩回原链接位置</li>
+            <li>测试不同大小、不同位置的链接，确保动画效果一致</li>
+            <li>特别测试固定位置的链接（右下角Netflix按钮）</li>
+            <li>滚动页面后点击链接，测试从不同位置的弹出效果</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>技术细节</h2>
+        <ul style="color: #666; line-height: 1.8;">
+            <li><strong>动画原理:</strong> 使用CSS transform: translate() + scale() 组合</li>
+            <li><strong>变换原点:</strong> 设置为链接中心点，实现自然的展开效果</li>
+            <li><strong>缓动函数:</strong> cubic-bezier(0.34, 1.56, 0.64, 1) 提供弹性效果</li>
+            <li><strong>性能优化:</strong> 使用 will-change 和 CSS 变量</li>
+        </ul>
+    </div>
+
+    <script>
+        // 状态指示器
+        const statusIndicator = document.getElementById('statusIndicator');
+
+        function showStatus(message) {
+            statusIndicator.textContent = `状态: ${message}`;
+            statusIndicator.classList.add('show');
+            setTimeout(() => {
+                statusIndicator.classList.remove('show');
+            }, 2000);
+        }
+
+        // 模拟dialogTab的peek效果
+        function simulateDialogPeek(url, element) {
+            const link = element;
+            const linkRect = link.getBoundingClientRect();
+            const linkCenterX = linkRect.left + linkRect.width / 2;
+            const linkCenterY = linkRect.top + linkRect.height / 2;
+
+            console.log('链接被点击:', url);
+            console.log('链接位置:', linkRect);
+            console.log('链接中心:', { x: linkCenterX, y: linkCenterY });
+            console.log('链接文本:', link.textContent);
+
+            showStatus('正在显示Peek效果...');
+
+            // 创建模拟的dialog弹窗
+            const mockDialog = document.createElement('div');
+            mockDialog.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0.1);
+                width: 400px;
+                height: 300px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-radius: 12px;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 18px;
+                font-weight: 500;
+                z-index: 9999;
+                animation: dialog-peek-popin 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            `;
+            mockDialog.textContent = 'Peek Dialog\n' + url;
+
+            // 添加CSS动画
+            if (!document.getElementById('peekAnimationStyle')) {
+                const style = document.createElement('style');
+                style.id = 'peekAnimationStyle';
+                style.textContent = `
+                    @keyframes dialog-peek-popin {
+                        0% {
+                            transform: translate(calc(-50% + ${-(linkCenterX - window.innerWidth/2)}px), calc(-50% + ${-(linkCenterY - window.innerHeight/2)}px)) scale(0.1);
+                            opacity: 0;
+                        }
+                        100% {
+                            transform: translate(-50%, -50%) scale(1);
+                            opacity: 1;
+                        }
+                    }
+                    @keyframes dialog-peek-popout {
+                        0% {
+                            transform: translate(-50%, -50%) scale(1);
+                            opacity: 1;
+                        }
+                        100% {
+                            transform: translate(calc(-50% + ${-(linkCenterX - window.innerWidth/2)}px), calc(-50% + ${-(linkCenterY - window.innerHeight/2)}px)) scale(0.1);
+                            opacity: 0;
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+
+            document.body.appendChild(mockDialog);
+
+            // 3秒后自动关闭
+            setTimeout(() => {
+                mockDialog.style.animation = 'dialog-peek-popout 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards';
+                setTimeout(() => {
+                    mockDialog.remove();
+                    showStatus('Peek效果已关闭');
+                }, 300);
+            }, 3000);
+        }
+
+        // 绑定点击事件
+        document.addEventListener('click', function(e) {
+            const url = e.target.href || e.target.dataset.url;
+            if (url && (e.target.classList.contains('test-link') || e.target.classList.contains('demo-link') || e.target.classList.contains('special-test') || e.target.classList.contains('test-button'))) {
+                e.preventDefault();
+                simulateDialogPeek(url, e.target);
+            }
+        });
+
+        // 页面加载完成后显示状态
+        window.addEventListener('load', () => {
+            showStatus('测试页面已加载完成');
+        });
+
+        // 监听滚动事件
+        let scrollTimeout;
+        window.addEventListener('scroll', () => {
+            showStatus('页面滚动中...');
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                showStatus('滚动完成');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,401 @@
+/*
+Theme Previews Plus
+Makes the theme previews in vivaldi://settings/themes/ better match
+the layout placements of your tab bar, address bar, and panel bar.
+*/
+
+/* Change grid layout for tabs on top, address on top, and panels on right */
+#browser.tabs-top.address-top #panels-container.right ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: 1fr 50px;
+    grid-template-rows: 18px 14px 1fr;
+    grid-template-areas:
+        'TabBar TabBar'
+        'AddressBar AddressBar'
+        'Content Panel';
+}
+/* Change grid layout for tabs on top, address on bottom, and panels on left */
+#browser.tabs-top.address-bottom #panels-container.left ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: 50px 1fr;
+    grid-template-rows: 18px 1fr 14px;
+    grid-template-areas:
+        'TabBar TabBar'
+        'Panel Content'
+        'AddressBar AddressBar';
+}
+/* Change grid layout for tabs on top, address on bottom, and panels on right */
+#browser.tabs-top.address-bottom #panels-container.right ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: 1fr 50px;
+    grid-template-rows: 18px 1fr 14px;
+    grid-template-areas:
+        'TabBar TabBar'
+        'Content Panel'
+        'AddressBar AddressBar';
+}
+/* Change grid layout for tabs on bottom, address on top, and panels on left */
+#browser.tabs-bottom.address-top #panels-container.left ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: 50px 1fr;
+    grid-template-rows: 14px 1fr 18px;
+    grid-template-areas:
+        'AddressBar AddressBar'
+        'Panel Content'
+        'TabBar TabBar';
+}
+/* Change grid layout for tabs on bottom, address on top, and panels on right */
+#browser.tabs-bottom.address-top #panels-container.right ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: 1fr 50px;
+    grid-template-rows: 14px 1fr 18px;
+    grid-template-areas:
+        'AddressBar AddressBar'
+        'Content Panel'
+        'TabBar TabBar';
+}
+/* Change grid layout for tabs on bottom, address on bottom, and panels on left */
+#browser.tabs-bottom.address-bottom #panels-container.left ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: 50px 1fr;
+    grid-template-rows: 6px 1fr 14px 18px;
+    grid-template-areas:
+        'Title Title'
+        'Panel Content'
+        'AddressBar AddressBar'
+        'TabBar TabBar';
+}
+/* Change grid layout for tabs on bottom, address on bottom, and panels on right */
+#browser.tabs-bottom.address-bottom #panels-container.right ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: 1fr 50px;
+    grid-template-rows: 6px 1fr 14px 18px;
+    grid-template-areas:
+        'Title Title'
+        'Content Panel'
+        'AddressBar AddressBar'
+        'TabBar TabBar';
+}
+/* Change grid layout for tabs on left, address on top, and panels on left */
+#browser.tabs-left.address-top #panels-container.left ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: minmax(40px, 25%) minmax(32px, 20%) 1fr;
+    grid-template-rows: 14px 1fr;
+    grid-template-areas:
+        'AddressBar AddressBar AddressBar'
+        'Panel TabBar Content';
+}
+/* Change grid layout for tabs on left, address on top, and panels on right */
+#browser.tabs-left.address-top #panels-container.right ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: minmax(32px, 20%) 1fr minmax(40px, 25%);
+    grid-template-rows: 14px 1fr;
+    grid-template-areas:
+        'AddressBar AddressBar AddressBar'
+        'TabBar Content Panel';
+}
+/* Change grid layout for tabs on left, address on bottom, and panels on left */
+#browser.tabs-left.address-bottom #panels-container.left ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: minmax(40px, 25%) minmax(32px, 20%) 1fr;
+    grid-template-rows: 6px 1fr 14px;
+    grid-template-areas:
+        'Title Title Title'
+        'Panel TabBar Content'
+        'AddressBar AddressBar AddressBar';
+}
+/* Change grid layout for tabs on left, address on bottom, and panels on right */
+#browser.tabs-left.address-bottom #panels-container.right ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: minmax(32px, 20%) 1fr minmax(40px, 25%);
+    grid-template-rows: 6px 1fr 14px;
+    grid-template-areas:
+        'Title Title Title'
+        'TabBar Content Panel'
+        'AddressBar AddressBar AddressBar';
+}
+/* Change grid layout for tabs on right, address on top, and panels on left */
+#browser.tabs-right.address-top #panels-container.left ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: minmax(40px, 25%) 1fr minmax(32px, 20%);
+    grid-template-rows: 14px 1fr;
+    grid-template-areas:
+        'AddressBar AddressBar AddressBar'
+        'Panel Content TabBar';
+}
+/* Change grid layout for tabs on right, address on top, and panels on right */
+#browser.tabs-right.address-top #panels-container.right ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: 1fr minmax(32px, 20%) minmax(40px, 25%);
+    grid-template-rows: 14px 1fr;
+    grid-template-areas:
+        'AddressBar AddressBar AddressBar'
+        'Content TabBar Panel';
+}
+/* Change grid layout for tabs on right, address on bottom, and panels on left */
+#browser.tabs-right.address-bottom #panels-container.left ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: minmax(40px, 25%) 1fr minmax(32px, 20%);
+    grid-template-rows: 6px 1fr 14px;
+    grid-template-areas:
+        'Title Title Title'
+        'Panel Content TabBar'
+        'AddressBar AddressBar AddressBar';
+}
+/* Change grid layout for tabs on right, address on bottom, and panels on right */
+#browser.tabs-right.address-bottom #panels-container.right ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: 1fr minmax(32px, 20%) minmax(40px, 25%);
+    grid-template-rows: 6px 1fr 14px;
+    grid-template-areas:
+        'Title Title Title'
+        'Content TabBar Panel'
+        'AddressBar AddressBar AddressBar';
+}
+/* Change grid layout for tabs on top, address off, and panels on left */
+#browser.tabs-top:is(.address-top-off, .address-bottom-off) #panels-container.left ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: 50px 1fr;
+    grid-template-rows: 18px 0 1fr;
+    grid-template-areas:
+        'TabBar TabBar'
+        'AddressBar AddressBar'
+        'Panel Content';
+}
+/* Change grid layout for tabs on top, address off, and panels on right */
+#browser.tabs-top:is(.address-top-off, .address-bottom-off) #panels-container.right ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: 1fr 50px;
+    grid-template-rows: 18px 0 1fr;
+    grid-template-areas:
+        'TabBar TabBar'
+        'AddressBar AddressBar'
+        'Content Panel';
+}
+/* Change grid layout for tabs on bottom, address off, and panels on left */
+#browser.tabs-bottom:is(.address-top-off, .address-bottom-off) #panels-container.left ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: 50px 1fr;
+    grid-template-rows: 6px 1fr 0 18px;
+    grid-template-areas:
+        'Title Title'
+        'Panel Content'
+        'AddressBar AddressBar'
+        'TabBar TabBar';
+}
+/* Change grid layout for tabs on bottom, address off, and panels on right */
+#browser.tabs-bottom:is(.address-top-off, .address-bottom-off) #panels-container.right ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: 1fr 50px;
+    grid-template-rows: 6px 1fr 0 18px;
+    grid-template-areas:
+        'Title Title'
+        'Content Panel'
+        'AddressBar AddressBar'
+        'TabBar TabBar';
+}
+/* Change grid layout for tabs on left, address off, and panels on left */
+#browser.tabs-left:is(.address-top-off, .address-bottom-off) #panels-container.left ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: minmax(40px, 25%) minmax(32px, 20%) 1fr;
+    grid-template-rows: 6px 1fr 0;
+    grid-template-areas:
+        'Title Title Title'
+        'Panel TabBar Content'
+        'AddressBar AddressBar AddressBar';
+}
+/* Change grid layout for tabs on left, address off, and panels on right */
+#browser.tabs-left:is(.address-top-off, .address-bottom-off) #panels-container.right ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: minmax(32px, 20%) 1fr minmax(40px, 25%);
+    grid-template-rows: 6px 1fr 0;
+    grid-template-areas:
+        'Title Title Title'
+        'TabBar Content Panel'
+        'AddressBar AddressBar AddressBar';
+}
+/* Change grid layout for tabs on right, address off, and panels on left */
+#browser.tabs-right:is(.address-top-off, .address-bottom-off) #panels-container.left ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: minmax(40px, 25%) 1fr minmax(32px, 20%);
+    grid-template-rows: 6px 1fr 0;
+    grid-template-areas:
+        'Title Title Title'
+        'Panel Content TabBar'
+        'AddressBar AddressBar AddressBar';
+}
+/* Change grid layout for tabs on right, address off, and panels on right */
+#browser.tabs-right:is(.address-top-off, .address-bottom-off) #panels-container.right ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: 1fr minmax(32px, 20%) minmax(40px, 25%);
+    grid-template-rows: 6px 1fr 0;
+    grid-template-areas:
+        'Title Title Title'
+        'Content TabBar Panel'
+        'AddressBar AddressBar AddressBar';
+}
+/* Change grid layout for tabs off, address on top, and panels on left */
+#browser.tabs-off.address-top #panels-container.left ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: 50px 1fr;
+    grid-template-rows: 0 14px 1fr;
+    grid-template-areas:
+        'TabBar TabBar'
+        'AddressBar AddressBar'
+        'Panel Content';
+}
+/* Change grid layout for tabs off, address on top, and panels on right */
+#browser.tabs-off.address-top #panels-container.right ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: 1fr 50px;
+    grid-template-rows: 0 14px 1fr;
+    grid-template-areas:
+        'TabBar TabBar'
+        'AddressBar AddressBar'
+        'Content Panel';
+}
+/* Change grid layout for tabs off, address on bottom, and panels on left */
+#browser.tabs-off.address-bottom #panels-container.left ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: 50px 1fr;
+    grid-template-rows: 6px 0 1fr 14px;
+    grid-template-areas:
+        'Title Title'
+        'TabBar TabBar'
+        'Panel Content'
+        'AddressBar AddressBar';
+}
+/* Change grid layout for tabs off, address on bottom, and panels on right */
+#browser.tabs-off.address-bottom #panels-container.right ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: 1fr 50px;
+    grid-template-rows: 6px 0 1fr 14px;
+    grid-template-areas:
+        'Title Title'
+        'TabBar TabBar'
+        'Content Panel'
+        'AddressBar AddressBar';
+}
+/* Change grid layout for tabs off, address off, and panels on left */
+#browser.tabs-off:is(.address-top-off, .address-bottom-off) #panels-container.left ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: 50px 1fr;
+    grid-template-rows: 6px 0 0 1fr;
+    grid-template-areas:
+        'Title Title'
+        'TabBar TabBar'
+        'AddressBar AddressBar'
+        'Panel Content';
+}
+/* Change grid layout for tabs off, address off, and panels on right */
+#browser.tabs-off:is(.address-top-off, .address-bottom-off) #panels-container.right ~ #webview-container .ThemePreview-Image .ThemePreview-Browser:not(.ThemePreview-Browser--Loading) {
+    grid-template-columns: 1fr 50px;
+    grid-template-rows: 6px 0 0 1fr;
+    grid-template-areas:
+        'Title Title'
+        'TabBar TabBar'
+        'AddressBar AddressBar'
+        'Content Panel';
+}
+
+/* Hide tabs area and address area when off */
+#browser:is(.address-top-off, .address-bottom-off) #webview-container .ThemePreview-AddressBar,
+#browser.tabs-off #webview-container .ThemePreview-TabBar {
+    display: none;
+}
+
+/* Flip panel area and icon previews for panels on right */
+#browser #panels-container.right ~ #webview-container .ThemePreview-AddressBar {
+    flex-direction: row-reverse;
+}
+#browser #panels-container.right ~ #webview-container .ThemePreview-Panel-Item {
+    margin-left: auto;
+}
+/* Relocate border radius in panel area for tabs not on bottom and address not on bottom, or tabs not on top and address not on top */
+#browser:not(.tabs-bottom, .address-bottom) #panels-container.right ~ #webview-container .ThemePreview-Panel {
+    border-radius: initial;
+    border-bottom-right-radius: var(--innerRadius);
+}
+#browser:not(.tabs-top.address-top) #panels-container:is(.left, .right) ~ #webview-container .ThemePreview-Panel {
+    border-radius: initial;
+}
+/* Add border radius to address area for tabs not on bottom and address on bottom, or tabs not on top and address on top */
+#browser:not(.tabs-bottom).address-bottom #webview-container .ThemePreview-AddressBar {
+    border-radius: initial;
+    border-bottom-left-radius: var(--innerRadius);
+    border-bottom-right-radius: var(--innerRadius);
+    padding: 2px 6px 4px;
+}
+#browser:not(.tabs-top).address-top #webview-container .ThemePreview-AddressBar {
+    border-radius: initial;
+    border-top-left-radius: var(--innerRadius);
+    border-top-right-radius: var(--innerRadius);
+}
+/* Flip tab bar item radius and padding when tabs on bottom */
+#browser.tabs-bottom #webview-container .ThemePreview-TabBar {
+    border-radius: initial;
+    border-bottom-left-radius: var(--innerRadius);
+    border-bottom-right-radius: var(--innerRadius);
+    padding: 0 6px 6px;
+}
+#browser.tabs-bottom #webview-container .ThemePreview-TabBar-Tab {
+    border-radius: initial;
+    border-bottom-left-radius: var(--radius);
+    border-bottom-right-radius: var(--radius);
+}
+
+/* Define flex and padding for tabs on left or tabs on right */
+#browser:is(.tabs-left, .tabs-right) #webview-container .ThemePreview-TabBar {
+    border-radius: initial;
+    flex-direction: column;
+    padding: 0.5px 0.5px 0;
+    gap: 0.5px;
+}
+#browser:is(.tabs-left, .tabs-right) #webview-container .ThemePreview-TabBar-Tab {
+    width: 100%;
+    max-width: unset;
+    height: 10px;
+    max-height: 11%;
+    border-radius: var(--radius);
+}
+/* Change background color when tabs on left or tabs on right and tab bar is transparent */
+#browser.tabs-left #webview-container .ThemePreview-Browser.transparent-tabbar .ThemePreview-TabBar {
+    background-color: var(--colorImageLeftFgAlphaHeavy);
+}
+#browser.tabs-right #webview-container .ThemePreview-Browser.transparent-tabbar .ThemePreview-TabBar {
+    background-color: var(--colorImageRightFgAlphaHeavy);
+}
+/* Add border radius to tab area for tabs on left and panels on right, or tabs on right and panels on left */
+#browser.tabs-left.address-top #panels-container.right ~ #webview-container .ThemePreview-TabBar {
+    border-radius: initial;
+    border-bottom-left-radius: var(--innerRadius);
+}
+#browser:is(.tabs-left, .tabs-right).address-bottom #panels-container:is(.left, .right) ~ #webview-container .ThemePreview-TabBar {
+    border-radius: initial;
+}
+#browser.tabs-right.address-top #panels-container.left ~ #webview-container .ThemePreview-TabBar {
+    border-radius: initial;
+    border-bottom-right-radius: var(--innerRadius);
+}
+
+/* Add Title area when tabs not on top and address not on top */
+#browser:not(.tabs-top, .address-top) #webview-container .ThemePreview-Image .ThemePreview-Browser:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+}
+#browser:not(.tabs-top, .address-top) #webview-container .ThemePreview-Image .ThemePreview-Browser.color-behind-tabs-on:after {
+    background-color: var(--colorBg);
+}
+#browser:not(.tabs-top, .address-top) #webview-container .ThemePreview-Image .ThemePreview-Browser.color-behind-tabs-off:after {
+    background-color: var(--colorAccentBg);
+}
+
+/* Make tab bar items floating when density on */
+#browser.density-on.tabs-top #webview-container .ThemePreview-TabBar {
+    padding: 4px 0 2px 10px;
+}
+#browser.density-on.tabs-bottom #webview-container .ThemePreview-TabBar {
+    padding: 3px 0 3px 10px;
+}
+#browser.density-on:is(.tabs-left, .tabs-right) #webview-container .ThemePreview-TabBar {
+    padding: 2px 1px;
+    gap: 2px;
+}
+#browser.density-on #webview-container .ThemePreview-TabBar-Tab {
+    border-radius: var(--radius);
+    height: 10px;
+}
+
+/* Disable bottom border radius for welcome preview */
+#browser:not(.tabs-bottom, .address-bottom) #panels-container.right ~ #webview-container .ThemePreview-Welcome .ThemePreview-Panel,
+#browser:not(.tabs-bottom).address-bottom #webview-container .ThemePreview-Welcome .ThemePreview-AddressBar,
+#browser.tabs-bottom #webview-container .ThemePreview-Welcome .ThemePreview-TabBar,
+#browser.tabs-left.address-top #panels-container.right ~ #webview-container .ThemePreview-Welcome .ThemePreview-TabBar,
+#browser.tabs-right.address-top #panels-container.left ~ #webview-container .ThemePreview-Welcome .ThemePreview-TabBar {
+    border-radius: initial;
+}
+#browser.density-on:is(.tabs-top, .tabs-bottom) #webview-container .ThemePreview-Welcome .ThemePreview-TabBar {
+    padding: 3px 0 3px 10px;
+}
+#browser.density-on:is(.tabs-top, .tabs-bottom) #webview-container .ThemePreview-Welcome .ThemePreview-TabBar-Tab {
+    height: 12px;
+}
+#browser:not(.tabs-bottom).address-bottom #webview-container .ThemePreview-Welcome .ThemePreview-AddressBar {
+    padding: 3px 6px;
+}

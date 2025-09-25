@@ -1,0 +1,13 @@
+/* ========================================
+   HIDE DISABLED NAVIGATION BUTTONS
+   ======================================== */
+
+/* Hide disabled forward/back navigation buttons */
+button.ToolbarButton-Button[disabled] {
+  display: none !important;
+}
+
+/* Show only enabled navigation buttons */
+button.ToolbarButton-Button:not([disabled]) {
+  display: inline-flex !important;
+}

@@ -1,0 +1,107 @@
+@keyframes dialog-tab-animate-progress-bar {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+.dialog-container {
+    z-index: 999;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, .4);
+    transition-property: background-color;
+    transition-duration: 0.1s;
+    transition-timing-function: ease;
+    transition-delay: 0s;
+    backdrop-filter: blur(2px);
+    border-radius: var(--radius);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .dialog-tab {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+
+        .options-container {
+            display: flex;
+            height: 35px;
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            color: white;
+            z-index: 1160;
+
+            .options-button {
+                display: flex;
+                background: transparent;
+                border: unset;
+                cursor: pointer;
+                width: 35px;
+                height: 35px;
+                align-items: center;
+                justify-content: center;
+
+                &:hover {
+                    background-color: var(--colorBgAlphaHeavy);
+                }
+            }
+
+            .dialog-input {
+                background: var(--colorAccentBgAlpha);
+                color: white;
+                border: unset;
+                width: 20%;
+                margin: 0 0.5rem;
+                padding: 0.25rem 0.5rem;
+            }
+        }
+
+        .progress-bar {
+            height: 5px;
+            max-width: calc(100% - var(--radius) * 1.5);
+            left: calc(var(--radius)* 0.75);
+            background-color: #0080ff;
+            border-radius: var(--radius);
+            transition: width 0.2s linear;
+            overflow: hidden;
+            position: relative;
+
+            &[style*="width: 100%"]:after {
+                content: "";
+                width: 50%;
+                height: 100%;
+                background-image: linear-gradient(
+                    to right,
+                    rgba(255, 255, 255, 0.5),
+                    rgba(255, 255, 255, 0.8),
+                    rgba(255, 255, 255, 0.5)
+                );
+                position: absolute;
+                top: 0;
+                left: -100%;
+                animation: dialog-tab-animate-progress-bar 1.5s linear infinite;
+            }
+        }
+
+        webview {
+            position: relative;
+            flex: 1;
+            overflow: hidden;
+            border-radius: var(--radius);
+        }
+
+        &:has(webview[src^="https://app.web-highlights.com/reader/open-website-in-reader-mode"]) .reader-view-toggle {
+            background-color: var(--colorBgAlphaHeavy);
+            border-color: var(--colorBgDarker);
+        }
+    }
+}

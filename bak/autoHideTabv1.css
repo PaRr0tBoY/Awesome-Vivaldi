@@ -1,0 +1,174 @@
+/* ========================================
+   AUTO-HIDE TABBAR
+   ======================================== */
+
+/* Tab container sizing */
+#tabs-container.right,
+#tabs-container.left {
+  min-width: 7px !important;
+  max-width: 7px !important;
+  margin-top: -6px;
+  transition: min-width 148ms ease-in !important;
+  transition-delay: 300ms !important;
+  border-radius: 6px;
+  background-color: rgba(25, 30, 25, 0.9) !important;
+  /*margin-bottom: 5px;*/
+}
+
+#tabs-subcontainer.right,
+#tabs-subcontainer.left {
+  margin-top: -6px !important;
+  min-width: 40px !important;
+  max-width: 40px !important;
+  transition: min-width 240ms ease-in !important;
+  border-radius: 6px;
+  transition-delay: 0ms !important;
+  /*margin-bottom: 5px;*/
+  background-color: rgba(29, 40, 33, 0.81) !important;
+}
+
+/* Hover states */
+#tabs-container.left:hover,
+#tabs-container.right:hover {
+  min-width: 300px !important;
+  transition: min-width 240ms ease-out !important;
+  transition-delay: 0ms !important;
+  border-radius: 6px;
+}
+
+#tabs-subcontainer.left:hover,
+#tabs-subcontainer.right:hover {
+  min-width: 320px !important;
+  transition: min-width 148ms ease-out !important;
+  margin-top: -6px;
+  transition-delay: 280ms !important; /* add to transiton time and still should be lower than delay time plus transition time of tab-container fold*/
+}
+
+/* Tab bar styling */
+.tabbar-workspace-button {
+  width: 100% !important;
+}
+
+#tabs-tabbar-container.left,
+#tabs-tabbar-container.right {
+  width: auto !important;
+  min-width: 46px;
+  border-radius: 6px;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.button-toolbar.newtab,
+.button-toolbar.tabs-locked,
+.button-toolbar.tabs-unlocked {
+  /*left: 0px !important;
+  width: 150px;*/
+  display: none !important;
+}
+
+/* ========================================
+   HIDE ELEMENTS ON HOVER
+   ======================================== */
+
+#tabs-container.right:not(:hover) .tab,
+#tabs-container.left:not(:hover) .tab,
+#tabs-container.right:not(:hover) .tab-position,
+#tabs-container.left:not(:hover) .tab-position,
+#tabs-container.right:not(:hover) .separator,
+#tabs-container.left:not(:hover) .separator {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 150ms ease-in 300ms !important;
+}
+
+#tabs-container.right:hover .tab,
+#tabs-container.left:hover .tab,
+#tabs-container.right:hover .tab-position,
+#tabs-container.left:hover .tab-position,
+#tabs-container.right:hover .separator,
+#tabs-container.left:hover .separator {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transition: opacity 150ms ease-in 0ms !important;
+}
+
+#tabs-container.right:not(:hover) .ToolbarButton-Button,
+#tabs-container.left:not(:hover) .ToolbarButton-Button,
+#tabs-container.right:not(:hover) .UrlBar-AddressField .toolbar,
+#tabs-container.left:not(:hover) .UrlBar-AddressField .toolbar,
+#tabs-container.right:not(:hover) .UrlBar-AddressField,
+#tabs-container.left:not(:hover) .UrlBar-AddressField,
+#tabs-container.right:not(:hover) .UrlBar-AddressField .button-toolbar,
+#tabs-container.left:not(:hover) .UrlBar-AddressField .button-toolbar {
+  min-width: 0;
+  width: 0;
+  height: 0;
+  padding: 0 !important;
+  border: 0 !important;
+  overflow: hidden;
+  transition:
+    min-width 200ms ease-out,
+    width 200ms ease-out,
+    height 200ms ease-out,
+    padding 200ms ease-out !important;
+}
+
+/* ========================================
+   FLOATING TABBAR
+   ======================================== */
+
+#main > .inner > div:has(#tabs-tabbar-container.right),
+#main > .inner > div:has(#tabs-tabbar-container.left) {
+  position: absolute;
+  top: 0;
+  z-index: 2;
+  opacity: 1;
+  background-color: transparent !important;
+  background-image: none !important;
+  height: 100% !important;
+}
+
+#main > .inner > div:has(#tabs-tabbar-container.right) {
+  right: 0;
+}
+
+#main > .inner > div:has(#tabs-tabbar-container.left) {
+  left: 0;
+}
+
+#browser.transparent-tabbar
+  .inner
+  > div:has(#tabs-tabbar-container:is(.left, .right)) {
+  background-color: transparent !important;
+  backdrop-filter: none !important;
+}
+
+/* Webpage stack margins - exclude fullscreen */
+#browser:not(.fullscreen) .inner #webpage-stack {
+  margin-right: 7px;
+}
+
+#browser:not(.fullscreen)
+  .inner:has(#tabs-subcontainer:is(.left, .right))
+  #webpage-stack {
+  margin-right: 47px;
+}
+
+#browser:not(.fullscreen) #tabs-tabbar-container.right ~ #webpage-stack {
+  margin-left: 0;
+  margin-right: 7px;
+}
+
+#browser:not(.fullscreen)
+  #tabs-tabbar-container.right
+  ~ #webpage-stack:has(#tabs-subcontainer.right) {
+  margin-right: 47px;
+}
+
+/* Hide tab-strip when tab stack is active */
+#browser:has(#tabs-subcontainer.right) .tab-strip.overflow,
+#browser:has(#tabs-subcontainer.left) .tab-strip.overflow {
+  display: none !important;
+}

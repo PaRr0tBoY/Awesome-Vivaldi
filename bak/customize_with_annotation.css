@@ -1,0 +1,677 @@
+/* 设置标签页的基本定位为相对定位，为后续的定位子元素提供参考 */
+.tab {
+    position: relative;
+}
+
+/* 被注释掉的代码：为标签页添加半透明黑色背景遮罩层 */
+/*.tab .tab-header {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 96%;
+    height: 20%;
+    border-radius: inherit;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}*/
+
+/* 被注释掉的代码：设置固定标签页的标题栏样式 */
+/*.tab-position.is-pinned .tab-header {
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+    top: 0;
+    left: 0;
+    max-width: none;
+}*/
+
+/* 被注释掉的代码：设置固定标签组的大小和位置 */
+/*.tab.pinned.tab-group{
+    width: 100%;
+    height: 30%;
+    opacity: 1;
+    top: 0;
+    left: 0;
+    max-width: none;
+}
+*/
+/* 被注释掉的代码：隐藏固定标签页的缩略图 */
+/*.tab-position.is-pinned .thumbnail-image {
+    display: none;
+}*/
+
+/* 被注释掉的代码：设置标签页缩略图的样式 */
+/*.tab .thumbnail-image {
+    position: relative;
+    z-index: 0;
+    border-radius: inherit;
+    margin: 2px;
+}*/
+
+/* 修改工具栏命令按钮的图标颜色为浅绿色，使用!important确保优先级 */
+.button-toolbar.toolbar-command .button-icon svg path {
+    fill: #aec7bf !important;
+}
+/*========================测试代码区域==========================*/
+/* 功能：按住cmd键显示标签页编号 */
+#tabs-container .tab-strip {
+    /* 在标签条中设置计数器，用于标签页编号 */
+    counter-set: tab-number !important;
+}
+/* 当按钮预览功能禁用时，在前8个标签页位置前显示编号 */
+:has(.button-disabled-preview) #tabs-container .tab-strip > span:nth-child(-n + 8) .tab-position::before {
+    counter-increment: tab-number !important; /* 递增计数器 */
+    content: counter(tab-number) !important; /* 显示当前编号 */
+    position: absolute !important; /* 绝对定位 */
+    top: 1px !important; /* 距离顶部1像素 */
+    left: 4px !important; /* 距离左侧4像素 */
+    width: 16px !important; /* 编号框宽度 */
+    height: 16px !important; /* 编号框高度 */
+    border-radius: 3px !important; /* 圆角边框 */
+    font-size: 11.5px !important; /* 字体大小 */
+    text-align: center !important; /* 文字居中对齐 */
+    color: var(--colorFg) !important; /* 前景色使用CSS变量 */
+    background-color: var(--colorBgDarker) !important; /* 背景色使用CSS变量 */
+    z-index: 3 !important; /* 确保编号在标签页内容上层 */
+}
+
+/* 功能：按住cmd键并悬停显示书签栏 */
+#browser {
+    --bookmark-bar-hide-delay: 400ms; /* 书签栏隐藏延迟时间 */
+    --bookmark-bar-show-ctrlkey: false; /* 控制键显示书签栏的开关 */
+}
+
+/* 当书签栏在顶部时（地址栏在顶部或标签栏在顶部的布局） */
+.bookmark-bar-top:is(.address-top, .tabs-top) {
+    /* 当书签栏被悬停时，禁用网页视图的鼠标事件，防止误操作 */
+    #main:has(.bookmark-bar:hover) #webview-container {
+        pointer-events: none !important;
+    }
+    /* 标签栏在顶部时，禁用标签栏的拖拽功能 */
+    &.tabs-top #tabs-subcontainer {
+        -webkit-app-region: no-drag !important;
+    }
+
+    /* 书签栏默认高度设为0，实现隐藏效果 */
+    .bookmark-bar {
+        height: 0 !important;
+        border: none !important;
+    }
+    /* 书签栏的观察器元素，用于实现悬停显示效果 */
+    .bookmark-bar .observer {
+        height: 30px !important; /* 实际高度 */
+        color: #aec7bf !important; /* 文字颜色 */
+        background-color: #16211D !important; /* 背景颜色 */
+        position: absolute !important; /* 绝对定位 */
+        z-index: 4 !important; /* 层级 */
+        width: 100% !important; /* 全宽 */
+        border-bottom: solid 1px var(--colorBorder) !important; /* 底部边框 */
+        clip-path: inset(0 0 100% 0) !important; /* 裁剪路径，隐藏元素 */
+        transition-delay: var(--bookmark-bar-hide-delay) !important; /* 隐藏延迟 */
+    }
+    /* 当按钮预览禁用且标签栏被悬停时，显示书签栏 */
+    &:has(.button-disabled-preview):has(.tabbar-wrapper:hover).tabs-top .bookmark-bar .observer,
+    /* 地址栏顶部布局时，主栏被悬停时显示书签栏 */
+    &:has(.button-disabled-preview).address-top .bookmark-bar:is(.mainbar:not(:has(.OmniDropdown, nav.menu)):hover ~ *) .observer,
+    /* 书签栏获得焦点或被悬停时显示 */
+    .bookmark-bar:is(:focus-within, :hover) .observer {
+        clip-path: inset(0 0 -1px 0) !important; /* 调整裁剪路径显示元素 */
+        transition: clip-path 150ms cubic-bezier(0, 1, 0, 0.9) 50ms !important; /* 显示动画 */
+    }
+    /* 当不需要控制键显示书签栏时 */
+    @container not style(--bookmark-bar-show-ctrlkey: true) {
+        /* 标签栏被悬停时显示 */
+        &:has(.tabbar-wrapper:hover).tabs-top .bookmark-bar .observer,
+        /* 地址栏顶部布局时显示 */
+        &.address-top .bookmark-bar:is(.mainbar:not(:has(.OmniDropdown, nav.menu)):hover ~ *) .observer,
+        /* 书签栏获得焦点或被悬停时显示 */
+        .bookmark-bar:is(:focus-within, :hover) .observer {
+            clip-path: inset(0 0 -1px 0) !important; /* 调整裁剪路径显示元素 */
+            transition: clip-path 150ms cubic-bezier(0, 1, 0, 0.9) 50ms !important; /* 显示动画 */
+        }
+    }
+    /* 当动画关闭时，禁用过渡效果 */
+    &.animation-off .bookmark-bar .observer {
+        transition-duration: 0ms !important;
+    }
+}
+
+/* 书签弹窗优化：提供更多空间 */
+/* 书签弹窗主体 */
+.button-popup[aria-labelledby="dialog-bookmark-title"]
+{
+  height: 100%; /* 高度100% */
+  max-height: 100%; /* 最大高度100% */
+}
+/* 书签弹窗容器 */
+.BookmarkPopup
+{
+  flex-grow:1; /* 占用剩余空间 */
+  display: flex; /* 弹性布局 */
+    flex-direction: column; /* 垂直排列 */
+}
+/* 书签位置选择器 */
+.BookmarkLocationSelector.BookmarkPopup-LocationSelector
+{
+  flex-grow:1; /* 占用剩余空间 */
+  display: flex; /* 弹性布局 */
+    flex-direction: column; /* 垂直排列 */
+  overflow:hidden; /* 隐藏溢出内容 */
+}
+/* 书签文件夹列表 */
+.BookmarkLocationSelector-FolderList.vivaldi-tree
+{
+  flex-grow:1; /* 占用剩余空间 */
+}
+/* 书签弹窗内容区域 */
+.button-popup[aria-labelledby="dialog-bookmark-title"] .dialog-content
+{
+  flex-grow:1; /* 占用剩余空间 */
+}
+/* 地址栏相关样式（当前被注释掉） */
+/* 在非全屏且地址栏在特定位置时隐藏标题栏 */
+/*#browser:not(.fullscreen):not(.address-top-off, .address-bottom-off, .address-bottom) #header {
+    display: none;
+}*/
+
+/* 设置主栏的最小高度，基于UI缩放级别调整 */
+/*#browser:not(.address-top-off, .address-bottom-off, .address-bottom) .mainbar:not(:has(.window-buttongroup.on-mainbar)) {
+    min-height: calc(35px / var(--uiZoomLevel));
+}*/
+
+/* 设置主栏的左内边距，基于UI缩放级别调整 */
+/*#browser:not(.fullscreen):not(.address-top-off, .address-bottom-off, .address-bottom) .mainbar:not(:has(.window-buttongroup.on-mainbar)) {
+    padding-left: calc(68px / var(--uiZoomLevel));
+}*/
+
+/* 设置工具栏的最小高度，基于UI缩放级别调整 */
+/*#browser:not(.address-top-off, .address-bottom-off, .address-bottom) .mainbar > .toolbar-mainbar {
+    min-height: calc(34px / var(--uiZoomLevel));
+}*/
+
+/* 圆角标签和UI元素样式 */
+/* Vivaldi标志位置调整 */
+.Vivaldi {
+    top: 5px; /* 距离顶部5像素 */
+    left: 2px; /* 距离左侧2像素 */
+}
+
+/* 标题栏位置调整 */
+#titlebar {
+    top: 5px; /* 距离顶部5像素 */
+}
+
+/* 头部区域内边距 */
+#header {
+    padding-top: 3px; /* 上内边距3像素 */
+    padding-bottom: 3px; /* 下内边距3像素 */
+}
+
+/* 标题文字样式 */
+.title {
+    color: #fff; /* 白色文字 */
+    mix-blend-mode: difference; /* 差值混合模式，确保在任何背景下都可见 */
+}
+
+/* Windows系统窗口按钮组的圆角样式 */
+#browser.win .window-buttongroup button {
+    border-radius: var(--radiusHalf); /* 使用CSS变量设置圆角 */
+}
+
+/*Tool bar*/
+#tabs-container .tab:not(.tab-group) {
+    border-radius: var(--radiusHalf);
+}
+
+.tabs-at-edge #tabs-tabbar-container.top,
+.native:not(.stacks-dotted) #tabs-tabbar-container.top {
+    padding-top: 2px;
+}
+
+.toolbar-mainbar {
+    .toolbar-extensions>.button-toolbar>button,
+    .page-zoom-controls>.button-toolbar>button,
+    >.button-toolbar>button,
+    .toolbar-extensions>.toolbar-group>.button-toolbar>button,
+    .page-zoom-controls>.toolbar-group>.button-toolbar>button,
+    >.toolbar-group>.button-toolbar>button {
+        border-radius: var(--radiusHalf);
+    }
+}
+
+.color-behind-tabs-off {
+    #tabs-subcontainer.top,
+    .transparent-tabbar #tabs-subcontainer.top {
+        margin-left: 48px;
+
+        .address-top .mainbar {
+            border: 0px;
+        }
+    }
+}
+
+.transparent-tabbar.tabs-top .button-toolbar.workspace-popup.tabbar-workspace-button button {
+    border-radius: var(--radiusHalf);
+}
+
+.transparent-tabbar.tabs-top .button-toolbar.workspace-popup.tabbar-workspace-button {
+
+    background-color: transparent;
+}
+
+.tabs-top {
+    .maximized .vivaldi {
+        height: 29px;
+    }
+    .tab.active:not(.marked):not(.tab-mini):not(.tab-in-accordion):after,
+    .tab.active:not(.marked):not(.tab-mini):not(.tab-in-accordion):before {
+        bottom: 0;
+        -webkit-mask-image: radial-gradient(circle at 0 0, transparent, transparent 73%);
+
+        .tab-position {
+            .tab.insubstrip.active:not(.marked) {
+                padding-bottom: 2px;
+                margin-bottom: 0;
+                border-radius: var(--radiusHalf);
+            }
+
+            .tab,
+            .tabs-bottom .tab-position .tab {
+                margin-right: 2px;
+                margin-left: 2px;
+            }
+        }
+    }
+}
+
+.toolbar-tabbar.sync-and-trash-container {
+    margin-right: 8px;
+}
+
+/*Start Page*/
+
+.tracker-warning,
+.SpeedDialView-SearchField,
+.SpeedDial-Blocked-Counter {
+    backdrop-filter: var(--backgroundBlur);
+    background-color: var(--colorBgAlphaBlur);
+}
+
+.startpage .startpage-navigation {
+    background-color: var(--colorBgAlphaBlur);
+    backdrop-filter: var(--backgroundBlur);
+}
+
+.speeddial .dial {
+    backdrop-filter: var(--backgroundBlur);
+}
+
+/*Task panel*/
+.calendar-grid-agenda .cal-tasks-row .cal-tasks-row-date.current {
+    margin: 10px 0px 2px 0;
+    /* padding: 7px 0px 7px 0; */
+}
+
+.calendar-grid-agenda .cal-tasks-row .cal-tasks-row-date {
+    padding: 10px 0px 7px 0;
+}
+
+.calendar-grid-agenda .cal-tasks-row .cal-tasks-row-events .event-container {
+    margin: 5px 0px 5px 0;
+}
+
+.calendar-event {
+    margin: 0px 2px;
+    padding: 10px 0px 10px 2px;
+
+    .cal-event-body-content {
+        margin-left: 22px;
+    }
+}
+
+/*Notes*/
+.sortselector {
+    height: 32px;
+    padding-left: 2px;
+    .sortselector .sortselector-button {
+        height: 32px;
+    }
+}
+
+/* 美化下载界面样式 */
+/* 人体工程学下载弹窗对话框 */
+// .download-popout {height: 100%; max-height: calc(100vh - 114px);} /* 可选：强制弹窗高度为视口高度的85% */
+/* 下载编辑器自适应内容大小 */
+.panel.downloads section.download-editor {flex-basis: fit-content !important; }
+/* 禁用状态的下载编辑器数据区域高度为0 */
+.panel.downloads section.download-editor > .data.disabled {max-height: 0;}
+/* 启用状态的下载编辑器数据区域添加底部内边距 */
+.panel.downloads section.download-editor > .data:not(.disabled) {padding-bottom: 12px;}
+
+/* 彩色下载进度弹窗按钮 */
+/* 下载进度条背景设为黑色 */
+.button-toolbar .progress {background-color: black !important;}
+/* 已加载部分背景色过渡效果 */
+.button-toolbar .progress .loaded {transition: background-color 300ms ease-out 0s !important;}
+/* 0-9%进度时显示洋红色 */
+.button-toolbar .progress .loaded:is([style^='width: 0.'], [style^='width: 1.'], [style^='width: 2.'], [style^='width: 3.'], [style^='width: 4.'], [style^='width: 5.'], [style^='width: 6.'], [style^='width: 7.'], [style^='width: 8.'], [style^='width: 9.']) {background-color: magenta;}
+/* 10%进度时显示深粉色 */
+.button-toolbar .progress .loaded[style^='width: 1']:not([style^='width: 1.']):not([style^='width: 100%']) {background-color: #ff0080;}
+/* 20%进度时显示深橙色 */
+.button-toolbar .progress .loaded[style^='width: 2']:not([style^='width: 2.']) {background-color: darkorange;}
+/* 30%进度时显示橙色 */
+.button-toolbar .progress .loaded[style^='width: 3']:not([style^='width: 3.']) {background-color: orange;}
+/* 40%进度时显示金色 */
+.button-toolbar .progress .loaded[style^='width: 4']:not([style^='width: 4.']) {background-color: gold;}
+/* 50%进度时显示黄色 */
+.button-toolbar .progress .loaded[style^='width: 5']:not([style^='width: 5.']) {background-color: yellow;}
+/* 60%进度时显示黄绿色 */
+.button-toolbar .progress .loaded[style^='width: 6']:not([style^='width: 6.']) {background-color: greenyellow;}
+/* 70%进度时显示青绿色 */
+.button-toolbar .progress .loaded[style^='width: 7']:not([style^='width: 7.']) {background-color: limegreen;}
+/* 80%进度时显示中绿松石色 */
+.button-toolbar .progress .loaded[style^='width: 8']:not([style^='width: 8.']) {background-color: mediumturquoise;}
+/* 90%进度时显示深天蓝色 */
+.button-toolbar .progress .loaded[style^='width: 9']:not([style^='width: 9.']) {background-color: deepskyblue;}
+/* 100%进度时显示淡青色 */
+.button-toolbar .progress .loaded[style^='width: 100'] {background-color: lightcyan !important;}
+
+/* 下载弹窗按钮计数器 */
+/* 在进度条前后添加文字装饰效果 */
+.button-toolbar .progress .loaded::before, .button-toolbar .progress .loaded::after {position: absolute; color: white; -webkit-text-stroke: .2px; text-shadow: -.5px -.5px 1px cyan, .5px .5px 1px red, -1px 0 1px black, 1px 0 1px black, 0 -.5px 1px black, .5px 1.5px 1px black;}
+/* 显示数字部分：提取style属性中的宽度数值 */
+.button-toolbar .progress .loaded:not([style^='width: 100%']):not([style^='width: 0%'])::before {content: attr(style); left: -3px; bottom: 1px; width: 13px; height: 30px; font-size: 10px; clip-path: inset(13px 0 0 0);}
+/* 对于整数十的进度调整数字位置 */
+.button-toolbar .progress .loaded:not([style^='width: 100%']):not([style^='width: 0%']):not([style^='width: 0.']):not([style^='width: 1.']):not([style^='width: 2.']):not([style^='width: 3.']):not([style^='width: 4.']):not([style^='width: 5.']):not([style^='width: 6.']):not([style^='width: 7.']):not([style^='width: 8.']):not([style^='width: 9.'])::before {left: -2.5px; width: 11.5px;}
+/* 显示百分号 */
+.button-toolbar .progress .loaded:not([style^='width: 100%']):not([style^='width: 0%'])::after {content: '%'; left: 11px; bottom: 6.5px; font-size: 8px;}
+/* 对于整数十的进度调整百分号位置 */
+.button-toolbar .progress .loaded:not([style^='width: 100%']):not([style^='width: 0%']):not([style^='width: 0.']):not([style^='width: 1.']):not([style^='width: 2.']):not([style^='width: 3.']):not([style^='width: 4.']):not([style^='width: 5.']):not([style^='width: 6.']):not([style^='width: 7.']):not([style^='width: 8.']):not([style^='width: 9.'])::after {left: 9px;}
+/* 下载图标淡出效果 */
+.button-toolbar > button[title="Downloads"] > span > svg {opacity:0.4;}
+
+/* 浮动标签样式设置 */
+:root {
+  --mod-border-radius: 4px; /* 圆角半径 */
+  --mod-whitespace-x: 3px; /* 水平间距 */
+  --mod-whitespace-y: 5px; /* 垂直间距 */
+  --mod-whitespace-tabbar-right: 15px; /* 标签栏右侧间距 */
+  --mod-highlight-color: #c00; /* 高亮颜色 */
+  --mod-drop-shadow: 3px 3px 5px -1px rgba(0,0,0,.3); /* 阴影效果 */
+  --mod-animation-speed: .3s; /* 动画速度 */
+  --mod-mainbar-height: 45px; /* 主栏高度 */
+}
+
+/* -- 标签栏样式 -- */
+#tabs-tabbar-container.top {
+  margin-bottom: var(--mod-whitespace-y); /* 底部外边距 */
+  border-width: 0; /* 边框宽度为0 */
+  box-shadow: none !important; /* 移除阴影效果 */
+
+  padding-right: var(--mod-whitespace-tabbar-right); /* 右侧内边距 */
+
+  /* 非固定标签页之间的水平间距 */
+  .tab-strip > span + span .tab:not(.pinned) {
+    margin-left: var(--mod-whitespace-x);
+  }
+}
+
+/* 标签页位置容器 */
+.tab-position {
+  .tab {
+    transition: all var(--mod-animation-speed) ease; /* 过渡动画效果 */
+    border-radius: var(--mod-border-radius) !important; /* 圆角边框 */
+    * {
+      cursor: pointer; /* 鼠标指针为手型 */
+    }
+
+    /* 覆盖可能的Chrome样式修改 */
+    &::after,
+    &::before {
+      display: none; /* 隐藏伪元素 */
+    }
+
+    /* 关闭按钮样式 */
+    .close {
+      background-color: transparent; /* 透明背景 */
+      border-radius: 99rem; /* 圆形边框 */
+    }
+
+    /* 活动标签页和悬停时的阴影效果 */
+    &.active,
+    &:hover {
+      box-shadow: var(--mod-drop-shadow); /* 添加阴影 */
+    }
+  }
+}
+
+/* -- 启用水平滚动时的标签样式 --*/
+.horizontal-scrolling {
+  &.tab-strip {
+    padding-top: unset !important; /* 重置顶部内边距 */
+    margin-top: unset !important; /* 重置顶部外边距 */
+  }
+}
+
+/* -- 高亮显示有背景音频的标签页 -- */
+.tab.audio-on:not(.active) {
+  transition: all var(--mod-animation-speed) ease; /* 过渡动画 */
+  color: var(--colorHighlightBg, --mod-highlight-color); /* 文字颜色 */
+  box-shadow: var(--mod-drop-shadow); /* 阴影效果 */
+  .tab-header {
+    background-color: var(--colorBg); /* 标题栏背景色 */
+  }
+}
+
+/* -- 主栏样式 -- */
+.mainbar {
+  & > .toolbar-mainbar {
+    align-items: stretch; /* 项目拉伸填充 */
+    height: var(--mod-mainbar-height); /* 主栏高度 */
+    padding: var(--mod-whitespace-y); /* 内边距 */
+  }
+}
+
+/* 地址栏搜索框和地址框样式 */
+.UrlBar-SearchField,
+.UrlBar-AddressField {
+  border-radius: var(--mod-border-radius); /* 圆角边框 */
+  height: auto; /* 自动高度 */
+
+  /* 页面加载指示器 */
+  .pageload-indicator {
+    border-radius: var(--mod-border-radius); /* 圆角边框 */
+    height: 100% !important; /* 全高 */
+  }
+}
+
+/* 地址栏字段 */
+.UrlField {
+  height: calc(var(--mod-mainbar-height) - (var(--mod-whitespace-y) * 2)) ; /* 计算高度：主栏高度减去两倍垂直间距 */
+}
+
+/* 全能下拉菜单 */
+.OmniDropdown {
+  top: 100% !important; /* 位置在父元素底部 */
+}
+
+/* 主栏中的个人资料弹出菜单 */
+.toolbar-mainbar .profile-popup {
+  margin-right: var(--mod-whitespace-tabbar-right); /* 右侧外边距 */
+}
+
+/* -- Speed dial -- */
+.dials {
+  .dial *:hover {
+    cursor: pointer;
+  }
+}
+/*==========================================================*/
+div.tab-strip {
+    position: relative;
+}
+
+/* 工具栏按钮标题文字颜色设为白色 */
+button.ToolbarButton-Button .button-title {
+    color: white;
+}
+
+/* 隐藏URL混淆警告 */
+.UrlBar-UrlObfuscationWarning {
+    display: none !important;
+}
+
+/* 隐藏"网页提供订阅"按钮 */
+.ToolbarButton-Button[title="网页提供订阅"] {
+    display: none !important;
+    float: left;
+}
+
+/* 隐藏"翻译页面"按钮 */
+.ToolbarButton-Button[title="翻译页面"] {
+    display: none !important;
+    float: left;
+}
+
+/* 隐藏包含"内容拦截器"标题的按钮 */
+.ToolbarButton-Button[title*="内容拦截器"] {
+    display: none !important;
+}
+
+/* 隐藏站点信息安全徽章 */
+.SiteInfoButton-SecurityBadge {
+    display: none !important;
+}
+
+/* 隐藏书签按钮 */
+.BookmarkButton {
+    display: none !important;
+}
+
+/* 隐藏"显示输入记录"按钮 */
+button[title="显示输入记录"] {
+    display: none !important;
+}
+
+/*.button-addressfield {
+    margin-right: 30px;
+}
+*/
+
+/* 地址栏输入框文字居中对齐 */
+#urlFieldInput {
+    text-align: center;
+}
+
+/* URL片段包装器：定位在地址栏中央 */
+.UrlFragment-Wrapper {
+    position: absolute; /* 绝对定位 */
+    left: 45%; /* 距离左侧45% */
+    transform: translateX(-50%); /* 向左平移50%实现居中 */
+
+}
+
+/* 标签页容器：垂直弹性布局 */
+#tabs-container {
+  display: flex; /* 弹性布局 */
+  flex-direction: column; /* 垂直方向 */
+  height: 100%; /* 全高 */
+}
+
+/* 隐藏新建标签页按钮 */
+.button-toolbar.newtab {
+    display: none;
+}
+
+/* 快速命令弹窗样式 */
+.modal-wrapper:has(.quick-command-container) {
+    position: fixed; /* 固定定位 */
+    transform: translate(-50%, 20%); /* 定位在屏幕上方20%处 */
+    border-radius: 15px !important; /* 大圆角 */
+    opacity: 0.91 !important; /* 透明度 */
+    backdrop-filter: blur(10px); /* 背景模糊效果 */
+    width: 650px; /* 固定宽度 */
+}
+
+/* 虚拟滚动网格和内部容器的宽度设置 */
+.ReactVirtualized__Grid.ReactVirtualized__List,
+.ReactVirtualized__Grid__innerScrollContainer {
+    max-width: 800px !important; /* 最大宽度 */
+    width: 100% !important; /* 自适应宽度 */
+}
+
+/* 快速命令相关元素宽度设为100% */
+.quick-commands {
+    width: 100% !important;
+}
+
+.quick-command-container {
+    width: 100% !important;
+}
+
+.quick-command-search {
+    width: 100% !important;
+}
+
+.quick-commands {
+    width: 100% !important;
+}
+
+.quick-command{
+    width: 100% !important;
+}
+
+.quick-command-sectionheader {
+    width: 100% !important;
+}
+
+/* 隐藏虚拟滚动列表的滚动条 */
+.ReactVirtualized__Grid.ReactVirtualized__List {
+  scrollbar-width: none; /* 无滚动条 */
+}
+
+
+
+/* 垂直扩展程序下拉菜单 */
+.extensionIconPopupMenu {
+  --popupWidth: 280px !important; /* 弹窗宽度 */
+}
+/* 扩展程序菜单的工具栏样式 */
+.extensionIconPopupMenu > .toolbar {
+  max-height: 50vh; /* 最大高度为视口高度的50% */
+  overflow: hidden auto; /* 隐藏溢出内容并显示滚动条 */
+  flex-direction: column; /* 垂直排列 */
+  flex-wrap: nowrap; /* 不换行 */
+  align-items: stretch; /* 项目拉伸填充 */
+}
+/* 扩展程序图标按钮样式 */
+.extensionIconPopupMenu .ExtensionDropdownIcon > button {
+  justify-content: flex-start; /* 左对齐 */
+  padding: 10px; /* 内边距 */
+}
+/* 在扩展程序按钮后显示标题 */
+.extensionIconPopupMenu .ExtensionDropdownIcon > button::after {
+  content: attr(title); /* 显示标题属性的内容 */
+  overflow: hidden; /* 隐藏溢出 */
+  text-overflow: ellipsis; /* 超出部分显示省略号 */
+}
+/* 按钮徽章位置调整 */
+.button-toolbar > button > .button-badge {
+  top: auto; /* 自动顶部位置 */
+  right: 10px; /* 距离右侧10像素 */
+}
+
+/* 隐藏输入框内部的小工具栏 */
+.toolbar.toolbar-small.toolbar-insideinput {
+    display: none;
+}
+
+/* 标签页工具提示中隐藏缩略图 */
+#vivaldi-tooltip .tooltip-item .thumbnail-image {
+    display: none !important;
+}
+
+/* 仪表板小部件中隐藏URL包装器 */
+.dashboard-widget .url-wrapper {
+  display: none;
+}

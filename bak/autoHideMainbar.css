@@ -1,0 +1,88 @@
+/* ========================================
+   COLLAPSIBLE MAIN BAR
+   ======================================== */
+
+/* Main bar container - collapsed with 10px height */
+.mainbar {
+  height: 10px !important;
+  overflow: hidden !important;
+  transition: height 280ms ease-out !important;
+  background: var(--colorBg, var(--colorAccentBg)) !important;
+  border-bottom: 1px solid var(--colorBorder, rgba(0, 0, 0, 0.1)) !important;
+}
+
+/* Main bar expansion on hover - immediate */
+.mainbar:hover {
+  height: 36px !important;
+  overflow: visible !important;
+}
+
+/* Main bar items container */
+.mainbar .observer {
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+}
+
+/* Main bar items - hidden when collapsed */
+.mainbar .mainbarItem,
+.mainbar .mainbarButton,
+.mainbar button,
+.mainbar .action-button {
+  height: 28px !important;
+  margin: 0 2px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 12px !important;
+  border-radius: 4px !important;
+  background: var(--colorBgLight, rgba(255, 255, 255, 0.1)) !important;
+  transition: all 280ms ease-out !important;
+  border: 1px solid var(--colorBorder, rgba(0, 0, 0, 0.1)) !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/* Remove default spacer */
+.mainbar .spacer {
+  display: none !important;
+}
+
+/* Show items when main bar is hovered */
+.mainbar:hover .mainbarItem,
+.mainbar:hover .mainbarButton,
+.mainbar:hover button,
+.mainbar:hover .action-button {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Add spacing to first item */
+.mainbar .observer .mainbarItem:first-child,
+.mainbar .observer .mainbarButton:first-child,
+.mainbar .observer button:first-child,
+.mainbar .observer .action-button:first-child {
+  margin-left: 60px !important;
+  padding-left: 60px !important;
+}
+
+/* Hover effect for main bar items */
+.mainbar .mainbarItem:hover,
+.mainbar .mainbarButton:hover,
+.mainbar button:hover,
+.mainbar .action-button:hover {
+  background: var(--colorAccentBg, rgba(64, 224, 208, 0.2)) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Main bar accessibility - make it keyboard navigable when expanded */
+.mainbar:focus-within {
+  height: 36px !important;
+  overflow: visible !important;
+}
+
+/* Smooth transition for all main bar elements */
+.mainbar * {
+  transition: inherit !important;
+}

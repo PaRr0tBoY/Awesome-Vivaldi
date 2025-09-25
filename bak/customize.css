@@ -1,0 +1,592 @@
+.tab {
+    position: relative;
+}
+
+/*.tab .tab-header {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 96%;
+    height: 20%;
+    border-radius: inherit;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}*/
+
+/*.tab-position.is-pinned .tab-header {
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+    top: 0;
+    left: 0;
+    max-width: none;
+}*/
+
+/*.tab.pinned.tab-group{
+    width: 100%;
+    height: 30%;
+    opacity: 1;
+    top: 0;
+    left: 0;
+    max-width: none;
+}
+*/
+/*.tab-position.is-pinned .thumbnail-image {
+    display: none;
+}*/
+
+/*.tab .thumbnail-image {
+    position: relative;
+    z-index: 0;
+    border-radius: inherit;
+    margin: 2px;
+}*/
+
+.button-toolbar.toolbar-command .button-icon svg path {
+    fill: #aec7bf !important;
+}
+/*========================测试代码区域==========================*/
+/* Hold cmd and show tab numbers */
+#tabs-container .tab-strip {
+    counter-set: tab-number !important;
+}
+:has(.button-disabled-preview) #tabs-container .tab-strip > span:nth-child(-n + 8) .tab-position::before {
+    counter-increment: tab-number !important;
+    content: counter(tab-number) !important;
+    position: absolute !important;
+    top: 1px !important;
+    left: 4px !important;
+    width: 16px !important;
+    height: 16px !important;
+    border-radius: 3px !important;
+    font-size: 11.5px !important;
+    text-align: center !important;
+    color: var(--colorFg) !important;
+    background-color: var(--colorBgDarker) !important;
+    z-index: 3 !important;
+}
+
+/* Hold cmd and hover to show Bookmarks bar */
+#browser {
+    --bookmark-bar-hide-delay: 400ms;
+    --bookmark-bar-show-ctrlkey: false;
+}
+
+.bookmark-bar-top:is(.address-top, .tabs-top) {
+    #main:has(.bookmark-bar:hover) #webview-container {
+        pointer-events: none !important;
+    }
+    &.tabs-top #tabs-subcontainer {
+        -webkit-app-region: no-drag !important;
+    }
+
+    .bookmark-bar {
+        height: 0 !important;
+        border: none !important;
+    }
+    .bookmark-bar .observer {
+        height: 30px !important;
+        color: #aec7bf !important;
+        background-color: #16211D !important;
+        position: absolute !important;
+        z-index: 4 !important;
+        width: 100% !important;
+        border-bottom: solid 1px var(--colorBorder) !important;
+        clip-path: inset(0 0 100% 0) !important;
+        transition-delay: var(--bookmark-bar-hide-delay) !important;
+    }
+    &:has(.button-disabled-preview):has(.tabbar-wrapper:hover).tabs-top .bookmark-bar .observer,
+    &:has(.button-disabled-preview).address-top .bookmark-bar:is(.mainbar:not(:has(.OmniDropdown, nav.menu)):hover ~ *) .observer,
+    .bookmark-bar:is(:focus-within, :hover) .observer {
+        clip-path: inset(0 0 -1px 0) !important;
+        transition: clip-path 150ms cubic-bezier(0, 1, 0, 0.9) 50ms !important;
+    }
+    @container not style(--bookmark-bar-show-ctrlkey: true) {
+        &:has(.tabbar-wrapper:hover).tabs-top .bookmark-bar .observer,
+        &.address-top .bookmark-bar:is(.mainbar:not(:has(.OmniDropdown, nav.menu)):hover ~ *) .observer,
+        .bookmark-bar:is(:focus-within, :hover) .observer {
+            clip-path: inset(0 0 -1px 0) !important;
+            transition: clip-path 150ms cubic-bezier(0, 1, 0, 0.9) 50ms !important;
+        }
+    }
+    &.animation-off .bookmark-bar .observer {
+        transition-duration: 0ms !important;
+    }
+}
+
+/* More Space at bookmark */
+.button-popup[aria-labelledby="dialog-bookmark-title"]
+{
+  height: 100%;
+  max-height: 100%;
+}
+.BookmarkPopup
+{
+  flex-grow:1;
+  display: flex;
+    flex-direction: column;
+}
+.BookmarkLocationSelector.BookmarkPopup-LocationSelector
+{
+  flex-grow:1;
+  display: flex;
+    flex-direction: column;
+  overflow:hidden;
+}
+.BookmarkLocationSelector-FolderList.vivaldi-tree
+{
+  flex-grow:1;
+}
+.button-popup[aria-labelledby="dialog-bookmark-title"] .dialog-content
+{
+  flex-grow:1;
+}
+/* 地址栏 */
+/*#browser:not(.fullscreen):not(.address-top-off, .address-bottom-off, .address-bottom) #header {
+    display: none;
+}
+
+#browser:not(.address-top-off, .address-bottom-off, .address-bottom) .mainbar:not(:has(.window-buttongroup.on-mainbar)) {
+    min-height: calc(35px / var(--uiZoomLevel));
+}
+
+#browser:not(.fullscreen):not(.address-top-off, .address-bottom-off, .address-bottom) .mainbar:not(:has(.window-buttongroup.on-mainbar)) {
+    padding-left: calc(68px / var(--uiZoomLevel));
+}
+
+#browser:not(.address-top-off, .address-bottom-off, .address-bottom) .mainbar > .toolbar-mainbar {
+    min-height: calc(34px / var(--uiZoomLevel));
+}*/
+
+/* Rounder Tabs */
+/*Title bar*/
+.Vivaldi {
+    top: 5px;
+    left: 2px;
+}
+
+#titlebar {
+    top: 5px;
+}
+
+#header {
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.title {
+    color: #fff;
+    mix-blend-mode: difference;
+}
+
+#browser.win .window-buttongroup button {
+    border-radius: var(--radiusHalf);
+}
+
+/*Tool bar*/
+#tabs-container .tab:not(.tab-group) {
+    border-radius: var(--radiusHalf);
+}
+
+.tabs-at-edge #tabs-tabbar-container.top,
+.native:not(.stacks-dotted) #tabs-tabbar-container.top {
+    padding-top: 2px;
+}
+
+.toolbar-mainbar {
+    .toolbar-extensions>.button-toolbar>button,
+    .page-zoom-controls>.button-toolbar>button,
+    >.button-toolbar>button,
+    .toolbar-extensions>.toolbar-group>.button-toolbar>button,
+    .page-zoom-controls>.toolbar-group>.button-toolbar>button,
+    >.toolbar-group>.button-toolbar>button {
+        border-radius: var(--radiusHalf);
+    }
+}
+
+.color-behind-tabs-off {
+    #tabs-subcontainer.top,
+    .transparent-tabbar #tabs-subcontainer.top {
+        margin-left: 48px;
+
+        .address-top .mainbar {
+            border: 0px;
+        }
+    }
+}
+
+.transparent-tabbar.tabs-top .button-toolbar.workspace-popup.tabbar-workspace-button button {
+    border-radius: var(--radiusHalf);
+}
+
+.transparent-tabbar.tabs-top .button-toolbar.workspace-popup.tabbar-workspace-button {
+
+    background-color: transparent;
+}
+
+.tabs-top {
+    .maximized .vivaldi {
+        height: 29px;
+    }
+    .tab.active:not(.marked):not(.tab-mini):not(.tab-in-accordion):after,
+    .tab.active:not(.marked):not(.tab-mini):not(.tab-in-accordion):before {
+        bottom: 0;
+        -webkit-mask-image: radial-gradient(circle at 0 0, transparent, transparent 73%);
+
+        .tab-position {
+            .tab.insubstrip.active:not(.marked) {
+                padding-bottom: 2px;
+                margin-bottom: 0;
+                border-radius: var(--radiusHalf);
+            }
+
+            .tab,
+            .tabs-bottom .tab-position .tab {
+                margin-right: 2px;
+                margin-left: 2px;
+            }
+        }
+    }
+}
+
+.toolbar-tabbar.sync-and-trash-container {
+    margin-right: 8px;
+}
+
+/*Start Page*/
+
+.tracker-warning,
+.SpeedDialView-SearchField,
+.SpeedDial-Blocked-Counter {
+    backdrop-filter: var(--backgroundBlur);
+    background-color: var(--colorBgAlphaBlur);
+}
+
+.startpage .startpage-navigation {
+    background-color: var(--colorBgAlphaBlur);
+    backdrop-filter: var(--backgroundBlur);
+}
+
+.speeddial .dial {
+    backdrop-filter: var(--backgroundBlur);
+}
+
+/*Task panel*/
+.calendar-grid-agenda .cal-tasks-row .cal-tasks-row-date.current {
+    margin: 10px 0px 2px 0;
+    /* padding: 7px 0px 7px 0; */
+}
+
+.calendar-grid-agenda .cal-tasks-row .cal-tasks-row-date {
+    padding: 10px 0px 7px 0;
+}
+
+.calendar-grid-agenda .cal-tasks-row .cal-tasks-row-events .event-container {
+    margin: 5px 0px 5px 0;
+}
+
+.calendar-event {
+    margin: 0px 2px;
+    padding: 10px 0px 10px 2px;
+
+    .cal-event-body-content {
+        margin-left: 22px;
+    }
+}
+
+/*Notes*/
+.sortselector {
+    height: 32px;
+    padding-left: 2px;
+    .sortselector .sortselector-button {
+        height: 32px;
+    }
+}
+
+/* Beautiful Downloads */
+/* Ergonomic download popup dialog */
+// .download-popout {height: 100%; max-height: calc(100vh - 114px);} /* optional: force popup length always at 85vh */
+.panel.downloads section.download-editor {flex-basis: fit-content !important; }
+.panel.downloads section.download-editor > .data.disabled {max-height: 0;}
+.panel.downloads section.download-editor > .data:not(.disabled) {padding-bottom: 12px;}
+
+/* colorful download progress popup button */
+.button-toolbar .progress {background-color: black !important;}
+.button-toolbar .progress .loaded {transition: background-color 300ms ease-out 0s !important;}
+.button-toolbar .progress .loaded:is([style^='width: 0.'], [style^='width: 1.'], [style^='width: 2.'], [style^='width: 3.'], [style^='width: 4.'], [style^='width: 5.'], [style^='width: 6.'], [style^='width: 7.'], [style^='width: 8.'], [style^='width: 9.']) {background-color: magenta;}
+.button-toolbar .progress .loaded[style^='width: 1']:not([style^='width: 1.']):not([style^='width: 100%']) {background-color: #ff0080;}
+.button-toolbar .progress .loaded[style^='width: 2']:not([style^='width: 2.']) {background-color: darkorange;}
+.button-toolbar .progress .loaded[style^='width: 3']:not([style^='width: 3.']) {background-color: orange;}
+.button-toolbar .progress .loaded[style^='width: 4']:not([style^='width: 4.']) {background-color: gold;}
+.button-toolbar .progress .loaded[style^='width: 5']:not([style^='width: 5.']) {background-color: yellow;}
+.button-toolbar .progress .loaded[style^='width: 6']:not([style^='width: 6.']) {background-color: greenyellow;}
+.button-toolbar .progress .loaded[style^='width: 7']:not([style^='width: 7.']) {background-color: limegreen;}
+.button-toolbar .progress .loaded[style^='width: 8']:not([style^='width: 8.']) {background-color: mediumturquoise;}
+.button-toolbar .progress .loaded[style^='width: 9']:not([style^='width: 9.']) {background-color: deepskyblue;}
+.button-toolbar .progress .loaded[style^='width: 100'] {background-color: lightcyan !important;}
+
+/* download popup button counter */
+.button-toolbar .progress .loaded::before, .button-toolbar .progress .loaded::after {position: absolute; color: white; -webkit-text-stroke: .2px; text-shadow: -.5px -.5px 1px cyan, .5px .5px 1px red, -1px 0 1px black, 1px 0 1px black, 0 -.5px 1px black, .5px 1.5px 1px black;}
+/* number */
+.button-toolbar .progress .loaded:not([style^='width: 100%']):not([style^='width: 0%'])::before {content: attr(style); left: -3px; bottom: 1px; width: 13px; height: 30px; font-size: 10px; clip-path: inset(13px 0 0 0);}
+.button-toolbar .progress .loaded:not([style^='width: 100%']):not([style^='width: 0%']):not([style^='width: 0.']):not([style^='width: 1.']):not([style^='width: 2.']):not([style^='width: 3.']):not([style^='width: 4.']):not([style^='width: 5.']):not([style^='width: 6.']):not([style^='width: 7.']):not([style^='width: 8.']):not([style^='width: 9.'])::before {left: -2.5px; width: 11.5px;}
+/* percent */
+.button-toolbar .progress .loaded:not([style^='width: 100%']):not([style^='width: 0%'])::after {content: '%'; left: 11px; bottom: 6.5px; font-size: 8px;}
+.button-toolbar .progress .loaded:not([style^='width: 100%']):not([style^='width: 0%']):not([style^='width: 0.']):not([style^='width: 1.']):not([style^='width: 2.']):not([style^='width: 3.']):not([style^='width: 4.']):not([style^='width: 5.']):not([style^='width: 6.']):not([style^='width: 7.']):not([style^='width: 8.']):not([style^='width: 9.'])::after {left: 9px;}
+/* faded download icon */
+.button-toolbar > button[title="Downloads"] > span > svg {opacity:0.4;}
+
+/* Floating Tabs */
+:root {
+  --mod-border-radius: 4px;
+  --mod-whitespace-x: 3px;
+  --mod-whitespace-y: 5px;
+  --mod-whitespace-tabbar-right: 15px;
+  --mod-highlight-color: #c00;
+  --mod-drop-shadow: 3px 3px 5px -1px rgba(0,0,0,.3);
+  --mod-animation-speed: .3s;
+  --mod-mainbar-height: 45px;
+}
+
+/* -- Tabs -- */
+#tabs-tabbar-container.top {
+  margin-bottom: var(--mod-whitespace-y);
+  border-width: 0;
+  box-shadow: none !important;
+
+  padding-right: var(--mod-whitespace-tabbar-right);
+
+  .tab-strip > span + span .tab:not(.pinned) {
+    margin-left: var(--mod-whitespace-x);
+  }
+}
+
+.tab-position {
+  .tab {
+    transition: all var(--mod-animation-speed) ease;
+    border-radius: var(--mod-border-radius) !important;
+    * {
+      cursor: pointer;
+    }
+
+    /* overwrite potential chrome mods */
+    &::after,
+    &::before {
+      display: none;
+    }
+
+    .close {
+      background-color: transparent;
+      border-radius: 99rem;
+    }
+
+    &.active,
+    &:hover {
+      box-shadow: var(--mod-drop-shadow);
+    }
+  }
+}
+
+/* -- tabs horizontal scrolling enabled --*/
+.horizontal-scrolling {
+  &.tab-strip {
+    padding-top: unset !important;
+    margin-top: unset !important;
+  }
+}
+
+/* -- highlight tab with background audio -- */
+.tab.audio-on:not(.active) {
+  transition: all var(--mod-animation-speed) ease;
+  color: var(--colorHighlightBg, --mod-highlight-color);
+  box-shadow: var(--mod-drop-shadow);
+  .tab-header {
+    background-color: var(--colorBg);
+  }
+}
+
+/* -- Main Bar -- */
+.mainbar {
+  & > .toolbar-mainbar {
+    align-items: stretch;
+    height: var(--mod-mainbar-height);
+    padding: var(--mod-whitespace-y);
+  }
+}
+
+.UrlBar-SearchField,
+.UrlBar-AddressField {
+  border-radius: var(--mod-border-radius);
+  height: auto;
+
+  .pageload-indicator {
+    border-radius: var(--mod-border-radius);
+    height: 100% !important;
+  }
+}
+
+.UrlField {
+  height: calc(var(--mod-mainbar-height) - (var(--mod-whitespace-y) * 2)) ;
+}
+
+.OmniDropdown {
+  top: 100% !important;
+}
+
+.toolbar-mainbar .profile-popup {
+  margin-right: var(--mod-whitespace-tabbar-right);
+}
+
+/* -- Speed dial -- */
+.dials {
+  .dial *:hover {
+    cursor: pointer;
+  }
+}
+/*==========================================================*/
+div.tab-strip {
+    position: relative;
+}
+
+button.ToolbarButton-Button .button-title {
+    color: white;
+}
+
+.UrlBar-UrlObfuscationWarning {
+    display: none !important;
+}
+
+.ToolbarButton-Button[title="网页提供订阅"] {
+    display: none !important;
+    float: left;
+}
+
+.ToolbarButton-Button[title="翻译页面"] {
+    display: none !important;
+    float: left;
+}
+
+.ToolbarButton-Button[title*="内容拦截器"] {
+    display: none !important;
+}
+
+.SiteInfoButton-SecurityBadge {
+    display: none !important;
+}
+
+.BookmarkButton {
+    display: none !important;
+}
+
+button[title="显示输入记录"] {
+    display: none !important;
+}
+
+/*.button-addressfield {
+    margin-right: 30px;
+}
+*/
+
+#urlFieldInput {
+    text-align: center;
+}
+
+.UrlFragment-Wrapper {
+    position: absolute;
+    left: 45%;
+    transform: translateX(-50%);
+
+}
+
+#tabs-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.button-toolbar.newtab {
+    display: none;
+}
+
+.modal-wrapper:has(.quick-command-container) {
+    position: fixed;
+    transform: translate(-50%, 20%);
+    border-radius: 15px !important;
+    opacity: 0.91 !important;
+    backdrop-filter: blur(10px);
+    width: 650px;
+}
+
+.ReactVirtualized__Grid.ReactVirtualized__List,
+.ReactVirtualized__Grid__innerScrollContainer {
+    max-width: 800px !important;
+    width: 100% !important;
+}
+
+.quick-commands {
+    width: 100% !important;
+}
+
+.quick-command-container {
+    width: 100% !important;
+}
+
+.quick-command-search {
+    width: 100% !important;
+}
+
+.quick-commands {
+    width: 100% !important;
+}
+
+.quick-command{
+    width: 100% !important;
+}
+
+.quick-command-sectionheader {
+    width: 100% !important;
+}
+
+.ReactVirtualized__Grid.ReactVirtualized__List {
+  scrollbar-width: none;
+}
+
+
+
+/* Vertical Extensions Drop-Down Menu */
+.extensionIconPopupMenu {
+  --popupWidth: 280px !important;
+}
+.extensionIconPopupMenu > .toolbar {
+  max-height: 50vh;
+  overflow: hidden auto;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+}
+.extensionIconPopupMenu .ExtensionDropdownIcon > button {
+  justify-content: flex-start;
+  padding: 10px;
+}
+.extensionIconPopupMenu .ExtensionDropdownIcon > button::after {
+  content: attr(title);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.button-toolbar > button > .button-badge {
+  top: auto;
+  right: 10px;
+}
+
+.toolbar.toolbar-small.toolbar-insideinput {
+    display: none;
+}
+
+/* Tab tooltip hide thumbnail */
+#vivaldi-tooltip .tooltip-item .thumbnail-image {
+    display: none !important;
+}
+
+.dashboard-widget .url-wrapper {
+  display: none;
+}

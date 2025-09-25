@@ -1,0 +1,632 @@
+/*Vival Arc Legacy*/
+:root {
+  --window-border: 4px; /* window border, recommend 4px~16px */
+  --mac-header: calc(var(--window-border) + 0px); /* title bar extra height */
+  --win-header: calc(var(--window-border) + 20px); /* title bar extra height */
+  --linux-header: calc(
+    var(--window-border) + 20px
+  ); /* title bar extra height */
+  --addressbar-height: 36px;
+  --window-button-scale: 0.8;
+  --window-button-opacity: 0.3;
+  --tab-padding: calc(var(--window-border) / 2);
+  --colorToviTransparent: transparent;
+  --webview-shadow-light:
+    0px 1px 3px 0px rgba(0, 0, 0, 0.1),
+    0px 0px var(--window-border) 0px rgba(0, 0, 0, 0.1);
+  --webview-shadow-dark:
+    0px 2px 2px 0px rgba(0, 0, 0, 0.05), 0px 2px 8px 0px rgba(0, 0, 0, 0.05),
+    0px 0px 0px 1.2px #ffffff18;
+}
+
+/*topHeader-Mac*/
+#browser.mac:not(.is-settingspage):not(.address-top).tabs-left.tabs-right
+  > #header,
+#browser.mac:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom) #header,
+#browser.mac.color-behind-tabs-off:not(
+    .is-settingspage
+  )#browser.tabs-left.tabs-right
+  #header {
+  background: transparent;
+  min-height: var(--mac-header) !important;
+  height: var(--mac-header) !important;
+}
+.mac #titlebar #pagetitle,
+#titlebar #pagetitle .linux.alt {
+  height: var(--mac-header) !important;
+  font-size: 11px;
+  color: var(--colorFg);
+  color: white !important;
+  display: none;
+}
+/*windowButtonGroup-Mac*/
+#browser.mac:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+  #header
+  .window-buttongroup
+  button {
+  width: calc((var(--mac-header) - 0px) * var(--uiZoomLevel));
+  height: calc((var(--mac-header) - 0px) * var(--uiZoomLevel));
+  padding-right: 4px;
+  margin: 0px;
+  flex: 0 0 calc(var(--window-border) - 4px);
+}
+
+/* Wrote Myself */
+/*----------------------------------------------------*/
+
+/*.title {
+  color: #fff;
+  mix-blend-mode: difference;
+}*/
+
+/* 修改工具栏命令按钮的图标颜色为浅绿色，使用!important确保优先级 */
+.button-toolbar.toolbar-command .button-icon svg path {
+  fill: #aec7bf !important;
+}
+
+/* 隐藏URL混淆警告 */
+.UrlBar-UrlObfuscationWarning {
+  display: none !important;
+}
+
+/* 隐藏"网页提供订阅"按钮 */
+.ToolbarButton-Button[title="网页提供订阅"] {
+  display: none !important;
+  float: left;
+}
+
+/* 隐藏"翻译页面"按钮 */
+/*.ToolbarButton-Button[title="翻译页面"] {
+  display: none !important;
+  float: left;
+}*/
+/* 隐藏内容拦截器 */
+.ToolbarButton-Button[title*="内容拦截器"] {
+  display: none !important;
+}
+
+/* 隐藏siteInfo */
+button.button-addressfield.SiteInfoButton {
+  display: none !important;
+}
+
+/* 隐藏站点信息安全徽章 */
+.SiteInfoButton-SecurityBadge {
+  display: none !important;
+}
+
+/* 隐藏书签按钮 */
+.BookmarkButton {
+  display: none !important;
+}
+
+/* 隐藏"显示输入记录"按钮 */
+button[title="显示输入记录"] {
+  display: none !important;
+}
+
+/* 地址栏输入框文字居中对齐 */
+#urlFieldInput {
+  text-align: center;
+}
+
+/* URL片段包装器：定位在地址栏中央 */
+.UrlFragment-Wrapper {
+  position: absolute; /* 绝对定位 */
+  left: 45%; /* 距离左侧45% */
+  transform: translateX(-50%); /* 向左平移50%实现居中 */
+}
+
+/* 快速命令弹窗样式 */
+.modal-wrapper:has(.quick-command-container) {
+  position: fixed; /* 固定定位 */
+  transform: translate(-50%, 20%); /* 定位在屏幕上方20%处 */
+  border-radius: 15px !important; /* 大圆角 */
+  opacity: 0.91 !important; /* 透明度 */
+  /*backdrop-filter: blur(10px); */
+  width: 650px; /* 固定宽度 */
+}
+
+/* 虚拟滚动网格和内部容器的宽度设置 */
+.ReactVirtualized__Grid.ReactVirtualized__List,
+.ReactVirtualized__Grid__innerScrollContainer {
+  max-width: 800px !important; /* 最大宽度 */
+  width: 100% !important; /* 自适应宽度 */
+}
+
+/* 快速命令相关元素宽度设为100% */
+.quick-commands {
+  width: 100% !important;
+}
+
+.quick-command-container {
+  width: 100% !important;
+}
+
+.quick-command-search {
+  width: 100% !important;
+}
+
+.quick-commands {
+  width: 100% !important;
+}
+
+.quick-command {
+  width: 100% !important;
+}
+
+.quick-command-sectionheader {
+  width: 100% !important;
+}
+
+/* 隐藏虚拟滚动列表的滚动条 */
+.ReactVirtualized__Grid.ReactVirtualized__List {
+  scrollbar-width: none; /* 无滚动条 */
+}
+
+/*------------------------------------ 下载美化 ------------------------------------------*/
+/* 美化下载界面样式 */
+/* 人体工程学下载弹窗对话框 */
+// .download-popout
+{
+  height: 100%;
+  max-height: calc(100vh - 114px);
+} /* 可选：强制弹窗高度为视口高度的85% */
+/* 下载编辑器自适应内容大小 */
+.panel.downloads section.download-editor {
+  flex-basis: fit-content !important;
+}
+/* 禁用状态的下载编辑器数据区域高度为0 */
+.panel.downloads section.download-editor > .data.disabled {
+  max-height: 0;
+}
+/* 启用状态的下载编辑器数据区域添加底部内边距 */
+.panel.downloads section.download-editor > .data:not(.disabled) {
+  padding-bottom: 12px;
+}
+
+/* 彩色下载进度弹窗按钮 */
+/* 下载进度条背景设为黑色 */
+.button-toolbar .progress {
+  background-color: black !important;
+}
+/* 已加载部分背景色过渡效果 */
+.button-toolbar .progress .loaded {
+  transition: background-color 300ms ease-out 0s !important;
+}
+/* 0-9%进度时显示洋红色 */
+.button-toolbar
+  .progress
+  .loaded:is(
+    [style^="width: 0."],
+    [style^="width: 1."],
+    [style^="width: 2."],
+    [style^="width: 3."],
+    [style^="width: 4."],
+    [style^="width: 5."],
+    [style^="width: 6."],
+    [style^="width: 7."],
+    [style^="width: 8."],
+    [style^="width: 9."]
+  ) {
+  background-color: magenta;
+}
+/* 10%进度时显示深粉色 */
+.button-toolbar
+  .progress
+  .loaded[style^="width: 1"]:not([style^="width: 1."]):not(
+    [style^="width: 100%"]
+  ) {
+  background-color: #ff0080;
+}
+/* 20%进度时显示深橙色 */
+.button-toolbar .progress .loaded[style^="width: 2"]:not([style^="width: 2."]) {
+  background-color: darkorange;
+}
+/* 30%进度时显示橙色 */
+.button-toolbar .progress .loaded[style^="width: 3"]:not([style^="width: 3."]) {
+  background-color: orange;
+}
+/* 40%进度时显示金色 */
+.button-toolbar .progress .loaded[style^="width: 4"]:not([style^="width: 4."]) {
+  background-color: gold;
+}
+/* 50%进度时显示黄色 */
+.button-toolbar .progress .loaded[style^="width: 5"]:not([style^="width: 5."]) {
+  background-color: yellow;
+}
+/* 60%进度时显示黄绿色 */
+.button-toolbar .progress .loaded[style^="width: 6"]:not([style^="width: 6."]) {
+  background-color: greenyellow;
+}
+/* 70%进度时显示青绿色 */
+.button-toolbar .progress .loaded[style^="width: 7"]:not([style^="width: 7."]) {
+  background-color: limegreen;
+}
+/* 80%进度时显示中绿松石色 */
+.button-toolbar .progress .loaded[style^="width: 8"]:not([style^="width: 8."]) {
+  background-color: mediumturquoise;
+}
+/* 90%进度时显示深天蓝色 */
+.button-toolbar .progress .loaded[style^="width: 9"]:not([style^="width: 9."]) {
+  background-color: deepskyblue;
+}
+/* 100%进度时显示淡青色 */
+.button-toolbar .progress .loaded[style^="width: 100"] {
+  background-color: lightcyan !important;
+}
+
+/* 下载弹窗按钮计数器 */
+/* 在进度条前后添加文字装饰效果 */
+.button-toolbar .progress .loaded::before,
+.button-toolbar .progress .loaded::after {
+  position: absolute;
+  color: white;
+  -webkit-text-stroke: 0.2px;
+  text-shadow:
+    -0.5px -0.5px 1px cyan,
+    0.5px 0.5px 1px red,
+    -1px 0 1px black,
+    1px 0 1px black,
+    0 -0.5px 1px black,
+    0.5px 1.5px 1px black;
+}
+/* 显示数字部分：提取style属性中的宽度数值 */
+.button-toolbar
+  .progress
+  .loaded:not([style^="width: 100%"]):not([style^="width: 0%"])::before {
+  content: attr(style);
+  left: -3px;
+  bottom: 1px;
+  width: 13px;
+  height: 30px;
+  font-size: 10px;
+  clip-path: inset(13px 0 0 0);
+}
+/* 对于整数十的进度调整数字位置 */
+.button-toolbar
+  .progress
+  .loaded:not([style^="width: 100%"]):not([style^="width: 0%"]):not(
+    [style^="width: 0."]
+  ):not([style^="width: 1."]):not([style^="width: 2."]):not(
+    [style^="width: 3."]
+  ):not([style^="width: 4."]):not([style^="width: 5."]):not(
+    [style^="width: 6."]
+  ):not([style^="width: 7."]):not([style^="width: 8."]):not(
+    [style^="width: 9."]
+  )::before {
+  left: -2.5px;
+  width: 11.5px;
+}
+/* 显示百分号 */
+.button-toolbar
+  .progress
+  .loaded:not([style^="width: 100%"]):not([style^="width: 0%"])::after {
+  content: "%";
+  left: 11px;
+  bottom: 6.5px;
+  font-size: 8px;
+}
+/* 对于整数十的进度调整百分号位置 */
+.button-toolbar
+  .progress
+  .loaded:not([style^="width: 100%"]):not([style^="width: 0%"]):not(
+    [style^="width: 0."]
+  ):not([style^="width: 1."]):not([style^="width: 2."]):not(
+    [style^="width: 3."]
+  ):not([style^="width: 4."]):not([style^="width: 5."]):not(
+    [style^="width: 6."]
+  ):not([style^="width: 7."]):not([style^="width: 8."]):not(
+    [style^="width: 9."]
+  )::after {
+  left: 9px;
+}
+/* 下载图标淡出效果 */
+.button-toolbar > button[title="Downloads"] > span > svg {
+  opacity: 0.4;
+}
+
+/*标签栏样式*/
+/*=====================================================================*/
+/* 浮动标签样式设置 */
+:root {
+  --mod-border-radius: 4px; /* 圆角半径 */
+  --mod-whitespace-x: 3px; /* 水平间距 */
+  --mod-whitespace-y: 5px; /* 垂直间距 */
+  --mod-whitespace-tabbar-right: 15px; /* 标签栏右侧间距 */
+  --mod-highlight-color: #c00; /* 高亮颜色 */
+  --mod-drop-shadow: 3px 3px 5px -1px rgba(0, 0, 0, 0.3); /* 阴影效果 */
+  --mod-animation-speed: 0.3s; /* 动画速度 */
+  --mod-mainbar-height: 45px; /* 主栏高度 */
+}
+
+/* -- 标签栏样式 -- */
+#tabs-tabbar-container.top {
+  margin-bottom: var(--mod-whitespace-y); /* 底部外边距 */
+  border-width: 0; /* 边框宽度为0 */
+  box-shadow: none !important; /* 移除阴影效果 */
+
+  padding-right: var(--mod-whitespace-tabbar-right); /* 右侧内边距 */
+
+  /* 非固定标签页之间的水平间距 */
+  .tab-strip > span + span .tab:not(.pinned) {
+    margin-left: var(--mod-whitespace-x);
+  }
+}
+
+/* 标签页位置容器 */
+.tab-position {
+  .tab {
+    transition: all var(--mod-animation-speed) ease; /* 过渡动画效果 */
+    border-radius: var(--mod-border-radius) !important; /* 圆角边框 */
+    * {
+      cursor: pointer; /* 鼠标指针为手型 */
+    }
+
+    /* 覆盖可能的Chrome样式修改 */
+    &::after,
+    &::before {
+      display: none; /* 隐藏伪元素 */
+    }
+
+    /* 关闭按钮样式 */
+    .close {
+      background-color: transparent; /* 透明背景 */
+      border-radius: 99rem; /* 圆形边框 */
+    }
+
+    /* 活动标签页和悬停时的阴影效果 */
+    &.active,
+    &:hover {
+      box-shadow: var(--mod-drop-shadow); /* 添加阴影 */
+    }
+  }
+}
+
+/* -- 启用水平滚动时的标签样式 --*/
+.horizontal-scrolling {
+  &.tab-strip {
+    padding-top: unset !important; /* 重置顶部内边距 */
+    margin-top: unset !important; /* 重置顶部外边距 */
+  }
+}
+
+/* -- 高亮显示有背景音频的标签页 -- */
+.tab.audio-on:not(.active) {
+  transition: all var(--mod-animation-speed) ease; /* 过渡动画 */
+  color: var(--colorHighlightBg, --mod-highlight-color); /* 文字颜色 */
+  box-shadow: var(--mod-drop-shadow); /* 阴影效果 */
+  .tab-header {
+    background-color: var(--colorBg); /* 标题栏背景色 */
+  }
+}
+
+/* -- 主栏样式 -- */
+.mainbar {
+  & > .toolbar-mainbar {
+    align-items: stretch; /* 项目拉伸填充 */
+    height: var(--mod-mainbar-height); /* 主栏高度 */
+    padding: var(--mod-whitespace-y); /* 内边距 */
+  }
+}
+
+/* 地址栏搜索框和地址框样式 */
+.UrlBar-SearchField,
+.UrlBar-AddressField {
+  border-radius: var(--mod-border-radius); /* 圆角边框 */
+  height: auto; /* 自动高度 */
+
+  /* 页面加载指示器 */
+  .pageload-indicator {
+    border-radius: var(--mod-border-radius); /* 圆角边框 */
+    height: 100% !important; /* 全高 */
+  }
+}
+
+/* 地址栏字段 */
+.UrlField {
+  height: calc(
+    var(--mod-mainbar-height) - (var(--mod-whitespace-y) * 2)
+  ); /* 计算高度：主栏高度减去两倍垂直间距 */
+}
+
+/* 全能下拉菜单 */
+.OmniDropdown {
+  top: 100% !important; /* 位置在父元素底部 */
+}
+
+/* 主栏中的个人资料弹出菜单 */
+.toolbar-mainbar .profile-popup {
+  margin-right: var(--mod-whitespace-tabbar-right); /* 右侧外边距 */
+}
+
+/* -- Speed dial -- */
+.dials {
+  .dial *:hover {
+    cursor: pointer;
+  }
+}
+
+/*=====================================================================*/
+/*-----------------------------------------------------------------*/
+/* 垂直扩展程序下拉菜单 */
+.extensionIconPopupMenu {
+  --popupWidth: 280px !important; /* 弹窗宽度 */
+}
+/* 扩展程序菜单的工具栏样式 */
+.extensionIconPopupMenu > .toolbar {
+  max-height: 50vh; /* 最大高度为视口高度的50% */
+  overflow: hidden auto; /* 隐藏溢出内容并显示滚动条 */
+  flex-direction: column; /* 垂直排列 */
+  flex-wrap: nowrap; /* 不换行 */
+  align-items: stretch; /* 项目拉伸填充 */
+}
+/* 扩展程序图标按钮样式 */
+.extensionIconPopupMenu .ExtensionDropdownIcon > button {
+  justify-content: flex-start; /* 左对齐 */
+  padding: 10px; /* 内边距 */
+}
+/* 在扩展程序按钮后显示标题 */
+.extensionIconPopupMenu .ExtensionDropdownIcon > button::after {
+  content: attr(title); /* 显示标题属性的内容 */
+  overflow: hidden; /* 隐藏溢出 */
+  text-overflow: ellipsis; /* 超出部分显示省略号 */
+}
+/* 按钮徽章位置调整 */
+.button-toolbar > button > .button-badge {
+  top: auto; /* 自动顶部位置 */
+  right: 10px; /* 距离右侧10像素 */
+}
+
+/* 隐藏输入框内部的小工具栏 */
+/*.toolbar.toolbar-small.toolbar-insideinput {
+  display: none;
+}*/
+
+/* 标签页工具提示中隐藏缩略图 */
+/*#vivaldi-tooltip .tooltip-item .thumbnail-image {
+  display: none !important;
+}*/
+
+/* 仪表板小部件中隐藏URL包装器 */
+.dashboard-widget .url-wrapper {
+  display: none;
+}
+
+/*========================================================*/
+#loading-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 4px;
+  /* You can change the thickness of the bar */
+  width: 0;
+  background: linear-gradient(to right, #eaf4d3, #dbd8ae, #ca907e);
+  /* #EAF4D3, #DBD8AE, #CA907E as an example*/
+  transition: width 0.3s ease;
+  z-index: 9999;
+}
+
+/*===============================Auto Hide Tabbar===================================*/
+#tabs-container.left,
+#tabs-subcontainer.left,
+#tabs-subcontainer.right,
+#tabs-container.right {
+  min-width: 40px !important;
+  max-width: 40px !important;
+  transition: min-width 280ms ease-out !important;
+  transition-delay: 350ms !important;
+  border-radius: 10px;
+}
+
+#tabs-container.right,
+#tabs-container.left {
+  margin-bottom: 5px;
+}
+#tabs-subcontainer.right,
+#tabs-subcontainer.left {
+  transition-delay: 0ms !important;
+  margin-bottom: 5px;
+}
+
+#tabs-container.left:hover,
+#tabs-subcontainer.left:hover,
+#tabs-container.right:hover,
+#tabs-subcontainer.right:hover {
+  min-width: 300px !important;
+  transition: min-width 150ms ease-out !important;
+  transition-delay: 0ms !important;
+  border-radius: 10px;
+}
+
+#tabs-subcontainer.left:hover,
+#tabs-subcontainer.right:hover {
+  transition-delay: 300ms !important;
+}
+
+.tabbar-workspace-button {
+  width: 100% !important;
+}
+
+#tabs-tabbar-container.left,
+#tabs-tabbar-container.right {
+  width: auto !important;
+  min-width: 40px;
+  border-radius: 10px;
+}
+
+.button-toolbar.newtab {
+  left: 0px !important;
+  width: 150px;
+}
+
+/*===============================Hide Elements While Not Hover===================================*/
+
+/* Hide Toolbar Button when not hover */
+#tabs-container.right:not(:hover) .ToolbarButton-Button,
+#tabs-container.left:not(:hover) .ToolbarButton-Button,
+#tabs-container.right:not(:hover) .UrlBar-AddressField .toolbar,
+#tabs-container.left:not(:hover) .UrlBar-AddressField .toolbar,
+#tabs-container.right:not(:hover) .UrlBar-AddressField,
+#tabs-container.left:not(:hover) .UrlBar-AddressField,
+#tabs-container.right:not(:hover) .UrlBar-AddressField .button-toolbar,
+#tabs-container.left:not(:hover) .UrlBar-AddressField .button-toolbar {
+  min-width: 0;
+  width: 0; /* 设置宽度为0 */
+  height: 0; /* 设置高度为0 */
+  padding: 0 !important; /* 清除内边距 */
+  border: 0 !important; /* 清除边框 */
+  overflow: hidden; /* 隐藏溢出内容 */
+  transition:
+    min-width 280ms ease-out,
+    width 280ms ease-out,
+    height 280ms ease-out,
+    padding 280ms ease-out !important;
+}
+/*================================Float On Webpage==================================*/
+
+#main > .inner > div:has(#tabs-tabbar-container.right) {
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 2;
+  opacity: 1;
+  background-color: var(--colorBg);
+  height: 100% !important;
+}
+
+#main > .inner > div:has(#tabs-tabbar-container.left) {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  opacity: 1;
+  background-color: var(--colorBg);
+  height: 100% !important;
+}
+
+#browser.transparent-tabbar
+  .inner
+  > div:has(#tabs-tabbar-container:is(.left, .right)) {
+  background-color: rgba(26, 34, 32, 0.5);
+  backdrop-filter: blur(10px);
+}
+
+.inner #webpage-stack {
+  margin-right: 40px;
+}
+
+.inner:has(#tabs-subcontainer:is(.left, .right)) #webpage-stack {
+  margin-right: 80px;
+}
+
+#tabs-tabbar-container.right ~ #webpage-stack {
+  margin-left: 0;
+  margin-right: 40px;
+}
+
+#tabs-tabbar-container.right ~ #webpage-stack:has(#tabs-subcontainer.right) {
+  margin-right: 80px;
+}
+
+/*==================================================================*/

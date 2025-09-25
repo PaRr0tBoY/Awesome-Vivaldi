@@ -1,0 +1,19 @@
+[
+  { "host": "ceskatelevize.cz", "selector": "#ctPlayer1", "capture": true },
+  { "host": "dailymotion.com", "selector": "#player-body", "capture": true },
+  { "host": "france.tv", "selector": ".js-player-container", "capture": true },
+  { "host": "netflix.com", "selector": "html", "capture": true },
+  { "host": "nicovideo.jp", "selector": ".PlayerContainer", "capture": true },
+  { "host": "kvs-demo.com", "selector": "#kt_player", "capture": true },
+  { "host": "periscope.tv", "selector": ".EventHandler-Layer", "capture": true },
+  { "host": "pluralsight.com", "selector": ".player-wrapper", "capture": false },
+  { "host": "pornhub.com", "selector": "#main-container .video-wrapper #player", "capture": false },
+  { "host": "primevideo.com", "selector": ".webPlayerUIContainer", "capture": true },
+  { "host": "rutube.ru", "selector": ".raichu-video-tag", "capture": true },
+  { "host": "ruv.is", "selector": ".video-js", "capture": true },
+  { "host": "ted.com", "selector": "html", "capture": false },
+  { "host": "twitch.tv", "selector": ".persistent-player", "capture": false },
+  { "host": "vimeo.com", "zIndex": "300", "selector": ".player", "capture": false },
+  { "host": "yandex.ru", "selector": ".player-container", "capture": true },
+  { "host": "youtube.com", "zIndex": "10" }
+]

@@ -1,0 +1,327 @@
+:root {
+  --mod-gap: 5px;
+  --mod-border-radius: 17px;
+}
+/* ========================================
+   AUTO-HIDE TABBAR
+   ======================================== */
+
+/* Main Tabbar*/
+
+/* Adjust hide animation and width of main tabbar here */
+/* I set its width very small since I think this has more of a "hidden" vibe,
+and I figure people may want to focus more on sub-stack when they're working on a certain subject
+with a tab-stack. Which is why we need tab-stack no? */
+#tabs-container.right,
+#tabs-container.left {
+  min-width: 7px !important;
+  max-width: 7px !important;
+  transition: min-width 280ms ease-out !important;
+  /*transition-delay: 0ms !important;*/
+  /* min width of main tabbar should not set lower than 6px, which will cause weird issue. */
+  margin-top: -6px; /*You might not want this*/
+  padding-top: var(--mod-gap) !important; /*You might not want this*/
+  padding-bottom: var(--mod-gap) !important; /*You might not want this*/
+  padding-right: var(--mod-gap) !important; /*You might not want this*/
+  border-radius: var(--mod-border-radius) !important;
+  background-color: rgba(
+    25,
+    30,
+    25,
+    0.9
+  ) !important; /* Adjust the color here */
+  /* Written By Claude */
+  box-sizing: border-box !important;
+}
+
+/* Adjust expand width of main tabbar here */
+#tabs-container.left:hover,
+#tabs-container.right:hover {
+  min-width: 300px !important;
+  max-width: 300px !important;
+  padding-top: var(--mod-gap) !important; /*You might not want this*/
+  padding-bottom: var(--mod-gap) !important; /*You might not want this*/
+  padding-right: var(--mod-gap) !important; /*You might not want this*/
+  border-radius: var(--mod-border-radius) !important;
+  background-color: rgba(
+    25,
+    30,
+    25,
+    0.9
+  ) !important; /* Adjust the color here */
+  /* Written By Claude */
+  box-sizing: border-box !important;
+  /*transition-delay: 100ms !important;*/
+}
+
+/* SubStack / Secondary Tabbar */
+
+/* Adjust hide animation and width of Secondary tabbar here */
+#tabs-subcontainer.right,
+#tabs-subcontainer.left {
+  min-width: 42px !important;
+  max-width: 42px !important;
+  transition: min-width 280ms ease-out !important;
+  /*transition-delay: 60ms !important;*/
+  margin-top: -6px !important; /*You might not want this*/
+  padding-top: var(--mod-gap) !important; /*You might not want this*/
+  padding-bottom: var(--mod-gap) !important; /*You might not want this*/
+  border-radius: var(--mod-border-radius) !important;
+  background-color: rgba(
+    29,
+    40,
+    33,
+    0.81
+  ) !important; /* Adjust the color here */
+  /* Written By Claude */
+  box-sizing: border-box !important;
+}
+
+/* Adjust expand width of Secondary tabbar here */
+#tabs-subcontainer.left:hover,
+#tabs-subcontainer.right:hover {
+  min-width: 335px !important;
+  max-width: 335px !important;
+  margin-top: -6px;
+  padding-top: var(--mod-gap) !important; /*You might not want this*/
+  padding-bottom: var(--mod-gap) !important; /*You might not want this*/
+  border-radius: var(--mod-border-radius) !important;
+  background-color: rgba(
+    29,
+    40,
+    33,
+    0.81
+  ) !important; /* Adjust the color here */
+  /* Written By Claude */
+  box-sizing: border-box !important;
+}
+
+/* Tab bar styling */
+.tabbar-workspace-button {
+  width: 100% !important;
+}
+
+/* Overall container of main and secondary tabbar. */
+#tabs-tabbar-container.left,
+#tabs-tabbar-container.right {
+  width: auto !important;
+  min-width: 7px; /* main stack width when it fold */
+  max-width: 342px; /* Combine total of expand width of stack and substack when one of them is hovered */
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  border-radius: var(--mod-border-radius) !important;
+  /*border-color: black !important;
+  border-width: 1px !important;*/
+  /* Written By Claude */
+  box-shadow: none !important;
+  box-sizing: border-box !important;
+}
+
+/* I hate newtab button. But if you have the opposite opinion,replace below codes with these
+
+.button-toolbar.newtab{
+  left: 0px !important;
+  width: 150px;
+}
+
+And of course you don't need those lockers icon when your tabbar expand on hover so here's how you hide em.
+
+.button-toolbar.tabs-locked,
+.button-toolbar.tabs-unlocked {
+  display: none !important;
+}
+*/
+.button-toolbar.newtab,
+.button-toolbar.tabs-locked,
+.button-toolbar.tabs-unlocked {
+  display: none !important;
+} /* Codeblock to replace of*/
+
+/* ========================================
+   HIDE ELEMENTS ON HOVER
+   ======================================== */
+
+/*
+Codes below is important. Help avoid issue when
+1. Create a tab stack
+2. Dissolve a tab stack
+*/
+/* Hide tab-strip when tabs-container is not hovered */
+.tab-strip.overflow {
+  display: none !important;
+}
+
+/* Show tab-strip when tabs-container is hovered */
+#tabs-container:hover .tab-strip.overflow {
+  display: block !important;
+  /*animation: fadeInBlock 300ms ease-out !important;*/
+}
+
+/* Animation for smooth appearance when display changes */
+/*@keyframes fadeInBlock {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}*/
+
+/* These code hide and show tabs when tabbar hide and expands */
+/* Comment these codes if you don't need */
+#tabs-container.right:not(:hover) .tab,
+#tabs-container.left:not(:hover) .tab,
+#tabs-container.right:not(:hover) .tab-position,
+#tabs-container.left:not(:hover) .tab-position,
+#tabs-container.right:not(:hover) .separator,
+#tabs-container.left:not(:hover) .separator {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 280ms ease-in !important;
+}
+
+#tabs-container.right:hover .tab,
+#tabs-container.left:hover .tab,
+#tabs-container.right:hover .tab-position,
+#tabs-container.left:hover .tab-position,
+#tabs-container.right:hover .separator,
+#tabs-container.left:hover .separator {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transition: opacity 280ms ease-out 50ms !important;
+  /*transition-delay: 180ms !important;*/
+}
+
+/*
+In case you place adressfield and some tool button at your tabbar
+These code will help you hide them when tabbar hide
+and show them when tabbar expand
+*/
+/* Comment it on your need */
+#tabs-container.right:not(:hover) .ToolbarButton-Button,
+#tabs-container.left:not(:hover) .ToolbarButton-Button,
+#tabs-container.right:not(:hover) .UrlBar-AddressField .toolbar,
+#tabs-container.left:not(:hover) .UrlBar-AddressField .toolbar,
+#tabs-container.right:not(:hover) .UrlBar-AddressField,
+#tabs-container.left:not(:hover) .UrlBar-AddressField,
+#tabs-container.right:not(:hover) .UrlBar-AddressField .button-toolbar,
+#tabs-container.left:not(:hover) .UrlBar-AddressField .button-toolbar {
+  min-width: 0;
+  width: 0;
+  height: 0;
+  padding: 0 !important;
+  border: 0 !important;
+  overflow: hidden;
+  transition:
+    min-width 280ms ease-out,
+    width 280ms ease-out,
+    height 280ms ease-out,
+    padding 280ms ease-out !important;
+  /*transition-delay: 180ms !important;*/
+}
+
+/* Show toolbar and URL field elements when hovered */
+/*#tabs-container.right:hover .ToolbarButton-Button,
+#tabs-container.left:hover .ToolbarButton-Button,
+#tabs-container.right:hover .UrlBar-AddressField .toolbar,
+#tabs-container.left:hover .UrlBar-AddressField .toolbar,
+#tabs-container.right:hover .UrlBar-AddressField,
+#tabs-container.left:hover .UrlBar-AddressField,
+#tabs-container.right:hover .UrlBar-AddressField .button-toolbar,
+#tabs-container.left:hover .UrlBar-AddressField .button-toolbar {
+  min-width: auto !important;
+  width: auto !important;
+  height: auto !important;
+  padding: initial !important;
+  border: initial !important;
+  overflow: visible !important;
+}*/
+
+/* ========================================
+   FLOATING TABBAR
+   ======================================== */
+/* If you want the expanded tabbar floating on the website instead of squeezing it, just add the following css to the css above */
+/* But read the comments before you do */
+
+#main > .inner > div:has(#tabs-tabbar-container.right),
+#main > .inner > div:has(#tabs-tabbar-container.left) {
+  position: absolute;
+  top: 0;
+  z-index: 2;
+  opacity: 1;
+  background-color: transparent !important;
+  background-image: none !important;
+  height: 100% !important;
+}
+
+#main > .inner > div:has(#tabs-tabbar-container.right) {
+  right: 0;
+}
+
+#main > .inner > div:has(#tabs-tabbar-container.left) {
+  left: 0;
+}
+
+#browser.transparent-tabbar
+  .inner
+  > div:has(#tabs-tabbar-container:is(.left, .right)) {
+  background-color: transparent !important;
+  backdrop-filter: none !important;
+}
+
+/*=================== Webpage stack margins - Code Section 1 ===================*/
+
+/* Uncomment codes below if you're on right tabbar, also comment codes for left tabbar in Code Section 2 to make it work */
+
+#browser:not(.fullscreen) .inner #webpage-stack {
+  margin-right: 7px;
+}
+
+#browser:not(.fullscreen)
+  .inner:has(#tabs-subcontainer:is(.left, .right))
+  #webpage-stack {
+  margin-right: 49px;
+}
+
+#browser:not(.fullscreen) #tabs-tabbar-container.right ~ #webpage-stack {
+  margin-left: 0;
+  margin-right: 7px;
+}
+
+#browser:not(.fullscreen)
+  #tabs-tabbar-container.right
+  ~ #webpage-stack:has(#tabs-subcontainer.right) {
+  margin-right: 49px;
+}
+
+/*------------------------------------------------------------------------------------*/
+
+/*=================== Webpage stack margins - Code Section 2 ===================*/
+
+/* Uncomment codes below if you're on left tabbar, also comment codes for right tabbar in Code Section 1 to make it work */
+
+/*#browser:not(.fullscreen) .inner #webpage-stack {
+  margin-left: 7px;
+}
+
+#browser:not(.fullscreen)
+  .inner:has(#tabs-subcontainer:is(.left, .right))
+  #webpage-stack {
+  margin-left: 49px;
+}
+
+#browser:not(.fullscreen) #tabs-tabbar-container.left ~ #webpage-stack {
+  margin-right: 0;
+  margin-left: 7px;
+}
+
+#browser:not(.fullscreen)
+  #tabs-tabbar-container.left
+  ~ #webpage-stack:has(#tabs-subcontainer.left) {
+  margin-left: 49px;
+}*/
+
+/*------------------------------------------------------------------------------------*/

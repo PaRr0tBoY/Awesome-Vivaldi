@@ -1,0 +1,37 @@
+/* ========================================
+   AUTO-HIDE PANELS
+   ======================================== */
+
+#panels-container.left {
+  width: 6px !important;
+  transition: width 280ms ease-out !important;
+}
+
+#panels-container.left:hover {
+  width: 40px !important;
+}
+
+#panels-container.left:not(:hover) #panels {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 280ms ease-out,
+    visibility 280ms ease-out;
+}
+
+#panels-container.left:hover #panels {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 280ms ease-out,
+    visibility 280ms ease-out;
+}
+
+/*#panels-container ~ #webpage-stack {
+  margin-right: 6px;
+  transition: margin-right 280ms ease-out;
+}
+
+#panels-container:hover ~ #webpage-stack {
+  margin-right: 40px;
+}*/
