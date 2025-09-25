@@ -1,4 +1,5 @@
 /**
+ * v4
  * Opens links in a dialog, either by key combinations, holding the middle mouse button or context menu
  * Forum link: https://forum.vivaldi.net/topic/92501/open-in-dialog-mod?_=1717490394230
  *
@@ -510,13 +511,83 @@
     }
 
     /**
-     * Opens a new Chrome tab with specified active boolean value
+     * Opens a new Chrome tab with specified active boolean value and closes the current dialog
      * @param {string} inputId is the id of the input containing current url
      * @param {boolean} active indicates whether the tab is active or not (background tab)
      */
     openNewTab(inputId, active) {
       const url = document.getElementById(inputId).value;
-      chrome.tabs.create({ url: url, active: active });
+
+      // For background tabs, just create the tab and close dialog immediately
+      if (!active) {
+        chrome.tabs.create({ url: url, active: false });
+        // Use normal closing animation
+        setTimeout(() => {
+          this.closeLastDialog();
+        }, 100);
+        return;
+      }
+
+      // Get the current dialog element
+      const webviewId = inputId.replace("input-", "");
+      const data = this.webviews.get(webviewId);
+      if (!data) return;
+
+      const dialogContainer = data.divContainer;
+      const dialogTab = dialogContainer.querySelector(".dialog-tab");
+      if (!dialogTab) return;
+
+      // Create overlay element
+      const overlay = document.createElement("div");
+      overlay.style.position = "fixed";
+      overlay.style.top = "0";
+      overlay.style.left = "0";
+      overlay.style.width = "100%";
+      overlay.style.height = "100%";
+      overlay.style.backgroundColor = "#1C2220";
+      overlay.style.opacity = "0";
+      overlay.style.zIndex = "999999998"; // Below dialog but above everything else
+      overlay.style.transition = "opacity 0.3s ease-in-out";
+      overlay.style.pointerEvents = "none";
+      document.body.appendChild(overlay);
+
+      // Get target dimensions from active webview
+      let activeWebview = document.querySelector(
+        ".active.visible.webpageview webview",
+      );
+      if (activeWebview) {
+        const rect = activeWebview.getBoundingClientRect();
+
+        // Store original styles for cleanup
+        const originalTransition = dialogTab.style.transition;
+        const originalWidth = dialogTab.style.width;
+        const originalHeight = dialogTab.style.height;
+        const originalMargin = dialogTab.style.margin;
+
+        // Apply animation to scale dialog to normal tab size
+        dialogTab.style.transition = "all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)";
+        dialogTab.style.width = rect.width + "px";
+        dialogTab.style.height = rect.height + "px";
+        dialogTab.style.margin = "0";
+      }
+
+      // Animate overlay opacity from 0 to 1
+      setTimeout(() => {
+        overlay.style.opacity = "1";
+      }, 10);
+
+      // Create new tab and close dialog after animation
+      setTimeout(() => {
+        chrome.tabs.create({ url: url, active: true });
+        this.closeLastDialog();
+
+        // Remove overlay after a short delay
+        setTimeout(() => {
+          if (overlay.parentNode) {
+            overlay.parentNode.removeChild(overlay);
+          }
+        }, 100);
+      }, 300);
     }
   }
 
