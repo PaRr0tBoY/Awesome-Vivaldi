@@ -8,13 +8,13 @@
 
 # INSTALLATION
 
-0. BACKUP ALL NECESSARY FILES BEFORE STARTED
+0. **BACKUP ALL NECESSARY FILES BEFORE STARTING**
 
 To install CSS:
 
 1. Open Vivaldi://experiments in Vivaldi and check Allow CSS Modification
 2. Restart Vivaldi
-3. Goto Settings->Appearance and you'll see CUSTOM UI MODIFICATIONS. Select file location as "/path/to/Vivaldi-Mods/CSS"
+3. Go to Settings->Appearance and you'll see CUSTOM UI MODIFICATIONS. Select file location as "/path/to/Vivaldi-Mods/CSS"
 4. Restart Vivaldi, you're all set!
 
 To install Javascript moddings:
@@ -51,7 +51,7 @@ To install Javascript moddings:
 
    c. To learn more about css modification for Vivaldi by yourself check [Inspecting the Vivaldi UI with DevTools | Vivaldi Forum](https://forum.vivaldi.net/topic/16684/inspecting-the-vivaldi-ui-with-devtools?page=1)
 
-4. If you're on macOS see [macOS_Patch_Scripts | upviv](https://github.com/PaRr0tBoY/Vivaldi-Mods/blob/8a1e9f8a63f195f67f27ab2e5b86c4aff0081096/macOS_Patch_Scripts/upviv) as a reference
+4. If you're on macOS use [macOS_Patch_Scripts | upviv](https://github.com/PaRr0tBoY/Vivaldi-Mods/blob/8a1e9f8a63f195f67f27ab2e5b86c4aff0081096/macOS_Patch_Scripts/upviv) as a reference for patchscript
 
 # Community JS Mods and CSS Included in this modpack
 
