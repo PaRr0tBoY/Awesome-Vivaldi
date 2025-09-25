@@ -34,6 +34,22 @@ with a tab-stack. Which is why we need tab-stack no? */
   box-sizing: border-box !important;
 }
 
+/* Enhanced conditions for keeping tabbar expanded */
+/* When StackEditor modal is present or AddressField is focused */
+body:has(.button-popup) #tabs-container.right,
+body:has(.button-popup) #tabs-container.left,
+body:has(.UrlBar-AddressField:focus-within) #tabs-container.right,
+body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
+  min-width: 300px !important;
+  max-width: 300px !important;
+  padding-top: var(--mod-gap) !important;
+  padding-bottom: var(--mod-gap) !important;
+  padding-right: var(--mod-gap) !important;
+  border-radius: var(--mod-border-radius) !important;
+  background-color: rgba(25, 30, 25, 0.9) !important;
+  box-sizing: border-box !important;
+}
+
 /* Adjust expand width of main tabbar here */
 #tabs-container.left:hover,
 #tabs-container.right:hover {
@@ -152,8 +168,12 @@ Codes below is important. Help avoid issue when
   display: none !important;
 }
 
-/* Show tab-strip when tabs-container is hovered */
-#tabs-container:hover .tab-strip.overflow {
+/* Show tab-strip when tabs-container is hovered or special conditions met */
+#tabs-container:hover .tab-strip.overflow,
+body:has(.button-popup) #tabs-container .tab-strip.overflow,
+body:has(.UrlBar-AddressField:focus-within)
+  #tabs-container
+  .tab-strip.overflow {
   display: block !important;
   /*animation: fadeInBlock 300ms ease-out !important;*/
 }
@@ -170,8 +190,7 @@ Codes below is important. Help avoid issue when
   }
 }*/
 
-/* These code hide and show tabs when tabbar hide and expands */
-/* Comment these codes if you don't need */
+/* Enhanced tab visibility rules - show tabs when special conditions are met */
 #tabs-container.right:not(:hover) .tab,
 #tabs-container.left:not(:hover) .tab,
 #tabs-container.right:not(:hover) .tab-position,
@@ -181,6 +200,36 @@ Codes below is important. Help avoid issue when
   opacity: 0 !important;
   pointer-events: none !important;
   transition: opacity 280ms ease-in !important;
+}
+
+/* Override: Show tabs when StackEditor modal is present or AddressField is focused */
+body:has(.button-popup) #tabs-container.right:not(:hover) .tab,
+body:has(.button-popup) #tabs-container.left:not(:hover) .tab,
+body:has(.button-popup) #tabs-container.right:not(:hover) .tab-position,
+body:has(.button-popup) #tabs-container.left:not(:hover) .tab-position,
+body:has(.button-popup) #tabs-container.right:not(:hover) .separator,
+body:has(.button-popup) #tabs-container.left:not(:hover) .separator,
+body:has(.UrlBar-AddressField:focus-within)
+  #tabs-container.right:not(:hover)
+  .tab,
+body:has(.UrlBar-AddressField:focus-within)
+  #tabs-container.left:not(:hover)
+  .tab,
+body:has(.UrlBar-AddressField:focus-within)
+  #tabs-container.right:not(:hover)
+  .tab-position,
+body:has(.UrlBar-AddressField:focus-within)
+  #tabs-container.left:not(:hover)
+  .tab-position,
+body:has(.UrlBar-AddressField:focus-within)
+  #tabs-container.right:not(:hover)
+  .separator,
+body:has(.UrlBar-AddressField:focus-within)
+  #tabs-container.left:not(:hover)
+  .separator {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transition: opacity 280ms ease-out 50ms !important;
 }
 
 #tabs-container.right:hover .tab,
@@ -196,31 +245,59 @@ Codes below is important. Help avoid issue when
 }
 
 /*
-In case you place adressfield and some tool button at your tabbar
-These code will help you hide them when tabbar hide
-and show them when tabbar expand
+Enhanced toolbar button visibility rules
+Show toolbar buttons when StackEditor modal is present or AddressField is focused
 */
-/* Comment it on your need */
+/*#tabs-container.right:not(:hover) .UrlBar-AddressField,
+#tabs-container.left:not(:hover) .UrlBar-AddressField,*/
+
 #tabs-container.right:not(:hover) .ToolbarButton-Button,
 #tabs-container.left:not(:hover) .ToolbarButton-Button,
-#tabs-container.right:not(:hover) .UrlBar-AddressField .toolbar,
-#tabs-container.left:not(:hover) .UrlBar-AddressField .toolbar,
-#tabs-container.right:not(:hover) .UrlBar-AddressField,
-#tabs-container.left:not(:hover) .UrlBar-AddressField,
-#tabs-container.right:not(:hover) .UrlBar-AddressField .button-toolbar,
-#tabs-container.left:not(:hover) .UrlBar-AddressField .button-toolbar {
-  min-width: 0;
-  width: 0;
-  height: 0;
+#tabs-container.right:not(:hover)
+  .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
+#tabs-container.left:not(:hover)
+  .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget {
+  min-width: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
   padding: 0 !important;
   border: 0 !important;
-  overflow: hidden;
+  overflow: hidden !important;
   transition:
     min-width 280ms ease-out,
     width 280ms ease-out,
     height 280ms ease-out,
     padding 280ms ease-out !important;
   /*transition-delay: 180ms !important;*/
+}
+
+/* Override: Show toolbar elements when StackEditor modal is present or AddressField is focused */
+body:has(.button-popup) #tabs-container.right:not(:hover) .ToolbarButton-Button,
+body:has(.button-popup) #tabs-container.left:not(:hover) .ToolbarButton-Button,
+body:has(.button-popup)
+  #tabs-container.right:not(:hover)
+  .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
+body:has(.button-popup)
+  #tabs-container.left:not(:hover)
+  .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
+body:has(.UrlBar-AddressField:focus-within)
+  #tabs-container.right:not(:hover)
+  .ToolbarButton-Button,
+body:has(.UrlBar-AddressField:focus-within)
+  #tabs-container.left:not(:hover)
+  .ToolbarButton-Button,
+body:has(.UrlBar-AddressField:focus-within)
+  #tabs-container.right:not(:hover)
+  .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
+body:has(.UrlBar-AddressField:focus-within)
+  #tabs-container.left:not(:hover)
+  .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget {
+  min-width: auto !important;
+  width: auto !important;
+  height: auto !important;
+  padding: initial !important;
+  border: initial !important;
+  overflow: visible !important;
 }
 
 /* Show toolbar and URL field elements when hovered */
