@@ -1,3 +1,9 @@
+# TOC
+
+- [Showcase](#SHOWCASE)
+- [Installation](#INSTALLATION)
+- [Modlist](#community-js-mods-and-css-included-in-this-modpack)
+
 # SHOWCASE
 
 ![link preview like Arc Peek](/Showcase/Vivaldi-Arc-Peek.gif)
@@ -53,7 +59,7 @@ To install Javascript moddings:
 
 4. If you're on macOS use [macOS_Patch_Scripts | upviv](https://github.com/PaRr0tBoY/Vivaldi-Mods/blob/8a1e9f8a63f195f67f27ab2e5b86c4aff0081096/macOS_Patch_Scripts/upviv) as a reference for patchscript
 
-# Community JS Mods and CSS Included in this modpack
+# Community JS Mods And CSS Included In This Modpack
 
 [📸 Element Capture](https://forum.vivaldi.net/topic/103686/element-capture?_=1758777284963)
 > This mod adds the function of automatically selecting the area to capture when taking screenshots.
