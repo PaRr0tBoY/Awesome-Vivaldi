@@ -1,3 +1,10 @@
+# Preview
+![Auto Hide Tab](/Preview/autoHideTwoLevelTab.gif)
+![Auto Hide Bookmark Bar](/Preview/autoHideBookmarkBar.gif)
+![Auto Hide Panel](/Preview/autoHidePanel.gif)
+![link preview like Arc Peek](/Preview/Vivaldi-Arc-Peek.gif)
+
+# INSTALLATION
 To install CSS:
 
 1. Open Vivaldi://experiments in Vivaldi and check Allow CSS Modification
