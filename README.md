@@ -1,4 +1,5 @@
-# Community JS Mods and CSS used in this repository
+# Community JS Mods and CSS Included in this modpack
+
 [📸 Element Capture](https://forum.vivaldi.net/topic/103686/element-capture?_=1758777284963)
 > This mod adds the function of automatically selecting the area to capture when taking screenshots.
 
@@ -50,7 +51,8 @@
 [tovifun/VivalArc: With just a few tweaks, you can give Vivaldi that cool Arc vibe](https://github.com/tovifun/VivalArc)
 > Part of codes in this repo is used.
 
-# SHOWCASE 
+# SHOWCASE
+
 ![link preview like Arc Peek](/Showcase/Vivaldi-Arc-Peek.gif)
 ![Open Peek In New Tab](/Showcase/Peek.gif)
 ![Auto Hide Tab](/Showcase/autoHideTwoLevelTab.gif)
@@ -58,6 +60,7 @@
 ![Auto Hide Panel](/Showcase/autoHidePanel.gif)
 
 # INSTALLATION
+
 To install CSS:
 
 1. Open Vivaldi://experiments in Vivaldi and check Allow CSS Modification
