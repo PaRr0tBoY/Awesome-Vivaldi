@@ -1,4 +1,6 @@
 # Community JS Mods and CSS used in this repository
+[📸 Element Capture](https://forum.vivaldi.net/topic/103686/element-capture?_=1758777284963)
+> This mod adds the function of automatically selecting the area to capture when taking screenshots.
 
 [Colorful tabs](https://forum.vivaldi.net/topic/96586/colorful-tabs?_=1758775816485)
 > Part of the code that calculates the color from an icon
