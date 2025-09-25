@@ -250,7 +250,8 @@ Show toolbar buttons when StackEditor modal is present or AddressField is focuse
 */
 /*#tabs-container.right:not(:hover) .UrlBar-AddressField,
 #tabs-container.left:not(:hover) .UrlBar-AddressField,*/
-
+#tabs-container.right:not(:hover) .button-toolbar.toolbar-spacer-flexible,
+#tabs-container.left:not(:hover) .button-toolbar.toolbar-spacer-flexible,
 #tabs-container.right:not(:hover) .ToolbarButton-Button,
 #tabs-container.left:not(:hover) .ToolbarButton-Button,
 #tabs-container.right:not(:hover)
@@ -272,6 +273,12 @@ Show toolbar buttons when StackEditor modal is present or AddressField is focuse
 }
 
 /* Override: Show toolbar elements when StackEditor modal is present or AddressField is focused */
+body:has(.button-popup)
+  #tabs-container.right:not(:hover)
+  .button-toolbar.toolbar-spacer-flexible,
+body:has(.button-popup)
+  #tabs-container.left:not(:hover)
+  .button-toolbar.toolbar-spacer-flexible,
 body:has(.button-popup) #tabs-container.right:not(:hover) .ToolbarButton-Button,
 body:has(.button-popup) #tabs-container.left:not(:hover) .ToolbarButton-Button,
 body:has(.button-popup)
@@ -280,6 +287,12 @@ body:has(.button-popup)
 body:has(.button-popup)
   #tabs-container.left:not(:hover)
   .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
+body:has(.UrlBar-AddressField:focus-within)
+  #tabs-container.right:not(:hover)
+  .button-toolbar.toolbar-spacer-flexible,
+body:has(.UrlBar-AddressField:focus-within)
+  #tabs-container.left:not(:hover)
+  .button-toolbar.toolbar-spacer-flexible,
 body:has(.UrlBar-AddressField:focus-within)
   #tabs-container.right:not(:hover)
   .ToolbarButton-Button,
@@ -296,6 +309,7 @@ body:has(.UrlBar-AddressField:focus-within)
   width: auto !important;
   height: auto !important;
   padding: initial !important;
+  margin: 0px !important;
   border: initial !important;
   overflow: visible !important;
 }
