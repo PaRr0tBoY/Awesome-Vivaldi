@@ -292,12 +292,35 @@ button[title="显示输入记录"] {
    QUICK COMMAND MODAL
    ======================================== */
 
-.modal-wrapper:has(.quick-command-container) {
+/*.modal-wrapper:has(.quick-command-container) {
   position: fixed;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, 20%);
   border-radius: 15px !important;
   opacity: 0.91 !important;
   width: 650px;
+  max-height: 80vh;
+  overflow: hidden;
+}*/
+.modal-wrapper:has(.quick-command-container) {
+  position: fixed;
+  left: 50%;
+  top: calc(var(--search-top, 50%)); /* 用 CSS 变量调整偏移 */
+  transform: translateX(-50%); /* 只水平居中，垂直用 top 控制 */
+  border-radius: 15px !important;
+  opacity: 0.91 !important;
+  width: 650px;
+  max-height: 80vh;
+  overflow: hidden;
+}
+
+.quick-command-search {
+  --search-top: 50%; /* 或固定高度 + margin 计算，可手动设置 */
+}
+
+.VivaldiList::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
 }
 
 /* Quick command width management */
@@ -313,7 +336,6 @@ button[title="显示输入记录"] {
 
 .ReactVirtualized__Grid.ReactVirtualized__List {
   max-width: 800px !important;
-  scrollbar-width: none;
 }
 
 /* ========================================
@@ -557,6 +579,59 @@ button[title="显示输入记录"] {
 /* ========================================
    EXTENSIONS MENU STYLING
    ======================================== */
+/* 浏览器扩展图标换行解决方案 - 完整版 */
+
+.toolbar-extensions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  align-content: flex-start !important;
+  max-width: 300px !important;
+  overflow: visible !important;
+  gap: 3px !important;
+}
+
+/* 扩展按钮样式 */
+.toolbar-extensions button,
+.toolbar-extensions div[class*="button"],
+button[class*="ToolbarButton"] {
+  flex-shrink: 0 !important;
+  min-width: 22px !important;
+  min-height: 22px !important;
+  margin: 1px !important;
+  padding: 2px !important;
+  box-sizing: border-box !important;
+}
+
+/* 确保所有扩展元素有适当间距 */
+/*.toolbar-extensions > * {
+  margin: 1px 2px !important;
+}*/
+
+.toolbar-extensions {
+  margin-left: 10px !important;
+}
+/* 响应式调整 */
+@media (max-width: 1200px) {
+  .toolbar-extensions {
+    max-width: 220px !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .toolbar-extensions {
+    max-width: 180px !important;
+  }
+}
+
+/* 可选：限制高度并添加滚动 */
+.toolbar-extensions {
+  max-height: 35px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/*============================================================================*/
 
 .extensionIconPopupMenu {
   --popupWidth: 280px !important;

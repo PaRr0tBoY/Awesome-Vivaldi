@@ -33,7 +33,9 @@ with a tab-stack. Which is why we need tab-stack no? */
   padding-bottom: var(--mod-gap) !important; /*You might not want this*/
   padding-right: var(--mod-gap) !important; /*You might not want this*/
   border-radius: var(--mod-border-radius) !important;
-  background-color: var(--tabs-container-bg-color) !important; /* Adjust the color here */
+  background-color: var(
+    --tabs-container-bg-color
+  ) !important; /* Adjust the color here */
   box-sizing: border-box !important;
 }
 
@@ -62,7 +64,9 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
   padding-bottom: var(--mod-gap) !important; /*You might not want this*/
   padding-right: var(--mod-gap) !important; /*You might not want this*/
   border-radius: var(--mod-border-radius) !important;
-  background-color: var(--tabs-container-bg-color) !important; /* Adjust the color here */
+  background-color: var(
+    --tabs-container-bg-color
+  ) !important; /* Adjust the color here */
   box-sizing: border-box !important;
   /* transition-delay: 60ms !important; */
 }
@@ -80,7 +84,9 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
   padding-top: var(--mod-gap) !important; /*You might not want this*/
   padding-bottom: var(--mod-gap) !important; /*You might not want this*/
   border-radius: var(--mod-border-radius) !important;
-  background-color: var(--tabs-subcontainer-bg-color) !important; /* Adjust the color here */
+  background-color: var(
+    --tabs-subcontainer-bg-color
+  ) !important; /* Adjust the color here */
   box-sizing: border-box !important;
 }
 
@@ -94,7 +100,9 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
   padding-top: var(--mod-gap) !important; /*You might not want this*/
   padding-bottom: var(--mod-gap) !important; /*You might not want this*/
   border-radius: var(--mod-border-radius) !important;
-  background-color: var(--tabs-subcontainer-bg-color) !important; /* Adjust the color here */
+  background-color: var(
+    --tabs-subcontainer-bg-color
+  ) !important; /* Adjust the color here */
   box-sizing: border-box !important;
 }
 
@@ -107,8 +115,12 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
 #tabs-tabbar-container.left,
 #tabs-tabbar-container.right {
   width: auto !important;
-  min-width: var(--tabs-container-collapse-width) !important; /* main stack width when it fold */
-  max-width: calc(var(--tabs-container-expand-width)+var(--tabs-subcontainer-collapse-width)) !important; /* Combine total of expand width of stack and substack when one of them is hovered */
+  min-width: var(
+    --tabs-container-collapse-width
+  ) !important; /* main stack width when it fold */
+  max-width: calc(
+    var(--tabs-container-expand-width)+var(--tabs-subcontainer-collapse-width)
+  ) !important; /* Combine total of expand width of stack and substack when one of them is hovered */
   background-color: transparent !important;
   background-image: none !important;
   border: none !important;
@@ -162,6 +174,17 @@ body:has(.UrlBar-AddressField:focus-within)
   .tab-strip.overflow {
   display: block !important;
   /*animation: fadeInBlock 300ms ease-out !important;*/
+}
+
+#tabs-container:not(:hover) .toolbar-extensions {
+  max-width: 0 !important;
+  /*overflow: hidden !important;*/
+  transition: max-width var(--fast-animation-speed) ease-out !important;
+}
+
+#tabs-container:hover .toolbar-extensions {
+  max-width: 300px !important;
+  transition: max-width var(--smooth-animation-speed) ease-out !important;
 }
 
 /* Animation for smooth appearance when display changes */
@@ -226,7 +249,7 @@ body:has(.UrlBar-AddressField:focus-within)
 #tabs-container.left:hover .separator {
   opacity: 1 !important;
   pointer-events: auto !important;
-  transition: opacity var(--smooth-animation-speed) ease-out 50ms !important;
+  transition: opacity var(--smooth-animation-speed) ease-out 60ms !important;
   /*transition-delay: 180ms !important;*/
 }
 
@@ -254,7 +277,7 @@ Show toolbar buttons when popup is present or AddressField is focused
     width var(--smooth-animation-speed) ease-out,
     height var(--smooth-animation-speed) ease-out,
     padding var(--smooth-animation-speed) ease-out !important;
-  /*transition-delay: 60ms !important;*/
+  transition-delay: 60ms !important;
 }
 
 /* Show toolbar elements when popup is present or AddressField is focused */
@@ -358,7 +381,10 @@ body:has(.UrlBar-AddressField:focus-within)
 #browser:not(.fullscreen)
   .inner:has(#tabs-subcontainer:is(.left, .right))
   #webpage-stack {
-  margin-right: calc(var(--tabs-container-collapse-width) + var(--tabs-subcontainer-collapse-width));
+  margin-right: calc(
+    var(--tabs-container-collapse-width) +
+      var(--tabs-subcontainer-collapse-width)
+  );
 }
 
 #browser:not(.fullscreen) #tabs-tabbar-container.right ~ #webpage-stack {
@@ -368,7 +394,10 @@ body:has(.UrlBar-AddressField:focus-within)
 #browser:not(.fullscreen)
   #tabs-tabbar-container.right
   ~ #webpage-stack:has(#tabs-subcontainer.right) {
-  margin-right: calc(var(--tabs-container-collapse-width) + var(--tabs-subcontainer-collapse-width));
+  margin-right: calc(
+    var(--tabs-container-collapse-width) +
+      var(--tabs-subcontainer-collapse-width)
+  );
 }
 
 /*------------------------------------------------------------------------------------*/
