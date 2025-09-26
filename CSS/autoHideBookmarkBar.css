@@ -4,7 +4,7 @@
 
 /* Bookmark bar container - collapsed with 3px height */
 .bookmark-bar {
-  height: 20px !important;
+  height: 7px !important;
   overflow: hidden !important;
   transition: height 280ms ease-out !important;
   background: var(--colorBg, var(--colorAccentBg)) !important;

@@ -2,7 +2,8 @@
 :root {
   /* Window & Border Settings */
   --window-border: 4px;
-  --mac-header: calc(var(--window-border));
+  /*--mac-header: calc(var(--window-border));*/
+  --mac-header: 0px;
   --win-header: calc(var(--window-border) + 20px);
   --linux-header: calc(var(--window-border) + 20px);
   --addressbar-height: 36px;

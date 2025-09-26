@@ -1,6 +1,6 @@
 :root {
   --mod-gap: 5px;
-  --mod-border-radius: 17px;
+  --tabbar-border-radius: 17px;
   --tabs-container-collapse-width: 7px;
   --tabs-container-expand-width: 300px;
   --tabs-subcontainer-collapse-width: 42px;
@@ -9,8 +9,8 @@
   --medium-animation-speed: 140ms;
   --smooth-animation-speed: 280ms;
   --transition-delay-time: 60ms;
-  --tabs-container-bg-color: rgba(25, 30, 25, 0.9);
-  --tabs-subcontainer-bg-color: rgba(29, 40, 33, 0.81);
+  --tabs-container-bg-color: rgba(29, 40, 33, 0.81);
+  --tabs-subcontainer-bg-color: rgba(25, 30, 25, 0.9);
 }
 /* ========================================
    AUTO-HIDE TABBAR
@@ -32,7 +32,6 @@ with a tab-stack. Which is why we need tab-stack no? */
   padding-top: var(--mod-gap) !important; /*You might not want this*/
   padding-bottom: var(--mod-gap) !important; /*You might not want this*/
   padding-right: var(--mod-gap) !important; /*You might not want this*/
-  border-radius: var(--mod-border-radius) !important;
   background-color: var(
     --tabs-container-bg-color
   ) !important; /* Adjust the color here */
@@ -50,7 +49,6 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
   padding-top: var(--mod-gap) !important;
   padding-bottom: var(--mod-gap) !important;
   padding-right: var(--mod-gap) !important;
-  border-radius: var(--mod-border-radius) !important;
   background-color: var(--tabs-container-bg-color) !important;
   box-sizing: border-box !important;
 }
@@ -63,7 +61,6 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
   padding-top: var(--mod-gap) !important; /*You might not want this*/
   padding-bottom: var(--mod-gap) !important; /*You might not want this*/
   padding-right: var(--mod-gap) !important; /*You might not want this*/
-  border-radius: var(--mod-border-radius) !important;
   background-color: var(
     --tabs-container-bg-color
   ) !important; /* Adjust the color here */
@@ -83,7 +80,7 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
   margin-top: -6px !important; /*You might not want this*/
   padding-top: var(--mod-gap) !important; /*You might not want this*/
   padding-bottom: var(--mod-gap) !important; /*You might not want this*/
-  border-radius: var(--mod-border-radius) !important;
+  border-radius: var(--tabbar-border-radius) 0px 0px var(--tabbar-border-radius);
   background-color: var(
     --tabs-subcontainer-bg-color
   ) !important; /* Adjust the color here */
@@ -99,7 +96,7 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
   margin-top: -6px;
   padding-top: var(--mod-gap) !important; /*You might not want this*/
   padding-bottom: var(--mod-gap) !important; /*You might not want this*/
-  border-radius: var(--mod-border-radius) !important;
+  border-radius: var(--tabbar-border-radius) 0px 0px var(--tabbar-border-radius);
   background-color: var(
     --tabs-subcontainer-bg-color
   ) !important; /* Adjust the color here */
@@ -124,7 +121,7 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
   background-color: transparent !important;
   background-image: none !important;
   border: none !important;
-  border-radius: var(--mod-border-radius) !important;
+  border-radius: var(--tabbar-border-radius) !important;
   /*border-color: black !important;
   border-width: 1px !important;*/
   /* Written By Claude */
