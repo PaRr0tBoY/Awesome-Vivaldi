@@ -41,30 +41,26 @@ with a tab-stack. Which is why we need tab-stack no? */
   position: relative !important;
 }
 
-/* 圆角设置：根据标签栏位置和元素顺序调整 */
-/* 右侧标签栏的圆角 */
+/* Rounded corners: Adjust based on tab bar position and element order */
+/* Rounded corners for right tab bar */
 #tabs-tabbar-container.right #tabs-container.right {
-  /* 主标签栏在最右边，右侧圆角 */
   border-radius: 0px var(--tabbar-border-radius) var(--tabbar-border-radius) 0px !important;
 }
 
 #tabs-tabbar-container.right #tabs-subcontainer.right {
-  /* 子标签栏在主标签栏左边，左侧圆角 */
   border-radius: var(--tabbar-border-radius) 0px 0px var(--tabbar-border-radius) !important;
 }
 
-/* 左侧标签栏的圆角 */
+/* Rounded corners for left tab bar */
 #tabs-tabbar-container.left #tabs-container.left {
-  /* 主标签栏在最左边，左侧圆角 */
   border-radius: var(--tabbar-border-radius) 0px 0px var(--tabbar-border-radius) !important;
 }
 
 #tabs-tabbar-container.left #tabs-subcontainer.left {
-  /* 子标签栏在主标签栏右边，右侧圆角 */
   border-radius: 0px var(--tabbar-border-radius) var(--tabbar-border-radius) 0px !important;
 }
 
-/* 当只有主标签栏时的圆角设置 */
+/* Rounded corners when only main tab bar is present */
 #tabs-tabbar-container.right:not(:has(#tabs-subcontainer))
   #tabs-container.right {
   border-radius: var(--tabbar-border-radius) !important;
@@ -106,7 +102,7 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
 
 /* SubStack / Secondary Tabbar */
 
-/* 修复弹跳问题：为 tabs-subcontainer 添加 transform 过渡动画 */
+/* Fix bouncing issue: Add transform transition animation to tabs-subcontainer */
 #tabs-subcontainer.right,
 #tabs-subcontainer.left {
   min-width: var(--tabs-subcontainer-collapse-width) !important;
@@ -123,7 +119,7 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
     --tabs-subcontainer-bg-color
   ) !important; /* Adjust the color here */
   box-sizing: border-box !important;
-  /* 确保 subcontainer 保持在正确位置 */
+  /* Ensure subcontainer stays in correct position */
   position: relative !important;
   will-change: transform !important;
 }
@@ -152,7 +148,7 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
   width: 100% !important;
 }
 
-/* 修复容器弹跳：为整体容器添加平滑过渡 */
+/* Fix container bouncing: Add smooth transition to overall container */
 #tabs-tabbar-container.left,
 #tabs-tabbar-container.right {
   width: auto !important;
@@ -171,19 +167,19 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
   /* Written By Claude */
   box-shadow: none !important;
   box-sizing: border-box !important;
-  /* 为整体容器添加过渡动画，减少弹跳感 */
+  /* Add transition animation to overall container to reduce bouncing effect */
   transition:
     width var(--smooth-animation-speed) ease-out,
     min-width var(--smooth-animation-speed) ease-out,
     max-width var(--smooth-animation-speed) ease-out !important;
-  /* 确保容器布局稳定 - 修复标签栏顺序 */
+  /* Ensure container layout stability - Fix tab bar order */
   display: flex !important;
   flex-direction: row !important;
   align-items: stretch !important;
 }
 
-/* 正确的标签栏顺序：右侧标签栏时主标签栏在右边，左侧标签栏时主标签栏在左边 */
-/* 右侧标签栏：子标签栏在左，主标签栏在右 */
+/* Correct tab bar order: When right tab bar, main tab bar is on the right; when left tab bar, main tab bar is on the left */
+/* Right tab bar: Sub tab bar on left, main tab bar on right */
 #tabs-tabbar-container.right #tabs-subcontainer.right {
   order: 1 !important;
 }
@@ -192,7 +188,7 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
   order: 2 !important;
 }
 
-/* 左侧标签栏：主标签栏在左，子标签栏在右 */
+/* Left tab bar: Main tab bar on left, sub tab bar on right */
 #tabs-tabbar-container.left #tabs-container.left {
   order: 1 !important;
 }
@@ -497,17 +493,18 @@ body:has(.button-popup) #tabs-container.left:not(:hover) .toolbar-extensions {
   backdrop-filter: none !important;
 }
 
-/*=================== Webpage stack margins - Code Section 1 ===================*/
+/*=================== Webpage stack margins - Auto Detection ===================*/
 
-/* Uncomment codes below if you're on right tabbar, also comment codes for left tabbar in Code Section 2 to make it work */
+/* Auto-detect tabbar position and apply appropriate margins */
 
-#browser:not(.fullscreen) .inner #webpage-stack {
+/* Right tabbar margins */
+#browser:not(.fullscreen):has(#tabs-tabbar-container.right) .inner #webpage-stack {
   margin-right: var(--tabs-container-collapse-width);
-  /* 为网页栈也添加过渡动画，与标签栏同步 */
   transition: margin-right var(--smooth-animation-speed) ease-out !important;
 }
 
 #browser:not(.fullscreen)
+  :has(#tabs-tabbar-container.right)
   .inner:has(#tabs-subcontainer:is(.left, .right))
   #webpage-stack {
   margin-right: calc(
@@ -529,18 +526,14 @@ body:has(.button-popup) #tabs-container.left:not(:hover) .toolbar-extensions {
   );
 }
 
-/*------------------------------------------------------------------------------------*/
-
-/*=================== Webpage stack margins - Code Section 2 ===================*/
-
-/* Uncomment codes below if you're on left tabbar, also comment codes for right tabbar in Code Section 1 to make it work */
-
-/*#browser:not(.fullscreen) .inner #webpage-stack {
+/* Left tabbar margins */
+#browser:not(.fullscreen):has(#tabs-tabbar-container.left) .inner #webpage-stack {
   margin-left: var(--tabs-container-collapse-width);
   transition: margin-left var(--smooth-animation-speed) ease-out !important;
 }
 
 #browser:not(.fullscreen)
+  :has(#tabs-tabbar-container.left)
   .inner:has(#tabs-subcontainer:is(.left, .right))
   #webpage-stack {
   margin-left: calc(var(--tabs-container-collapse-width) + var(--tabs-subcontainer-collapse-width));
@@ -554,6 +547,4 @@ body:has(.button-popup) #tabs-container.left:not(:hover) .toolbar-extensions {
   #tabs-tabbar-container.left
   ~ #webpage-stack:has(#tabs-subcontainer.left) {
   margin-left: calc(var(--tabs-container-collapse-width) + var(--tabs-subcontainer-collapse-width));
-}*/
-
-/*------------------------------------------------------------------------------------*/
+}
