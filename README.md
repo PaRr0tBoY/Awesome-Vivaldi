@@ -1,4 +1,4 @@
-# TOC
+# INDEX
 
 - [Showcase](#SHOWCASE)
 - [Installation](#INSTALLATION)
