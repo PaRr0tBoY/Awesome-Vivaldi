@@ -1,5 +1,5 @@
 /**
- * v4
+ * v5
  * Opens links in a dialog, either by key combinations, holding the middle mouse button or context menu
  * Forum link: https://forum.vivaldi.net/topic/92501/open-in-dialog-mod?_=1717490394230
  *
@@ -714,8 +714,14 @@
                 "http://www.w3.org/2000/svg",
                 "svg",
               );
-              svg.setAttribute("width", this.config.progressRingRadius * 2 + 10);
-              svg.setAttribute("height", this.config.progressRingRadius * 2 + 10);
+              svg.setAttribute(
+                "width",
+                this.config.progressRingRadius * 2 + 10,
+              );
+              svg.setAttribute(
+                "height",
+                this.config.progressRingRadius * 2 + 10,
+              );
               svg.setAttribute(
                 "viewBox",
                 `0 0 ${this.config.progressRingRadius * 2 + 10} ${this.config.progressRingRadius * 2 + 10}`,
@@ -756,7 +762,8 @@
               );
               progressCircle.setAttribute("stroke-linecap", "round");
 
-              const circumference = 2 * Math.PI * this.config.progressRingRadius;
+              const circumference =
+                2 * Math.PI * this.config.progressRingRadius;
               progressCircle.setAttribute("stroke-dasharray", circumference);
               progressCircle.setAttribute("stroke-dashoffset", circumference);
               progressCircle.setAttribute(

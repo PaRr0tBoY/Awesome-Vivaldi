@@ -8,7 +8,7 @@
 
 ![link preview like Arc Peek](/Showcase/Vivaldi-Arc-Peek.gif)
 ![Open Peek In New Tab](/Showcase/Peek.gif)
-![Auto Hide Tab](/Showcase/autoHideTwoLevelTab.gif)
+![Auto Hide Tab](/Showcase/autotab.gif)
 ![Auto Hide Bookmark Bar](/Showcase/autoHideBookmarkBar.gif)
 ![Auto Hide Panel](/Showcase/autoHidePanel.gif)
 
