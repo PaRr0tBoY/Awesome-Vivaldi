@@ -9,8 +9,8 @@
   --medium-animation-speed: 140ms;
   --smooth-animation-speed: 280ms;
   --transition-delay-time: 60ms;
-  --tabs-container-bg-color: rgba(29, 40, 33, 0.81);
-  --tabs-subcontainer-bg-color: rgba(25, 30, 25, 0.9);
+  --tabs-container-bg-color: rgba(25, 30, 25, 0.9);
+  --tabs-subcontainer-bg-color: rgba(29, 40, 33, 0.81);
 }
 /* ========================================
    AUTO-HIDE TABBAR
@@ -25,7 +25,9 @@ with a tab-stack. Which is why we need tab-stack no? */
 #tabs-container.left {
   min-width: var(--tabs-container-collapse-width) !important;
   max-width: var(--tabs-container-collapse-width) !important;
-  transition: min-width var(--smooth-animation-speed) ease-out !important;
+  transition:
+    min-width var(--smooth-animation-speed) ease-out,
+    max-width var(--smooth-animation-speed) ease-out !important;
   transition-delay: 0ms !important;
   /* min width of main tabbar should not set lower than 6px, which will cause weird issue. */
   margin-top: -6px; /*You might not want this*/
@@ -36,6 +38,40 @@ with a tab-stack. Which is why we need tab-stack no? */
     --tabs-container-bg-color
   ) !important; /* Adjust the color here */
   box-sizing: border-box !important;
+  position: relative !important;
+}
+
+/* 圆角设置：根据标签栏位置和元素顺序调整 */
+/* 右侧标签栏的圆角 */
+#tabs-tabbar-container.right #tabs-container.right {
+  /* 主标签栏在最右边，右侧圆角 */
+  border-radius: 0px var(--tabbar-border-radius) var(--tabbar-border-radius) 0px !important;
+}
+
+#tabs-tabbar-container.right #tabs-subcontainer.right {
+  /* 子标签栏在主标签栏左边，左侧圆角 */
+  border-radius: var(--tabbar-border-radius) 0px 0px var(--tabbar-border-radius) !important;
+}
+
+/* 左侧标签栏的圆角 */
+#tabs-tabbar-container.left #tabs-container.left {
+  /* 主标签栏在最左边，左侧圆角 */
+  border-radius: var(--tabbar-border-radius) 0px 0px var(--tabbar-border-radius) !important;
+}
+
+#tabs-tabbar-container.left #tabs-subcontainer.left {
+  /* 子标签栏在主标签栏右边，右侧圆角 */
+  border-radius: 0px var(--tabbar-border-radius) var(--tabbar-border-radius) 0px !important;
+}
+
+/* 当只有主标签栏时的圆角设置 */
+#tabs-tabbar-container.right:not(:has(#tabs-subcontainer))
+  #tabs-container.right {
+  border-radius: var(--tabbar-border-radius) !important;
+}
+
+#tabs-tabbar-container.left:not(:has(#tabs-subcontainer)) #tabs-container.left {
+  border-radius: var(--tabbar-border-radius) !important;
 }
 
 /* Enhanced conditions for keeping tabbar expanded */
@@ -70,21 +106,26 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
 
 /* SubStack / Secondary Tabbar */
 
-/* Adjust hide animation and width of Secondary tabbar here */
+/* 修复弹跳问题：为 tabs-subcontainer 添加 transform 过渡动画 */
 #tabs-subcontainer.right,
 #tabs-subcontainer.left {
   min-width: var(--tabs-subcontainer-collapse-width) !important;
   max-width: var(--tabs-subcontainer-collapse-width) !important;
-  transition: min-width var(--smooth-animation-speed) ease-out !important;
+  transition:
+    min-width var(--smooth-animation-speed) ease-out,
+    max-width var(--smooth-animation-speed) ease-out,
+    transform var(--smooth-animation-speed) ease-out !important;
   /* transition-delay: var(--fast-animation-speed) !important; */
   margin-top: -6px !important; /*You might not want this*/
   padding-top: var(--mod-gap) !important; /*You might not want this*/
   padding-bottom: var(--mod-gap) !important; /*You might not want this*/
-  border-radius: var(--tabbar-border-radius) 0px 0px var(--tabbar-border-radius);
   background-color: var(
     --tabs-subcontainer-bg-color
   ) !important; /* Adjust the color here */
   box-sizing: border-box !important;
+  /* 确保 subcontainer 保持在正确位置 */
+  position: relative !important;
+  will-change: transform !important;
 }
 
 /* Adjust expand width of Secondary tabbar here */
@@ -92,11 +133,14 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
 #tabs-subcontainer.right:hover {
   min-width: var(--tabs-subcontainer-expand-width) !important;
   max-width: var(--tabs-subcontainer-expand-width) !important;
+  transition:
+    min-width var(--smooth-animation-speed) ease-out,
+    max-width var(--smooth-animation-speed) ease-out,
+    transform var(--smooth-animation-speed) ease-out !important;
   transition-delay: 0ms !important;
   margin-top: -6px;
   padding-top: var(--mod-gap) !important; /*You might not want this*/
   padding-bottom: var(--mod-gap) !important; /*You might not want this*/
-  border-radius: var(--tabbar-border-radius) 0px 0px var(--tabbar-border-radius);
   background-color: var(
     --tabs-subcontainer-bg-color
   ) !important; /* Adjust the color here */
@@ -108,7 +152,7 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
   width: 100% !important;
 }
 
-/* Overall container of main and secondary tabbar. */
+/* 修复容器弹跳：为整体容器添加平滑过渡 */
 #tabs-tabbar-container.left,
 #tabs-tabbar-container.right {
   width: auto !important;
@@ -127,6 +171,34 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
   /* Written By Claude */
   box-shadow: none !important;
   box-sizing: border-box !important;
+  /* 为整体容器添加过渡动画，减少弹跳感 */
+  transition:
+    width var(--smooth-animation-speed) ease-out,
+    min-width var(--smooth-animation-speed) ease-out,
+    max-width var(--smooth-animation-speed) ease-out !important;
+  /* 确保容器布局稳定 - 修复标签栏顺序 */
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+}
+
+/* 正确的标签栏顺序：右侧标签栏时主标签栏在右边，左侧标签栏时主标签栏在左边 */
+/* 右侧标签栏：子标签栏在左，主标签栏在右 */
+#tabs-tabbar-container.right #tabs-subcontainer.right {
+  order: 1 !important;
+}
+
+#tabs-tabbar-container.right #tabs-container.right {
+  order: 2 !important;
+}
+
+/* 左侧标签栏：主标签栏在左，子标签栏在右 */
+#tabs-tabbar-container.left #tabs-container.left {
+  order: 1 !important;
+}
+
+#tabs-tabbar-container.left #tabs-subcontainer.left {
+  order: 2 !important;
 }
 
 /* I hate newtab button. But if you have the opposite opinion,replace below codes with these
@@ -431,6 +503,8 @@ body:has(.button-popup) #tabs-container.left:not(:hover) .toolbar-extensions {
 
 #browser:not(.fullscreen) .inner #webpage-stack {
   margin-right: var(--tabs-container-collapse-width);
+  /* 为网页栈也添加过渡动画，与标签栏同步 */
+  transition: margin-right var(--smooth-animation-speed) ease-out !important;
 }
 
 #browser:not(.fullscreen)
@@ -463,6 +537,7 @@ body:has(.button-popup) #tabs-container.left:not(:hover) .toolbar-extensions {
 
 /*#browser:not(.fullscreen) .inner #webpage-stack {
   margin-left: var(--tabs-container-collapse-width);
+  transition: margin-left var(--smooth-animation-speed) ease-out !important;
 }
 
 #browser:not(.fullscreen)
