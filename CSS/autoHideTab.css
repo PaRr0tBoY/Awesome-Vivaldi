@@ -1,6 +1,15 @@
 :root {
   --mod-gap: 5px;
   --mod-border-radius: 17px;
+  --tabs-container-collapse-width: 7px;
+  --tabs-container-expand-width: 300px;
+  --tabs-subcontainer-collapse-width: 42px;
+  --tabs-subcontainer-expand-width: 335px;
+  --fast-animation-speed: 70ms;
+  --medium-animation-speed: 140ms;
+  --smooth-animation-speed: 280ms;
+  --tabs-container-bg-color: rgba(25, 30, 25, 0.9);
+  --tabs-subcontainer-bg-color: rgba(29, 40, 33, 0.81);
 }
 /* ========================================
    AUTO-HIDE TABBAR
@@ -14,23 +23,17 @@ and I figure people may want to focus more on sub-stack when they're working on 
 with a tab-stack. Which is why we need tab-stack no? */
 #tabs-container.right,
 #tabs-container.left {
-  min-width: 7px !important;
-  max-width: 7px !important;
-  transition: min-width 280ms ease-out !important;
-  /*transition-delay: 0ms !important;*/
+  min-width: var(--tabs-container-collapse-width) !important;
+  max-width: var(--tabs-container-collapse-width) !important;
+  transition: min-width var(--smooth-animation-speed) ease-out !important;
+  transition-delay: 0ms !important;
   /* min width of main tabbar should not set lower than 6px, which will cause weird issue. */
   margin-top: -6px; /*You might not want this*/
   padding-top: var(--mod-gap) !important; /*You might not want this*/
   padding-bottom: var(--mod-gap) !important; /*You might not want this*/
   padding-right: var(--mod-gap) !important; /*You might not want this*/
   border-radius: var(--mod-border-radius) !important;
-  background-color: rgba(
-    25,
-    30,
-    25,
-    0.9
-  ) !important; /* Adjust the color here */
-  /* Written By Claude */
+  background-color: var(--tabs-container-bg-color) !important; /* Adjust the color here */
   box-sizing: border-box !important;
 }
 
@@ -40,34 +43,28 @@ body:has(.button-popup) #tabs-container.right,
 body:has(.button-popup) #tabs-container.left,
 body:has(.UrlBar-AddressField:focus-within) #tabs-container.right,
 body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
-  min-width: 300px !important;
-  max-width: 300px !important;
+  min-width: var(--tabs-container-expand-width) !important;
+  max-width: var(--tabs-container-expand-width) !important;
   padding-top: var(--mod-gap) !important;
   padding-bottom: var(--mod-gap) !important;
   padding-right: var(--mod-gap) !important;
   border-radius: var(--mod-border-radius) !important;
-  background-color: rgba(25, 30, 25, 0.9) !important;
+  background-color: var(--tabs-container-bg-color) !important;
   box-sizing: border-box !important;
 }
 
 /* Adjust expand width of main tabbar here */
 #tabs-container.left:hover,
 #tabs-container.right:hover {
-  min-width: 300px !important;
-  max-width: 300px !important;
+  min-width: var(--tabs-container-expand-width) !important;
+  max-width: var(--tabs-container-expand-width) !important;
   padding-top: var(--mod-gap) !important; /*You might not want this*/
   padding-bottom: var(--mod-gap) !important; /*You might not want this*/
   padding-right: var(--mod-gap) !important; /*You might not want this*/
   border-radius: var(--mod-border-radius) !important;
-  background-color: rgba(
-    25,
-    30,
-    25,
-    0.9
-  ) !important; /* Adjust the color here */
-  /* Written By Claude */
+  background-color: var(--tabs-container-bg-color) !important; /* Adjust the color here */
   box-sizing: border-box !important;
-  /*transition-delay: 100ms !important;*/
+  /* transition-delay: 60ms !important; */
 }
 
 /* SubStack / Secondary Tabbar */
@@ -75,40 +72,29 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
 /* Adjust hide animation and width of Secondary tabbar here */
 #tabs-subcontainer.right,
 #tabs-subcontainer.left {
-  min-width: 42px !important;
-  max-width: 42px !important;
-  transition: min-width 280ms ease-out !important;
-  /*transition-delay: 60ms !important;*/
+  min-width: var(--tabs-subcontainer-collapse-width) !important;
+  max-width: var(--tabs-subcontainer-collapse-width) !important;
+  transition: min-width var(--smooth-animation-speed) ease-out !important;
+  /* transition-delay: var(--fast-animation-speed) !important; */
   margin-top: -6px !important; /*You might not want this*/
   padding-top: var(--mod-gap) !important; /*You might not want this*/
   padding-bottom: var(--mod-gap) !important; /*You might not want this*/
   border-radius: var(--mod-border-radius) !important;
-  background-color: rgba(
-    29,
-    40,
-    33,
-    0.81
-  ) !important; /* Adjust the color here */
-  /* Written By Claude */
+  background-color: var(--tabs-subcontainer-bg-color) !important; /* Adjust the color here */
   box-sizing: border-box !important;
 }
 
 /* Adjust expand width of Secondary tabbar here */
 #tabs-subcontainer.left:hover,
 #tabs-subcontainer.right:hover {
-  min-width: 335px !important;
-  max-width: 335px !important;
+  min-width: var(--tabs-subcontainer-expand-width) !important;
+  max-width: var(--tabs-subcontainer-expand-width) !important;
+  transition-delay: 0ms !important;
   margin-top: -6px;
   padding-top: var(--mod-gap) !important; /*You might not want this*/
   padding-bottom: var(--mod-gap) !important; /*You might not want this*/
   border-radius: var(--mod-border-radius) !important;
-  background-color: rgba(
-    29,
-    40,
-    33,
-    0.81
-  ) !important; /* Adjust the color here */
-  /* Written By Claude */
+  background-color: var(--tabs-subcontainer-bg-color) !important; /* Adjust the color here */
   box-sizing: border-box !important;
 }
 
@@ -121,8 +107,8 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
 #tabs-tabbar-container.left,
 #tabs-tabbar-container.right {
   width: auto !important;
-  min-width: 7px; /* main stack width when it fold */
-  max-width: 342px; /* Combine total of expand width of stack and substack when one of them is hovered */
+  min-width: var(--tabs-container-collapse-width) !important; /* main stack width when it fold */
+  max-width: calc(var(--tabs-container-expand-width)+var(--tabs-subcontainer-collapse-width)) !important; /* Combine total of expand width of stack and substack when one of them is hovered */
   background-color: transparent !important;
   background-image: none !important;
   border: none !important;
@@ -190,7 +176,7 @@ body:has(.UrlBar-AddressField:focus-within)
   }
 }*/
 
-/* Enhanced tab visibility rules - show tabs when special conditions are met */
+/* show tabs when hover */
 #tabs-container.right:not(:hover) .tab,
 #tabs-container.left:not(:hover) .tab,
 #tabs-container.right:not(:hover) .tab-position,
@@ -199,10 +185,10 @@ body:has(.UrlBar-AddressField:focus-within)
 #tabs-container.left:not(:hover) .separator {
   opacity: 0 !important;
   pointer-events: none !important;
-  transition: opacity 280ms ease-in !important;
+  transition: opacity var(--smooth-animation-speed) ease-in !important;
 }
 
-/* Override: Show tabs when StackEditor modal is present or AddressField is focused */
+/* Show tabs when popup is present or AddressField is focused */
 body:has(.button-popup) #tabs-container.right:not(:hover) .tab,
 body:has(.button-popup) #tabs-container.left:not(:hover) .tab,
 body:has(.button-popup) #tabs-container.right:not(:hover) .tab-position,
@@ -229,7 +215,7 @@ body:has(.UrlBar-AddressField:focus-within)
   .separator {
   opacity: 1 !important;
   pointer-events: auto !important;
-  transition: opacity 280ms ease-out 50ms !important;
+  transition: opacity var(--smooth-animation-speed) ease-out !important;
 }
 
 #tabs-container.right:hover .tab,
@@ -240,13 +226,12 @@ body:has(.UrlBar-AddressField:focus-within)
 #tabs-container.left:hover .separator {
   opacity: 1 !important;
   pointer-events: auto !important;
-  transition: opacity 280ms ease-out 50ms !important;
+  transition: opacity var(--smooth-animation-speed) ease-out 50ms !important;
   /*transition-delay: 180ms !important;*/
 }
 
 /*
-Enhanced toolbar button visibility rules
-Show toolbar buttons when StackEditor modal is present or AddressField is focused
+Show toolbar buttons when popup is present or AddressField is focused
 */
 /*#tabs-container.right:not(:hover) .UrlBar-AddressField,
 #tabs-container.left:not(:hover) .UrlBar-AddressField,*/
@@ -265,14 +250,14 @@ Show toolbar buttons when StackEditor modal is present or AddressField is focuse
   border: 0 !important;
   overflow: hidden !important;
   transition:
-    min-width 280ms ease-out,
-    width 280ms ease-out,
-    height 280ms ease-out,
-    padding 280ms ease-out !important;
-  /*transition-delay: 180ms !important;*/
+    min-width var(--smooth-animation-speed) ease-out,
+    width var(--smooth-animation-speed) ease-out,
+    height var(--smooth-animation-speed) ease-out,
+    padding var(--smooth-animation-speed) ease-out !important;
+  /*transition-delay: 60ms !important;*/
 }
 
-/* Override: Show toolbar elements when StackEditor modal is present or AddressField is focused */
+/* Show toolbar elements when popup is present or AddressField is focused */
 body:has(.button-popup)
   #tabs-container.right:not(:hover)
   .button-toolbar.toolbar-spacer-flexible,
@@ -309,7 +294,6 @@ body:has(.UrlBar-AddressField:focus-within)
   width: auto !important;
   height: auto !important;
   padding: initial !important;
-  margin: 0px !important;
   border: initial !important;
   overflow: visible !important;
 }
@@ -368,24 +352,23 @@ body:has(.UrlBar-AddressField:focus-within)
 /* Uncomment codes below if you're on right tabbar, also comment codes for left tabbar in Code Section 2 to make it work */
 
 #browser:not(.fullscreen) .inner #webpage-stack {
-  margin-right: 7px;
+  margin-right: var(--tabs-container-collapse-width);
 }
 
 #browser:not(.fullscreen)
   .inner:has(#tabs-subcontainer:is(.left, .right))
   #webpage-stack {
-  margin-right: 49px;
+  margin-right: calc(var(--tabs-container-collapse-width) + var(--tabs-subcontainer-collapse-width));
 }
 
 #browser:not(.fullscreen) #tabs-tabbar-container.right ~ #webpage-stack {
-  margin-left: 0;
-  margin-right: 7px;
+  margin-right: var(--tabs-container-collapse-width);
 }
 
 #browser:not(.fullscreen)
   #tabs-tabbar-container.right
   ~ #webpage-stack:has(#tabs-subcontainer.right) {
-  margin-right: 49px;
+  margin-right: calc(var(--tabs-container-collapse-width) + var(--tabs-subcontainer-collapse-width));
 }
 
 /*------------------------------------------------------------------------------------*/
@@ -395,24 +378,23 @@ body:has(.UrlBar-AddressField:focus-within)
 /* Uncomment codes below if you're on left tabbar, also comment codes for right tabbar in Code Section 1 to make it work */
 
 /*#browser:not(.fullscreen) .inner #webpage-stack {
-  margin-left: 7px;
+  margin-left: var(--tabs-container-collapse-width);
 }
 
 #browser:not(.fullscreen)
   .inner:has(#tabs-subcontainer:is(.left, .right))
   #webpage-stack {
-  margin-left: 49px;
+  margin-left: calc(var(--tabs-container-collapse-width) + var(--tabs-subcontainer-collapse-width));
 }
 
 #browser:not(.fullscreen) #tabs-tabbar-container.left ~ #webpage-stack {
-  margin-right: 0;
-  margin-left: 7px;
+  margin-left: var(--tabs-container-collapse-width);
 }
 
 #browser:not(.fullscreen)
   #tabs-tabbar-container.left
   ~ #webpage-stack:has(#tabs-subcontainer.left) {
-  margin-left: 49px;
+  margin-left: calc(var(--tabs-container-collapse-width) + var(--tabs-subcontainer-collapse-width));
 }*/
 
 /*------------------------------------------------------------------------------------*/
