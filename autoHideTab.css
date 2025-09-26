@@ -152,9 +152,6 @@ And of course you don't need those lockers icon when your tabbar expand on hover
   display: none !important;
 } /* Codeblock to replace of*/
 
-.toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget {
-  margin-bottom: -35px !important;
-}
 /* ========================================
    HIDE ELEMENTS ON HOVER
    ======================================== */
@@ -177,6 +174,17 @@ body:has(.UrlBar-AddressField:focus-within)
   .tab-strip.overflow {
   display: block !important;
   /*animation: fadeInBlock 300ms ease-out !important;*/
+}
+
+#tabs-container:not(:hover) .toolbar-extensions {
+  max-width: 0 !important;
+  overflow: hidden !important;
+  transition: max-width var(--fast-animation-speed) ease-out !important;
+}
+
+#tabs-container:hover .toolbar-extensions {
+  max-width: 300px !important;
+  transition: max-width var(--smooth-animation-speed) ease-out !important;
 }
 
 /* Animation for smooth appearance when display changes */
@@ -230,7 +238,7 @@ body:has(.UrlBar-AddressField:focus-within)
   .separator {
   opacity: 1 !important;
   pointer-events: auto !important;
-  transition: opacity var(--smooth-animation-speed) ease-out 60ms !important;
+  transition: opacity var(--smooth-animation-speed) ease-out !important;
 }
 
 #tabs-container.right:hover .tab,
@@ -251,20 +259,15 @@ Show toolbar buttons when popup is present or AddressField is focused
 /*#tabs-container.right:not(:hover) .UrlBar-AddressField,
 #tabs-container.left:not(:hover) .UrlBar-AddressField,*/
 /*#tabs-container.right:not(:hover) .button-toolbar.toolbar-spacer-flexible,
-#tabs-container.left:not(:hover) .button-toolbar.toolbar-spacer-flexible,
+#tabs-container.left:not(:hover) .button-toolbar.toolbar-spacer-flexible,*/
+body:not(:has(.button-popup)) #tabs-container.right:not(:hover) .button-toolbar,
+body:not(:has(.button-popup)) #tabs-container.left:not(:hover) .button-toolbar,
 #tabs-container.right:not(:hover) .ToolbarButton-Button,
-#tabs-container.left:not(:hover) .ToolbarButton-Button,*/
-#tabs-container.right:not(:hover) .toolbar-extensions,
-#tabs-container.left:not(:hover) .toolbar-extensions,
-#tabs-container.right:not(:hover)
-  .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
-#tabs-container.left:not(:hover)
-  .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
+#tabs-container.left:not(:hover) .ToolbarButton-Button,
 #tabs-container.right:not(:hover)
   .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
 #tabs-container.left:not(:hover)
   .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget {
-  max-width: 0 !important;
   min-width: 0 !important;
   width: 0 !important;
   height: 0 !important;
@@ -273,39 +276,36 @@ Show toolbar buttons when popup is present or AddressField is focused
   overflow: hidden !important;
   transition:
     min-width var(--smooth-animation-speed) ease-out,
-    max-width var(--smooth-animation-speed) ease-out 60ms,
     width var(--smooth-animation-speed) ease-out,
     height var(--smooth-animation-speed) ease-out,
     padding var(--smooth-animation-speed) ease-out !important;
   transition-delay: 60ms !important;
 }
-
-#tabs-container.right:hover .toolbar-extensions,
-#tabs-container.left:hover .toolbar-extensions {
-  max-width: 300px !important;
-  transition: max-width var(--smooth-animation-speed) ease-out 60ms !important;
-}
-
-/*#tabs-container:not(:hover) .toolbar-extensions {
-  max-width: 0 !important;
-  transition: max-width var(--smooth-animation-speed) ease-out 60ms !important;
-}
-
-#tabs-container:hover .toolbar-extensions {
-  max-width: 300px !important;
-  transition: max-width var(--smooth-animation-speed) ease-out 60ms !important;
-}*/
-
 /* Show toolbar elements when popup is present or AddressField is focused */
-/*body:has(.button-popup)
+
+body:has(.button-popup) #tabs-container.right:not(:hover) .button-toolbar,
+body:has(.button-popup) #tabs-container.left:not(:hover) .button-toolbar,
+body:has(.button-popup)
   #tabs-container.right:not(:hover)
   .button-toolbar.toolbar-spacer-flexible,
 body:has(.button-popup)
   #tabs-container.left:not(:hover)
   .button-toolbar.toolbar-spacer-flexible,
 body:has(.button-popup) #tabs-container.right:not(:hover) .ToolbarButton-Button,
-body:has(.button-popup) #tabs-container.left:not(:hover) .ToolbarButton-Button,*/
-/*body:has(.UrlBar-AddressField:focus-within)
+body:has(.button-popup) #tabs-container.left:not(:hover) .ToolbarButton-Button,
+body:has(.button-popup)
+  #tabs-container.right:not(:hover)
+  .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
+body:has(.button-popup)
+  #tabs-container.left:not(:hover)
+  .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
+body:has(.UrlBar-AddressField:focus-within)
+  #tabs-container.right:not(:hover)
+  .button-toolbar,
+body:has(.UrlBar-AddressField:focus-within)
+  #tabs-container.left:not(:hover)
+  .button-toolbar,
+body:has(.UrlBar-AddressField:focus-within)
   #tabs-container.right:not(:hover)
   .button-toolbar.toolbar-spacer-flexible,
 body:has(.UrlBar-AddressField:focus-within)
@@ -316,66 +316,21 @@ body:has(.UrlBar-AddressField:focus-within)
   .ToolbarButton-Button,
 body:has(.UrlBar-AddressField:focus-within)
   #tabs-container.left:not(:hover)
-  .ToolbarButton-Button,*/
-/*==========================================================================*/
-body:has(.button-popup)
-  #tabs-container.right:not(:hover)
-  .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
-body:has(.button-popup)
-  #tabs-container.left:not(:hover)
-  .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
-/*==========================================================================*/
-body:has(.button-popup)
-  #tabs-container.right:not(:hover)
-  .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
-body:has(.button-popup)
-  #tabs-container.left:not(:hover)
-  .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
-/*==========================================================================*/
-/*==========================================================================*/
-body:has(.UrlBar-AddressField:focus-within)
-  #tabs-container.right:not(:hover)
-  .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
-body:has(.UrlBar-AddressField:focus-within)
-  #tabs-container.left:not(:hover)
-  .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
-/*==========================================================================*/
+  .ToolbarButton-Button,
 body:has(.UrlBar-AddressField:focus-within)
   #tabs-container.right:not(:hover)
   .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
 body:has(.UrlBar-AddressField:focus-within)
   #tabs-container.left:not(:hover)
-  .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget
-/*==========================================================================*/ {
+  .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget {
   min-width: auto !important;
-  max-width: 300px !important;
-  width: initial !important;
-  height: initial !important;
+  width: auto !important;
+  height: auto !important;
   padding: initial !important;
   border: initial !important;
   overflow: visible !important;
-  transition-delay: 60ms !important;
 }
 
-/*==========================================================================*/
-body:has(.UrlBar-AddressField:focus-within)
-  #tabs-container.right:not(:hover)
-  .toolbar-extensions,
-body:has(.UrlBar-AddressField:focus-within)
-  #tabs-container.left:not(:hover)
-  .toolbar-extensions,
-/*==========================================================================*/
-body:has(.button-popup) #tabs-container.right:not(:hover) .toolbar-extensions,
-body:has(.button-popup) #tabs-container.left:not(:hover) .toolbar-extensions {
-  min-width: auto !important;
-  max-width: 300px !important;
-  width: initial !important;
-  height: initial !important;
-  padding: initial !important;
-  border: initial !important;
-  transition-delay: 60ms !important;
-}
-/*==========================================================================*/
 /* Show toolbar and URL field elements when hovered */
 /*#tabs-container.right:hover .ToolbarButton-Button,
 #tabs-container.left:hover .ToolbarButton-Button,
