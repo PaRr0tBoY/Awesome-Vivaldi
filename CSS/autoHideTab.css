@@ -8,13 +8,13 @@
   --fast-animation-speed: 70ms;
   --medium-animation-speed: 140ms;
   --smooth-animation-speed: 280ms;
+  --transition-delay-time: 60ms;
   --tabs-container-bg-color: rgba(25, 30, 25, 0.9);
   --tabs-subcontainer-bg-color: rgba(29, 40, 33, 0.81);
 }
 /* ========================================
    AUTO-HIDE TABBAR
    ======================================== */
-
 /* Main Tabbar*/
 
 /* Adjust hide animation and width of main tabbar here */
@@ -201,6 +201,7 @@ body:has(.UrlBar-AddressField:focus-within)
   opacity: 0 !important;
   pointer-events: none !important;
   transition: opacity var(--smooth-animation-speed) ease-in !important;
+  transition-delay: var(--transition-delay-time) !important;
 }
 
 /* Show tabs when popup is present or AddressField is focused */
@@ -230,7 +231,8 @@ body:has(.UrlBar-AddressField:focus-within)
   .separator {
   opacity: 1 !important;
   pointer-events: auto !important;
-  transition: opacity var(--smooth-animation-speed) ease-out 60ms !important;
+  transition: opacity var(--smooth-animation-speed) ease-out !important;
+  transition-delay: var(--transition-delay-time) !important;
 }
 
 #tabs-container.right:hover .tab,
@@ -241,8 +243,8 @@ body:has(.UrlBar-AddressField:focus-within)
 #tabs-container.left:hover .separator {
   opacity: 1 !important;
   pointer-events: auto !important;
-  transition: opacity var(--smooth-animation-speed) ease-out 60ms !important;
-  /*transition-delay: 180ms !important;*/
+  transition: opacity var(--smooth-animation-speed) ease-out !important;
+  transition-delay: var(--transition-delay-time) !important;
 }
 
 /*
@@ -273,17 +275,18 @@ Show toolbar buttons when popup is present or AddressField is focused
   overflow: hidden !important;
   transition:
     min-width var(--smooth-animation-speed) ease-out,
-    max-width var(--smooth-animation-speed) ease-out 60ms,
+    max-width var(--smooth-animation-speed) ease-out,
     width var(--smooth-animation-speed) ease-out,
     height var(--smooth-animation-speed) ease-out,
     padding var(--smooth-animation-speed) ease-out !important;
-  transition-delay: 60ms !important;
+  transition-delay: var(--transition-delay-time) !important;
 }
 
 #tabs-container.right:hover .toolbar-extensions,
 #tabs-container.left:hover .toolbar-extensions {
   max-width: 300px !important;
-  transition: max-width var(--smooth-animation-speed) ease-out 60ms !important;
+  transition: max-width var(--smooth-animation-speed) ease-out !important;
+  transition-delay: var(--transition-delay-time) !important;
 }
 
 /*#tabs-container:not(:hover) .toolbar-extensions {
@@ -354,7 +357,7 @@ body:has(.UrlBar-AddressField:focus-within)
   padding: initial !important;
   border: initial !important;
   overflow: visible !important;
-  transition-delay: 60ms !important;
+  transition-delay: var(--transition-delay-time) !important;
 }
 
 /*==========================================================================*/
@@ -373,7 +376,7 @@ body:has(.button-popup) #tabs-container.left:not(:hover) .toolbar-extensions {
   height: initial !important;
   padding: initial !important;
   border: initial !important;
-  transition-delay: 60ms !important;
+  transition-delay: var(--transition-delay-time) !important;
 }
 /*==========================================================================*/
 /* Show toolbar and URL field elements when hovered */
