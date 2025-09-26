@@ -691,135 +691,139 @@
             500,
           );
         } else if (event.button === 0) {
-          if (!this.leftClickFeedbackElement) {
-            this.leftClickFeedbackElement = document.createElement("div");
-            this.leftClickFeedbackElement.style.cssText = `
-              position: fixed;
-              top: 50%;
-              left: 50%;
-              transform: translate(-50%, -50%);
-              width: ${this.config.progressRingRadius * 2 + 10}px;
-              height: ${this.config.progressRingRadius * 2 + 10}px;
-              z-index: 10000;
-              pointer-events: none;
-              opacity: 0;
-              transition: opacity 0.2s ease;
-            `;
+          // 只有在链接上长按时才创建并显示进度条
+          const link = this.#getLinkElement(event);
+          if (link) {
+            if (!this.leftClickFeedbackElement) {
+              this.leftClickFeedbackElement = document.createElement("div");
+              this.leftClickFeedbackElement.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: ${this.config.progressRingRadius * 2 + 10}px;
+                height: ${this.config.progressRingRadius * 2 + 10}px;
+                z-index: 10000;
+                pointer-events: none;
+                opacity: 0;
+                transition: opacity 0.2s ease;
+              `;
 
-            // 创建SVG进度环
-            const svg = document.createElementNS(
-              "http://www.w3.org/2000/svg",
-              "svg",
-            );
-            svg.setAttribute("width", this.config.progressRingRadius * 2 + 10);
-            svg.setAttribute("height", this.config.progressRingRadius * 2 + 10);
-            svg.setAttribute(
-              "viewBox",
-              `0 0 ${this.config.progressRingRadius * 2 + 10} ${this.config.progressRingRadius * 2 + 10}`,
-            );
+              // 创建SVG进度环
+              const svg = document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "svg",
+              );
+              svg.setAttribute("width", this.config.progressRingRadius * 2 + 10);
+              svg.setAttribute("height", this.config.progressRingRadius * 2 + 10);
+              svg.setAttribute(
+                "viewBox",
+                `0 0 ${this.config.progressRingRadius * 2 + 10} ${this.config.progressRingRadius * 2 + 10}`,
+              );
 
-            const bgCircle = document.createElementNS(
-              "http://www.w3.org/2000/svg",
-              "circle",
-            );
-            bgCircle.setAttribute("cx", this.config.progressRingRadius + 5);
-            bgCircle.setAttribute("cy", this.config.progressRingRadius + 5);
-            bgCircle.setAttribute("r", this.config.progressRingRadius);
-            bgCircle.setAttribute("fill", "none");
-            bgCircle.setAttribute("stroke", "rgba(0, 0, 0, 0.3)");
-            bgCircle.setAttribute(
-              "stroke-width",
-              this.config.progressRingWidth,
-            );
+              const bgCircle = document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "circle",
+              );
+              bgCircle.setAttribute("cx", this.config.progressRingRadius + 5);
+              bgCircle.setAttribute("cy", this.config.progressRingRadius + 5);
+              bgCircle.setAttribute("r", this.config.progressRingRadius);
+              bgCircle.setAttribute("fill", "none");
+              bgCircle.setAttribute("stroke", "rgba(0, 0, 0, 0.3)");
+              bgCircle.setAttribute(
+                "stroke-width",
+                this.config.progressRingWidth,
+              );
 
-            const progressCircle = document.createElementNS(
-              "http://www.w3.org/2000/svg",
-              "circle",
-            );
-            progressCircle.setAttribute(
-              "cx",
-              this.config.progressRingRadius + 5,
-            );
-            progressCircle.setAttribute(
-              "cy",
-              this.config.progressRingRadius + 5,
-            );
-            progressCircle.setAttribute("r", this.config.progressRingRadius);
-            progressCircle.setAttribute("fill", "none");
-            progressCircle.setAttribute("stroke", "#ffffff");
-            progressCircle.setAttribute(
-              "stroke-width",
-              this.config.progressRingWidth,
-            );
-            progressCircle.setAttribute("stroke-linecap", "round");
+              const progressCircle = document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "circle",
+              );
+              progressCircle.setAttribute(
+                "cx",
+                this.config.progressRingRadius + 5,
+              );
+              progressCircle.setAttribute(
+                "cy",
+                this.config.progressRingRadius + 5,
+              );
+              progressCircle.setAttribute("r", this.config.progressRingRadius);
+              progressCircle.setAttribute("fill", "none");
+              progressCircle.setAttribute("stroke", "#ffffff");
+              progressCircle.setAttribute(
+                "stroke-width",
+                this.config.progressRingWidth,
+              );
+              progressCircle.setAttribute("stroke-linecap", "round");
 
-            const circumference = 2 * Math.PI * this.config.progressRingRadius;
-            progressCircle.setAttribute("stroke-dasharray", circumference);
-            progressCircle.setAttribute("stroke-dashoffset", circumference);
-            progressCircle.setAttribute(
-              "transform",
-              `rotate(-90 ${this.config.progressRingRadius + 5} ${this.config.progressRingRadius + 5})`,
-            );
+              const circumference = 2 * Math.PI * this.config.progressRingRadius;
+              progressCircle.setAttribute("stroke-dasharray", circumference);
+              progressCircle.setAttribute("stroke-dashoffset", circumference);
+              progressCircle.setAttribute(
+                "transform",
+                `rotate(-90 ${this.config.progressRingRadius + 5} ${this.config.progressRingRadius + 5})`,
+              );
 
-            svg.appendChild(bgCircle);
-            svg.appendChild(progressCircle);
-            this.leftClickFeedbackElement.appendChild(svg);
+              svg.appendChild(bgCircle);
+              svg.appendChild(progressCircle);
+              this.leftClickFeedbackElement.appendChild(svg);
 
-            this.progressCircle = progressCircle;
-            this.progressCircumference = circumference;
+              this.progressCircle = progressCircle;
+              this.progressCircumference = circumference;
 
-            document.body.appendChild(this.leftClickFeedbackElement);
+              document.body.appendChild(this.leftClickFeedbackElement);
+            }
+
+            const effectiveHoldTime =
+              this.config.leftClickHoldTime - this.config.leftClickHoldDelay;
+
+            this.visibilityDelayTimer = setTimeout(() => {
+              this.progressCircle.setAttribute(
+                "stroke-dashoffset",
+                this.progressCircumference,
+              );
+              this.leftClickFeedbackElement.style.opacity = "1";
+              this.leftClickFeedbackElement.style.left = event.clientX + "px";
+              this.leftClickFeedbackElement.style.top = event.clientY + "px";
+
+              const startTime = Date.now();
+              this.progressInterval = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / effectiveHoldTime, 1);
+                const offset =
+                  this.progressCircumference -
+                  this.progressCircumference * progress;
+                this.progressCircle.setAttribute("stroke-dashoffset", offset);
+
+                if (this.config.ringColor !== "default") {
+                  this.progressCircle.setAttribute(
+                    "stroke",
+                    this.config.ringColor,
+                  );
+                } else {
+                  const hue = 120 * progress;
+                  const saturation = 100;
+                  const lightness = 50 + 50 * (1 - progress);
+                  this.progressCircle.setAttribute(
+                    "stroke",
+                    `hsl(${hue}, ${saturation}%, ${lightness}%)`,
+                  );
+                }
+
+                if (progress >= 1) {
+                  clearInterval(this.progressInterval);
+                }
+              }, 16); // ~60fps
+            }, this.config.leftClickHoldDelay);
+
+            holdTimerForLeftClick = setTimeout(() => {
+              this.#callDialog(event);
+              this.leftClickFeedbackElement.style.opacity = "0";
+              if (this.progressInterval) clearInterval(this.progressInterval);
+              if (this.visibilityDelayTimer)
+                clearTimeout(this.visibilityDelayTimer);
+            }, this.config.leftClickHoldTime);
           }
-
-          const effectiveHoldTime =
-            this.config.leftClickHoldTime - this.config.leftClickHoldDelay;
-
-          this.visibilityDelayTimer = setTimeout(() => {
-            this.progressCircle.setAttribute(
-              "stroke-dashoffset",
-              this.progressCircumference,
-            );
-            this.leftClickFeedbackElement.style.opacity = "1";
-            this.leftClickFeedbackElement.style.left = event.clientX + "px";
-            this.leftClickFeedbackElement.style.top = event.clientY + "px";
-
-            const startTime = Date.now();
-            this.progressInterval = setInterval(() => {
-              const elapsed = Date.now() - startTime;
-              const progress = Math.min(elapsed / effectiveHoldTime, 1);
-              const offset =
-                this.progressCircumference -
-                this.progressCircumference * progress;
-              this.progressCircle.setAttribute("stroke-dashoffset", offset);
-
-              if (this.config.ringColor !== "default") {
-                this.progressCircle.setAttribute(
-                  "stroke",
-                  this.config.ringColor,
-                );
-              } else {
-                const hue = 120 * progress;
-                const saturation = 100;
-                const lightness = 50 + 50 * (1 - progress);
-                this.progressCircle.setAttribute(
-                  "stroke",
-                  `hsl(${hue}, ${saturation}%, ${lightness}%)`,
-                );
-              }
-
-              if (progress >= 1) {
-                clearInterval(this.progressInterval);
-              }
-            }, 16); // ~60fps
-          }, this.config.leftClickHoldDelay);
-
-          holdTimerForLeftClick = setTimeout(() => {
-            this.#callDialog(event);
-            this.leftClickFeedbackElement.style.opacity = "0";
-            if (this.progressInterval) clearInterval(this.progressInterval);
-            if (this.visibilityDelayTimer)
-              clearTimeout(this.visibilityDelayTimer);
-          }, this.config.leftClickHoldTime);
         }
       });
 
