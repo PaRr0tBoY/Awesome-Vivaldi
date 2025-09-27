@@ -1,7 +1,7 @@
 :root {
   --mod-gap: 5px;
   --tabbar-border-radius: 17px;
-  --tabs-container-collapse-width: 7px;
+  --tabs-container-collapse-width: 7px; /* min width of main tabbar should not set lower than 6px, which will cause weird issue. */
   --tabs-container-expand-width: 300px;
   --tabs-subcontainer-collapse-width: 42px;
   --tabs-subcontainer-expand-width: 335px;
@@ -29,7 +29,6 @@ with a tab-stack. Which is why we need tab-stack no? */
     min-width var(--smooth-animation-speed) ease-out,
     max-width var(--smooth-animation-speed) ease-out !important;
   transition-delay: 0ms !important;
-  /* min width of main tabbar should not set lower than 6px, which will cause weird issue. */
   margin-top: -6px; /*You might not want this*/
   padding-top: var(--mod-gap) !important; /*You might not want this*/
   padding-bottom: var(--mod-gap) !important; /*You might not want this*/
@@ -498,7 +497,9 @@ body:has(.button-popup) #tabs-container.left:not(:hover) .toolbar-extensions {
 /* Auto-detect tabbar position and apply appropriate margins */
 
 /* Right tabbar margins */
-#browser:not(.fullscreen):has(#tabs-tabbar-container.right) .inner #webpage-stack {
+#browser:not(.fullscreen):has(#tabs-tabbar-container.right)
+  .inner
+  #webpage-stack {
   margin-right: var(--tabs-container-collapse-width);
   transition: margin-right var(--smooth-animation-speed) ease-out !important;
 }
@@ -527,7 +528,9 @@ body:has(.button-popup) #tabs-container.left:not(:hover) .toolbar-extensions {
 }
 
 /* Left tabbar margins */
-#browser:not(.fullscreen):has(#tabs-tabbar-container.left) .inner #webpage-stack {
+#browser:not(.fullscreen):has(#tabs-tabbar-container.left)
+  .inner
+  #webpage-stack {
   margin-left: var(--tabs-container-collapse-width);
   transition: margin-left var(--smooth-animation-speed) ease-out !important;
 }
@@ -536,7 +539,10 @@ body:has(.button-popup) #tabs-container.left:not(:hover) .toolbar-extensions {
   :has(#tabs-tabbar-container.left)
   .inner:has(#tabs-subcontainer:is(.left, .right))
   #webpage-stack {
-  margin-left: calc(var(--tabs-container-collapse-width) + var(--tabs-subcontainer-collapse-width));
+  margin-left: calc(
+    var(--tabs-container-collapse-width) +
+      var(--tabs-subcontainer-collapse-width)
+  );
 }
 
 #browser:not(.fullscreen) #tabs-tabbar-container.left ~ #webpage-stack {
@@ -546,5 +552,8 @@ body:has(.button-popup) #tabs-container.left:not(:hover) .toolbar-extensions {
 #browser:not(.fullscreen)
   #tabs-tabbar-container.left
   ~ #webpage-stack:has(#tabs-subcontainer.left) {
-  margin-left: calc(var(--tabs-container-collapse-width) + var(--tabs-subcontainer-collapse-width));
+  margin-left: calc(
+    var(--tabs-container-collapse-width) +
+      var(--tabs-subcontainer-collapse-width)
+  );
 }
