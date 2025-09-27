@@ -38,6 +38,7 @@ with a tab-stack. Which is why we need tab-stack no? */
   ) !important; /* Adjust the color here */
   box-sizing: border-box !important;
   position: relative !important;
+  resize: none !important;
 }
 
 /* Rounded corners: Adjust based on tab bar position and element order */
@@ -82,6 +83,7 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
   padding-right: var(--mod-gap) !important;
   background-color: var(--tabs-container-bg-color) !important;
   box-sizing: border-box !important;
+  resize: none !important;
 }
 
 /* Adjust expand width of main tabbar here */
@@ -96,6 +98,7 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
     --tabs-container-bg-color
   ) !important; /* Adjust the color here */
   box-sizing: border-box !important;
+  resize: none !important;
   /* transition-delay: 60ms !important; */
 }
 
@@ -121,6 +124,7 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
   /* Ensure subcontainer stays in correct position */
   position: relative !important;
   will-change: transform !important;
+  resize: none !important;
 }
 
 /* Adjust expand width of Secondary tabbar here */
@@ -140,6 +144,7 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
     --tabs-subcontainer-bg-color
   ) !important; /* Adjust the color here */
   box-sizing: border-box !important;
+  resize: none !important;
 }
 
 /* Tab bar styling */
@@ -175,6 +180,7 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
   display: flex !important;
   flex-direction: row !important;
   align-items: stretch !important;
+  resize: none !important;
 }
 
 /* Correct tab bar order: When right tab bar, main tab bar is on the right; when left tab bar, main tab bar is on the left */

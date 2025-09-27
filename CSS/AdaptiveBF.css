@@ -3,7 +3,7 @@
    ======================================== */
 
 /* Hide disabled forward/back navigation buttons */
-button.ToolbarButton-Button[disabled] {
+button.ToolbarButton-Button[disabled]:not([name="Divider"]) {
   display: none !important;
 }
 
