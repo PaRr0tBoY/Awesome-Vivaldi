@@ -3,13 +3,13 @@
  * Opens links in a dialog, either by key combinations, holding the middle mouse button or context menu
  * Forum link: https://forum.vivaldi.net/topic/92501/open-in-dialog-mod?_=1717490394230
  *
- * New feature: Long-press left click to open pop-up
- * - Holding left click for 400ms opens links in a pop-up dialog
+ * New feature: Long-press right click to open pop-up
+ * - Holding right click for 400ms opens links in a pop-up dialog
  * - Features a 200ms-delayed circular progress indicator to prevent accidental triggers
  * - Supports customization of progress ring size, stroke width, color and delay time
  * - Configuration options:
- *   - leftClickHoldTime: Total long-press duration (400ms)
- *   - leftClickHoldDelay: Delay before showing progress ring (200ms)
+ *   - rightClickHoldTime: Total long-press duration (400ms)
+ *   - rightClickHoldDelay: Delay before showing progress ring (200ms)
  *   - progressRingRadius: Progress ring radius (20px)
  *   - progressRingWidth: Progress ring stroke width (3px)
  *   - ringColor: Progress ring color ("default" for gradient or specific color value like "#ff0000")
@@ -20,8 +20,8 @@
       linkIconInteractionOnHover: true, // if false, you have to click the icon to show the dialog - if true, the dialog shows on mouseenter
       showIconDelay: 250, // set to 0 to disable - delays showing the icon on hovering a link
       showDialogOnHoverDelay: 100, // set to 0 to disable - delays showing the dialog on hovering the linkIcon
-      leftClickHoldTime: 400, // Long-press duration (in milliseconds) to open dialogTab
-      leftClickHoldDelay: 200, // Long-press the left button to delay the display of the progress ring (milliseconds)
+      rightClickHoldTime: 400, // Long-press duration (in milliseconds) to open dialogTab
+      rightClickHoldDelay: 200, // Long-press the right button to delay the display of the progress ring (milliseconds)
       progressRingRadius: 20, // Radius of the progress ring
       progressRingWidth: 3, // The line width of the progress ring
       ringColor: "#40E0D0", // Progress ring color: Specify a color value (e.g., "#ff0000") or use "default" for a gradient color.
@@ -198,6 +198,8 @@
             if (webviewId) {
               this.webviews.delete(webviewId);
             }
+            // 通知 link interaction handler 关闭完成
+            chrome.runtime.sendMessage({ type: 'dialog-closed' });
           },
           { once: true },
         );
@@ -628,7 +630,7 @@
       this.config = config;
 
       this.icon = null;
-      this.leftClickFeedbackElement = null;
+      this.rightClickFeedbackElement = null;
 
       this.timers = {
         showIcon: null,
@@ -636,9 +638,20 @@
         hideIcon: null,
       };
 
+      this.isLongPress = false; // 标记是否是长按操作
+      this.dialogTriggered = false; // 标志是否已触发 dialogTab
+
       window.addEventListener("beforeunload", this.#cleanup.bind(this));
 
       this.#initialize();
+
+      // 监听 dialog 关闭消息，重置状态
+      chrome.runtime.onMessage.addListener((message) => {
+        if (message.type === 'dialog-closed') {
+          this.dialogTriggered = false;
+          this.isLongPress = false;
+        }
+      });
     }
 
     /**
@@ -653,9 +666,9 @@
     }
 
     #cleanup() {
-      if (this.leftClickFeedbackElement) {
-        this.leftClickFeedbackElement.remove();
-        this.leftClickFeedbackElement = null;
+      if (this.rightClickFeedbackElement) {
+        this.rightClickFeedbackElement.remove();
+        this.rightClickFeedbackElement = null;
         this.progressCircle = null;
         this.progressCircumference = null;
       }
@@ -672,6 +685,10 @@
         clearTimeout(this.visibilityDelayTimer);
         this.visibilityDelayTimer = null;
       }
+
+      // 重置标志
+      this.dialogTriggered = false;
+      this.isLongPress = false;
     }
 
     /**
@@ -679,7 +696,7 @@
      */
     #setupMouseHandling() {
       let holdTimerForMiddleClick;
-      let holdTimerForLeftClick;
+      let holdTimerForRightClick;
 
       document.addEventListener("pointerdown", (event) => {
         // Check if the Ctrl key, Alt key, and mouse button were pressed
@@ -690,13 +707,16 @@
             () => this.#callDialog(event),
             500,
           );
-        } else if (event.button === 0) {
+        } else if (event.button === 2) {
           // 只有在链接上长按时才创建并显示进度条
           const link = this.#getLinkElement(event);
           if (link) {
-            if (!this.leftClickFeedbackElement) {
-              this.leftClickFeedbackElement = document.createElement("div");
-              this.leftClickFeedbackElement.style.cssText = `
+            // 标记这是一个长按操作
+            this.isLongPress = true;
+
+            if (!this.rightClickFeedbackElement) {
+              this.rightClickFeedbackElement = document.createElement("div");
+              this.rightClickFeedbackElement.style.cssText = `
                 position: fixed;
                 top: 50%;
                 left: 50%;
@@ -773,25 +793,25 @@
 
               svg.appendChild(bgCircle);
               svg.appendChild(progressCircle);
-              this.leftClickFeedbackElement.appendChild(svg);
+              this.rightClickFeedbackElement.appendChild(svg);
 
               this.progressCircle = progressCircle;
               this.progressCircumference = circumference;
 
-              document.body.appendChild(this.leftClickFeedbackElement);
+              document.body.appendChild(this.rightClickFeedbackElement);
             }
 
             const effectiveHoldTime =
-              this.config.leftClickHoldTime - this.config.leftClickHoldDelay;
+              this.config.rightClickHoldTime - this.config.rightClickHoldDelay;
 
             this.visibilityDelayTimer = setTimeout(() => {
               this.progressCircle.setAttribute(
                 "stroke-dashoffset",
                 this.progressCircumference,
               );
-              this.leftClickFeedbackElement.style.opacity = "1";
-              this.leftClickFeedbackElement.style.left = event.clientX + "px";
-              this.leftClickFeedbackElement.style.top = event.clientY + "px";
+              this.rightClickFeedbackElement.style.opacity = "1";
+              this.rightClickFeedbackElement.style.left = event.clientX + "px";
+              this.rightClickFeedbackElement.style.top = event.clientY + "px";
 
               const startTime = Date.now();
               this.progressInterval = setInterval(() => {
@@ -821,25 +841,27 @@
                   clearInterval(this.progressInterval);
                 }
               }, 16); // ~60fps
-            }, this.config.leftClickHoldDelay);
+            }, this.config.rightClickHoldDelay);
 
-            holdTimerForLeftClick = setTimeout(() => {
+            holdTimerForRightClick = setTimeout(() => {
+              event.preventDefault();
+              event.stopPropagation();
               this.#callDialog(event);
-              this.leftClickFeedbackElement.style.opacity = "0";
+              this.rightClickFeedbackElement.style.opacity = "0";
               if (this.progressInterval) clearInterval(this.progressInterval);
               if (this.visibilityDelayTimer)
                 clearTimeout(this.visibilityDelayTimer);
-            }, this.config.leftClickHoldTime);
+            }, this.config.rightClickHoldTime);
           }
         }
       });
 
       document.addEventListener("pointerup", (event) => {
         if (event.button === 1) clearTimeout(holdTimerForMiddleClick);
-        if (event.button === 0) {
-          clearTimeout(holdTimerForLeftClick);
-          if (this.leftClickFeedbackElement && this.progressCircle) {
-            this.leftClickFeedbackElement.style.opacity = "0";
+        if (event.button === 2) {
+          clearTimeout(holdTimerForRightClick);
+          if (this.rightClickFeedbackElement && this.progressCircle) {
+            this.rightClickFeedbackElement.style.opacity = "0";
             this.progressCircle.setAttribute(
               "stroke-dashoffset",
               this.progressCircumference || "157",
@@ -936,8 +958,22 @@
       let link = this.#getLinkElement(event);
       if (link) {
         event.preventDefault();
+        event.stopPropagation();
+        this.dialogTriggered = true;
         this.#sendDialogMessage(link.href);
       }
+    }
+
+    /**
+     * 阻止所有点击事件，防止误触打开原链接
+     */
+    preventAllClicks() {
+      // 只阻止下一次点击事件（仅一次）
+      document.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+      }, { capture: true, once: true });
     }
 
     #createIconStyle() {

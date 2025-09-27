@@ -3,7 +3,9 @@
    ======================================== */
 
 /* Hide disabled forward/back navigation buttons */
-button.ToolbarButton-Button[disabled]:not([name="Divider"]) {
+button.ToolbarButton-Button[disabled]:not([name="Divider"]):not(
+    .button-toolbar.toolbar-spacer-flexible
+  ) {
   display: none !important;
 }
 

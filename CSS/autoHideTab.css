@@ -12,7 +12,7 @@
   --smooth-animation-speed: 280ms;
   --transition-delay-time: 60ms;
   --tabs-container-bg-color: rgba(25, 30, 25, 0.9);
-  --tabs-subcontainer-bg-color: rgba(29, 50, 33, 0.81);
+  --tabs-subcontainer-bg-color: rgba(29, 50, 33, 0.8);
   /*--tabs-subcontainer-bg-color: var(--colorAccentFg);*/
 }
 /* ========================================
@@ -97,10 +97,12 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
   margin-top: var(--tabs-margin-top) !important;
   margin-bottom: var(--tabs-margin-bottom) !important;
   background-color: var(--tabs-container-bg-color) !important;
+  border-radius: 0 !important;
   transition:
     min-width var(--smooth-animation-speed) ease-out,
     max-width var(--smooth-animation-speed) ease-out,
     background-color var(--smooth-animation-speed) ease-out,
+    border-radius var(--smooth-animation-speed) ease-out,
     transform var(--smooth-animation-speed) ease-out !important;
   /* transition-delay: var(--fast-animation-speed) !important; */
   padding: var(--mod-gap) 0 var(--mod-gap) 0 !important;
@@ -120,7 +122,10 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
   min-width: var(--tabs-subcontainer-expand-width) !important;
   max-width: var(--tabs-subcontainer-expand-width) !important;
   background-color: var(--tabs-subcontainer-bg-color) !important;
+  border-radius: var(--tabbar-border-radius) 0px 0px var(--tabbar-border-radius) !important;
+
   transition:
+    border-radius var(--smooth-animation-speed) ease-out,
     min-width var(--smooth-animation-speed) ease-out,
     max-width var(--smooth-animation-speed) ease-out,
     background-color var(--smooth-animation-speed) ease-out,
@@ -150,7 +155,7 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
   background-color: transparent !important;
   background-image: none !important;
   border: none !important;
-  border-radius: var(--tabbar-border-radius) !important;
+  border-radius: var(--tabbar-border-radius);
   /*border-color: black !important;
   border-width: 1px !important;*/
   /* Written By Claude */
@@ -171,10 +176,6 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
 /* Rounded corners for right tab bar */
 #tabs-tabbar-container.right #tabs-container.right {
   border-radius: 0px var(--tabbar-border-radius) var(--tabbar-border-radius) 0px !important;
-}
-
-#tabs-tabbar-container.right #tabs-subcontainer.right {
-  border-radius: var(--tabbar-border-radius) 0px 0px var(--tabbar-border-radius) !important;
 }
 
 /* Rounded corners for left tab bar */

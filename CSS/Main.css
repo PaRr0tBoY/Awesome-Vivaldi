@@ -271,9 +271,9 @@ button[title="显示输入记录"] {
    ======================================== */
 
 /* Toolbar command button icons */
-.button-toolbar.toolbar-command .button-icon svg path {
+/*.button-toolbar.toolbar-command .button-icon svg path {
   fill: #aec7bf !important;
-}
+}*/
 
 /* Address field center alignment */
 #urlFieldInput {
@@ -290,6 +290,9 @@ button[title="显示输入记录"] {
   transform: translateX(-50%);
 }
 
+[class*="button-popup"] {
+  border-radius: 12px !important;
+}
 /* ========================================
    QUICK COMMAND MODAL
    ======================================== */

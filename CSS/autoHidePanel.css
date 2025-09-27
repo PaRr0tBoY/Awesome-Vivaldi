@@ -2,24 +2,18 @@
    AUTO-HIDE PANELS
    ======================================== */
 
-#panels-container.left {
+#panels-container {
   width: 6px !important;
   transition: width 280ms ease-out !important;
 }
 
-#panels-container.left:hover {
+#panels-container:hover {
   width: 40px !important;
 }
 
-#panels-container.left:not(:hover) #panels {
-  opacity: 0;
-  visibility: hidden;
-  transition:
-    opacity 280ms ease-out,
-    visibility 280ms ease-out;
-}
-
-#panels-container.left:hover #panels {
+body:has(.toolbar-editor) #panels-container:not(:hover),
+body:has(.toolbar-editor) #panels-container:not(:hover) #panels {
+  width: 40px !important;
   opacity: 1;
   visibility: visible;
   transition:
@@ -27,29 +21,7 @@
     visibility 280ms ease-out;
 }
 
-/*#panels-container ~ #webpage-stack {
-  margin-right: 6px;
-  transition: margin-right 280ms ease-out;
-}
-
-#panels-container:hover ~ #webpage-stack {
-  margin-right: 40px;
-}*/
-
-/* Right panels auto-hide */
-#panels-container.right {
-  /*right: 6px !important;*/
-  width: 6px !important;
-  transition:
-    width 280ms ease-out,
-    right 280ms ease-out !important;
-}
-
-#panels-container.right:hover {
-  width: 40px !important;
-}
-
-#panels-container.right:not(:hover) #panels {
+#panels-container:not(:hover) #panels {
   opacity: 0;
   visibility: hidden;
   transition:
@@ -57,7 +29,7 @@
     visibility 280ms ease-out;
 }
 
-#panels-container.right:hover #panels {
+#panels-container:hover #panels {
   opacity: 1;
   visibility: visible;
   transition:
