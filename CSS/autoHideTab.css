@@ -3,6 +3,8 @@
   --tabbar-border-radius: 17px;
   --tabs-container-collapse-width: 7px; /* min width of main tabbar should not set lower than 6px, which will cause weird issue. */
   --tabs-container-expand-width: 300px;
+  --tabs-margin-top: -5px; /*-5px*/
+  --tabs-margin-bottom: 0px; /*-5px*/
   --tabs-subcontainer-collapse-width: 42px;
   --tabs-subcontainer-expand-width: 335px;
   --fast-animation-speed: 70ms;
@@ -10,11 +12,20 @@
   --smooth-animation-speed: 280ms;
   --transition-delay-time: 60ms;
   --tabs-container-bg-color: rgba(25, 30, 25, 0.9);
-  --tabs-subcontainer-bg-color: rgba(29, 40, 33, 0.81);
+  --tabs-subcontainer-bg-color: rgba(29, 50, 33, 0.81);
+  /*--tabs-subcontainer-bg-color: var(--colorAccentFg);*/
 }
 /* ========================================
    AUTO-HIDE TABBAR
    ======================================== */
+
+/* Disabled tabbar resize */
+.SlideBar {
+  display: none !important;
+  /*pointer-events: none !important;
+  cursor: default !important;*/
+}
+
 /* Main Tabbar*/
 
 /* Adjust hide animation and width of main tabbar here */
@@ -25,49 +36,17 @@ with a tab-stack. Which is why we need tab-stack no? */
 #tabs-container.left {
   min-width: var(--tabs-container-collapse-width) !important;
   max-width: var(--tabs-container-collapse-width) !important;
+  background-color: var(--tabs-container-bg-color) !important;
   transition:
+    background-color var(--smooth-animation-speed) ease-out,
     min-width var(--smooth-animation-speed) ease-out,
     max-width var(--smooth-animation-speed) ease-out !important;
   transition-delay: 0ms !important;
-  margin-top: -6px; /*You might not want this*/
-  padding-top: var(--mod-gap) !important; /*You might not want this*/
-  padding-bottom: var(--mod-gap) !important; /*You might not want this*/
-  padding-right: var(--mod-gap) !important; /*You might not want this*/
-  background-color: var(
-    --tabs-container-bg-color
-  ) !important; /* Adjust the color here */
+  margin-top: var(--tabs-margin-top) !important;
+  margin-bottom: var(--tabs-margin-bottom) !important;
+  padding: var(--mod-gap) var(--mod-gap) var(--mod-gap) 0 !important;
   box-sizing: border-box !important;
   position: relative !important;
-  resize: none !important;
-}
-
-/* Rounded corners: Adjust based on tab bar position and element order */
-/* Rounded corners for right tab bar */
-#tabs-tabbar-container.right #tabs-container.right {
-  border-radius: 0px var(--tabbar-border-radius) var(--tabbar-border-radius) 0px !important;
-}
-
-#tabs-tabbar-container.right #tabs-subcontainer.right {
-  border-radius: var(--tabbar-border-radius) 0px 0px var(--tabbar-border-radius) !important;
-}
-
-/* Rounded corners for left tab bar */
-#tabs-tabbar-container.left #tabs-container.left {
-  border-radius: var(--tabbar-border-radius) 0px 0px var(--tabbar-border-radius) !important;
-}
-
-#tabs-tabbar-container.left #tabs-subcontainer.left {
-  border-radius: 0px var(--tabbar-border-radius) var(--tabbar-border-radius) 0px !important;
-}
-
-/* Rounded corners when only main tab bar is present */
-#tabs-tabbar-container.right:not(:has(#tabs-subcontainer))
-  #tabs-container.right {
-  border-radius: var(--tabbar-border-radius) !important;
-}
-
-#tabs-tabbar-container.left:not(:has(#tabs-subcontainer)) #tabs-container.left {
-  border-radius: var(--tabbar-border-radius) !important;
 }
 
 /* Enhanced conditions for keeping tabbar expanded */
@@ -78,12 +57,15 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.right,
 body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
   min-width: var(--tabs-container-expand-width) !important;
   max-width: var(--tabs-container-expand-width) !important;
-  padding-top: var(--mod-gap) !important;
-  padding-bottom: var(--mod-gap) !important;
-  padding-right: var(--mod-gap) !important;
-  background-color: var(--tabs-container-bg-color) !important;
+  background-color: var(--tabs-subcontainer-bg-color) !important;
+  transition:
+    background-color var(--smooth-animation-speed) ease-out,
+    min-width var(--smooth-animation-speed) ease-out,
+    max-width var(--smooth-animation-speed) ease-out !important;
+  margin-top: var(--tabs-margin-top) !important;
+  margin-bottom: var(--tabs-margin-bottom) !important;
+  padding: var(--mod-gap) var(--mod-gap) var(--mod-gap) 0 !important;
   box-sizing: border-box !important;
-  resize: none !important;
 }
 
 /* Adjust expand width of main tabbar here */
@@ -91,14 +73,15 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
 #tabs-container.right:hover {
   min-width: var(--tabs-container-expand-width) !important;
   max-width: var(--tabs-container-expand-width) !important;
-  padding-top: var(--mod-gap) !important; /*You might not want this*/
-  padding-bottom: var(--mod-gap) !important; /*You might not want this*/
-  padding-right: var(--mod-gap) !important; /*You might not want this*/
-  background-color: var(
-    --tabs-container-bg-color
-  ) !important; /* Adjust the color here */
+  background-color: var(--tabs-subcontainer-bg-color) !important;
+  transition:
+    background-color var(--smooth-animation-speed) ease-out,
+    min-width var(--smooth-animation-speed) ease-out,
+    max-width var(--smooth-animation-speed) ease-out !important;
+  margin-top: var(--tabs-margin-top) !important;
+  margin-bottom: var(--tabs-margin-bottom) !important;
+  padding: var(--mod-gap) var(--mod-gap) var(--mod-gap) 0 !important;
   box-sizing: border-box !important;
-  resize: none !important;
   /* transition-delay: 60ms !important; */
 }
 
@@ -109,22 +92,24 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
 #tabs-subcontainer.left {
   min-width: var(--tabs-subcontainer-collapse-width) !important;
   max-width: var(--tabs-subcontainer-collapse-width) !important;
+  margin-top: var(--tabs-margin-top) !important;
+  margin-bottom: var(--tabs-margin-bottom) !important;
+  background-color: var(--tabs-container-bg-color) !important;
   transition:
     min-width var(--smooth-animation-speed) ease-out,
     max-width var(--smooth-animation-speed) ease-out,
+    background-color var(--smooth-animation-speed) ease-out,
     transform var(--smooth-animation-speed) ease-out !important;
   /* transition-delay: var(--fast-animation-speed) !important; */
-  margin-top: -6px !important; /*You might not want this*/
-  padding-top: var(--mod-gap) !important; /*You might not want this*/
-  padding-bottom: var(--mod-gap) !important; /*You might not want this*/
-  background-color: var(
+  padding: var(--mod-gap) 0 var(--mod-gap) 0 !important;
+  /*background-color: var(
     --tabs-subcontainer-bg-color
-  ) !important; /* Adjust the color here */
+  ) !important;*/
+  background-color: var(--tabs-container-bg-color) !important;
   box-sizing: border-box !important;
   /* Ensure subcontainer stays in correct position */
   position: relative !important;
   will-change: transform !important;
-  resize: none !important;
 }
 
 /* Adjust expand width of Secondary tabbar here */
@@ -132,19 +117,17 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
 #tabs-subcontainer.right:hover {
   min-width: var(--tabs-subcontainer-expand-width) !important;
   max-width: var(--tabs-subcontainer-expand-width) !important;
+  background-color: var(--tabs-subcontainer-bg-color) !important;
   transition:
     min-width var(--smooth-animation-speed) ease-out,
     max-width var(--smooth-animation-speed) ease-out,
+    background-color var(--smooth-animation-speed) ease-out,
     transform var(--smooth-animation-speed) ease-out !important;
   transition-delay: 0ms !important;
-  margin-top: -6px;
-  padding-top: var(--mod-gap) !important; /*You might not want this*/
-  padding-bottom: var(--mod-gap) !important; /*You might not want this*/
-  background-color: var(
-    --tabs-subcontainer-bg-color
-  ) !important; /* Adjust the color here */
+  margin-top: var(--tabs-margin-top) !important;
+  margin-bottom: var(--tabs-margin-bottom) !important;
+  padding: var(--mod-gap) 0 var(--mod-gap) 0 !important;
   box-sizing: border-box !important;
-  resize: none !important;
 }
 
 /* Tab bar styling */
@@ -180,7 +163,35 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
   display: flex !important;
   flex-direction: row !important;
   align-items: stretch !important;
-  resize: none !important;
+}
+
+/* Rounded corners: Adjust based on tab bar position and element order */
+/* Rounded corners for right tab bar */
+#tabs-tabbar-container.right #tabs-container.right {
+  border-radius: 0px var(--tabbar-border-radius) var(--tabbar-border-radius) 0px !important;
+}
+
+#tabs-tabbar-container.right #tabs-subcontainer.right {
+  border-radius: var(--tabbar-border-radius) 0px 0px var(--tabbar-border-radius) !important;
+}
+
+/* Rounded corners for left tab bar */
+#tabs-tabbar-container.left #tabs-container.left {
+  border-radius: var(--tabbar-border-radius) 0px 0px var(--tabbar-border-radius) !important;
+}
+
+#tabs-tabbar-container.left #tabs-subcontainer.left {
+  border-radius: 0px var(--tabbar-border-radius) var(--tabbar-border-radius) 0px !important;
+}
+
+/* Rounded corners when only main tab bar is present */
+#tabs-tabbar-container.right:not(:has(#tabs-subcontainer))
+  #tabs-container.right {
+  border-radius: var(--tabbar-border-radius) !important;
+}
+
+#tabs-tabbar-container.left:not(:has(#tabs-subcontainer)) #tabs-container.left {
+  border-radius: var(--tabbar-border-radius) !important;
 }
 
 /* Correct tab bar order: When right tab bar, main tab bar is on the right; when left tab bar, main tab bar is on the left */

@@ -9,7 +9,8 @@
   --addressbar-height: 36px;
   --window-button-scale: 0.8;
   --window-button-opacity: 0.3;
-  --tab-padding: calc(var(--window-border) / 2);
+  /*--tab-padding: calc(var(--window-border) / 2);*/
+  --tab-padding: 0;
   --colorToviTransparent: transparent;
 
   /* Shadow Effects */
