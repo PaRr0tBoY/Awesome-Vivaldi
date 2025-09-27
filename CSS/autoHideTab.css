@@ -53,6 +53,8 @@ with a tab-stack. Which is why we need tab-stack no? */
 /* When StackEditor modal is present or AddressField is focused */
 body:has(.button-popup) #tabs-container.right,
 body:has(.button-popup) #tabs-container.left,
+body:has(.toolbar-editor) #tabs-container.right,
+body:has(.toolbar-editor) #tabs-container.left,
 body:has(.UrlBar-AddressField:focus-within) #tabs-container.right,
 body:has(.UrlBar-AddressField:focus-within) #tabs-container.left {
   min-width: var(--tabs-container-expand-width) !important;
@@ -236,6 +238,7 @@ And of course you don't need those lockers icon when your tabbar expand on hover
 .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget {
   margin-bottom: -35px !important;
 }
+
 /* ========================================
    HIDE ELEMENTS ON HOVER
    ======================================== */
@@ -286,6 +289,12 @@ body:has(.UrlBar-AddressField:focus-within)
 }
 
 /* Show tabs when popup is present or AddressField is focused */
+body:has(.toolbar-editor) #tabs-container.right:not(:hover) .tab,
+body:has(.toolbar-editor) #tabs-container.left:not(:hover) .tab,
+body:has(.toolbar-editor) #tabs-container.right:not(:hover) .tab-position,
+body:has(.toolbar-editor) #tabs-container.left:not(:hover) .tab-position,
+body:has(.toolbar-editor) #tabs-container.right:not(:hover) .separator,
+body:has(.toolbar-editor) #tabs-container.left:not(:hover) .separator,
 body:has(.button-popup) #tabs-container.right:not(:hover) .tab,
 body:has(.button-popup) #tabs-container.left:not(:hover) .tab,
 body:has(.button-popup) #tabs-container.right:not(:hover) .tab-position,
@@ -416,6 +425,20 @@ body:has(.button-popup)
   #tabs-container.left:not(:hover)
   .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
 /*==========================================================================*/
+body:has(.toolbar-editor)
+  #tabs-container.right:not(:hover)
+  .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
+body:has(.toolbar-editor)
+  #tabs-container.left:not(:hover)
+  .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
+/*==========================================================================*/
+body:has(.toolbar-editor)
+  #tabs-container.right:not(:hover)
+  .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
+body:has(.toolbar-editor)
+  #tabs-container.left:not(:hover)
+  .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
+/*==========================================================================*/
 /*==========================================================================*/
 body:has(.UrlBar-AddressField:focus-within)
   #tabs-container.right:not(:hover)
@@ -450,7 +473,9 @@ body:has(.UrlBar-AddressField:focus-within)
   .toolbar-extensions,
 /*==========================================================================*/
 body:has(.button-popup) #tabs-container.right:not(:hover) .toolbar-extensions,
-body:has(.button-popup) #tabs-container.left:not(:hover) .toolbar-extensions {
+body:has(.button-popup) #tabs-container.left:not(:hover) .toolbar-extensions,
+body:has(.toolbar-editor) #tabs-container.right:not(:hover) .toolbar-extensions,
+body:has(.toolbar-editor) #tabs-container.left:not(:hover) .toolbar-extensions {
   min-width: auto !important;
   max-width: 300px !important;
   width: initial !important;
