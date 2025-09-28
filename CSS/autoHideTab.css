@@ -60,7 +60,8 @@ with a tab-stack. Which is why we need tab-stack no? */
 }
 
 /* Adjust expand width of main tabbar here */
-#tabs-container:hover {
+#tabs-container:hover,
+#tabs-container.drag-over {
   min-width: var(--tabs-container-expand-width) !important;
   max-width: var(--tabs-container-expand-width) !important;
   background-color: var(--tabbar-bg-color-expand) !important;
@@ -77,11 +78,13 @@ with a tab-stack. Which is why we need tab-stack no? */
   /* transition-delay: 60ms !important; */
 }
 
-#tabs-tabbar-container:not(:has(#tabs-subcontainer)) #tabs-container.left:hover{
+#tabs-tabbar-container:not(:has(#tabs-subcontainer)) #tabs-container.left:hover,
+#tabs-tabbar-container:not(:has(#tabs-subcontainer)) #tabs-container.left.drag-over {
   border-radius: 0px var(--tabbar-border-radius-expand) var(--tabbar-border-radius-expand) 0px !important;
 }
 
-#tabs-tabbar-container:not(:has(#tabs-subcontainer)) #tabs-container.right:hover {
+#tabs-tabbar-container:not(:has(#tabs-subcontainer)) #tabs-container.right:hover,
+#tabs-tabbar-container:not(:has(#tabs-subcontainer)) #tabs-container.right.drag-over {
   border-radius: var(--tabbar-border-radius-expand) 0px 0px var(--tabbar-border-radius-expand) !important;
 }
 
@@ -106,10 +109,12 @@ with a tab-stack. Which is why we need tab-stack no? */
   position: relative !important;
 }
 
-#tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer.right{
+#tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer.right,
+#tabs-tabbar-container:has(#tabs-container.drag-over) #tabs-subcontainer.right {
   border-radius: var(--tabbar-border-radius-expand) 0px 0px var(--tabbar-border-radius-expand) !important;
 }
-#tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer.left{
+#tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer.left,
+#tabs-tabbar-container:has(#tabs-container.drag-over) #tabs-subcontainer.left {
   border-radius: 0px var(--tabbar-border-radius-expand) var(--tabbar-border-radius-expand) 0px !important;
 }
 
@@ -135,19 +140,26 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container {
 
 body:has(.button-popup) #tabs-container.left:hover,
 body:has(.toolbar-editor) #tabs-container.left:hover,
-body:has(.UrlBar-AddressField:focus-within) #tabs-container.left:hover {
+body:has(.UrlBar-AddressField:focus-within) #tabs-container.left:hover,
+body:has(.button-popup) #tabs-container.left.drag-over,
+body:has(.toolbar-editor) #tabs-container.left.drag-over,
+body:has(.UrlBar-AddressField:focus-within) #tabs-container.left.drag-over {
   border-radius: 0 var(--tabbar-border-radius-expand) var(--tabbar-border-radius-expand) 0 !important;
 }
 
 body:has(.button-popup) #tabs-container.right:hover,
 body:has(.toolbar-editor) #tabs-container.right:hover,
-body:has(.UrlBar-AddressField:focus-within) #tabs-container.right:hover {
+body:has(.UrlBar-AddressField:focus-within) #tabs-container.right:hover,
+body:has(.button-popup) #tabs-container.right.drag-over,
+body:has(.toolbar-editor) #tabs-container.right.drag-over,
+body:has(.UrlBar-AddressField:focus-within) #tabs-container.right.drag-over {
   border-radius: var(--tabbar-border-radius-expand) 0 0 var(--tabbar-border-radius-expand) !important;
 }
 
 /* ================================================================================= */
 /* Adjust expand width of Secondary tabbar here */
-#tabs-subcontainer:hover {
+#tabs-subcontainer:hover,
+#tabs-subcontainer.drag-over {
   min-width: var(--tabs-subcontainer-expand-width) !important;
   max-width: var(--tabs-subcontainer-expand-width) !important;
   background-color: var(--tabbar-bg-color-expand) !important;
@@ -164,22 +176,25 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.right:hover {
   box-sizing: border-box !important;
 }
 
-#tabs-subcontainer.left:hover{
+#tabs-subcontainer.left:hover,
+#tabs-subcontainer.left.drag-over {
   border-radius: 0px var(--tabbar-border-radius-expand) var(--tabbar-border-radius-expand) 0px !important;
 }
-#tabs-subcontainer.right:hover {
+#tabs-subcontainer.right:hover,
+#tabs-subcontainer.right.drag-over {
   border-radius: var(--tabbar-border-radius-expand) 0px 0px var(--tabbar-border-radius-expand) !important;
 }
 
-body:has(.button-popup) #tabs-subcontainer.left:not(:hover),
-body:has(.toolbar-editor) #tabs-subcontainer.left:not(:hover),
-body:has(.UrlBar-AddressField:focus-within) #tabs-subcontainer.left:not(:hover){
+body:has(.button-popup) #tabs-subcontainer.left:not(:hover):not(.drag-over),
+body:has(.toolbar-editor) #tabs-subcontainer.left:not(:hover):not(.drag-over),
+body:has(.UrlBar-AddressField:focus-within) #tabs-subcontainer.left:not(:hover):not(.drag-over) {
   border-radius: 0 var(--tabbar-border-radius-expand) var(--tabbar-border-radius-expand) 0 !important;
 }
 
-body:has(.button-popup) #tabs-subcontainer.right:not(:hover),
-body:has(.toolbar-editor) #tabs-subcontainer.right:not(:hover),
-body:has(.UrlBar-AddressField:focus-within) #tabs-subcontainer.right:hover {
+body:has(.button-popup) #tabs-subcontainer.right:not(:hover):not(.drag-over),
+body:has(.toolbar-editor) #tabs-subcontainer.right:not(:hover):not(.drag-over),
+body:has(.UrlBar-AddressField:focus-within) #tabs-subcontainer.right:hover,
+body:has(.UrlBar-AddressField:focus-within) #tabs-subcontainer.right.drag-over {
   border-radius: var(--tabbar-border-radius-expand) 0 0 var(--tabbar-border-radius-expand) !important;
 }
 
@@ -293,6 +308,7 @@ Codes below is important. Help avoid issue when
 
 /* Show tab-strip when tabs-container is hovered or special conditions met */
 #tabs-container:hover .tab-strip.overflow,
+#tabs-container.drag-over .tab-strip.overflow,
 body:has(.button-popup) #tabs-container .tab-strip.overflow,
 body:has(.UrlBar-AddressField:focus-within)
   #tabs-container
@@ -313,10 +329,10 @@ body:has(.UrlBar-AddressField:focus-within)
   }
 }*/
 
-/* show tabs when hover */
-#tabs-container:not(:hover) .tab,
-#tabs-container:not(:hover) .tab-position,
-#tabs-container:not(:hover) .separator {
+/* show tabs when hover or drag over */
+#tabs-container:not(:hover):not(.drag-over) .tab,
+#tabs-container:not(:hover):not(.drag-over) .tab-position,
+#tabs-container:not(:hover):not(.drag-over) .separator {
   opacity: 0 !important;
   pointer-events: none !important;
   transition: opacity var(--animation-speed) ease-in !important;
@@ -324,20 +340,20 @@ body:has(.UrlBar-AddressField:focus-within)
 }
 
 /* Show tabs when popup is present or AddressField is focused */
-body:has(.toolbar-editor) #tabs-container:not(:hover) .tab,
-body:has(.toolbar-editor) #tabs-container:not(:hover) .tab-position,
-body:has(.toolbar-editor) #tabs-container:not(:hover) .separator,
-body:has(.button-popup) #tabs-container:not(:hover) .tab,
-body:has(.button-popup) #tabs-container:not(:hover) .tab-position,
-body:has(.button-popup) #tabs-container:not(:hover) .separator,
+body:has(.toolbar-editor) #tabs-container:not(:hover):not(.drag-over) .tab,
+body:has(.toolbar-editor) #tabs-container:not(:hover):not(.drag-over) .tab-position,
+body:has(.toolbar-editor) #tabs-container:not(:hover):not(.drag-over) .separator,
+body:has(.button-popup) #tabs-container:not(:hover):not(.drag-over) .tab,
+body:has(.button-popup) #tabs-container:not(:hover):not(.drag-over) .tab-position,
+body:has(.button-popup) #tabs-container:not(:hover):not(.drag-over) .separator,
 body:has(.UrlBar-AddressField:focus-within)
-  #tabs-container:not(:hover)
+  #tabs-container:not(:hover):not(.drag-over)
   .tab,
 body:has(.UrlBar-AddressField:focus-within)
-  #tabs-container:not(:hover)
+  #tabs-container:not(:hover):not(.drag-over)
   .tab-position,
 body:has(.UrlBar-AddressField:focus-within)
-  #tabs-container:not(:hover)
+  #tabs-container:not(:hover):not(.drag-over)
   .separator {
   opacity: 1 !important;
   pointer-events: auto !important;
@@ -347,7 +363,10 @@ body:has(.UrlBar-AddressField:focus-within)
 
 #tabs-container:hover .tab,
 #tabs-container:hover .tab-position,
-#tabs-container:hover .separator {
+#tabs-container:hover .separator,
+#tabs-container.drag-over .tab,
+#tabs-container.drag-over .tab-position,
+#tabs-container.drag-over .separator {
   opacity: 1 !important;
   pointer-events: auto !important;
   transition: opacity var(--animation-speed) ease-out !important;
@@ -363,10 +382,10 @@ Show toolbar buttons when popup is present or AddressField is focused
 #tabs-container.left:not(:hover) .button-toolbar.toolbar-spacer-flexible,
 #tabs-container.right:not(:hover) .ToolbarButton-Button,
 #tabs-container.left:not(:hover) .ToolbarButton-Button,*/
-#tabs-container:not(:hover) .toolbar-extensions,
-#tabs-container:not(:hover)
+#tabs-container:not(:hover):not(.drag-over) .toolbar-extensions,
+#tabs-container:not(:hover):not(.drag-over)
   .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
-#tabs-container:not(:hover)
+#tabs-container:not(:hover):not(.drag-over)
   .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget {
   max-width: 0 !important;
   min-width: 0 !important;
@@ -384,7 +403,8 @@ Show toolbar buttons when popup is present or AddressField is focused
   transition-delay: var(--transition-delay-time) !important;
 }
 
-#tabs-container:hover .toolbar-extensions {
+#tabs-container:hover .toolbar-extensions,
+#tabs-container.drag-over .toolbar-extensions {
   max-width: 300px !important;
   transition: max-width var(--animation-speed) ease-out !important;
   transition-delay: var(--transition-delay-time) !important;
@@ -422,22 +442,22 @@ body:has(.UrlBar-AddressField:focus-within)
   #tabs-container.left:not(:hover)
   .ToolbarButton-Button,*/
 body:has(.button-popup)
-  #tabs-container:not(:hover)
+  #tabs-container:not(:hover):not(.drag-over)
   .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
 body:has(.button-popup)
-  #tabs-container:not(:hover)
+  #tabs-container:not(:hover):not(.drag-over)
   .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
 body:has(.toolbar-editor)
-  #tabs-container:not(:hover)
+  #tabs-container:not(:hover):not(.drag-over)
   .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
 body:has(.toolbar-editor)
-  #tabs-container:not(:hover)
+  #tabs-container:not(:hover):not(.drag-over)
   .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
 body:has(.UrlBar-AddressField:focus-within)
-  #tabs-container:not(:hover)
+  #tabs-container:not(:hover):not(.drag-over)
   .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
 body:has(.UrlBar-AddressField:focus-within)
-  #tabs-container:not(:hover)
+  #tabs-container:not(:hover):not(.drag-over)
   .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget{
   min-width: auto !important;
   max-width: 300px !important;
@@ -451,11 +471,11 @@ body:has(.UrlBar-AddressField:focus-within)
 
 /*==========================================================================*/
 body:has(.UrlBar-AddressField:focus-within)
-  #tabs-container:not(:hover)
+  #tabs-container:not(:hover):not(.drag-over)
   .toolbar-extensions,
 /*==========================================================================*/
-body:has(.button-popup) #tabs-container:not(:hover) .toolbar-extensions,
-body:has(.toolbar-editor) #tabs-container:not(:hover) .toolbar-extensions {
+body:has(.button-popup) #tabs-container:not(:hover):not(.drag-over) .toolbar-extensions,
+body:has(.toolbar-editor) #tabs-container:not(:hover):not(.drag-over) .toolbar-extensions {
   min-width: auto !important;
   max-width: 300px !important;
   width: initial !important;
