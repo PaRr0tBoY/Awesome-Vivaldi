@@ -39,8 +39,7 @@
 /* I set its width very small since I think this has more of a "hidden" vibe,
 and I figure people may want to focus more on sub-stack when they're working on a certain subject
 with a tab-stack. Which is why we need tab-stack no? */
-#tabs-container.right,
-#tabs-container.left {
+#tabs-container {
   min-width: var(--tabs-container-collapse-width) !important;
   max-width: var(--tabs-container-collapse-width) !important;
   margin-top: var(--tabbar-margin-top) !important;
@@ -61,8 +60,7 @@ with a tab-stack. Which is why we need tab-stack no? */
 }
 
 /* Adjust expand width of main tabbar here */
-#tabs-container.left:hover,
-#tabs-container.right:hover {
+#tabs-container:hover {
   min-width: var(--tabs-container-expand-width) !important;
   max-width: var(--tabs-container-expand-width) !important;
   background-color: var(--tabbar-bg-color-expand) !important;
@@ -89,8 +87,7 @@ with a tab-stack. Which is why we need tab-stack no? */
 
 /* SubStack / Secondary Tabbar */
 
-#tabs-subcontainer.right,
-#tabs-subcontainer.left {
+#tabs-subcontainer {
   min-width: var(--tabs-subcontainer-collapse-width) !important;
   max-width: var(--tabs-subcontainer-collapse-width) !important;
   margin-top: var(--tabbar-margin-top) !important;
@@ -150,8 +147,7 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.right:hover {
 
 /* ================================================================================= */
 /* Adjust expand width of Secondary tabbar here */
-#tabs-subcontainer.left:hover,
-#tabs-subcontainer.right:hover {
+#tabs-subcontainer:hover {
   min-width: var(--tabs-subcontainer-expand-width) !important;
   max-width: var(--tabs-subcontainer-expand-width) !important;
   background-color: var(--tabbar-bg-color-expand) !important;
@@ -188,8 +184,7 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-subcontainer.right:hover {
 }
 
 /* Fix container bouncing: Add smooth transition to overall container */
-#tabs-tabbar-container.left,
-#tabs-tabbar-container.right {
+#tabs-tabbar-container {
   width: auto !important;
   min-width: var(
     --tabs-container-collapse-width
@@ -319,12 +314,9 @@ body:has(.UrlBar-AddressField:focus-within)
 }*/
 
 /* show tabs when hover */
-#tabs-container.right:not(:hover) .tab,
-#tabs-container.left:not(:hover) .tab,
-#tabs-container.right:not(:hover) .tab-position,
-#tabs-container.left:not(:hover) .tab-position,
-#tabs-container.right:not(:hover) .separator,
-#tabs-container.left:not(:hover) .separator {
+#tabs-container:not(:hover) .tab,
+#tabs-container:not(:hover) .tab-position,
+#tabs-container:not(:hover) .separator {
   opacity: 0 !important;
   pointer-events: none !important;
   transition: opacity var(--animation-speed) ease-in !important;
@@ -332,35 +324,20 @@ body:has(.UrlBar-AddressField:focus-within)
 }
 
 /* Show tabs when popup is present or AddressField is focused */
-body:has(.toolbar-editor) #tabs-container.right:not(:hover) .tab,
-body:has(.toolbar-editor) #tabs-container.left:not(:hover) .tab,
-body:has(.toolbar-editor) #tabs-container.right:not(:hover) .tab-position,
-body:has(.toolbar-editor) #tabs-container.left:not(:hover) .tab-position,
-body:has(.toolbar-editor) #tabs-container.right:not(:hover) .separator,
-body:has(.toolbar-editor) #tabs-container.left:not(:hover) .separator,
-body:has(.button-popup) #tabs-container.right:not(:hover) .tab,
-body:has(.button-popup) #tabs-container.left:not(:hover) .tab,
-body:has(.button-popup) #tabs-container.right:not(:hover) .tab-position,
-body:has(.button-popup) #tabs-container.left:not(:hover) .tab-position,
-body:has(.button-popup) #tabs-container.right:not(:hover) .separator,
-body:has(.button-popup) #tabs-container.left:not(:hover) .separator,
+body:has(.toolbar-editor) #tabs-container:not(:hover) .tab,
+body:has(.toolbar-editor) #tabs-container:not(:hover) .tab-position,
+body:has(.toolbar-editor) #tabs-container:not(:hover) .separator,
+body:has(.button-popup) #tabs-container:not(:hover) .tab,
+body:has(.button-popup) #tabs-container:not(:hover) .tab-position,
+body:has(.button-popup) #tabs-container:not(:hover) .separator,
 body:has(.UrlBar-AddressField:focus-within)
-  #tabs-container.right:not(:hover)
+  #tabs-container:not(:hover)
   .tab,
 body:has(.UrlBar-AddressField:focus-within)
-  #tabs-container.left:not(:hover)
-  .tab,
-body:has(.UrlBar-AddressField:focus-within)
-  #tabs-container.right:not(:hover)
+  #tabs-container:not(:hover)
   .tab-position,
 body:has(.UrlBar-AddressField:focus-within)
-  #tabs-container.left:not(:hover)
-  .tab-position,
-body:has(.UrlBar-AddressField:focus-within)
-  #tabs-container.right:not(:hover)
-  .separator,
-body:has(.UrlBar-AddressField:focus-within)
-  #tabs-container.left:not(:hover)
+  #tabs-container:not(:hover)
   .separator {
   opacity: 1 !important;
   pointer-events: auto !important;
@@ -368,12 +345,9 @@ body:has(.UrlBar-AddressField:focus-within)
   transition-delay: var(--transition-delay-time) !important;
 }
 
-#tabs-container.right:hover .tab,
-#tabs-container.left:hover .tab,
-#tabs-container.right:hover .tab-position,
-#tabs-container.left:hover .tab-position,
-#tabs-container.right:hover .separator,
-#tabs-container.left:hover .separator {
+#tabs-container:hover .tab,
+#tabs-container:hover .tab-position,
+#tabs-container:hover .separator {
   opacity: 1 !important;
   pointer-events: auto !important;
   transition: opacity var(--animation-speed) ease-out !important;
@@ -389,15 +363,10 @@ Show toolbar buttons when popup is present or AddressField is focused
 #tabs-container.left:not(:hover) .button-toolbar.toolbar-spacer-flexible,
 #tabs-container.right:not(:hover) .ToolbarButton-Button,
 #tabs-container.left:not(:hover) .ToolbarButton-Button,*/
-#tabs-container.right:not(:hover) .toolbar-extensions,
-#tabs-container.left:not(:hover) .toolbar-extensions,
-#tabs-container.right:not(:hover)
+#tabs-container:not(:hover) .toolbar-extensions,
+#tabs-container:not(:hover)
   .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
-#tabs-container.left:not(:hover)
-  .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
-#tabs-container.right:not(:hover)
-  .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
-#tabs-container.left:not(:hover)
+#tabs-container:not(:hover)
   .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget {
   max-width: 0 !important;
   min-width: 0 !important;
@@ -415,8 +384,7 @@ Show toolbar buttons when popup is present or AddressField is focused
   transition-delay: var(--transition-delay-time) !important;
 }
 
-#tabs-container.right:hover .toolbar-extensions,
-#tabs-container.left:hover .toolbar-extensions {
+#tabs-container:hover .toolbar-extensions {
   max-width: 300px !important;
   transition: max-width var(--animation-speed) ease-out !important;
   transition-delay: var(--transition-delay-time) !important;
@@ -453,50 +421,24 @@ body:has(.UrlBar-AddressField:focus-within)
 body:has(.UrlBar-AddressField:focus-within)
   #tabs-container.left:not(:hover)
   .ToolbarButton-Button,*/
-/*==========================================================================*/
 body:has(.button-popup)
-  #tabs-container.right:not(:hover)
+  #tabs-container:not(:hover)
   .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
 body:has(.button-popup)
-  #tabs-container.left:not(:hover)
-  .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
-/*==========================================================================*/
-body:has(.button-popup)
-  #tabs-container.right:not(:hover)
-  .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
-body:has(.button-popup)
-  #tabs-container.left:not(:hover)
-  .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
-/*==========================================================================*/
-body:has(.toolbar-editor)
-  #tabs-container.right:not(:hover)
-  .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
-body:has(.toolbar-editor)
-  #tabs-container.left:not(:hover)
-  .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
-/*==========================================================================*/
-body:has(.toolbar-editor)
-  #tabs-container.right:not(:hover)
+  #tabs-container:not(:hover)
   .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
 body:has(.toolbar-editor)
-  #tabs-container.left:not(:hover)
-  .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
-/*==========================================================================*/
-/*==========================================================================*/
-body:has(.UrlBar-AddressField:focus-within)
-  #tabs-container.right:not(:hover)
+  #tabs-container:not(:hover)
   .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
-body:has(.UrlBar-AddressField:focus-within)
-  #tabs-container.left:not(:hover)
-  .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
-/*==========================================================================*/
-body:has(.UrlBar-AddressField:focus-within)
-  #tabs-container.right:not(:hover)
+body:has(.toolbar-editor)
+  #tabs-container:not(:hover)
   .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
 body:has(.UrlBar-AddressField:focus-within)
-  #tabs-container.left:not(:hover)
-  .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget
-/*==========================================================================*/ {
+  #tabs-container:not(:hover)
+  .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
+body:has(.UrlBar-AddressField:focus-within)
+  #tabs-container:not(:hover)
+  .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget{
   min-width: auto !important;
   max-width: 300px !important;
   width: initial !important;
@@ -509,16 +451,11 @@ body:has(.UrlBar-AddressField:focus-within)
 
 /*==========================================================================*/
 body:has(.UrlBar-AddressField:focus-within)
-  #tabs-container.right:not(:hover)
-  .toolbar-extensions,
-body:has(.UrlBar-AddressField:focus-within)
-  #tabs-container.left:not(:hover)
+  #tabs-container:not(:hover)
   .toolbar-extensions,
 /*==========================================================================*/
-body:has(.button-popup) #tabs-container.right:not(:hover) .toolbar-extensions,
-body:has(.button-popup) #tabs-container.left:not(:hover) .toolbar-extensions,
-body:has(.toolbar-editor) #tabs-container.right:not(:hover) .toolbar-extensions,
-body:has(.toolbar-editor) #tabs-container.left:not(:hover) .toolbar-extensions {
+body:has(.button-popup) #tabs-container:not(:hover) .toolbar-extensions,
+body:has(.toolbar-editor) #tabs-container:not(:hover) .toolbar-extensions {
   min-width: auto !important;
   max-width: 300px !important;
   width: initial !important;
@@ -551,8 +488,7 @@ body:has(.toolbar-editor) #tabs-container.left:not(:hover) .toolbar-extensions {
 /* If you want the expanded tabbar floating on the website instead of squeezing it, just add the following css to the css above */
 /* But read the comments before you do */
 
-#main > .inner > div:has(#tabs-tabbar-container.right),
-#main > .inner > div:has(#tabs-tabbar-container.left) {
+#main > .inner > div:has(#tabs-tabbar-container) {
   position: absolute;
   top: 0;
   z-index: 2;
@@ -577,7 +513,7 @@ body:has(.toolbar-editor) #tabs-container.left:not(:hover) .toolbar-extensions {
   backdrop-filter: none !important;
 }
 
-/*=================== Webpage stack margins - Auto Detection ===================*/
+/*=================== Webpage stack margins - Auto Calculation ===================*/
 
 /* Auto-detect tabbar position and apply appropriate margins */
 
