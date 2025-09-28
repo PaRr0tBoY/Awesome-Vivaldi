@@ -70,6 +70,7 @@ with a tab-stack. Which is why we need tab-stack no? */
     background-color var(--animation-speed) ease-out,
     min-width var(--animation-speed) ease-out,
     max-width var(--animation-speed) ease-out !important;
+  transition-delay: var(--transition-delay-time) !important;
   margin-top: var(--tabbar-margin-top) !important;
   margin-bottom: var(--tabbar-margin-bottom) !important;
   padding: var(--tabbar-padding) var(--tabbar-padding) var(--tabbar-padding) 0 !important;
@@ -101,6 +102,7 @@ with a tab-stack. Which is why we need tab-stack no? */
     background-color var(--animation-speed) ease-out,
     border-radius var(--animation-speed) ease-out,
     transform var(--animation-speed) ease-out !important;
+  transition-delay: var(--transition-delay-time) !important;
   padding: var(--tabbar-padding) 0 var(--tabbar-padding) 0 !important;
   box-sizing: border-box !important;
   position: relative !important;
