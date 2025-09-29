@@ -149,7 +149,7 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container.right:hover {
 
 /* ================================================================================= */
 /* Adjust expand width of Secondary tabbar here */
-#tabs-subcontainer:hover {
+body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within)) #tabs-subcontainer:hover {
   min-width: var(--tabs-subcontainer-expand-width) !important;
   max-width: var(--tabs-subcontainer-expand-width) !important;
   background-color: var(--tabbar-bg-color-expand) !important;
@@ -181,7 +181,7 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-subcontainer.left:not(:hover){
 
 body:has(.button-popup) #tabs-subcontainer.right:not(:hover),
 body:has(.toolbar-editor) #tabs-subcontainer.right:not(:hover),
-body:has(.UrlBar-AddressField:focus-within) #tabs-subcontainer.right:hover {
+body:has(.UrlBar-AddressField:focus-within) #tabs-subcontainer.right:not(:hover) {
   border-radius: var(--tabbar-border-radius-expand) 0 0 var(--tabbar-border-radius-expand) !important;
 }
 
