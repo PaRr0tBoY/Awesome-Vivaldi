@@ -135,18 +135,6 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container {
   box-sizing: border-box !important;
 }
 
-body:has(.button-popup) #tabs-container.left:hover,
-body:has(.toolbar-editor) #tabs-container.left:hover,
-body:has(.UrlBar-AddressField:focus-within) #tabs-container.left:hover {
-  border-radius: 0 var(--tabbar-border-radius-expand) var(--tabbar-border-radius-expand) 0 !important;
-}
-
-body:has(.button-popup) #tabs-container.right:hover,
-body:has(.toolbar-editor) #tabs-container.right:hover,
-body:has(.UrlBar-AddressField:focus-within) #tabs-container.right:hover {
-  border-radius: var(--tabbar-border-radius-expand) 0 0 var(--tabbar-border-radius-expand) !important;
-}
-
 /* ================================================================================= */
 /* Adjust expand width of Secondary tabbar here */
 body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within)) #tabs-subcontainer:hover {
