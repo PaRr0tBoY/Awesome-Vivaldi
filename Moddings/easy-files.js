@@ -1,7 +1,6 @@
 /*
  * Easy Files
  * Written by Tam710562
- * Optimized by AI
  */
 
 (() => {
@@ -21,7 +20,7 @@
         return `${(size / Math.pow(1024, i)).toFixed(2)} ${['B', 'kB', 'MB', 'GB', 'TB'][i]}`;
       },
       getFileExtension(fileName) {
-        return /(?:\.([^.]+))?$/.exec(fileName)?.[1]; // Use optional chaining for safety
+        return /(?:\.([^.]+))?$/.exec(fileName)[1];
       },
       verifyAccept({ fileName, mimeType }, accept) {
         if (!accept) {
@@ -37,8 +36,6 @@
         }
 
         for (const mt of mimeTypes) {
-          // Pre-compile regex for performance if called frequently with same patterns
-          // For now, assume patterns change, so re-create
           if (
             mt.startsWith('.')
               ? new RegExp(mt.replace('.', '.+\\.') + '$').test(fileName)
@@ -86,68 +83,59 @@
         return getComputedStyle(element);
       },
     },
-    // Optimized createElement for slightly better performance
     createElement(tagName, attribute, parent, inner, options) {
       if (typeof tagName === 'undefined') {
         return;
       }
-      options = options || {};
-      options.isPrepend = typeof options.isPrepend === 'undefined' ? false : options.isPrepend;
-
+      if (typeof options === 'undefined') {
+        options = {};
+      }
+      if (typeof options.isPrepend === 'undefined') {
+        options.isPrepend = false;
+      }
       const el = document.createElement(tagName);
-
-      if (attribute && typeof attribute === 'object') {
+      if (!!attribute && typeof attribute === 'object') {
         for (const key in attribute) {
-          switch (key) {
-            case 'text':
-              el.textContent = attribute[key];
-              break;
-            case 'html':
-              el.innerHTML = attribute[key];
-              break;
-            case 'style':
-              if (typeof attribute[key] === 'object') {
-                for (const css in attribute.style) {
-                  el.style.setProperty(css, attribute.style[css]);
-                }
+          if (key === 'text') {
+            el.textContent = attribute[key];
+          } else if (key === 'html') {
+            el.innerHTML = attribute[key];
+          } else if (key === 'style' && typeof attribute[key] === 'object') {
+            for (const css in attribute.style) {
+              el.style.setProperty(css, attribute.style[css]);
+            }
+          } else if (key === 'events' && typeof attribute[key] === 'object') {
+            for (const event in attribute.events) {
+              if (typeof attribute.events[event] === 'function') {
+                el.addEventListener(event, attribute.events[event]);
               }
-              break;
-            case 'events':
-              if (typeof attribute[key] === 'object') {
-                for (const event in attribute.events) {
-                  if (typeof attribute.events[event] === 'function') {
-                    el.addEventListener(event, attribute.events[event]);
-                  }
-                }
-              }
-              break;
-            default:
-              if (key in el) { // Faster check than typeof el[key] !== 'undefined'
-                el[key] = attribute[key];
-              } else {
-                el.setAttribute(key, typeof attribute[key] === 'object' ? JSON.stringify(attribute[key]) : attribute[key]);
-              }
-              break;
-          }
-        }
-      }
-
-      if (inner) {
-        const innerElements = Array.isArray(inner) ? inner : [inner];
-        for (const item of innerElements) {
-          if (item?.nodeName) { // Check if it's a DOM node
-            el.append(item);
+            }
+          } else if (typeof el[key] !== 'undefined') {
+            el[key] = attribute[key];
           } else {
-            el.append(this.createElementFromHTML(item));
+            if (typeof attribute[key] === 'object') {
+              attribute[key] = JSON.stringify(attribute[key]);
+            }
+            el.setAttribute(key, attribute[key]);
           }
         }
       }
-
+      if (!!inner) {
+        if (!Array.isArray(inner)) {
+          inner = [inner];
+        }
+        for (let i = 0; i < inner.length; i++) {
+          if (inner[i].nodeName) {
+            el.append(inner[i]);
+          } else {
+            el.append(this.createElementFromHTML(inner[i]));
+          }
+        }
+      }
       if (typeof parent === 'string') {
         parent = document.querySelector(parent);
       }
-
-      if (parent) {
+      if (!!parent) {
         if (options.isPrepend) {
           parent.prepend(el);
         } else {
@@ -221,8 +209,12 @@
       const id = this.uuid.generate();
       const inner = document.querySelector('#main > .inner, #main > .webpageview');
 
-      config = config || {};
-      config.autoClose = typeof config.autoClose === 'undefined' ? true : config.autoClose;
+      if (!config) {
+        config = {};
+      }
+      if (typeof config.autoClose === 'undefined') {
+        config.autoClose = true;
+      }
 
       function onKeyCloseDialog(windowId, key) {
         if (
@@ -252,8 +244,7 @@
           modalBg.remove();
         }
         vivaldi.tabsPrivate.onKeyboardShortcut.removeListener(onKeyCloseDialog);
-        // Fix: Use removeListener correctly, it was previously adding it twice then removing once
-        vivaldi.tabsPrivate.onWebviewClickCheck.removeListener(onClickCloseDialog);
+        vivaldi.tabsPrivate.onWebviewClickCheck.addListener(onClickCloseDialog);
       }
 
       vivaldi.tabsPrivate.onKeyboardShortcut.addListener(onKeyCloseDialog);
@@ -330,35 +321,34 @@
         close: closeDialog,
       };
     },
-    // timeOut is now a cleaner promise-based approach
     timeOut(callback, condition, timeOut = 300) {
-      return new Promise(resolve => {
-        let timeOutId;
-        const checkCondition = () => {
-          let result;
-          if (!condition) {
-            result = document.getElementById('browser');
-          } else if (typeof condition === 'string') {
-            result = document.querySelector(condition);
-          } else if (typeof condition === 'function') {
-            result = condition();
-          }
+      let timeOutId = setTimeout(function wait() {
+        let result;
+        if (!condition) {
+          result = document.getElementById('browser');
+        } else if (typeof condition === 'string') {
+          result = document.querySelector(condition);
+        } else if (typeof condition === 'function') {
+          result = condition();
+        } else {
+          return;
+        }
+        if (result) {
+          callback(result);
+        } else {
+          timeOutId = setTimeout(wait, timeOut);
+        }
+      }, timeOut);
 
-          if (result) {
-            callback(result);
-            resolve(result); // Resolve the promise
-            clearTimeout(timeOutId);
-          } else {
-            timeOutId = setTimeout(checkCondition, timeOut);
-          }
-        };
-        timeOutId = setTimeout(checkCondition, timeOut); // Initial call
+      function stop() {
+        if (timeOutId) {
+          clearTimeout(timeOutId);
+        }
+      }
 
-        // Added stop function to the returned promise for external control
-        return {
-          stop: () => clearTimeout(timeOutId)
-        };
-      });
+      return {
+        stop,
+      };
     },
     uuid: {
       generate(ids) {
@@ -409,7 +399,7 @@
   };
 
   const chunkSize = 1024 * 1024 * 10; // 10MB
-  // const maxAllowedSize = 1024 * 1024 * 5; // 5MB - Removed for testing purposes
+  const maxAllowedSize = 1024 * 1024 * 5; // 5MB
 
   const pointerPosition = {
     x: 0,
@@ -419,32 +409,18 @@
   gnoh.addStyle([
     `.${nameKey}.dialog-custom .dialog-content { flex-flow: wrap; gap: 18px; }`,
     `.${nameKey}.dialog-custom .dialog-content .selectbox-wrapper { overflow: hidden; margin: -2px; padding: 2px; }`,
-    `.${nameKey}.dialog-custom .dialog-content .selectbox-wrapper .selectbox-container { overflow: auto; margin: -2px; padding: 2px; flex: 0 1 auto; display: flex; flex-wrap: wrap; gap: 18px; }`,
+    `.${nameKey}.dialog-custom .dialog-content .selectbox-wrapper .selectbox-container { overflow: auto; margin: -2px; padding: 2px; flex: 0 1 auto; }`,
     `.${nameKey}.dialog-custom .dialog-content .selectbox-wrapper .selectbox-container .selectbox-image { background-color: var(--colorBgLighter); width: 120px; height: 120px; display: flex; justify-content: center; align-items: center; }`,
     `.${nameKey}.dialog-custom .dialog-content .selectbox-wrapper .selectbox-container .selectbox-image:hover { box-shadow: 0 0 0 2px var(--colorHighlightBg); }`,
     `.${nameKey}.dialog-custom .dialog-content .selectbox-wrapper .selectbox-container .selectbox-image.preview img { object-fit: cover; width: 120px; height: 120px; flex: 0 0 auto; }`,
-    // CSS for custom file icons
     `.${nameKey}.dialog-custom .dialog-content .selectbox-wrapper .selectbox-container .selectbox-image.icon .file-icon { width: 54px; height: 69px; padding: 15px 0 0; position: relative; font-family: sans-serif; }`,
     `.${nameKey}.dialog-custom .dialog-content .selectbox-wrapper .selectbox-container .selectbox-image.icon .file-icon:before { position: absolute; content: ''; left: 0; top: 0; height: 15px; left: 0; background-color: var(--colorFileIconBg, #007bff); right: 15px; }`,
     `.${nameKey}.dialog-custom .dialog-content .selectbox-wrapper .selectbox-container .selectbox-image.icon .file-icon:after { position: absolute; content: ''; width: 0; height: 0; border-style: solid; border-width: 15.5px 0 0 15.5px; border-color: transparent transparent transparent var(--colorFileIconBgLighter, #66b0ff); top: 0; right: 0; }`,
     `.${nameKey}.dialog-custom .dialog-content .selectbox-wrapper .selectbox-container .selectbox-image.icon .file-icon .file-icon-content { background-color: var(--colorFileIconBg, #007bff); top: 15px; color: var(--colorFileIconFg, #fff); position: absolute; left: 0; bottom: 0; right: 0; padding: 24.75px 0.3em 0; font-size: 19.5px; font-weight: 500; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }`,
-    // CSS for OS file icons
-    `.${nameKey}.dialog-custom .dialog-content .selectbox-wrapper .selectbox-container .selectbox-image.file-icon-os {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 120px; /* Ensure it fits the container */
-      height: 120px; /* Ensure it fits the container */
-    }`,
-    `.${nameKey}.dialog-custom .dialog-content .selectbox-wrapper .selectbox-container .selectbox-image.file-icon-os img {
-      max-width: 96px; /* Adjust size of the icon as needed */
-      max-height: 96px; /* Adjust size of the icon as needed */
-      object-fit: contain;
-    }`,
     `.${nameKey}.dialog-custom .dialog-content .selectbox-wrapper .selectbox-container .selectbox-title { width: 120px; }`,
     `.${nameKey}.dialog-custom .dialog-content .selectbox-wrapper .selectbox-container .selectbox-title .filename-container { display: flex; flex-direction: row; overflow: hidden; width: 120px; }`,
     `.${nameKey}.dialog-custom .dialog-content .selectbox-wrapper .selectbox-container .selectbox-title .filename-container .filename-text { white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }`,
-    `.${nameKey}.dialog-custom .dialog-content .selectbox-wrapper .selectbox-container .selectbox-title .filename-container .filename-extension { white-align-self: flex-end; white-space: nowrap; }`,
+    `.${nameKey}.dialog-custom .dialog-content .selectbox-wrapper .selectbox-container .selectbox-title .filename-container .filename-extension { white-space: nowrap; }`,
   ], nameKey);
 
   function inject(nameKey) {
@@ -454,7 +430,7 @@
       window.easyFiles = true;
     }
 
-    const fileDataStore = {};
+    const fileData = [];
 
     let fileInput = null;
     let elementClickedRect = null;
@@ -472,6 +448,19 @@
 
     function getRect(element) {
       const rect = element.getBoundingClientRect().toJSON();
+      while (element = element.offsetParent) {
+        if (getComputedStyle(element).overflow !== 'visible') {
+          const parentRect = element.getBoundingClientRect();
+          rect.left = Math.max(rect.left, parentRect.left);
+          rect.top = Math.max(rect.top, parentRect.top);
+          rect.right = Math.min(rect.right, parentRect.right);
+          rect.bottom = Math.min(rect.bottom, parentRect.bottom);
+          rect.width = rect.right - rect.left;
+          rect.height = rect.bottom - rect.top;
+          rect.x = rect.left;
+          rect.y = rect.top;
+        }
+      }
       return rect;
     }
 
@@ -494,33 +483,32 @@
         }
 
         const attributes = {};
+
         for (const attr of fileInput.attributes) {
           attributes[attr.name] = attr.value;
         }
 
-        for (const key in fileDataStore) {
-          delete fileDataStore[key];
-        }
+        fileData.length = 0;
 
-        const currentClickedRect = { ...elementClickedRect };
-        currentClickedRect.left = currentClickedRect.left - pointerPosition.x;
-        currentClickedRect.top = currentClickedRect.top - pointerPosition.y;
-        currentClickedRect.right = currentClickedRect.right - pointerPosition.x;
-        currentClickedRect.bottom = currentClickedRect.bottom - pointerPosition.y;
-        currentClickedRect.x = currentClickedRect.x - pointerPosition.x;
-        currentClickedRect.y = currentClickedRect.y - pointerPosition.y;
-
+        elementClickedRect.left = elementClickedRect.left - pointerPosition.x;
+        elementClickedRect.top = elementClickedRect.top - pointerPosition.y;
+        elementClickedRect.right = elementClickedRect.right - pointerPosition.x;
+        elementClickedRect.bottom = elementClickedRect.bottom - pointerPosition.y;
+        elementClickedRect.x = elementClickedRect.x - pointerPosition.x;
+        elementClickedRect.y = elementClickedRect.y - pointerPosition.y;
 
         chrome.runtime.sendMessage({
           type: nameKey,
           action: 'click',
           attributes,
-          elementClickedRect: currentClickedRect,
+          elementClickedRect,
         });
       }
     }
 
     function handleMouseDown(event) {
+      elementClickedRect = getRect(event.target);
+
       pointerPosition.x = event.clientX;
       pointerPosition.y = event.clientY;
     }
@@ -538,22 +526,13 @@
       if (info.type === nameKey) {
         switch (info.action) {
           case 'file':
-            if (!fileDataStore[info.file.fileId]) {
-                fileDataStore[info.file.fileId] = {};
-            }
-            fileDataStore[info.file.fileId][info.file.fileDataIndex] = info.file.fileData;
+            fileData[info.file.fileDataIndex] = info.file.fileData;
 
-            const receivedChunks = Object.keys(fileDataStore[info.file.fileId]).length;
-            if (receivedChunks === info.file.fileDataLength) {
+            if (Object.entries(fileData).length === info.file.fileDataLength) {
               const dataTransfer = new DataTransfer();
-              const sortedBase64Chunks = Object.keys(fileDataStore[info.file.fileId])
-                .sort((a, b) => parseInt(a) - parseInt(b))
-                .map(key => fileDataStore[info.file.fileId][key]);
-              const base64String = sortedBase64Chunks.join('');
-
+              const base64String = fileData.join('');
               const unit8Array = Uint8Array.from(atob(base64String), c => c.charCodeAt(0));
               const decompressedArrayBuffer = await decompressArrayBuffer(unit8Array);
-
               dataTransfer.items.add(new File(
                 [decompressedArrayBuffer],
                 info.file.fileName,
@@ -561,7 +540,6 @@
               ));
 
               changeFile(dataTransfer);
-              delete fileDataStore[info.file.fileId];
             }
             break;
           case 'picker':
@@ -573,271 +551,204 @@
   }
 
   async function simulatePaste() {
-    return new Promise((resolve) => {
-      const handlePaste = (e) => {
+    return new Promise((resolve, reject) => {
+      document.addEventListener('paste', (e) => {
         e.preventDefault();
         const items = [];
+        let isRealFile = true;
+
         for (const item of e.clipboardData.items) {
           const file = item.getAsFile();
+          const entry = item.webkitGetAsEntry();
           if (file) {
-            items.push({
-              file: file,
-              isFile: true,
-            });
+            if (!entry || entry.isFile) {
+              items.push({
+                file,
+                isFile: true,
+                isRealFile: !!entry,
+              });
+            } else if (entry.isDirectory) {
+              items.push({
+                file,
+                isDirectory: true,
+              });
+            }
           }
         }
-        document.removeEventListener('paste', handlePaste);
+
         resolve({
           items,
+          isRealFile,
         });
-      };
+      }, { once: true });
 
-      document.addEventListener('paste', handlePaste);
       document.execCommand('paste');
     });
   }
 
   async function readClipboard(accept) {
     const clipboardFiles = [];
+
     try {
-      // Try modern clipboard API first
-      if (navigator.clipboard && navigator.clipboard.read) {
-        try {
-          const clipboardItems = await navigator.clipboard.read();
+      const supportedTypes = [
+        {
+          extension: 'png',
+          mimeType: 'image/png',
+        },
+        {
+          extension: 'jpeg',
+          mimeType: 'image/jpeg',
+        },
+        {
+          extension: 'jpg',
+          mimeType: 'image/jpeg',
+        },
+      ];
 
-          const processingPromises = clipboardItems.map(async (clipboardItem) => {
-            const imageTypes = clipboardItem.types.filter(type => type.startsWith('image/'));
-            if (imageTypes.length > 0) {
-              const blob = await clipboardItem.getType(imageTypes[0]);
+      const supportedType = supportedTypes.find(s => gnoh.file.verifyAccept({ fileName: 'image.' + s.extension, mimeType: s.mimeType }, accept));
 
-              try {
-                const jpegBlob = await convertPngToJpeg(blob);
-                blob = jpegBlob;
-              } catch (e) {
-                console.warn("Failed to convert PNG to JPEG, proceeding with original format:", e);
-              }
-
-              const arrayBuffer = await blob.arrayBuffer();
-              const compressedArrayBuffer = await gnoh.stream.compress(arrayBuffer);
-              const compressedBase64String = btoa(new Uint8Array(compressedArrayBuffer)
-                  .reduce((data, byte) => data + String.fromCharCode(byte), ''));
-              const fileDataChunks = gnoh.array.chunks(compressedBase64String, chunkSize);
-
-              const clipboardFile = {
-                  fileData: fileDataChunks,
-                  fileDataLength: fileDataChunks.length,
-                  mimeType: blob.type,
-                  size: blob.size,
-                  category: 'clipboard',
-                  fileId: gnoh.uuid.generate(),
-                  fileName: `clipboard_image.${gnoh.file.getFileExtension(blob.type) || 'png'}`,
-              };
-
-              clipboardFile.previewUrl = await vivaldi.utilities.storeImage({
-                  data: arrayBuffer,
-                  mimeType: blob.type,
-              });
-
-              return clipboardFile;
-            }
-            return null;
-          });
-
-          const results = await Promise.allSettled(processingPromises);
-          results.forEach(result => {
-            if (result.status === 'fulfilled' && result.value) {
-              clipboardFiles.push(result.value);
-            }
-          });
-
-        } catch (clipboardError) {
-          console.warn("Modern clipboard API failed, falling back to legacy method:", clipboardError);
-          // Fall back to legacy method
-          return await readClipboardLegacy(accept);
-        }
-      } else {
-        // Use legacy method if modern API not available
-        return await readClipboardLegacy(accept);
-      }
-
-    } catch (error) {
-      console.error("Error reading clipboard:", error);
-    }
-    return clipboardFiles;
-  }
-
-  // Legacy clipboard reading method as fallback
-  async function readClipboardLegacy(accept) {
-    const clipboardFiles = [];
-    try {
       const pasteData = await simulatePaste();
 
-      const processingPromises = pasteData.items.map(async (item) => {
+      for (const item of pasteData.items) {
         const file = item.file;
-        if (item.isFile && file) {
-            let blob = new Blob([file], { type: file.type });
+        let checkType = false;
+        if (item.isFile) {
+          if (item.isRealFile) {
+            checkType = gnoh.file.verifyAccept({ fileName: file.name, mimeType: file.type }, accept);
+          } else {
+            checkType = supportedType && file.type === 'image/png';
+          }
+        }
 
-            try {
-                const jpegBlob = await convertPngToJpeg(blob);
-                blob = jpegBlob;
-            } catch (e) {
-                console.warn("Failed to convert PNG to JPEG, proceeding with PNG:", e);
-            }
+        if (checkType && (!maxAllowedSize || file.size <= maxAllowedSize)) {
+          let blob = new Blob([file], { type: file.type });
 
-            const arrayBuffer = await blob.arrayBuffer();
-            const compressedArrayBuffer = await gnoh.stream.compress(arrayBuffer);
-            const compressedBase64String = btoa(new Uint8Array(compressedArrayBuffer)
-                .reduce((data, byte) => data + String.fromCharCode(byte), ''));
-            const fileDataChunks = gnoh.array.chunks(compressedBase64String, chunkSize);
+          if (!item.isRealFile && supportedType.mimeType === 'image/jpeg') {
+            blob = await convertPngToJpeg(blob);
+          }
 
-            const clipboardFile = {
-                fileData: fileDataChunks,
-                fileDataLength: fileDataChunks.length,
-                mimeType: blob.type,
-                size: blob.size,
-                category: 'clipboard',
-                fileId: gnoh.uuid.generate(),
-                fileName: file.name || `clipboard_file.${gnoh.file.getFileExtension(blob.type) || 'bin'}`,
-            };
+          const arrayBuffer = await blob.arrayBuffer();
+          const compressedArrayBuffer = await gnoh.stream.compress(arrayBuffer);
+          const compressedBase64String = btoa(new Uint8Array(compressedArrayBuffer)
+            .reduce((data, byte) => data + String.fromCharCode(byte), ''));
+          const fileData = gnoh.array.chunks(compressedBase64String, chunkSize);
+          const clipboardFile = {
+            fileData: fileData,
+            fileDataLength: fileData.length,
+            mimeType: blob.type,
+            size: blob.size,
+            category: 'clipboard',
+          };
 
-            if (blob.type.startsWith('image/')) {
+          if (item.isRealFile) {
+            clipboardFile.fileName = file.name;
+          } else {
+            clipboardFile.extension = supportedType.extension;
+          }
+
+          switch (clipboardFile.mimeType) {
+            case 'image/jpeg':
+            case 'image/png':
+            case 'image/svg+xml':
+            case 'image/webp':
+            case 'image/gif':
+            case 'image/bmp':
+              try {
                 clipboardFile.previewUrl = await vivaldi.utilities.storeImage({
-                    data: arrayBuffer,
-                    mimeType: blob.type,
+                  data: arrayBuffer,
+                  mimeType: blob.type,
                 });
-            }
-            return clipboardFile;
-        }
-        return null;
-      });
+              } catch (error) {
+                console.warn('Failed to create preview for clipboard image', error);
+                // Continue without preview if it fails
+              }
+              break;
+          }
 
-      const results = await Promise.allSettled(processingPromises);
-      results.forEach(result => {
-        if (result.status === 'fulfilled' && result.value) {
-          clipboardFiles.push(result.value);
-        } else if (result.status === 'rejected') {
-          console.error("Error processing clipboard item:", result.reason);
+          clipboardFiles.push(clipboardFile);
         }
-      });
-
+      }
     } catch (error) {
-      console.error("Error reading clipboard with legacy method:", error);
+      console.error(error);
     }
+
     return clipboardFiles;
   }
 
   async function convertPngToJpeg(blob) {
-    return new Promise((resolve, reject) => {
-      const image = new Image();
-      image.onload = () => {
-        const canvas = gnoh.createElement('canvas', {
-          width: image.width,
-          height: image.height,
-        });
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(image, 0, 0);
+    const image = gnoh.createElement('img', {
+      src: URL.createObjectURL(blob),
+    });
+    await image.decode();
 
-        canvas.toBlob(jpegBlob => {
-          URL.revokeObjectURL(image.src);
-          if (jpegBlob) {
-            resolve(jpegBlob);
-          } else {
-            reject(new Error("Failed to convert PNG to JPEG."));
-          }
-        }, 'image/jpeg', 0.9);
-      };
-      image.onerror = (e) => {
+    const canvas = gnoh.createElement('canvas', {
+      width: image.width,
+      height: image.height,
+    });
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(image, 0, 0);
+
+    return new Promise((resolve) => {
+      canvas.toBlob(blob => {
         URL.revokeObjectURL(image.src);
-        reject(e);
-      };
-      image.src = URL.createObjectURL(blob);
+        if (blob) {
+          resolve(blob);
+        }
+      }, 'image/jpeg');
     });
   }
 
   async function getDownloadedFiles(accept) {
-    try {
-      const downloadedFiles = await chrome.downloads.search({
-        exists: true,
-        state: 'complete',
-        orderBy: ['-startTime'],
-        limit: 10
-      });
+    const downloadedFiles = await chrome.downloads.search({ exists: true, state: 'complete', orderBy: ['-startTime'] });
 
-      const filePromises = downloadedFiles.map(async (downloadedFile) => {
-        // Less restrictive check - include files even without MIME type
+    const result = {};
+    for (let downloadedFile of downloadedFiles) {
+      if (
+        downloadedFile.mime
+        && downloadedFile.mime !== 'application/x-msdownload'
+        && gnoh.file.verifyAccept({ fileName: downloadedFile.filename, mimeType: downloadedFile.mime }, accept)
+      ) {
+        downloadedFile = (await chrome.downloads.search({ id: downloadedFile.id }))[0];
+
         if (
-          downloadedFile.exists === true
+          downloadedFile
+          && downloadedFile.exists === true
           && downloadedFile.state === 'complete'
-          && downloadedFile.filename  // Ensure filename exists
+          && (!maxAllowedSize || downloadedFile.fileSize <= maxAllowedSize)
+          && !result[downloadedFile.filename]
         ) {
           const file = {
-            // Try to get MIME type, fallback based on file extension
-            mimeType: downloadedFile.mime || getMimeTypeFromFilename(downloadedFile.filename),
+            mimeType: downloadedFile.mime,
             path: downloadedFile.filename,
             fileName: downloadedFile.filename.replace(/^.*[\\/]/, ''),
-            size: downloadedFile.fileSize || 0,
+            size: downloadedFile.fileSize,
             category: 'downloaded-file',
-            fileId: gnoh.uuid.generate(),
           };
 
-          // Only try to generate preview for image files
-          if (file.mimeType && file.mimeType.startsWith('image/')) {
-            try {
-              file.previewUrl = await vivaldi.utilities.storeImage({
-                url: file.path,
-              });
-            } catch (previewError) {
-              console.warn("Failed to generate preview for downloaded file:", file.fileName, previewError);
-            }
+          switch (file.mimeType) {
+            case 'image/jpeg':
+            case 'image/png':
+            case 'image/svg+xml':
+            case 'image/webp':
+            case 'image/gif':
+            case 'image/bmp':
+              try {
+                file.previewUrl = await vivaldi.utilities.storeImage({
+                  url: file.path,
+                });
+              } catch (error) {
+                console.warn('Failed to create preview for file:', file.path, error);
+                // Continue without preview if it fails
+              }
+              break;
           }
-          return file;
-        }
-        return null;
-      });
 
-      const results = await Promise.allSettled(filePromises);
-      const validFiles = {};
-      results.forEach(result => {
-        if (result.status === 'fulfilled' && result.value) {
-          // Use file path as key to avoid duplicates
-          if (!validFiles[result.value.path]) {
-            validFiles[result.value.path] = result.value;
-          }
-        } else if (result.status === 'rejected') {
-          console.error("Failed to process downloaded file:", result.reason);
+          result[downloadedFile.filename] = file;
         }
-      });
-
-      return Object.values(validFiles);
-    } catch (error) {
-      console.error("Error fetching downloaded files:", error);
-      return [];
+      }
     }
-  }
 
-  // Helper function to get MIME type from filename
-  function getMimeTypeFromFilename(filename) {
-    const extension = filename.toLowerCase().split('.').pop();
-    const mimeTypes = {
-      'jpg': 'image/jpeg',
-      'jpeg': 'image/jpeg',
-      'png': 'image/png',
-      'gif': 'image/gif',
-      'webp': 'image/webp',
-      'svg': 'image/svg+xml',
-      'pdf': 'application/pdf',
-      'txt': 'text/plain',
-      'html': 'text/html',
-      'css': 'text/css',
-      'js': 'application/javascript',
-      'json': 'application/json',
-      'zip': 'application/zip',
-      'doc': 'application/msword',
-      'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'xls': 'application/vnd.ms-excel',
-      'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    };
-    return mimeTypes[extension] || 'application/octet-stream';
+    return Object.values(result);
   }
 
   function createFileIcon(extension) {
@@ -857,7 +768,7 @@
       }
     });
 
-    gnoh.createElement('div', {
+    const fileIconContent = gnoh.createElement('div', {
       class: 'file-icon-content',
       text: extension,
     }, fileIcon);
@@ -865,7 +776,7 @@
     return fileIcon;
   }
 
-  function createSelectbox(sender, file, dialog) {
+  async function createSelectbox(sender, file, dialog) {
     const selectbox = gnoh.createElement('button', {
       title: `${file.fileName ? file.fileName + '\n' : ''}Size: ${gnoh.file.readableFileSize(file.size)}`,
       class: 'selectbox',
@@ -874,38 +785,33 @@
           event.preventDefault();
           dialog.close();
 
-          if (file.category === 'downloaded-file' && !file.fileData) {
-            try {
-              const arrayBuffer = await vivaldi.mailPrivate.readFileToBuffer(file.path);
-              const compressedArrayBuffer = await gnoh.stream.compress(arrayBuffer);
-              const compressedBase64String = btoa(new Uint8Array(compressedArrayBuffer)
-                .reduce((data, byte) => data + String.fromCharCode(byte), ''));
-              file.fileData = gnoh.array.chunks(compressedBase64String, chunkSize);
-              file.fileDataLength = file.fileData.length;
-            } catch (e) {
-              console.error("Failed to read downloaded file:", e);
-              return;
-            }
+          switch (file.category) {
+            case 'downloaded-file':
+              if (!file.fileData) {
+                const arrayBuffer = await vivaldi.mailPrivate.readFileToBuffer(file.path);
+                const compressedArrayBuffer = await gnoh.stream.compress(arrayBuffer);
+                const compressedBase64String = btoa(new Uint8Array(compressedArrayBuffer)
+                  .reduce((data, byte) => data + String.fromCharCode(byte), ''));
+                file.fileData = gnoh.array.chunks(compressedBase64String, chunkSize);
+                file.fileDataLength = file.fileData.length;
+              }
+              break;
+            case 'clipboard':
+              if (!file.fileName) {
+                const d = new Date();
+                const year = d.getFullYear();
+                const month = (d.getMonth() + 1).toString().padStart(2, '0');
+                const date = d.getDate().toString().padStart(2, '0');
+                const hour = d.getHours().toString().padStart(2, '0');
+                const minute = d.getMinutes().toString().padStart(2, '0');
+                const second = d.getSeconds().toString().padStart(2, '0');
+                const millisecond = d.getMilliseconds().toString().padStart(3, '0');
+                file.fileName = `image_${year}-${month}-${date}_${hour}${minute}${second}${millisecond}.${file.extension}`;
+              }
+              break;
           }
 
-          if (file.category === 'clipboard' && !file.fileName) {
-            const d = new Date();
-            const year = d.getFullYear();
-            const month = (d.getMonth() + 1).toString().padStart(2, '0');
-            const date = d.getDate().toString().padStart(2, '0');
-            const hour = d.getHours().toString().padStart(2, '0');
-            const minute = d.getMinutes().toString().padStart(2, '0');
-            const second = d.getSeconds().toString().padStart(2, '0');
-            const millisecond = d.getMilliseconds().toString().padStart(3, '0');
-            const ext = gnoh.file.getFileExtension(file.mimeType) || gnoh.file.getFileExtension(file.fileName) || 'bin';
-            file.fileName = `clipboard_file_${year}-${month}-${date}_${hour}${minute}${second}${millisecond}.${ext}`;
-          }
-
-          if (file.fileData) {
-            chooseFile(sender, file);
-          } else {
-            console.error("File data not available for selection.");
-          }
+          chooseFile(sender, file);
         },
       },
     });
@@ -916,56 +822,41 @@
 
     if (file.previewUrl) {
       selectboxImage.classList.add('preview');
-      gnoh.createElement('img', {
-        src: file.previewUrl,
-      }, selectboxImage);
-    } else if (file.path) { // Only try to get OS icon if a path is available (i.e., for downloaded files)
-        const iconContainer = gnoh.createElement('div', {
-            class: 'file-icon-os'
-        }, selectboxImage);
-
-        vivaldi.files.getFileIcon(file.path, file.mimeType, (iconData) => {
-            if (iconData && iconData.data) {
-                gnoh.createElement('img', {
-                    src: iconData.data,
-                    alt: 'file icon'
-                }, iconContainer);
-            } else {
-                // Fallback to your custom text icon if native icon is not available or path is missing
-                selectboxImage.classList.add('icon');
-                const extension = gnoh.file.getFileExtension(file.fileName || file.mimeType) || 'file';
-                selectboxImage.append(createFileIcon(extension));
-            }
-        });
-    } else { // Fallback for clipboard files without a path
-        selectboxImage.classList.add('icon');
-        const extension = gnoh.file.getFileExtension(file.fileName || file.mimeType) || 'file';
-        selectboxImage.append(createFileIcon(extension));
+    } else {
+      selectboxImage.classList.add('icon');
     }
 
+    if (file.previewUrl) {
+      const image = gnoh.createElement('img', {
+        src: file.previewUrl,
+      }, selectboxImage);
+    } else {
+      const extension = file.extension || gnoh.file.getFileExtension(file.fileName);
+      selectboxImage.append(createFileIcon(extension));
+    }
 
     const selectboxTitle = gnoh.createElement('div', {
       class: 'selectbox-title',
     }, selectbox);
 
-    const filenameContainer = gnoh.createElement('div', {
+    const filenameText = gnoh.createElement('div', {
       class: 'filename-container',
     }, selectboxTitle);
 
     if (file.fileName) {
-      const extension = gnoh.file.getFileExtension(file.fileName);
+      const extension = file.extension || gnoh.file.getFileExtension(file.fileName);
       const name = extension ? file.fileName.substring(0, file.fileName.length - extension.length - 1) : file.fileName;
 
-      gnoh.createElement('div', {
+      const filenameContainer = gnoh.createElement('div', {
         class: 'filename-text',
         text: name,
-      }, filenameContainer);
+      }, filenameText);
 
       if (extension) {
-        gnoh.createElement('div', {
+        const filenameExtension = gnoh.createElement('div', {
           class: 'filename-extension',
           text: '.' + extension,
-        }, filenameContainer);
+        }, filenameText);
       }
     }
 
@@ -984,8 +875,6 @@
     });
 
     const buttonCancelElement = gnoh.object.merge(gnoh.constant.dialogButtons.cancel, {
-      label: gnoh.i18n.getMessage('Cancel'),
-      cancel: true,
       click() {
         disconnectResizeObserver && disconnectResizeObserver();
       },
@@ -999,7 +888,7 @@
         class: nameKey,
       }
     );
-    dialog.dialog.style.maxWidth = '90vw';
+    dialog.dialog.style.maxWidth = 570 + 'px';
 
     dialog.modalBg.style.height = 'fit-content';
     dialog.modalBg.style.position = 'fixed';
@@ -1014,25 +903,23 @@
       for (const entry of entries) {
         const dialogRect = entry.contentRect;
 
-        let newLeft = info.elementClickedRect.left;
-        let newTop = info.elementClickedRect.bottom;
-
-        if (newLeft + dialogRect.width > window.innerWidth) {
-          newLeft = Math.max(0, info.elementClickedRect.right - dialogRect.width);
-        }
-        if (newLeft < 0) {
-          newLeft = 0;
-        }
-
-        if (newTop + dialogRect.height > window.innerHeight) {
-          newTop = Math.max(0, info.elementClickedRect.top - dialogRect.height);
-        }
-        if (newTop < 0) {
-          newTop = 0;
+        if (info.elementClickedRect.left < 0) {
+          dialog.modalBg.style.left = '0px';
+        } else if (info.elementClickedRect.right > window.innerWidth) {
+          dialog.modalBg.style.right = '0px';
+        } else if (info.elementClickedRect.left + dialogRect.width > window.innerWidth) {
+          dialog.modalBg.style.left = Math.max((info.elementClickedRect.right - dialogRect.width), 0) + 'px';
+        } else {
+          dialog.modalBg.style.left = info.elementClickedRect.left + 'px';
         }
 
-        dialog.modalBg.style.left = newLeft + 'px';
-        dialog.modalBg.style.top = newTop + 'px';
+        if (info.elementClickedRect.bottom < 0) {
+          dialog.modalBg.style.top = '0px';
+        } else if (info.elementClickedRect.bottom + dialogRect.height > window.innerHeight) {
+          dialog.modalBg.style.top = Math.max((info.elementClickedRect.top - dialogRect.height), 0) + 'px';
+        } else {
+          dialog.modalBg.style.top = info.elementClickedRect.bottom + 'px';
+        }
       }
     }
 
@@ -1040,15 +927,12 @@
     resizeObserver.observe(dialog.dialog);
     disconnectResizeObserver = () => resizeObserver.unobserve(dialog.dialog);
 
-
-    const fragment = document.createDocumentFragment();
-
     if (clipboardFiles.length) {
       const selectboxWrapperClipboard = gnoh.createElement('div', {
         class: 'selectbox-wrapper',
       });
 
-      gnoh.createElement('h3', {
+      const h3Clipboard = gnoh.createElement('h3', {
         text: langs.clipboard,
       }, selectboxWrapperClipboard);
 
@@ -1056,10 +940,11 @@
         class: 'selectbox-container',
       }, selectboxWrapperClipboard);
 
-      clipboardFiles.forEach(clipboardFile => {
-        selectboxContainerClipboard.append(createSelectbox(sender, clipboardFile, dialog));
-      });
-      fragment.append(selectboxWrapperClipboard);
+      for (const clipboardFile of clipboardFiles) {
+        selectboxContainerClipboard.append(await createSelectbox(sender, clipboardFile, dialog));
+      }
+
+      dialog.dialogContent.append(selectboxWrapperClipboard);
     }
 
     if (downloadedFiles.length) {
@@ -1067,7 +952,7 @@
         class: 'selectbox-wrapper',
       });
 
-      gnoh.createElement('h3', {
+      const h3Downloaded = gnoh.createElement('h3', {
         text: langs.downloads,
       }, selectboxWrapperDownloaded);
 
@@ -1075,12 +960,12 @@
         class: 'selectbox-container',
       }, selectboxWrapperDownloaded);
 
-      downloadedFiles.forEach(downloadedFile => {
-        selectboxContainerDownloaded.append(createSelectbox(sender, downloadedFile, dialog));
-      });
-      fragment.append(selectboxWrapperDownloaded);
+      for (const downloadedFile of downloadedFiles) {
+        selectboxContainerDownloaded.append(await createSelectbox(sender, downloadedFile, dialog));
+      }
+
+      dialog.dialogContent.append(selectboxWrapperDownloaded);
     }
-    dialog.dialogContent.append(fragment);
   }
 
   function showAllFiles(sender) {
@@ -1095,9 +980,8 @@
   }
 
   function chooseFile(sender, file) {
-    if (!file.fileData || file.fileData.length === 0) {
-      console.error("Attempted to send empty or non-existent file data.");
-      return;
+    if (!file.fileData.length) {
+      file.fileData.push([]);
     }
 
     for (const [index, chunk] of file.fileData.entries()) {
@@ -1112,7 +996,6 @@
           fileDataLength: file.fileData.length,
           fileName: file.fileName,
           mimeType: file.mimeType,
-          fileId: file.fileId,
         },
       }, {
         frameId: sender.frameId,
@@ -1138,44 +1021,19 @@
     ) {
       switch (info.action) {
         case 'click':
-          const [clipboardFilesResult, downloadedFilesResult] = await Promise.allSettled([
+          const [clipboardFiles, downloadedFiles] = await Promise.all([
             readClipboard(info.attributes.accept),
             getDownloadedFiles(info.attributes.accept),
           ]);
 
-          const clipboardFiles = clipboardFilesResult.status === 'fulfilled' ? clipboardFilesResult.value : [];
-          if (clipboardFilesResult.status === 'rejected') {
-              console.error("Error fetching clipboard files:", clipboardFilesResult.reason);
-          }
-
-          const downloadedFiles = downloadedFilesResult.status === 'fulfilled' ? downloadedFilesResult.value : [];
-          if (downloadedFilesResult.status === 'rejected') {
-              console.error("Error fetching downloaded files:", downloadedFilesResult.reason);
-          }
-
-          // Debug logging
-          console.log(`Easy Files Debug: Found ${clipboardFiles.length} clipboard files and ${downloadedFiles.length} downloaded files`);
-          console.log('Clipboard files:', clipboardFiles.map(f => f.fileName));
-          console.log('Downloaded files:', downloadedFiles.map(f => f.fileName));
-
           if (clipboardFiles.length || downloadedFiles.length) {
             const webview = window[sender.tab.id] || document.elementFromPoint(pointerPosition.x, pointerPosition.y);
-            let zoom = 1;
-            let webviewZoom = 1;
-
-            if (webview) {
-              try {
-                  zoom = parseFloat(gnoh.element.getStyle(webview).getPropertyValue('--uiZoomLevel')) || 1;
-                  webviewZoom = await new Promise((resolve) => {
-                      webview.getZoom((res) => {
-                          resolve(res);
-                      });
-                  });
-              } catch (e) {
-                  console.warn("Could not get webview zoom levels, defaulting to 1:", e);
-              }
-            }
-
+            const zoom = parseFloat(gnoh.element.getStyle(webview).getPropertyValue('--uiZoomLevel'));
+            const webviewZoom = await new Promise((resolve) => {
+              webview.getZoom((res) => {
+                resolve(res);
+              });
+            });
 
             const ratio = webviewZoom / zoom;
 
@@ -1212,12 +1070,12 @@
           },
           func: inject,
           args: [nameKey],
-        }).catch(err => console.error(`Failed to inject script into tab ${tab.id}:`, err));
+        });
       });
     });
 
     chrome.webNavigation.onCommitted.addListener((details) => {
-      if (details.tabId !== -1 && (details.frameId === 0 || details.url.startsWith('http'))) {
+      if (details.tabId !== -1) {
         chrome.scripting.executeScript({
           target: {
             tabId: details.tabId,
@@ -1225,7 +1083,7 @@
           },
           func: inject,
           args: [nameKey],
-        }).catch(err => console.error(`Failed to inject script into frame ${details.frameId} of tab ${details.tabId}:`, err));
+        });
       }
     });
   }, () => window.vivaldiWindowId != null);
