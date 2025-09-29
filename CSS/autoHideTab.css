@@ -70,6 +70,7 @@ with a tab-stack. Which is why we need tab-stack no? */
     background-color var(--animation-speed) ease-out,
     min-width var(--animation-speed) ease-out,
     max-width var(--animation-speed) ease-out !important;
+  transition-delay: var(--transition-delay-time) !important;
   margin-top: var(--tabbar-margin-top) !important;
   margin-bottom: var(--tabbar-margin-bottom) !important;
   padding: var(--tabbar-padding) var(--tabbar-padding) var(--tabbar-padding) 0 !important;
@@ -101,6 +102,7 @@ with a tab-stack. Which is why we need tab-stack no? */
     background-color var(--animation-speed) ease-out,
     border-radius var(--animation-speed) ease-out,
     transform var(--animation-speed) ease-out !important;
+  transition-delay: var(--transition-delay-time) !important;
   padding: var(--tabbar-padding) 0 var(--tabbar-padding) 0 !important;
   box-sizing: border-box !important;
   position: relative !important;
@@ -133,21 +135,9 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container {
   box-sizing: border-box !important;
 }
 
-body:has(.button-popup) #tabs-container.left:hover,
-body:has(.toolbar-editor) #tabs-container.left:hover,
-body:has(.UrlBar-AddressField:focus-within) #tabs-container.left:hover {
-  border-radius: 0 var(--tabbar-border-radius-expand) var(--tabbar-border-radius-expand) 0 !important;
-}
-
-body:has(.button-popup) #tabs-container.right:hover,
-body:has(.toolbar-editor) #tabs-container.right:hover,
-body:has(.UrlBar-AddressField:focus-within) #tabs-container.right:hover {
-  border-radius: var(--tabbar-border-radius-expand) 0 0 var(--tabbar-border-radius-expand) !important;
-}
-
 /* ================================================================================= */
 /* Adjust expand width of Secondary tabbar here */
-#tabs-subcontainer:hover {
+body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within)) #tabs-subcontainer:hover {
   min-width: var(--tabs-subcontainer-expand-width) !important;
   max-width: var(--tabs-subcontainer-expand-width) !important;
   background-color: var(--tabbar-bg-color-expand) !important;
@@ -179,7 +169,7 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-subcontainer.left:not(:hover){
 
 body:has(.button-popup) #tabs-subcontainer.right:not(:hover),
 body:has(.toolbar-editor) #tabs-subcontainer.right:not(:hover),
-body:has(.UrlBar-AddressField:focus-within) #tabs-subcontainer.right:hover {
+body:has(.UrlBar-AddressField:focus-within) #tabs-subcontainer.right:not(:hover) {
   border-radius: var(--tabbar-border-radius-expand) 0 0 var(--tabbar-border-radius-expand) !important;
 }
 
