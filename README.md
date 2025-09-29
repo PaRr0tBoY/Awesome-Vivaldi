@@ -109,6 +109,14 @@ To install Javascript moddings:
 [Auto expand and collapse tabbar for two-level tab stack: Rework](https://forum.vivaldi.net/topic/111893/auto-expand-and-collapse-tabbar-for-two-level-tab-stack-rework?_=1758777265037)
 > Auto expand and collapse tabbar
 
+[Auto expand and collapse tabbar for two-level tab stack: Rework](https://forum.vivaldi.net/topic/111893/auto-expand-and-collapse-tabbar-for-two-level-tab-stack-rework?_=1758777265037)
+> Auto expand and collapse tabbar
+
+[Theme Previews Plus | Vivaldi Forum](https://forum.vivaldi.net/topic/103422/theme-previews-plus?_=1759122196203)
+> To make theme preview properly reflect the actual placement of your tab bar, address bar, and panel bar, as well as show floating tabs when those are enabled.
+> 
+> NOTE: This mod only works when the settings page is opened in a tab ("Open Settings in a Tab" is enabled in vivaldi://settings/appearance/).
+
 [tovifun/VivalArc: With just a few tweaks, you can give Vivaldi that cool Arc vibe](https://github.com/tovifun/VivalArc)
 > Part of codes in this repo is used.
 
