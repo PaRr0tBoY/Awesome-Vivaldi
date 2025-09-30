@@ -36,3 +36,17 @@ body:has(.toolbar-editor) #panels-container:not(:hover) #panels {
     opacity 280ms ease-out,
     visibility 280ms ease-out;
 }
+
+/* Codes below if for debug purposes */
+/* #panels-container {
+  width: 40px !important;
+}
+
+#panels {
+  width: 40px !important;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 280ms ease-out,
+    visibility 280ms ease-out;
+} */
