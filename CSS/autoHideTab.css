@@ -353,23 +353,33 @@ body:has(.button-popup) #tabs-container:not(:hover) > * {
   transition-delay: 50ms !important; */
 }
 
-/* #tabs-container:hover .toolbar-extensions {
-  transition: max-width var(--animation-speed) ease-out !important;
-  transition-delay: var(--transition-delay-time-expand) !important;
+/* Patch for left tab bar */
+#tabs-tabbar-container.left #tabs-container.left{
+  position: relative !important;
+  overflow: hidden !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  box-sizing: border-box !important;
 }
-body:has(.UrlBar-AddressField:focus-within)
-  #tabs-container:not(:hover)
-  .toolbar-extensions,
-body:has(.button-popup) #tabs-container:not(:hover) .toolbar-extensions,
-body:has(.toolbar-editor) #tabs-container:not(:hover) .toolbar-extensions {
+
+#tabs-tabbar-container.left #tabs-container.left > *{
   min-width: auto !important;
-  max-width: 300px !important;
-  width: initial !important;
-  height: initial !important;
+  max-width: none !important;
   padding: initial !important;
-  border: initial !important;
-  transition-delay: var(--transition-delay-time-collapse) !important;
-} */
+}
+
+#tabs-tabbar-container.left #tabs-container.left:not(:hover) > *{
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+#tabs-tabbar-container.left #tabs-container.left:hover > *,
+body:has(.button-popup) #tabs-tabbar-container.left #tabs-container.left > *,
+body:has(.toolbar-editor) #tabs-tabbar-container.left #tabs-container.left > *,
+body:has(.UrlBar-AddressField:focus-within) #tabs-tabbar-container.left #tabs-container.left > *{
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
 
 /* ========================================
    FLOATING TABBAR
