@@ -9,7 +9,7 @@
   /* Adjust tabbar margin and padding */
   --tabbar-margin-top: -5px;
   --tabbar-margin-bottom: 0px;
-  --tabbar-padding: 5px; /* Set to 0 if any tabs position problem */
+  --tabbar-padding: 7px; /* Set to 0 if any tabs position problem */
 
   /* Adjust tabbars' border radius when they expand or collapse */
   --tabbar-border-radius-expand: 17px;
@@ -54,17 +54,16 @@ with a tab-stack. Which is why we need tab-stack no? */
     background-color var(--animation-speed) ease-out,
     min-width var(--animation-speed) ease-out,
     max-width var(--animation-speed) ease-out !important;
-  /* transition-delay: var(--transition-delay-time-collapse) !important; */
-  transition-delay: var(--transition-delay-time-expand) !important;
-  /* padding: var(--tabbar-padding) var(--tabbar-padding) var(--tabbar-padding) 0 !important; */
+  transition-delay: var(--transition-delay-time-collapse) !important;
+  /* transition-delay: var(--transition-delay-time-expand) !important; */
   box-sizing: border-box !important;
   position: relative !important;
 }
 
 /* When the tabs-subcontainer is hovered, the tabs-container immediately collapses. */
-/* #tabs-tabbar-container:has(#tabs-subcontainer:hover) #tabs-container {
+#tabs-tabbar-container:has(#tabs-subcontainer:hover) #tabs-container {
   transition-delay: var(--transition-delay-time-expand) !important;
-} */
+}
 
 /* Adjust expand width of main tabbar here */
 #tabs-container:hover {
@@ -80,7 +79,6 @@ with a tab-stack. Which is why we need tab-stack no? */
   transition-delay: var(--transition-delay-time-expand) !important;
   margin-top: var(--tabbar-margin-top) !important;
   margin-bottom: var(--tabbar-margin-bottom) !important;
-  /* padding: var(--tabbar-padding) var(--tabbar-padding) var(--tabbar-padding) 0 !important; */
   box-sizing: border-box !important;
   /* transition-delay: 60ms !important; */
 }
@@ -100,6 +98,7 @@ with a tab-stack. Which is why we need tab-stack no? */
   max-width: var(--tabs-subcontainer-collapse-width) !important;
   margin-top: var(--tabbar-margin-top) !important;
   margin-bottom: var(--tabbar-margin-bottom) !important;
+  padding-top: var(--tabbar-padding) !important;
   background-color: var(--tabbar-bg-color-collapse) !important;
   border-radius: var(--tabbar-border-radius-collapse) !important;
   transition:
@@ -108,9 +107,8 @@ with a tab-stack. Which is why we need tab-stack no? */
     background-color var(--animation-speed) ease-out,
     border-radius var(--animation-speed) ease-out,
     transform var(--animation-speed) ease-out !important;
-  /* transition-delay: var(--transition-delay-time-collapse) !important; */
-  transition-delay: var(--transition-delay-time-expand) !important;
-  /* padding: var(--tabbar-padding) 0 var(--tabbar-padding) 0 !important; */
+  transition-delay: var(--transition-delay-time-collapse) !important;
+  /* transition-delay: var(--transition-delay-time-expand) !important; */
   box-sizing: border-box !important;
   position: relative !important;
   will-change: transform !important;
@@ -120,9 +118,9 @@ with a tab-stack. Which is why we need tab-stack no? */
   transition-delay: var(--transition-delay-time-expand) !important;
 } */
 
-/* #tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer {
+#tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer {
   transition-delay: var(--transition-delay-time-expand) !important;
-} */
+}
 
 #tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer.right{
   border-radius: var(--tabbar-border-radius-expand) 0px 0px var(--tabbar-border-radius-expand) !important;
@@ -148,7 +146,6 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container {
   transition-delay: var(--transition-delay-time-expand) !important;
   margin-top: var(--tabbar-margin-top) !important;
   margin-bottom: var(--tabbar-margin-bottom) !important;
-  /* padding: var(--tabbar-padding) var(--tabbar-padding) var(--tabbar-padding) 0 !important; */
   box-sizing: border-box !important;
 }
 
@@ -176,7 +173,7 @@ body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-Addres
   transition-delay: 0ms !important;
   margin-top: var(--tabbar-margin-top) !important;
   margin-bottom: var(--tabbar-margin-bottom) !important;
-  /* padding: var(--tabbar-padding) 0 var(--tabbar-padding) 0 !important; */
+  padding-top: var(--tabbar-padding) !important;
   box-sizing: border-box !important;
 }
 
@@ -328,15 +325,16 @@ And of course you don't need those lockers icon when your tabbar expand on hover
 #tabs-container:not(:hover) > * {
   min-width: 0 !important;
   max-width: 0 !important;
-  /* border: 0 !important; */
+  /* margin-left: 0 !important;
+  margin-right: 0 !important; */
   padding: 0 !important;
+  /* border: 0 !important; */
   overflow: hidden !important;
-  transition:
-    min-width calc(var(--animation-speed)-30ms) ease-out,
-    max-width calc(var(--animation-speed)-30ms) ease-out !important;
-    /* min-width var(--animation-speed) ease-out,
-    max-width var(--animation-speed) ease-out !important; */
   transition-delay: var(--transition-delay-time-collapse) !important;
+  /* transition:
+    min-width calc(var(--animation-speed) - 30ms) ease-out,
+    max-width calc(var(--animation-speed) - 30ms ) ease-out !important;
+  transition-delay: var(--transition-delay-time-collapse) !important; */
 }
 
 #tabs-container:hover > *,
@@ -345,13 +343,14 @@ body:has(.toolbar-editor) #tabs-container:not(:hover) > *,
 body:has(.button-popup) #tabs-container:not(:hover) > * {
   min-width: var(--tabs-container-expand-width) !important;
   max-width: var(--tabs-container-expand-width) !important;
+  /* margin-left: auto !important;
+  margin-right: calc(var(--tabbar-padding) + 10px) !important; */
+  padding-right: var(--tabbar-padding) !important;
   overflow: visible !important;
-  transition:
-    min-width calc(var(--animation-speed)-30ms) ease-out,
-    max-width calc(var(--animation-speed)-30ms) ease-out !important;
-    /* min-width var(--animation-speed) ease-out,
-    max-width var(--animation-speed) ease-out !important; */
-  /* transition-delay: 50ms !important; */
+  /* transition:
+    min-width calc(var(--animation-speed) + 50ms) ease-out,
+    max-width calc(var(--animation-speed) + 50ms) ease-out !important;
+  transition-delay: 50ms !important; */
 }
 
 /* #tabs-container:hover .toolbar-extensions {
