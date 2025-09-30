@@ -1,16 +1,23 @@
 # INDEX
 
-- [Showcase](#SHOWCASE)
-- [Installation](#INSTALLATION)
+- [Features](#features)
+- [Installation](#installation)
 - [Modlist](#community-js-mods-and-css-included-in-this-modpack)
 
-# SHOWCASE
+# Features
 
-![link preview like Arc Peek](/Showcase/Vivaldi-Arc-Peek.gif)
-![Open Peek In New Tab](/Showcase/Peek.gif)
-![Auto Hide Tab](/Showcase/autotab.gif)
-![Auto Hide Bookmark Bar](/Showcase/autoHideBookmarkBar.gif)
-![Auto Hide Panel](/Showcase/autoHidePanel.gif)
+| Features                                                                                                   | Preview  |
+|-------------------------------------------------------------------------------------------------------     |--------- |
+| **Auto hide EVERY bars**<br>   - Tab bar<br>   - Panel bar<br>   - Bookmark bar<br> |<img alt="left tabbar" width="340px" src="https://www.ac1d.space/img/leftTabbar.webp" />\|<img alt="right tabbar" width="340px" src="Others/Showcase/autoHide/tabbar/rightTabbar.gif" /><img alt="panel" width="340px" src="Others/Showcase/autoHide/panel/autoHidePanel.gif" /><img alt="bookmark" width="340px" src="Others/Showcase/autoHide/bookmarkbar/autoHideBookmarkBar.gif" />|
+| **Sleek Audio Icon**<br>  - Animated Icons<br>   - `Playing` : Coloured<br>   - `Mute` : Dim |<img alt="alt_text" width="340px" src="Others/Showcase/audioIcon/tabAudioIcon.gif" /><br />Replace Audio Icon EveryWhere<br /><img alt="alt_text" width="340px" src="Others/Showcase/audioIcon/audioIcon.png" />|
+| **Vivaldi Peek**<br>- Long Press Right Click On Link<br />- Alt + Left Click On Link |<img alt="alt_text" width="340px" src="Others/Showcase/Peek/Peek.gif" /><br />|
+| **Fixed quick file pane for latest Vivaldi**<br> |<img alt="alt_text" width="340px" src="Others/Showcase/easy-file-for-latest-vivaldi/easy-file-panel.png" />|
+| **Better Tab Indicator**<br />- and More…                              |<img alt="alt_text" width="340px" src="Others/Showcase/indicator/indicator.gif" />|
+|                                                              |                                                              |
+|                                                              |                                                              |
+|                                                              |                                                              |
+|                                                              |                                                              |
+|                                                              ||
 
 # INSTALLATION
 
@@ -114,9 +121,8 @@ To install Javascript moddings:
 
 [Theme Previews Plus | Vivaldi Forum](https://forum.vivaldi.net/topic/103422/theme-previews-plus?_=1759122196203)
 > To make theme preview properly reflect the actual placement of your tab bar, address bar, and panel bar, as well as show floating tabs when those are enabled.
-> 
+>
 > NOTE: This mod only works when the settings page is opened in a tab ("Open Settings in a Tab" is enabled in vivaldi://settings/appearance/).
 
 [tovifun/VivalArc: With just a few tweaks, you can give Vivaldi that cool Arc vibe](https://github.com/tovifun/VivalArc)
 > Part of codes in this repo is used.
-
