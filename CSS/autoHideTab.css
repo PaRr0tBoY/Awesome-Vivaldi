@@ -54,16 +54,17 @@ with a tab-stack. Which is why we need tab-stack no? */
     background-color var(--animation-speed) ease-out,
     min-width var(--animation-speed) ease-out,
     max-width var(--animation-speed) ease-out !important;
-  transition-delay: var(--transition-delay-time-collapse) !important;
-  padding: var(--tabbar-padding) var(--tabbar-padding) var(--tabbar-padding) 0 !important;
+  /* transition-delay: var(--transition-delay-time-collapse) !important; */
+  transition-delay: var(--transition-delay-time-expand) !important;
+  /* padding: var(--tabbar-padding) var(--tabbar-padding) var(--tabbar-padding) 0 !important; */
   box-sizing: border-box !important;
   position: relative !important;
 }
 
-/* 关键修复：当 tabs-subcontainer 悬停时，tabs-container 立即收缩 */
-#tabs-tabbar-container:has(#tabs-subcontainer:hover) #tabs-container {
+/* When the tabs-subcontainer is hovered, the tabs-container immediately collapses. */
+/* #tabs-tabbar-container:has(#tabs-subcontainer:hover) #tabs-container {
   transition-delay: var(--transition-delay-time-expand) !important;
-}
+} */
 
 /* Adjust expand width of main tabbar here */
 #tabs-container:hover {
@@ -79,7 +80,7 @@ with a tab-stack. Which is why we need tab-stack no? */
   transition-delay: var(--transition-delay-time-expand) !important;
   margin-top: var(--tabbar-margin-top) !important;
   margin-bottom: var(--tabbar-margin-bottom) !important;
-  padding: var(--tabbar-padding) 100px var(--tabbar-padding) 0 !important;
+  /* padding: var(--tabbar-padding) var(--tabbar-padding) var(--tabbar-padding) 0 !important; */
   box-sizing: border-box !important;
   /* transition-delay: 60ms !important; */
 }
@@ -107,23 +108,21 @@ with a tab-stack. Which is why we need tab-stack no? */
     background-color var(--animation-speed) ease-out,
     border-radius var(--animation-speed) ease-out,
     transform var(--animation-speed) ease-out !important;
-  /* 关键修复：默认延迟为 0ms，避免与 tabs-container 动画不同步 */
+  /* transition-delay: var(--transition-delay-time-collapse) !important; */
   transition-delay: var(--transition-delay-time-expand) !important;
-  padding: var(--tabbar-padding) 0 var(--tabbar-padding) 0 !important;
+  /* padding: var(--tabbar-padding) 0 var(--tabbar-padding) 0 !important; */
   box-sizing: border-box !important;
   position: relative !important;
   will-change: transform !important;
 }
 
-/* 当 tabs-subcontainer 自身悬停时，添加延迟以避免过于敏感 */
-#tabs-subcontainer:hover {
+/* #tabs-subcontainer:hover {
   transition-delay: var(--transition-delay-time-expand) !important;
-}
+} */
 
-/* 当 tabs-container 悬停时，tabs-subcontainer 保持 0 延迟 */
-#tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer {
+/* #tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer {
   transition-delay: var(--transition-delay-time-expand) !important;
-}
+} */
 
 #tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer.right{
   border-radius: var(--tabbar-border-radius-expand) 0px 0px var(--tabbar-border-radius-expand) !important;
@@ -146,13 +145,13 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-container {
     background-color var(--animation-speed) ease-out,
     min-width var(--animation-speed) ease-out,
     max-width var(--animation-speed) ease-out !important;
+  transition-delay: var(--transition-delay-time-expand) !important;
   margin-top: var(--tabbar-margin-top) !important;
   margin-bottom: var(--tabbar-margin-bottom) !important;
-  padding: var(--tabbar-padding) var(--tabbar-padding) var(--tabbar-padding) 0 !important;
+  /* padding: var(--tabbar-padding) var(--tabbar-padding) var(--tabbar-padding) 0 !important; */
   box-sizing: border-box !important;
 }
 
-/* 关键修复：当特殊条件触发时，tabs-subcontainer 也立即收缩 */
 body:has(.button-popup) #tabs-subcontainer,
 body:has(.toolbar-editor) #tabs-subcontainer,
 body:has(.UrlBar-AddressField:focus-within) #tabs-subcontainer {
@@ -160,8 +159,10 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-subcontainer {
 }
 
 /* ================================================================================= */
+
 /* Adjust expand width of Secondary tabbar here */
-body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within)) #tabs-subcontainer:hover {
+body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
+  #tabs-subcontainer:hover {
 /* #tabs-subcontainer:hover { */
   min-width: var(--tabs-subcontainer-expand-width) !important;
   max-width: var(--tabs-subcontainer-expand-width) !important;
@@ -175,7 +176,7 @@ body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-Addres
   transition-delay: 0ms !important;
   margin-top: var(--tabbar-margin-top) !important;
   margin-bottom: var(--tabbar-margin-bottom) !important;
-  padding: var(--tabbar-padding) 0 var(--tabbar-padding) 0 !important;
+  /* padding: var(--tabbar-padding) 0 var(--tabbar-padding) 0 !important; */
   box-sizing: border-box !important;
 }
 
@@ -207,49 +208,44 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-subcontainer.right:not(:hover)
   max-width: calc(
     var(--tabs-container-expand-width)+var(--tabs-subcontainer-collapse-width)
   ) !important; /* Combine total of expand width of stack and substack when one of them is hovered */
+  /* padding: var(--tabbar-padding) var(--tabbar-padding) var(--tabbar-padding) 0 !important; */
   background-color: transparent !important;
   background-image: none !important;
   border: none !important;
   border-radius: var(--tabbar-border-radius-expand);
   /*border-color: black !important;
   border-width: 1px !important;*/
-  /* Written By Claude */
   box-shadow: none !important;
   box-sizing: border-box !important;
-  /* Add transition animation to overall container to reduce bouncing effect */
   transition:
     width var(--animation-speed) ease-out,
     min-width var(--animation-speed) ease-out,
     max-width var(--animation-speed) ease-out !important;
-  /* Ensure container layout stability - Fix tab bar order */
   position: relative !important;
   display: flex !important;
   flex-direction: row !important;
   align-items: stretch !important;
-  /* 关键修复：容器宽度应该等于两个标签栏宽度之和 */
-  width: calc(var(--tabs-container-collapse-width) + var(--tabs-subcontainer-collapse-width)) !important;
+  /* width: calc(var(--tabs-container-collapse-width) + var(--tabs-subcontainer-collapse-width)) !important; */
 }
 
-/* 当 tabs-container 悬停时，容器宽度增加 */
-#tabs-tabbar-container:has(#tabs-container:hover) {
+/* When the tabs-container is hovered, the container width increases. */
+/* #tabs-tabbar-container:has(#tabs-container:hover) {
   width: calc(var(--tabs-container-expand-width) + var(--tabs-subcontainer-collapse-width)) !important;
   transition-delay: var(--transition-delay-time-expand) !important;
 }
 
-/* 当 tabs-subcontainer 悬停时，容器宽度增加 */
 #tabs-tabbar-container:has(#tabs-subcontainer:hover) {
   width: calc(var(--tabs-container-collapse-width) + var(--tabs-subcontainer-expand-width)) !important;
   transition-delay: var(--transition-delay-time-expand) !important;
 }
 
-/* 当只有 tabs-container 时的宽度 */
 #tabs-tabbar-container:not(:has(#tabs-subcontainer)) {
   width: var(--tabs-container-collapse-width) !important;
 }
 
 #tabs-tabbar-container:not(:has(#tabs-subcontainer)):has(#tabs-container:hover) {
   width: var(--tabs-container-expand-width) !important;
-}
+} */
 
 /* #tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer,
 #tabs-tabbar-container:has(#tabs-subcontainer:hover) #tabs-container{
@@ -358,7 +354,7 @@ body:has(.button-popup) #tabs-container:not(:hover) > * {
   /* transition-delay: 50ms !important; */
 }
 
-#tabs-container:hover .toolbar-extensions {
+/* #tabs-container:hover .toolbar-extensions {
   transition: max-width var(--animation-speed) ease-out !important;
   transition-delay: var(--transition-delay-time-expand) !important;
 }
@@ -374,7 +370,7 @@ body:has(.toolbar-editor) #tabs-container:not(:hover) .toolbar-extensions {
   padding: initial !important;
   border: initial !important;
   transition-delay: var(--transition-delay-time-collapse) !important;
-}
+} */
 
 /* ========================================
    FLOATING TABBAR
