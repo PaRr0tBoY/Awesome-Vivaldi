@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Quote of the day</title>
+  <style>
+    @font-face { font-family: 'Special Elite'; src: url('fonts/SpecialElite-Regular.ttf') format('truetype'); }
+
+     html, body { font-family: 'Special Elite', cursive; font-size: 6vh; height: 100%; }
+
+    /* Theme colors */
+    @media (prefers-color-scheme: dark) {
+      body { background: var(--colorBg, #18181b); color: var(--colorFg, #989ea4); }
+      #author { color: var(--colorHighlightBg, #00cccc); }
+    }
+
+    @media (prefers-color-scheme: light) {
+      body { background: var(--colorBg, #fcfcfc); color: var(--colorFg, #51514d); }
+      #author { color: var(--colorHighlightBg, #00cccc); }
+    }
+    
+    /* Wrapper */
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2vw;
+    }
+
+    p { margin-block-start: unset; }
+
+    #quote, #author { line-height: 1.3; }
+
+    #author { font-size: 5vh; font-style: italic; margin-right: -30vw; }
+
+    /* Small widget layout */
+    @media screen and (max-height: 200px) {
+      body { display: block; margin-top: 15vh; }
+      #quote { font-size: 5vw; }
+      #author { font-size: 4.5vw; text-align: end; margin-right: 10vw; text-align: right;}
+    }
+    
+    /* Hides scrollbars */
+    ::-webkit-scrollbar { display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <p id="quote"></p>
+  <p id="author"></p>
+  <script>
+    const generateQuote = function () {
+      let arrayIndex = Math.floor(Math.random() * quote.length);
+      document.getElementById("quote").innerHTML = quote[arrayIndex].quote;
+      document.getElementById("author").innerHTML = quote[arrayIndex].author;
+
+      const random = Math.floor(Math.random() * data.length);
+      const rnd = data[random];
+      const author = rnd.author ?
+        `${typ(rnd.quote)}${typ(rnd.author)}` :
+        typ(rnd.quote);
+      console.info(`${random}: ${author}`);
+    }
+
+    window.onload = function () {
+      const quotes = document.getElementById("quote");
+      generateQuote();
+    }
+  </script>
+  <script src="quotes.js"></script>
+</body>
+
+</html>

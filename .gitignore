@@ -22,9 +22,10 @@ node_modules
 .sass-cache
 
 # extra
-Widgets
 CLAUDE.md
 bak
 */.claude
 README.md.bak
 CSS/debug
+Moddings/autoHidePanel_personal.js
+personal_config
