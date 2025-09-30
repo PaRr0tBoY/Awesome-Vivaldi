@@ -8,8 +8,8 @@
 
 | Features | Preview |
 |---------|---------|
-| **Auto hide EVERY bars**<br>- Tab bar<br>- Panel bar<br>- Bookmark bar | <img alt="right tabbar" width="200px" src="Others/Showcase/autoHide/tabbar/rightTabbar.gif" /><img alt="left tabbar" width="200px" src="https://www.ac1d.space/img/leftTabbar.webp" /><img alt="panel" width="230px" src="Others/Showcase/autoHide/panel/autoHidePanel1.gif" /><img alt="bookmark" width="630px" src="Others/Showcase/autoHide/bookmarkbar/autoHideBookmarkBar.gif" /> |
-| **Sleek Audio Icon**<br>- Replace Everywhere<br>- `Playing` : Coloured<br>- `Mute` : Dim | <img alt="tab audio icon" width="315px" src="Others/Showcase/audioIcon/tabAudioIcon.gif" /><img alt="audio icon" width="315px" src="Others/Showcase/audioIcon/audioIcon.png" /> |
+| **Auto hide EVERY bars**<br>- Tab bar<br>- Panel bar<br>- Bookmark bar | <img alt="right tabbar" width="200px" src="Others/Showcase/autoHide/tabbar/rightTabbar.gif" /><img alt="panel" width="230px" src="Others/Showcase/autoHide/panel/autoHidePanel1.gif" /><img alt="bookmark" width="630px" src="Others/Showcase/autoHide/bookmarkbar/autoHideBookmarkBar.gif" /> |
+| **Sleek Audio Icon**<br>- Replace Everywhere<br>- `Playing` : Coloured<br>- `Mute` : Dim | <img alt="tab audio icon" width="315px" src="Others/Showcase/audioIcon/tabAudioIcon.gif" /> |
 | **Vivaldi Peek**<br>- Long Press Right Click On Link<br>- Alt + Left Click On Link | <img alt="peek" width="630px" src="Others/Showcase/Peek/Peek.gif" /> |
 | **Quick File Pane**<br>- Now optimized for latest Vivaldi | <img alt="easy file panel" width="630px" src="Others/Showcase/easy-file-for-latest-vivaldi/easy-file-panel.png" /> |
 | **Better Tab Indicator**<br>- and More… | <img alt="indicator" width="630px" src="Others/Showcase/indicator/indicator.gif" /> |
