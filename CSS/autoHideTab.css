@@ -107,7 +107,7 @@ with a tab-stack. Which is why we need tab-stack no? */
     background-color var(--animation-speed) ease-out,
     min-width var(--animation-speed) ease-out,
     max-width var(--animation-speed) ease-out !important;
-  transition-delay: var(--transition-delay-time-expand) !important;
+  transition-delay: var(--transition-delay-time-collapse) !important;
   margin-top: var(--tabbar-margin-top) !important;
   margin-bottom: var(--tabbar-margin-bottom) !important;
   box-sizing: border-box !important;
@@ -151,9 +151,9 @@ with a tab-stack. Which is why we need tab-stack no? */
   transition-delay: var(--transition-delay-time-expand) !important;
 } */
 
-#tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer {
+/* #tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer {
   transition-delay: var(--transition-delay-time-expand) !important;
-}
+} */
 
 #tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer.right{
   border-radius: var(--tabbar-border-radius-expand) 0px 0px var(--tabbar-border-radius-expand) !important;
@@ -368,7 +368,7 @@ And of course you don't need those lockers icon when your tabbar expand on hover
 #tabs-container:not(:hover) > * {
   min-width: 0 !important;
   max-width: 0 !important;
-  padding: 0 !important;
+  /* padding: 0 !important; */
   overflow: hidden !important;
   opacity: 0 !important;
   transition:
