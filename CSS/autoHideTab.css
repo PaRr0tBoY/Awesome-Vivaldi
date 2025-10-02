@@ -20,7 +20,7 @@
   --animation-speed: 280ms;
   --slow-animation-speed: 600ms;
   --transition-delay-time-expand: 0ms;
-  --transition-delay-time-collapse: 300ms;
+  --transition-delay-time-collapse: 0ms;
 
   /* Adjust tabbars' color when they expand or collapse */
 
@@ -88,6 +88,9 @@ with a tab-stack. Which is why we need tab-stack no? */
   /* transition-delay: var(--transition-delay-time-expand) !important; */
   box-sizing: border-box !important;
   position: relative !important;
+  overflow: visible !important;
+  /* overflow-y: auto !important;
+  overflow-x: hidden !important; */
 }
 
 /* When the tabs-subcontainer is hovered, the tabs-container immediately collapses. */
@@ -332,6 +335,19 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-subcontainer.right:not(:hover)
   background-color: transparent !important;
 }
 
+/* Hide scrollbars for left and right tabbars */
+#browser #tabs-tabbar-container.left ::-webkit-scrollbar,
+#browser #tabs-tabbar-container.right ::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbars for left and right tabbar wrappers */
+.tabs-left .tabbar-wrapper,
+.tabs-right .tabbar-wrapper {
+  background-color: transparent;
+  overflow: visible;
+}
+
 /* #tabs-tabbar-container {
   display: flex;
   align-items: center;
@@ -364,11 +380,34 @@ And of course you don't need those lockers icon when your tabbar expand on hover
 /* ========================================
    HIDE ELEMENTS ON HOVER
    ======================================== */
+#tabs-container .tab-strip.overflow {
+  margin-right: calc(var(--densityGap) * 2) !important;
+  margin-left: calc(var(--densityGap) * 2) !important;
+}
 
-#tabs-container:not(:hover) > * {
+#tabs-container:not(:hover) .tab-strip.overflow {
+  min-width: auto !important;
+  max-width: auto !important;
+  margin-right: calc(var(--densityGap) * 2) !important;
+  margin-left: calc(var(--densityGap) * 2) !important;
+  z-index: 99999999 !important;
+  overflow: hidden !important;
+  max-height: 100% !important;
+  height: 100% !important;
+  opacity: 1 !important;
+  transition: opacity var(--animation-speed) ease-out !important;
+  transition-delay: 0ms !important;
+  pointer-events: auto !important;
+}
+
+#tabs-container:not(:hover) .resize {
+  max-height: none !important;
+  height: 100% !important;
+  flex: 1 !important;
+}
+/* #tabs-container:not(:hover) > *:not(.resize):not(.button-toolbar.toolbar-spacer-flexible):not(.toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget):not(.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget) {
   min-width: 0 !important;
   max-width: 0 !important;
-  padding: 0 !important;
   overflow: hidden !important;
   opacity: 0 !important;
   transition:
@@ -376,10 +415,39 @@ And of course you don't need those lockers icon when your tabbar expand on hover
     max-width 0s ease-out var(--transition-delay-time-collapse),
     opacity var(--slow-animation-speed) ease-out 0s !important;
   pointer-events: none !important;
+} */
+
+/* #tabs-container:not(:hover) .resize{
+  min-width: auto !important;
+  max-width: auto !important;
+  overflow: visible !important;
+  opacity: 1 !important;
+  transition:
+    opacity var(--animation-speed) ease-out !important;
+  transition-delay: 0ms !important;
+  pointer-events: auto !important;
+} */
+
+
+#tabs-container:not(:hover) .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
+#tabs-container:not(:hover) .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget{
+  max-height: 0 !important;
+  opacity: 0 !important;
+  overflow: hidden !important;
+  transition: max-height 280ms ease-out,opacity 280ms ease-out 100ms !important;
 }
 
-#tabs-container:hover > *,
-body:has(.UrlBar-AddressField:focus-within) #tabs-container:not(:hover) > *,
+#tabs-container:not(:hover) .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget{
+  transform-origin: bottom !important;
+}
+
+#tabs-container:not(:hover) .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget{
+  transform-origin: top !important;
+}
+
+
+/* #tabs-container:hover > *,
+body:has(.urlbar-addressfield:focus-within) #tabs-container:not(:hover) > *,
 body:has(.toolbar-editor) #tabs-container:not(:hover) > *,
 body:has(.button-popup) #tabs-container:not(:hover) > * {
   min-width: var(--tabs-container-expand-width) !important;
@@ -391,6 +459,28 @@ body:has(.button-popup) #tabs-container:not(:hover) > * {
     opacity var(--animation-speed) ease-out !important;
   transition-delay: 0ms !important;
   pointer-events: auto !important;
+} */
+
+#tabs-container:hover .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
+body:has(.UrlBar-AddressField:focus-within) #tabs-container:not(:hover) .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
+body:has(.toolbar-editor) #tabs-container:not(:hover) .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
+body:has(.button-popup) #tabs-container:not(:hover) .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget {
+  max-height: 200px !important;
+  opacity: 1 !important;
+  overflow: visible !important;
+  transform-origin: bottom !important;
+  transition: max-height 280ms ease-out,opacity 280ms ease-out 100ms !important;
+}
+
+#tabs-container:hover .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
+body:has(.UrlBar-AddressField:focus-within) #tabs-container:not(:hover) .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
+body:has(.toolbar-editor) #tabs-container:not(:hover) .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
+body:has(.button-popup) #tabs-container:not(:hover) .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget{
+  max-height: 200px !important;
+  opacity: 1 !important;
+  overflow: visible !important;
+  transform-origin: top !important;
+  transition: max-height 280ms ease-out,opacity 280ms ease-out 100ms !important;
 }
 
 #tabs-tabbar-container #tabs-container {
