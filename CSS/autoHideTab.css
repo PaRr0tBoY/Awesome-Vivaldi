@@ -1,10 +1,10 @@
 /* Adjust Configure In :root */
 :root {
   /* Tabbar's width when they expand or collapse */
-  --tabs-container-collapse-width: 7px; /* min width of main tabbar should not set lower than 6px, which will cause weird issue. */
+  --tabs-container-collapse-width: 42px; /* min width of main tabbar should not set lower than 6px, which will cause weird issue. */
   --tabs-container-expand-width: 300px;
   --tabs-subcontainer-collapse-width: 42px;
-  --tabs-subcontainer-expand-width: 335px;
+  --tabs-subcontainer-expand-width: 300px;
 
   /* Adjust tabbar margin and padding */
   --tabbar-margin-top: 0px;
@@ -17,8 +17,9 @@
   /* Set to zero if you don't want round corner when tabbar collapsed */
 
   /* Animation speed when tabbars expand or collapse */
+  --slow-animation-speed: 560ms;
   --animation-speed: 280ms;
-  --slow-animation-speed: 600ms;
+  --fast-animation-speed: 140ms;
   --transition-delay-time-expand: 0ms;
   --transition-delay-time-collapse: 0ms;
 
@@ -400,87 +401,68 @@ And of course you don't need those lockers icon when your tabbar expand on hover
   pointer-events: auto !important;
 }
 
-#tabs-container:not(:hover) .resize {
+body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
+  #tabs-container:not(:hover) .resize {
   max-height: none !important;
   height: 100% !important;
   flex: 1 !important;
 }
-/* #tabs-container:not(:hover) > *:not(.resize):not(.button-toolbar.toolbar-spacer-flexible):not(.toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget):not(.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget) {
-  min-width: 0 !important;
-  max-width: 0 !important;
-  overflow: hidden !important;
-  opacity: 0 !important;
-  transition:
-    min-width 0s ease-out var(--transition-delay-time-collapse),
-    max-width 0s ease-out var(--transition-delay-time-collapse),
-    opacity var(--slow-animation-speed) ease-out 0s !important;
-  pointer-events: none !important;
-} */
 
-/* #tabs-container:not(:hover) .resize{
-  min-width: auto !important;
-  max-width: auto !important;
-  overflow: visible !important;
-  opacity: 1 !important;
-  transition:
-    opacity var(--animation-speed) ease-out !important;
-  transition-delay: 0ms !important;
-  pointer-events: auto !important;
-} */
-
-
-#tabs-container:not(:hover) .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
-#tabs-container:not(:hover) .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget{
-  max-height: 0 !important;
-  opacity: 0 !important;
-  overflow: hidden !important;
-  transition: max-height 280ms ease-out,opacity 280ms ease-out 100ms !important;
+.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget{
+/* .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget { */
+  transform: scaleX(1);
+  opacity: 1;
+  max-height: 200px;
+  transition: transform var(--slow-animation-speed) ease-out,
+              opacity var(--fast-animation-speed) ease-out,
+              max-height var(--animation-speed) ease-out 100ms;
+  transform-origin: center;
 }
 
-#tabs-container:not(:hover) .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget{
-  transform-origin: bottom !important;
+.toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget {
+  transform: scaleX(0);
+  opacity: 1;
+  max-height: 2000px;
 }
 
-#tabs-container:not(:hover) .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget{
-  transform-origin: top !important;
+#tabs-container:not(:hover) .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget {
+  transform: scaleX(0);
+  opacity: 0;
+  max-height: 0px;
 }
 
-
-/* #tabs-container:hover > *,
-body:has(.urlbar-addressfield:focus-within) #tabs-container:not(:hover) > *,
-body:has(.toolbar-editor) #tabs-container:not(:hover) > *,
-body:has(.button-popup) #tabs-container:not(:hover) > * {
-  min-width: var(--tabs-container-expand-width) !important;
-  max-width: var(--tabs-container-expand-width) !important;
-  padding-right: var(--tabbar-padding) !important;
-  overflow: visible !important;
-  opacity: 1 !important;
-  transition:
-    opacity var(--animation-speed) ease-out !important;
-  transition-delay: 0ms !important;
-  pointer-events: auto !important;
-} */
+#tabs-container:not(:hover) .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget {
+  transform: scaleX(0);
+  opacity: 0;
+  max-height: 0px;
+}
 
 #tabs-container:hover .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
 body:has(.UrlBar-AddressField:focus-within) #tabs-container:not(:hover) .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
 body:has(.toolbar-editor) #tabs-container:not(:hover) .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget,
 body:has(.button-popup) #tabs-container:not(:hover) .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget {
-  max-height: 200px !important;
+  transform: scaleX(1) !important;
   opacity: 1 !important;
+  max-height: 2000px;
   overflow: visible !important;
-  transform-origin: bottom !important;
-  transition: max-height 280ms ease-out,opacity 280ms ease-out 100ms !important;
+  /* transform-origin: center !important;
+  transition: transform 0s ease-out,
+              opacity 0s ease-out,
+              max-height 0s ease-out; */
 }
 
 #tabs-container:hover .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
 body:has(.UrlBar-AddressField:focus-within) #tabs-container:not(:hover) .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
 body:has(.toolbar-editor) #tabs-container:not(:hover) .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
 body:has(.button-popup) #tabs-container:not(:hover) .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget{
-  max-height: 200px !important;
+  transform: scaleX(1) !important;
   opacity: 1 !important;
+  max-height: 200px;
   overflow: visible !important;
-  transform-origin: top !important;
-  transition: max-height 280ms ease-out,opacity 280ms ease-out 100ms !important;
+  transform-origin: center !important;
+  transition: transform var(--animation-speed) ease-out 100ms,
+              opacity var(--slow-animation-speed) ease-out,
+              max-height var(--slow-animation-speed) ease-out;
 }
 
 #tabs-tabbar-container #tabs-container {
