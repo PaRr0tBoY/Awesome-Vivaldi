@@ -20,7 +20,7 @@
   --animation-speed: 280ms;
   --slow-animation-speed: 600ms;
   --transition-delay-time-expand: 0ms;
-  --transition-delay-time-collapse: 300ms;
+  --transition-delay-time-collapse: 0ms;
 
   /* Adjust tabbars' color when they expand or collapse */
 
