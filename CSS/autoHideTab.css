@@ -578,12 +578,12 @@ body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-Addres
   #tabs-container:not(:hover) .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget {
   opacity: 0 !important;
   /* visibility: hidden !important; */
-  max-height: 0px !important;
-  max-height: 0px !important;
+  max-width: 0px !important;
+  max-width: 0px !important;
   pointer-events: none !important;
   transition:
-    min-height 0s ease-out var(--transition-delay-time-collapse),
-    max-height 0s ease-out var(--transition-delay-time-collapse),
+    min-width 0s ease-out var(--transition-delay-time-collapse),
+    max-width 0s ease-out var(--transition-delay-time-collapse),
     opacity var(--fast-animation-speed) ease-out 0s !important;
 }
 
