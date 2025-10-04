@@ -7,51 +7,45 @@
   --tabs-subcontainer-expand-width: 300px;
 
   /* Adjust tabbar margin and padding */
-  --tabbar-margin-top: 0px;
+  --tabbar-margin-top: -5px;
   --tabbar-margin-bottom: 0px;
-  --tabbar-padding: 0px; /* Set to 0 if any tabs position problem */
+  --tabbar-padding: 7px; /* Set to 0 if any tabs position problem */
 
   /* Adjust tabbars' border radius when they expand or collapse */
-  --tabbar-border-radius-expand: 0px;
-  --tabbar-border-radius-collapse: 0px;
+  --tabbar-border-radius-expand: 17px;
+  --tabbar-border-radius-collapse: 3px;
   /* Set to zero if you don't want round corner when tabbar collapsed */
 
   /* Animation speed when tabbars expand or collapse */
   --slow-animation-speed: 560ms;
   --animation-speed: 280ms;
   --fast-animation-speed: 140ms;
+
+  /* Animation Delay Time */
   --transition-delay-time-expand: 0ms;
-  --transition-delay-time-collapse: 150ms;
+  --transition-delay-time-collapse: 0ms;
 
   /* Adjust tabbars' color when they expand or collapse */
 
-  /* Adaptive Theme */
-  /* ============================================ */
-  /* --tabbar-bg-color-collapse: var(--colorBg);
-  --tabbar-bg-color-expand: var(--colorFg);
-  --tabbar-border-color-collapse: var(--colorBglighter);
-  --tabbar-border-color-expand: var(--colorFgFaded); */
-  /* ============================================ */
-
   /* Light Theme */
   /* ============================================ */
-  /* --tabbar-bg-color-collapse: rgb(164, 164, 164);
-  --tabbar-bg-color-expand: rgba(241,241,243,1.00);
+  /* --tabbar-bg-color-collapse: rgb(160, 177, 178);
+  --tabbar-bg-color-expand: rgb(201, 222, 223);
   --tabbar-border-color-collapse: rgba(223, 249, 253, 1);
   --tabbar-border-color-expand: rgba(0, 251, 255, 1); */
   /* ============================================ */
 
   /* Dark Theme */
   /* ============================================ */
-  /* --tabbar-bg-color-collapse: rgba(42,42,49,1);
-  --tabbar-bg-color-expand: rgb(0, 0, 0);
-  --tabbar-border-color-collapse: rgb(2, 33, 65);
-  --tabbar-border-color-expand: rgb(36, 107, 240); */
+  --tabbar-bg-color-collapse: rgb(27, 27, 28);
+  --tabbar-bg-color-expand: rgb(53, 58, 63);
+  --tabbar-border-color-collapse: rgba(2, 33, 65, 1);
+  --tabbar-border-color-expand: rgb(45, 123, 139);
   /* ============================================ */
 
   /* My Theme(Green) */
   /* ============================================ */
-  --tabbar-bg-color-collapse: rgba(25, 30, 25, 1);
+  /* --tabbar-bg-color-collapse: rgba(25, 30, 25, 1);
   --tabbar-bg-color-collapse: rgba(25, 30, 25, 1);
   --tabbar-bg-color-expand: rgba(11, 41, 17, 1);
   --tabbar-border-color-collapse: rgba(0, 73, 45, 1);
@@ -60,8 +54,7 @@
   --tabbar-margin-bottom: 0px;
   --tabbar-padding: 7px; 
   --tabbar-border-radius-expand: 17px;
-  --tabbar-border-radius-collapse: 3px;
-  --tabbar-border-radius-collapse: 3px;
+  --tabbar-border-radius-collapse: 3px; */
   /* ============================================ */
 
   /* Debug */
@@ -428,52 +421,51 @@ And of course you don't need those lockers icon when your tabbar expand on hover
    HIDE ELEMENTS ON HOVER
    ======================================== */
 
-#tabs-container .tab-strip.overflow {
+/* #tabs-container .tab-strip.overflow {
   margin-right: calc(var(--densityGap) * 2) !important;
   margin-left: calc(var(--densityGap) * 2) !important;
-  transition-delay: var(--transition-delay-time-collapse) !important;
-}
+  transition: margin var(--animation-speed) ease-out !important;
+  transition-delay: 0ms !important;
+} */
 
-#tabs-container:not(:hover) .tab-strip.overflow {
+#tabs-container .tab-strip.overflow {
   min-width: auto !important;
   max-width: auto !important;
   margin-right: calc(var(--densityGap) * 2) !important;
   margin-left: calc(var(--densityGap) * 2) !important;
-  z-index: 99999999 !important;
-  overflow: hidden !important;
+  /* z-index: 99999999 !important; */
+  /* overflow: hidden !important; */
   max-height: 100% !important;
   height: 100% !important;
   opacity: 1 !important;
-  transition: opacity var(--animation-speed) ease-out !important;
-  transition-delay: var(--transition-delay-time-collapse) !important;
-  pointer-events: auto !important;
+  /* transition: margin var(--animation-speed) ease-out,
+              opacity var(--animation-speed) ease-out !important; */
+  /* transition-delay: 0ms !important; */
+  /* pointer-events: auto !important; */
 }
 
 body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
-  #tabs-container:not(:hover) .resize {
+  #tabs-container .resize {
   max-height: none !important;
   height: 100% !important;
   flex: 1 !important;
 }
 
-/* .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget {
-  transform: scaleY(0.2);
-  transform-origin: top !important;
-  opacity: 0;
-  max-height: 33px;
-  transition: transform var(--animation-speed) ease-out,
-              max-height var(--animation-speed) ease-out,
-              opacity var(--fast-animation-speed) ease-out;
-} */
+/* ========================================
+   BEFORE TOOLBAR
+   ======================================== */
+
 .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget {
-  margin-right: 5px !important;
-  margin-left: 5px !important;
-  margin-top: 5px;
-  margin-bottom: 5px;
+  /* margin-right: 7px !important;
+  margin-left: 5px !important; */
+  margin-top: 7px;
+  margin-bottom: 7px;
   transform: scaleY(1);
   transform-origin: top !important;
+  overflow: hidden;
   opacity: 1;
   max-height: 33px;
+  flex-shrink: 0 !important;
   transition: transform var(--animation-speed) ease-out,
               max-height var(--animation-speed) ease-out,
               background-color var(--animation-speed) ease-out,
@@ -493,15 +485,7 @@ body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-Addres
     background-color: var(--tabbar-bg-color-collapse);
     border-color: var(--tabbar-bg-color-collapse);
   }
-  
-  /* background-color: black;
-  border-radius: 12px; */
 }
-
-/* #tabs-container:hover .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget {
-  background-color: var(--tabbar-bg-color-expand);
-  border-radius: 12px;
-} */
 
 .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget::before {
   content: '';
@@ -511,10 +495,11 @@ body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-Addres
   transform: translate(-50%, -50%);
   width: 20px;
   height: 20px;
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><polyline points="15 9 10 14 15 19"/></svg>');
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="grey" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><polyline points="15 9 10 14 15 19"/></svg>');
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
+  /* background-color: var(--tabbar-border-color-expand); */
   opacity: 1;
   transition: opacity var(--animation-speed) ease-out;
   pointer-events: none;
@@ -555,29 +540,62 @@ body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup))
   }
 }
 
-body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
-  #tabs-container:not(:hover) .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget{
-  max-height: 0px;
-  opacity: 1;
-  visibility: hidden;
+/* ========================================
+   AFTER TOOLBAR
+   ======================================== */
+
+.toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget {
+  background-color: var(--tabbar-bg-color-expand) !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
   display: flex !important;
-  & > *:not(.button-toolbar.toolbar-spacer-flexible) {
-    opacity: 0;
-    visibility: hidden;
-    max-height: 0px;
-    margin-bottom: 10px;
-    flex-shrink: 0 !important;
-  }
+  flex-wrap: wrap !important;
+  align-items: flex-end !important;
+  align-content: flex-end !important;
+  overflow: visible !important;
+  max-height: 150px !important;
+  min-height: 85px !important;
+  opacity: 1 !important;
+  /* visibility: visible !important; */
+  pointer-events: auto !important;
+  transition:
+    min-height 0s ease-out var(--transition-delay-time-collapse),
+    max-height 0s ease-out var(--transition-delay-time-collapse),
+    opacity var(--fast-animation-speed) ease-out var(--transition-delay-time-collapse) !important;
+    /* visibility 0s ease-out !important; */
+  z-index: 10 !important;
+  padding: 5px !important;
 }
 
-.toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget{
-  display: flex !important;
-}
-.toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget > *{
+.toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget > * {
   flex-shrink: 0 !important;
+  background-color: var(--tabbar-bg-color-expand) !important;
 }
 
+body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
+  #tabs-container:not(:hover) .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget {
+  opacity: 0 !important;
+  /* visibility: hidden !important; */
+  max-height: 0px !important;
+  max-height: 0px !important;
+  pointer-events: none !important;
+  transition:
+    min-height 0s ease-out var(--transition-delay-time-collapse),
+    max-height 0s ease-out var(--transition-delay-time-collapse),
+    opacity var(--fast-animation-speed) ease-out 0s !important;
+}
 
+body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
+#tabs-container .resize {
+  padding-bottom: 85px !important;
+}
+
+body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
+  #tabs-container:not(:hover) .resize {
+  padding-bottom: 0px !important;
+}
 
 #tabs-tabbar-container #tabs-container {
   /* overflow: hidden !important; */
