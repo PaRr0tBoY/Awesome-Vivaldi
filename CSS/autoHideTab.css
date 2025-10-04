@@ -44,6 +44,7 @@
   /* My Theme(Green) */
   /* ============================================ */
   --tabbar-bg-color-collapse: rgba(25, 30, 25, 1);
+  --tabbar-bg-color-collapse: rgba(25, 30, 25, 1);
   --tabbar-bg-color-expand: rgba(11, 41, 17, 1);
   --tabbar-border-color-collapse: rgba(0, 73, 45, 1);
   --tabbar-border-color-expand: rgba(1, 131, 133, 1);
@@ -51,6 +52,7 @@
   --tabbar-margin-bottom: 0px;
   --tabbar-padding: 7px; 
   --tabbar-border-radius-expand: 17px;
+  --tabbar-border-radius-collapse: 3px;
   --tabbar-border-radius-collapse: 3px;
   /* ============================================ */
 
@@ -354,12 +356,47 @@ body:has(.UrlBar-AddressField:focus-within) #tabs-subcontainer.right:not(:hover)
   align-items: center;
 } */
 
-/* I hate newtab button. But if you have the opposite opinion,replace below codes with these
+.toolbar.toolbar-tabbar {
+  position: relative; 
+}
 
+.toolbar.toolbar-tabbar:hover .button-toolbar.newtab,
+.toolbar.toolbar-tabbar-after:hover .button-toolbar.newtab{
+  opacity: 1;
+  visibility: visible;
+}
 .button-toolbar.newtab{
+  width: 50px;
+  position: absolute !important;
+  bottom: 10px !important;
+  left: calc(50% - 25px) !important; 
+  z-index: 100 !important; 
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out, 
+              transform 0.2s ease-in-out, width 0.2s ease-in-out;
+  border-radius: 18px !important;
+  overflow: hidden;
+}
+#tabs-subcontainer .button-toolbar.newtab {
+  width: 280px;
+  position: absolute !important;
+  bottom: 10px !important;
+  left: calc(50% - 140px) !important; 
+  z-index: 100 !important; 
+  border-radius: 5px !important;
+}
+#tabs-container .button-toolbar.newtab {
+  display:none;
+}
+
+
+/* .button-toolbar.newtab{
   left: 0px !important;
   width: 150px;
-}
+} */
+/* I hate newtab button. But if you have the opposite opinion,replace below codes with these
+
 
 And of course you don't need those lockers icon when your tabbar expand on hover so here's how you hide em.
 
@@ -368,11 +405,10 @@ And of course you don't need those lockers icon when your tabbar expand on hover
   display: none !important;
 }
 */
-.button-toolbar.newtab,
 .button-toolbar.tabs-locked,
 .button-toolbar.tabs-unlocked {
   display: none !important;
-} /* Codeblock to be replaced of*/
+}
 
 .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget {
   margin-bottom: -35px !important;
