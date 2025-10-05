@@ -37,15 +37,15 @@
 
   /* Dark Theme */
   /* ============================================ */
-  /* --tabbar-bg-color-collapse: rgb(27, 27, 28);
+  --tabbar-bg-color-collapse: rgb(27, 27, 28);
   --tabbar-bg-color-expand: rgb(53, 58, 63);
   --tabbar-border-color-collapse: rgba(2, 33, 65, 1);
-  --tabbar-border-color-expand: rgb(45, 123, 139); */
+  --tabbar-border-color-expand: rgb(45, 123, 139);
   /* ============================================ */
 
   /* My Theme(Green) */
   /* ============================================ */
-  --tabbar-bg-color-collapse: rgba(25, 30, 25, 1);
+  /* --tabbar-bg-color-collapse: rgba(25, 30, 25, 1);
   --tabbar-bg-color-collapse: rgba(25, 30, 25, 1);
   --tabbar-bg-color-expand: rgba(11, 41, 17, 1);
   --tabbar-border-color-collapse: rgba(0, 73, 45, 1);
@@ -54,7 +54,7 @@
   --tabbar-margin-bottom: 0px;
   --tabbar-padding: 7px; 
   --tabbar-border-radius-expand: 17px;
-  --tabbar-border-radius-collapse: 3px;
+  --tabbar-border-radius-collapse: 3px; */
   /* ============================================ */
 
   /* Debug */
