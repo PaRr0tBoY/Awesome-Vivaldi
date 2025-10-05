@@ -37,15 +37,15 @@
 
   /* Dark Theme */
   /* ============================================ */
-  --tabbar-bg-color-collapse: rgb(27, 27, 28);
+  /* --tabbar-bg-color-collapse: rgb(27, 27, 28);
   --tabbar-bg-color-expand: rgb(53, 58, 63);
   --tabbar-border-color-collapse: rgba(2, 33, 65, 1);
-  --tabbar-border-color-expand: rgb(45, 123, 139);
+  --tabbar-border-color-expand: rgb(45, 123, 139); */
   /* ============================================ */
 
   /* My Theme(Green) */
   /* ============================================ */
-  /* --tabbar-bg-color-collapse: rgba(25, 30, 25, 1);
+  --tabbar-bg-color-collapse: rgba(25, 30, 25, 1);
   --tabbar-bg-color-collapse: rgba(25, 30, 25, 1);
   --tabbar-bg-color-expand: rgba(11, 41, 17, 1);
   --tabbar-border-color-collapse: rgba(0, 73, 45, 1);
@@ -54,7 +54,7 @@
   --tabbar-margin-bottom: 0px;
   --tabbar-padding: 7px; 
   --tabbar-border-radius-expand: 17px;
-  --tabbar-border-radius-collapse: 3px; */
+  --tabbar-border-radius-collapse: 3px;
   /* ============================================ */
 
   /* Debug */
@@ -334,10 +334,8 @@ body:has(:is(.button-popup, .toolbar-editor, .UrlBar-AddressField:focus-within))
 }
 
 /* Disabled tabbar resize */
-.SlideBar {
+#tabs-tabbar-container .SlideBar {
   display: none !important;
-  /*pointer-events: none !important;
-  cursor: default !important;*/
 }
 
 /* Prevent black background behind tabs-container at left */
@@ -366,9 +364,10 @@ body:has(:is(.button-popup, .toolbar-editor, .UrlBar-AddressField:focus-within))
 .toolbar.toolbar-tabbar {
   position: relative; 
 }
-
+body:has(.button-popup) .button-toolbar.newtab, 
 .toolbar.toolbar-tabbar:hover .button-toolbar.newtab,
-.toolbar.toolbar-tabbar-after:hover .button-toolbar.newtab{
+.toolbar.toolbar-tabbar-after:hover .button-toolbar.newtab,
+.toolbar.toolbar-tabbar-before:hover .button-toolbar.newtab{
   opacity: 1;
   visibility: visible;
 }
@@ -393,8 +392,14 @@ body:has(:is(.button-popup, .toolbar-editor, .UrlBar-AddressField:focus-within))
   z-index: 100 !important; 
   border-radius: 5px !important;
 }
+
 #tabs-container .button-toolbar.newtab {
-  display:none;
+  width: 280px;
+  position: absolute !important;
+  bottom: 10px !important;
+  left: calc(50% - 140px) !important; 
+  z-index: 100 !important; 
+  border-radius: 5px !important;
 }
 
 
@@ -417,6 +422,15 @@ And of course you don't need those lockers icon when your tabbar expand on hover
   display: none !important;
 }
 
+/* .tab:not(.active)
+{filter: blur(4px) !important;
+transition: filter 200ms linear !important
+}
+.tab.active
+{filter: blur(0px) !important;
+transition: filter 200ms linear !important
+} */
+
 /* ========================================
    HIDE ELEMENTS ON HOVER
    ======================================== */
@@ -428,20 +442,18 @@ And of course you don't need those lockers icon when your tabbar expand on hover
   transition-delay: 0ms !important;
 } */
 
+  /* margin: 0 max(calc(var(--densityGap) * 2), 1px) !important;
+} */
 #tabs-container .tab-strip.overflow {
   min-width: auto !important;
   max-width: auto !important;
-  margin-right: calc(var(--densityGap) * 2) !important;
-  margin-left: calc(var(--densityGap) * 2) !important;
-  /* z-index: 99999999 !important; */
-  /* overflow: hidden !important; */
-  max-height: 100% !important;
-  height: 100% !important;
-  opacity: 1 !important;
-  /* transition: margin var(--animation-speed) ease-out,
-              opacity var(--animation-speed) ease-out !important; */
-  /* transition-delay: 0ms !important; */
-  /* pointer-events: auto !important; */
+  margin: 0 max(calc(var(--densityGap) * 2), 1px) !important;
+}
+
+#tabs-subcontainer .tab-strip.overflow{
+  min-width: auto !important;
+  max-width: auto !important;
+  margin: 0 max(calc(var(--densityGap) * 2), 1px) !important;
 }
 
 body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
@@ -451,20 +463,21 @@ body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-Addres
   flex: 1 !important;
 }
 
+
 /* ========================================
    BEFORE TOOLBAR
    ======================================== */
 
 .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget {
-  /* margin-right: 7px !important;
-  margin-left: 5px !important; */
+  margin-right: 5px !important;
+  margin-left: 5px !important;
   margin-top: 7px;
   margin-bottom: 7px;
   transform: scaleY(1);
   transform-origin: top !important;
   overflow: hidden;
   opacity: 1;
-  max-height: 33px;
+  max-height: 30px;
   flex-shrink: 0 !important;
   transition: transform var(--animation-speed) ease-out,
               max-height var(--animation-speed) ease-out,
@@ -485,9 +498,17 @@ body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-Addres
     background-color: var(--tabbar-bg-color-collapse);
     border-color: var(--tabbar-bg-color-collapse);
   }
+  border: 1px solid var(--tabbar-bg-color-expand) !important;
+  border-radius: 12px !important;
 }
 
-.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget::before {
+#tabs-container:hover .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget {
+  background-color: var(--tabbar-bg-color-expand);
+  border: 1px solid var(--tabbar-bg-color-expand) !important;
+  border-radius: 12px !important;
+}
+
+/* .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget::before {
   content: '';
   position: absolute;
   left: 50%;
@@ -499,7 +520,6 @@ body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-Addres
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
-  /* background-color: var(--tabbar-border-color-expand); */
   opacity: 1;
   transition: opacity var(--animation-speed) ease-out;
   pointer-events: none;
@@ -511,7 +531,7 @@ body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup))
 body:has(#tabs-container:hover) .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget::before,
 body:has(#tabs-container:focus-within) .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget::before {
   opacity: 0;
-}
+} */
 
 body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup)) .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
 .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover {
