@@ -4,32 +4,32 @@
 osascript -e 'quit app "Vivaldi.app"'
 
 # Find path to Framework folder of current version and save it as variable
-findPath="`find /Applications/Vivaldi.app -name Vivaldi\ Framework.framework`"
+findPath="$(find /Applications/Vivaldi.app -name Vivaldi\ Framework.framework)"
 
 # Copy custom files to Vivaldi.app
-cp /Users/acid/Desktop/VivalArc/moddings/color_tabs.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivalArc/moddings/monochrome-icons.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivalArc/moddings/import-export-command-chains.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivalArc/moddings/chroma.min.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivalArc/moddings/easy-files.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivalArc/moddings/element-capture.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivalArc/moddings/global-media-controls.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivalArc/moddings/yb_address_bar.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivalArc/moddings/AdaptiveWebPanelHeaders.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivalArc/moddings/vivaldi-dashboard-camo.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivalArc/moddings/autoHidePanel.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivalArc/moddings/ClickAddBlockList.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivalArc/moddings/colorful_loading_top_bar.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivalArc/moddings/feedIcon.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivalArc/moddings/mdNotes.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivalArc/moddings/dialogTab.js "$findPath"/Resources/vivaldi/
-# cp /Users/acid/Desktop/VivalArc/moddings/moreFuncInWebPanel.js "$findPath"/Resources/vivaldi/
-# cp /Users/acid/Desktop/VivalArc/moddings/widgets.js "$findPath"/Resources/vivaldi/
-# cp /Users/acid/Desktop/VivalArc/moddings/yb_address_bar.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivaldiModpack/moddings/color_tabs.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivaldiModpack/moddings/monochrome-icons.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivaldiModpack/moddings/import-export-command-chains.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivaldiModpack/moddings/chroma.min.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivaldiModpack/moddings/easy-files.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivaldiModpack/moddings/element-capture.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivaldiModpack/moddings/global-media-controls.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivaldiModpack/moddings/yb_address_bar.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivaldiModpack/moddings/AdaptiveWebPanelHeaders.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivaldiModpack/moddings/vivaldi-dashboard-camo.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivaldiModpack/moddings/autoHidePanel_personal.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivaldiModpack/moddings/feedIcon.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivaldiModpack/moddings/mdNotes.js "$findPath"/Resources/vivaldi/
+#cp /Users/acid/Desktop/VivaldiModpack/moddings/ClickAddBlockList.js "$findPath"/Resources/vivaldi/
+#cp /Users/acid/Desktop/VivaldiModpack/moddings/dialogTab.js "$findPath"/Resources/vivaldi/
+#cp /Users/acid/Desktop/VivaldiModpack/moddings/colorful_loading_top_bar.js "$findPath"/Resources/vivaldi/
+# cp /Users/acid/Desktop/VivaldiModpack/moddings/moreFuncInWebPanel.js "$findPath"/Resources/vivaldi/
+# cp /Users/acid/Desktop/VivaldiModpack/moddings/widgets.js "$findPath"/Resources/vivaldi/
+# cp /Users/acid/Desktop/VivaldiModpack/moddings/yb_address_bar.js "$findPath"/Resources/vivaldi/
 
 ########################################################################################################################
-cp /Users/acid/Desktop/VivalArc/moddings/Follower-Tabs.js "$findPath"/Resources/vivaldi/user_files
-cp /Users/acid/Desktop/VivalArc/moddings/Picture-in-Picture.js "$findPath"/Resources/vivaldi/components/picture-in-picture
+cp /Users/acid/Desktop/VivaldiModpack/moddings/Follower-Tabs.js "$findPath"/Resources/vivaldi/user_files
+cp /Users/acid/Desktop/VivaldiModpack/moddings/Picture-in-Picture.js "$findPath"/Resources/vivaldi/components/picture-in-picture
 
 # Save path to browser.html as variable
 browserHtml="$findPath"/Resources/vivaldi/window.html
@@ -54,14 +54,15 @@ sed -i '' -e '/<\/body>/i\
 <script src="global-media-controls.js"></script>\
 <script src="AdaptiveWebPanelHeaders.js"></script>\
 <script src="vivaldi-dashboard-camo.js"></script>\
-<script src="autoHidePanel.js"></script>\
-<script src="ClickAddBlockList.js"></script>\
-<script src="colorful_loading_top_bar.js"></script>\
+<script src="autoHidePanel_personal.js"></script>\
 <script src="feedIcon.js"></script>\
 <script src="mdNotes.js"></script>\
 <script src="yb_address_bar.js"></script>\
-<script src="dialogTab.js"></script>\
 ' "$browserHtml"
+
+#<script src="ClickAddBlockList.js"></script>\
+#<script src="colorful_loading_top_bar.js"></script>\
+#<script src="dialogTab.js"></script>\
 
 # Pause script
 read -rsp $'Press [Enter] to restart Vivaldi...\n'
@@ -71,4 +72,5 @@ read -rsp $'Press [Enter] to restart Vivaldi...\n'
 # open "$findPath"/Resources/vivaldi/custom.js
 
 # Open Vivaldi
-open /Applications/Vivaldi.app --args --debug-packed-apps --silent-debugger-extension-api
+# open /Applications/Vivaldi.app --args --debug-packed-apps --silent-debugger-extension-api
+open /Applications/Vivaldi.app

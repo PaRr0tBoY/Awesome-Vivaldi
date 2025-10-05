@@ -8,7 +8,7 @@
   --linux-header: calc(var(--window-border) + 20px);
   --addressbar-height: 36px;
   --window-button-scale: 0.8;
-  --window-button-opacity: 0.3;
+  --window-button-opacity: 0.3
   /*--tab-padding: calc(var(--window-border) / 2);*/
   --tab-padding: 0;
   --colorToviTransparent: transparent;
@@ -360,6 +360,15 @@ button[title="显示输入记录"] {
   overflow: visible;
 }
 
+.WorkspacePopup-Items {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+
 /* ========================================
    DOWNLOAD PROGRESS STYLING
    ======================================== */
@@ -550,6 +559,7 @@ button[title="显示输入记录"] {
 .UrlBar-AddressField {
   border-radius: var(--mod-border-radius);
   height: auto;
+  overflow: visible !important;
 }
 
 .UrlBar-SearchField .pageload-indicator,
