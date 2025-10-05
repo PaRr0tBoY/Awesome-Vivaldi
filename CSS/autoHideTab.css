@@ -477,7 +477,7 @@ body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-Addres
   transform-origin: top !important;
   overflow: hidden;
   opacity: 1;
-  max-height: 30px;
+  max-height: 35px;
   flex-shrink: 0 !important;
   transition: transform var(--animation-speed) ease-out,
               max-height var(--animation-speed) ease-out,
