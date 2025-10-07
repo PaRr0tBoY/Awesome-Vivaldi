@@ -587,13 +587,9 @@ body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup))
   max-height: 150px !important;
   min-height: 85px !important;
   opacity: 1 !important;
-  /* visibility: visible !important; */
+  visibility: visible !important;
   pointer-events: auto !important;
-  transition:
-    min-height 0s ease-out var(--transition-delay-time-collapse),
-    max-height 0s ease-out var(--transition-delay-time-collapse),
-    opacity var(--slow-animation-speed) ease-out var(--transition-delay-time-collapse) !important;
-    /* visibility 0s ease-out !important; */
+  transition: none !important;
   z-index: 10 !important;
   padding: 5px !important;
   border-radius: calc(var(--radius) + 5px) !important;
@@ -602,6 +598,7 @@ body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup))
     background-color: var(--colorBgDarker) !important;
     background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important;
     flex-shrink: 0 !important;
+    transition: none !important;
   }
   & > .button-toolbar.newtab{
     background-color: transparent !important;
@@ -612,14 +609,13 @@ body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup))
 body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
   #tabs-container:not(:hover) .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget {
   opacity: 0 !important;
-  /* visibility: hidden !important; */
+  visibility: hidden !important;
   max-width: 0px !important;
-  max-width: 0px !important;
+  max-height: 0px !important;
+  min-height: 0px !important;
+  padding: 0px !important;
   pointer-events: none !important;
-  transition:
-    min-width 0s ease-out var(--transition-delay-time-collapse),
-    max-width 0s ease-out var(--transition-delay-time-collapse),
-    opacity 50ms ease-out 0s !important;
+  transition: none !important;
 }
 
 body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
