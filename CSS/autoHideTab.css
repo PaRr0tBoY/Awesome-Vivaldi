@@ -15,7 +15,8 @@
   --tabbar-padding: 7px; /* Set to 0 if any tabs position problem */
 
   /* Adjust tabbars' border radius when they expand or collapse */
-  --tabbar-border-radius-expand: 17px;
+  /* --tabbar-border-radius-expand: 17px; */
+  /* Expand tab bar border change accordingly to border radius set in browser theme*/
   --tabbar-border-radius-collapse: 3px;
   /* Set to zero if you don't want round corner when tabbar collapsed */
 
@@ -30,15 +31,12 @@
 
   /* Adjust tabbars' color when they expand or collapse */
 
-  /* Adaptive Theme */
+  /* Adaptive Skin */
   /* ============================================ */
---tabbar-bg-color-collapse: var(--colorBg);
---tabbar-bg-color-expand: var(--colorBgIntense);
---tabbar-border-color-collapse: var(--colorBorder);
---tabbar-border-color-expand: var(--colorHighlightBgDark);
+  /* If you didn't set custom theme color, Tab bar accent from your browser theme color automatically */
   /* ============================================ */
 
-  /* Light Theme */
+  /* Light Skin */
   /* ============================================ */
   /* --tabbar-bg-color-collapse: rgb(160, 177, 178);
   --tabbar-bg-color-expand: rgb(201, 222, 223);
@@ -46,25 +44,20 @@
   --tabbar-border-color-expand: rgba(0, 251, 255, 1); */
   /* ============================================ */
 
-  /* Dark Theme */
+  /* Dark Skin */
   /* ============================================ */
   /* --tabbar-bg-color-collapse: rgb(27, 27, 28);
-  --tabbar-bg-color-expand: rgb(53, 58, 63);
-  --tabbar-border-color-collapse: rgba(2, 33, 65, 1);
-  --tabbar-border-color-expand: rgb(45, 123, 139); */
+  --tabbar-bg-color-expand: rgb(53, 58, 63); */
+  --tabbar-border-color-collapse: rgba(66, 73, 80, 0.856); /* You can still add your own color */
+  /* --tabbar-border-color-expand: rgb(45, 123, 139); */
   /* ============================================ */
 
-  /* My Theme(Green) */
+  /* My Skin(Green) */
   /* ============================================ */
-  /* --tabbar-bg-color-collapse: rgba(25, 30, 25, 1);
-  --tabbar-bg-color-expand: rgba(11, 41, 17, 1);
-  --tabbar-border-color-collapse: rgba(0, 73, 45, 1);
-  --tabbar-border-color-expand: rgba(1, 131, 133, 1);
-  --tabbar-margin-top: -5px;
-  --tabbar-margin-bottom: 0px;
-  --tabbar-padding: 7px; 
-  --tabbar-border-radius-expand: 17px;
-  --tabbar-border-radius-collapse: 3px; */
+  /* --tabbar-bg-color-collapse: rgba(25, 30, 25, 1); */
+  /* --tabbar-bg-color-expand: rgba(11, 41, 17, 1); */
+  /* --tabbar-border-color-collapse: rgba(0, 73, 45, 1); */
+  /* --tabbar-border-color-expand: rgba(1, 131, 133, 1); */
   /* ============================================ */
 
   /* Debug */
@@ -87,9 +80,9 @@ with a tab-stack. Which is why we need tab-stack no? */
   max-width: var(--tabs-container-collapse-width) !important;
   margin-top: var(--tabbar-margin-top) !important;
   margin-bottom: var(--tabbar-margin-bottom) !important;
-  background-color: var(--colorBg) !important;
+  background-color: var(--tabbar-bg-color-collapse, var(--colorBg)) !important;
   border-radius: var(--tabbar-border-radius-collapse) !important;
-  border: 1px dotted var(--colorBorder) !important;
+  border: 1px dotted var(--tabbar-border-color-collapse, var(--colorBgLighter)) !important;
   /* will-change: transform !important; */
   transition:
     /* transform var(--smooth-animation-speed) ease-out, */
@@ -116,7 +109,7 @@ with a tab-stack. Which is why we need tab-stack no? */
 #tabs-container:hover {
   min-width: var(--tabs-container-expand-width) !important;
   max-width: var(--tabs-container-expand-width) !important;
-  background-color: var(--colorBgIntense) !important;
+  background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important;
   transition:
     /* transform var(--smooth-animation-speed) ease-out, */
     border-radius var(--animation-speed) ease-out,
@@ -147,9 +140,9 @@ with a tab-stack. Which is why we need tab-stack no? */
   margin-top: var(--tabbar-margin-top) !important;
   margin-bottom: var(--tabbar-margin-bottom) !important;
   padding-top: var(--tabbar-padding) !important;
-  background-color: var(--colorBg) !important;
+  background-color: var(--tabbar-bg-color-collapse, var(--colorBg)) !important;
   border-radius: var(--tabbar-border-radius-collapse) !important;
-  border: 1px dotted var(--colorBorder) !important;
+  border: 1px dotted var(--tabbar-border-color-collapse, var(--colorBgLighter)) !important;
   transition:
     min-width var(--animation-speed) ease-out,
     max-width var(--animation-speed) ease-out,
@@ -185,7 +178,7 @@ with a tab-stack. Which is why we need tab-stack no? */
 body:has(:is(.button-popup, .toolbar-editor, .UrlBar-AddressField:focus-within, #vivaldi-tooltip:hover)) #tabs-container {
   min-width: var(--tabs-container-expand-width) !important;
   max-width: var(--tabs-container-expand-width) !important;
-  background-color: var(--colorBgIntense) !important;
+  background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important;
   transition:
     /* transform var(--smooth-animation-speed) ease-out, */
     border-radius var(--animation-speed) ease-out,
@@ -211,7 +204,7 @@ body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-Addres
 /* #tabs-subcontainer:hover { */
   min-width: var(--tabs-subcontainer-expand-width) !important;
   max-width: var(--tabs-subcontainer-expand-width) !important;
-  background-color: var(--colorBgIntense) !important;
+  background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important;
   transition:
     border-radius var(--animation-speed) ease-out,
     border var(--animation-speed) ease-out,
@@ -315,9 +308,11 @@ body:has(:is(.button-popup, .toolbar-editor, .UrlBar-AddressField:focus-within))
 /* Border Color */
 #tabs-tabbar-container #tabs-container:hover {
   border: 1px solid var(--colorHighlightBgDark) !important;
+  border: 1px solid var(--tabbar-border-color-expand, var(--colorHighlightBgDark)) !important;
 }
 #tabs-tabbar-container #tabs-subcontainer:hover {
   border: 1px solid var(--colorHighlightBgDark) !important;
+  border: 1px solid var(--tabbar-border-color-expand, var(--colorHighlightBgDark)) !important;
 }
 /* Correct tab bar order: When right tab bar, main tab bar is on the right; when left tab bar, main tab bar is on the left */
 /* Right tab bar: Sub tab bar on left, main tab bar on right */
@@ -506,15 +501,18 @@ body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-Addres
   
   .UrlBar-AddressField{
     background-color: var(--colorBg);
+    background-color: var(--tabbar-bg-color-collapse, var(--colorBg));
     border-color: var(--colorBg);
+    border-color: var(--tabbar-bg-color-collapse, var(--colorBg));
   }
-  border: 1px solid var(--colorBgIntense) !important;
+  border: 1px solid var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important;
   border-radius: 12px !important;
 }
 
 #tabs-container:hover .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget {
-  background-color: var(--colorBgIntense);
-  border: 1px solid var(--colorBgIntense) !important;
+  background-color: var(--colorBgDarker);
+  background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker));
+  border: 1px solid var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important;
   border-radius: 12px !important;
 }
 
@@ -550,7 +548,7 @@ body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup))
   max-height: 150px;
   overflow: visible !important;
   transform-origin: top !important;
-  background-color: var(--colorBgIntense) !important;
+  background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important;
   transition: transform var(--animation-speed) ease-out,
               max-height var(--animation-speed) ease-out,
               background-color var(--animation-speed) ease-out,
@@ -575,7 +573,7 @@ body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup))
    ======================================== */
 
 .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget {
-  background-color: var(--colorBgIntense) !important;
+  background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important;
   position: absolute !important;
   bottom: 0 !important;
   left: 0 !important;
@@ -601,7 +599,8 @@ body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup))
   border-radius: calc(var(--radius) + 5px) !important;
 
   & > *:not(.button-toolbar.newtab) {
-    background-color: var(--colorBgIntense) !important;
+    background-color: var(--colorBgDarker) !important;
+    background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important;
     flex-shrink: 0 !important;
   }
   & > .button-toolbar.newtab{
