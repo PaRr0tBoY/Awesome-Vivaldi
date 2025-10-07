@@ -309,7 +309,7 @@ body:has(.tab-position.is-substack) #vivaldi-tooltip:hover .tooltip-item {
 }
 
 [class*="button-popup"] {
-  border-radius: 12px !important;
+  border-radius: var(--radius) !important;
 }
 /* ========================================
    QUICK COMMAND MODAL
