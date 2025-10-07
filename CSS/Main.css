@@ -228,20 +228,22 @@
   display: none !important;
 }
 
-/* Subscribe button */
-.ToolbarButton-Button[title="网页提供订阅"] {
-  display: none !important;
-  float: left;
-}
 
+/* .ToolbarButton-Button{
+  display: none !important;
+} */
 /* Content blocker */
-.ToolbarButton-Button[title="内容拦截器"],
-.ToolbarButton-Button[title*="内容拦截器"],
-.ToolbarButton-Button[title*="拦截器"],
-.ToolbarButton-Button[title*="广告拦截"],
-.ToolbarButton-Button[title*="跟踪拦截"],
-.ToolbarButton-Button[aria-label*="内容拦截器"],
-.ToolbarButton-Button[aria-label*="拦截器"] {
+.ToolbarButton-Button[title*="Feed"],
+.ToolbarButton-Button[title*="Block"],
+.ToolbarButton-Button[title*="Reader"],
+.ToolbarButton-Button[title*="Bookmark"],
+.ToolbarButton-Button[title*="Translate"],
+.ToolbarButton-Button[title*="订阅"],
+.ToolbarButton-Button[title*="拦截"],
+.ToolbarButton-Button[title*="阅读"],
+.ToolbarButton-Button[title*="书签"],
+.ToolbarButton-Button[title*="翻译"],
+.ToolbarButton-Button[title*="页面"] {
   display: none !important;
 }
 
@@ -269,11 +271,6 @@ button[title="显示输入记录"] {
 /* ========================================
    TOOLBAR & ADDRESS BAR STYLING
    ======================================== */
-
-/* Toolbar command button icons */
-/*.button-toolbar.toolbar-command .button-icon svg path {
-  fill: #aec7bf !important;
-}*/
 
 /* Address field center alignment */
 #urlFieldInput {
@@ -680,7 +677,7 @@ button[class*="ToolbarButton"] {
    LOADING BAR
    ======================================== */
 
-#loading-bar {
+/* #loading-bar {
   position: fixed;
   top: 0;
   left: 0;
@@ -689,7 +686,7 @@ button[class*="ToolbarButton"] {
   background: linear-gradient(to right, #eaf4d3, #dbd8ae, #ca907e);
   transition: width 0.3s ease;
   z-index: 9999;
-}
+} */
 
 /* ========================================
    STATUS BAR STYLING

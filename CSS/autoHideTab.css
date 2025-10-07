@@ -6,6 +6,9 @@
   --tabs-subcontainer-collapse-width: 44px;
   --tabs-subcontainer-expand-width: 300px;
 
+  --Button-newtab-main-width: calc(var(--tabs-container-expand-width) / 2);
+  --Button-newtab-sub-width: calc(var(--tabs-subcontainer-expand-width) / 2);
+
   /* Adjust tabbar margin and padding */
   --tabbar-margin-top: -5px;
   --tabbar-margin-bottom: 0px;
@@ -45,7 +48,7 @@
 
   /* My Theme(Green) */
   /* ============================================ */
-  /* --tabbar-bg-color-collapse: rgba(25, 30, 25, 1);
+  --tabbar-bg-color-collapse: rgba(25, 30, 25, 1);
   --tabbar-bg-color-collapse: rgba(25, 30, 25, 1);
   --tabbar-bg-color-expand: rgba(11, 41, 17, 1);
   --tabbar-border-color-collapse: rgba(0, 73, 45, 1);
@@ -54,7 +57,7 @@
   --tabbar-margin-bottom: 0px;
   --tabbar-padding: 7px; 
   --tabbar-border-radius-expand: 17px;
-  --tabbar-border-radius-collapse: 3px; */
+  --tabbar-border-radius-collapse: 3px;
   /* ============================================ */
 
   /* Debug */
@@ -372,33 +375,28 @@ body:has(.button-popup) .button-toolbar.newtab,
   visibility: visible;
 }
 .button-toolbar.newtab{
-  width: 50px;
+  /* width: 50px;
   position: absolute !important;
   bottom: 10px !important;
-  left: calc(50% - 25px) !important; 
-  z-index: 100 !important; 
+  left: calc(50% - 25px) !important; */
+  z-index: 100 !important;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out, 
-              transform 0.2s ease-in-out, width 0.2s ease-in-out;
-  border-radius: 18px !important;
+  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
   overflow: hidden;
 }
 #tabs-subcontainer .button-toolbar.newtab {
-  width: 280px;
+  width: var(--Button-newtab-sub-width);
   position: absolute !important;
   bottom: 10px !important;
-  left: calc(50% - 140px) !important; 
-  z-index: 100 !important; 
+  left: calc(50% - var(--Button-newtab-sub-width) / 2) !important;
+  z-index: 100 !important;
   border-radius: 5px !important;
 }
 
 #tabs-container .button-toolbar.newtab {
-  width: 280px;
-  position: absolute !important;
-  bottom: 10px !important;
-  left: calc(50% - 140px) !important; 
-  z-index: 100 !important; 
+  width: var(--Button-newtab-main-width);
+  z-index: 100 !important;
   border-radius: 5px !important;
 }
 
@@ -469,6 +467,7 @@ body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-Addres
    ======================================== */
 
 .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget {
+  z-index: 99999999999 !important; /* Fixed search suggestions popup covered by tabs */
   margin-right: 5px !important;
   margin-left: 5px !important;
   margin-top: 7px;
@@ -571,6 +570,7 @@ body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup))
   left: 0 !important;
   right: 0 !important;
   display: flex !important;
+  justify-content: center !important;
   flex-wrap: wrap !important;
   align-items: flex-end !important;
   align-content: flex-end !important;
@@ -587,12 +587,21 @@ body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup))
     /* visibility 0s ease-out !important; */
   z-index: 10 !important;
   padding: 5px !important;
+  border-radius: var(--tabbar-border-radius-expand) !important;
+  & > *:not(.button-toolbar.newtab) {
+    /* flex-shrink: 0 !important; */
+    background-color: var(--tabbar-bg-color-expand) !important;
+  }
+  & > .button-toolbar.newtab{
+    background-color: transparent !important;
+    /* flex-shrink: 0 !important; */
+  }
 }
 
-.toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget > * {
+/* .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget > * {
   flex-shrink: 0 !important;
   background-color: var(--tabbar-bg-color-expand) !important;
-}
+} */
 
 body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
   #tabs-container:not(:hover) .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget {
