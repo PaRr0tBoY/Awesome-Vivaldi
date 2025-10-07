@@ -55,7 +55,7 @@
   /* My Skin(Green) */
   /* ============================================ */
   /* --tabbar-bg-color-collapse: rgba(25, 30, 25, 1); */
-  /* --tabbar-bg-color-expand: rgba(11, 41, 17, 1); */
+  --tabbar-bg-color-expand: rgba(11, 41, 17, 0.4);
   /* --tabbar-border-color-collapse: rgba(0, 73, 45, 1); */
   /* --tabbar-border-color-expand: rgba(1, 131, 133, 1); */
   /* ============================================ */
@@ -573,7 +573,8 @@ body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup))
    ======================================== */
 
 .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget {
-  background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important;
+  /* background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important; */
+  background-color: transparent !important;
   position: absolute !important;
   bottom: 0 !important;
   left: 0 !important;
@@ -595,8 +596,8 @@ body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup))
   border-radius: calc(var(--radius) + 5px) !important;
 
   & > *:not(.button-toolbar.newtab) {
-    background-color: var(--colorBgDarker) !important;
-    background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important;
+    /* background-color: var(--colorBgDarker) !important;
+    background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important; */
     flex-shrink: 0 !important;
     transition: none !important;
     transform: none !important;
