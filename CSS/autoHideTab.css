@@ -11,7 +11,7 @@
 
   /* Adjust tabbar margin and padding */
   --tabbar-margin-top: -5px;
-  --tabbar-margin-bottom: 0px;
+  --tabbar-margin-bottom: 1px;
   --tabbar-padding: 7px; /* Set to 0 if any tabs position problem */
 
   /* Adjust tabbars' border radius when they expand or collapse */
@@ -27,7 +27,7 @@
 
   /* Animation Delay Time */
   --transition-delay-time-expand: 0ms;
-  --transition-delay-time-collapse: 150ms;
+  --transition-delay-time-collapse: 0ms;
 
   /* Adjust tabbars' color when they expand or collapse */
 
@@ -628,7 +628,7 @@ body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-Addres
     max-width 0s ease-out calc(var(--transition-delay-time-collapse) + var(--animation-speed)),
     max-height 0s ease-out calc(var(--transition-delay-time-collapse) + var(--animation-speed)),
     min-height 0s ease-out calc(var(--transition-delay-time-collapse) + var(--animation-speed)),
-    opacity var(--animation-speed) ease-out 0s !important;
+    opacity var(--fast-animation-speed) ease-out 0s !important;
 }
 
 body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
