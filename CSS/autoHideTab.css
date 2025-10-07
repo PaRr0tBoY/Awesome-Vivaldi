@@ -32,10 +32,10 @@
 
   /* Adaptive Theme */
   /* ============================================ */
---tabbar-bg-color-collapse: var(--colorBgDark);
+--tabbar-bg-color-collapse: var(--colorBg);
 --tabbar-bg-color-expand: var(--colorBgIntense);
---tabbar-border-color-collapse: var(--colorHighlightBgDark);
---tabbar-border-color-expand: var(--colorAccentBg);
+--tabbar-border-color-collapse: var(--colorBorder);
+--tabbar-border-color-expand: var(--colorHighlightBgDark);
   /* ============================================ */
 
   /* Light Theme */
@@ -87,9 +87,9 @@ with a tab-stack. Which is why we need tab-stack no? */
   max-width: var(--tabs-container-collapse-width) !important;
   margin-top: var(--tabbar-margin-top) !important;
   margin-bottom: var(--tabbar-margin-bottom) !important;
-  background-color: var(--tabbar-bg-color-collapse) !important;
+  background-color: var(--colorBg) !important;
   border-radius: var(--tabbar-border-radius-collapse) !important;
-  border: 1px dotted var(--tabbar-border-color-collapse) !important;
+  border: 1px dotted var(--colorBorder) !important;
   /* will-change: transform !important; */
   transition:
     /* transform var(--smooth-animation-speed) ease-out, */
@@ -116,7 +116,7 @@ with a tab-stack. Which is why we need tab-stack no? */
 #tabs-container:hover {
   min-width: var(--tabs-container-expand-width) !important;
   max-width: var(--tabs-container-expand-width) !important;
-  background-color: var(--tabbar-bg-color-expand) !important;
+  background-color: var(--colorBgIntense) !important;
   transition:
     /* transform var(--smooth-animation-speed) ease-out, */
     border-radius var(--animation-speed) ease-out,
@@ -147,9 +147,9 @@ with a tab-stack. Which is why we need tab-stack no? */
   margin-top: var(--tabbar-margin-top) !important;
   margin-bottom: var(--tabbar-margin-bottom) !important;
   padding-top: var(--tabbar-padding) !important;
-  background-color: var(--tabbar-bg-color-collapse) !important;
+  background-color: var(--colorBg) !important;
   border-radius: var(--tabbar-border-radius-collapse) !important;
-  border: 1px dotted var(--tabbar-border-color-collapse) !important;
+  border: 1px dotted var(--colorBorder) !important;
   transition:
     min-width var(--animation-speed) ease-out,
     max-width var(--animation-speed) ease-out,
@@ -185,7 +185,7 @@ with a tab-stack. Which is why we need tab-stack no? */
 body:has(:is(.button-popup, .toolbar-editor, .UrlBar-AddressField:focus-within, #vivaldi-tooltip:hover)) #tabs-container {
   min-width: var(--tabs-container-expand-width) !important;
   max-width: var(--tabs-container-expand-width) !important;
-  background-color: var(--tabbar-bg-color-expand) !important;
+  background-color: var(--colorBgIntense) !important;
   transition:
     /* transform var(--smooth-animation-speed) ease-out, */
     border-radius var(--animation-speed) ease-out,
@@ -211,7 +211,7 @@ body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-Addres
 /* #tabs-subcontainer:hover { */
   min-width: var(--tabs-subcontainer-expand-width) !important;
   max-width: var(--tabs-subcontainer-expand-width) !important;
-  background-color: var(--tabbar-bg-color-expand) !important;
+  background-color: var(--colorBgIntense) !important;
   transition:
     border-radius var(--animation-speed) ease-out,
     border var(--animation-speed) ease-out,
@@ -314,10 +314,10 @@ body:has(:is(.button-popup, .toolbar-editor, .UrlBar-AddressField:focus-within))
 
 /* Border Color */
 #tabs-tabbar-container #tabs-container:hover {
-  border: 1px solid var(--tabbar-border-color-expand) !important;
+  border: 1px solid var(--colorHighlightBgDark) !important;
 }
 #tabs-tabbar-container #tabs-subcontainer:hover {
-  border: 1px solid var(--tabbar-border-color-expand) !important;
+  border: 1px solid var(--colorHighlightBgDark) !important;
 }
 /* Correct tab bar order: When right tab bar, main tab bar is on the right; when left tab bar, main tab bar is on the left */
 /* Right tab bar: Sub tab bar on left, main tab bar on right */
@@ -505,16 +505,16 @@ body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-Addres
   }
   
   .UrlBar-AddressField{
-    background-color: var(--tabbar-bg-color-collapse);
-    border-color: var(--tabbar-bg-color-collapse);
+    background-color: var(--colorBg);
+    border-color: var(--colorBg);
   }
-  border: 1px solid var(--tabbar-bg-color-expand) !important;
+  border: 1px solid var(--colorBgIntense) !important;
   border-radius: 12px !important;
 }
 
 #tabs-container:hover .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget {
-  background-color: var(--tabbar-bg-color-expand);
-  border: 1px solid var(--tabbar-bg-color-expand) !important;
+  background-color: var(--colorBgIntense);
+  border: 1px solid var(--colorBgIntense) !important;
   border-radius: 12px !important;
 }
 
@@ -550,7 +550,7 @@ body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup))
   max-height: 150px;
   overflow: visible !important;
   transform-origin: top !important;
-  background-color: var(--tabbar-bg-color-expand) !important;
+  background-color: var(--colorBgIntense) !important;
   transition: transform var(--animation-speed) ease-out,
               max-height var(--animation-speed) ease-out,
               background-color var(--animation-speed) ease-out,
@@ -575,7 +575,7 @@ body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup))
    ======================================== */
 
 .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget {
-  background-color: var(--tabbar-bg-color-expand) !important;
+  background-color: var(--colorBgIntense) !important;
   position: absolute !important;
   bottom: 0 !important;
   left: 0 !important;
@@ -601,7 +601,7 @@ body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup))
   border-radius: calc(var(--radius) + 5px) !important;
 
   & > *:not(.button-toolbar.newtab) {
-    background-color: var(--tabbar-bg-color-expand) !important;
+    background-color: var(--colorBgIntense) !important;
     flex-shrink: 0 !important;
   }
   & > .button-toolbar.newtab{
