@@ -233,17 +233,17 @@
   display: none !important;
 } */
 /* Content blocker */
-.ToolbarButton-Button[title*="Feed"],
-.ToolbarButton-Button[title*="Block"],
-.ToolbarButton-Button[title*="Reader"],
-.ToolbarButton-Button[title*="Bookmark"],
-.ToolbarButton-Button[title*="Translate"],
-.ToolbarButton-Button[title*="订阅"],
-.ToolbarButton-Button[title*="拦截"],
-.ToolbarButton-Button[title*="阅读"],
-.ToolbarButton-Button[title*="书签"],
-.ToolbarButton-Button[title*="翻译"],
-.ToolbarButton-Button[title*="页面"] {
+.UrlBar-AddressField .ToolbarButton-Button[title*="Feed"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="Block"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="Reader"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="Bookmark"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="Translate"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="订阅"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="拦截"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="阅读"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="书签"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="翻译"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="页面"] {
   display: none !important;
 }
 
@@ -266,6 +266,27 @@ button[title="显示输入记录"] {
 /* Dashboard widget URL wrapper */
 .dashboard-widget .url-wrapper {
   display: none;
+}
+
+/* Tab tooltip hide thumbnail */
+/* body:has(.tab-position.is-substack:hover) #vivaldi-tooltip .tooltip-item {
+  visibility: visible;
+  opacity: 1;
+}
+
+body:has(.tab-position:not(.is-substack)) #vivaldi-tooltip .tooltip-item {
+  visibility: hidden;
+  opacity: 0;
+} */
+body:has(.tab-position.is-substack:hover) #vivaldi-tooltip .tooltip-item,
+body:has(.tab-position.is-substack) #vivaldi-tooltip:hover .tooltip-item {
+  visibility: visible;
+  opacity: 1;
+}
+
+#vivaldi-tooltip .tooltip-item {
+  visibility: hidden;
+  opacity: 0;
 }
 
 /* ========================================

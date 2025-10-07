@@ -48,7 +48,7 @@
 
   /* My Theme(Green) */
   /* ============================================ */
-  --tabbar-bg-color-collapse: rgba(25, 30, 25, 1);
+  /* --tabbar-bg-color-collapse: rgba(25, 30, 25, 1);
   --tabbar-bg-color-collapse: rgba(25, 30, 25, 1);
   --tabbar-bg-color-expand: rgba(11, 41, 17, 1);
   --tabbar-border-color-collapse: rgba(0, 73, 45, 1);
@@ -57,7 +57,7 @@
   --tabbar-margin-bottom: 0px;
   --tabbar-padding: 7px; 
   --tabbar-border-radius-expand: 17px;
-  --tabbar-border-radius-collapse: 3px;
+  --tabbar-border-radius-collapse: 3px; */
   /* ============================================ */
 
   /* Debug */
@@ -175,7 +175,7 @@ with a tab-stack. Which is why we need tab-stack no? */
 
 /* Enhanced conditions for keeping tabbar expanded */
 /* When StackEditor modal is present or AddressField is focused */
-body:has(:is(.button-popup, .toolbar-editor, .UrlBar-AddressField:focus-within)) #tabs-container {
+body:has(:is(.button-popup, .toolbar-editor, .UrlBar-AddressField:focus-within, #vivaldi-tooltip:hover)) #tabs-container {
   min-width: var(--tabs-container-expand-width) !important;
   max-width: var(--tabs-container-expand-width) !important;
   background-color: var(--tabbar-bg-color-expand) !important;
@@ -588,20 +588,16 @@ body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup))
   z-index: 10 !important;
   padding: 5px !important;
   border-radius: var(--tabbar-border-radius-expand) !important;
+
   & > *:not(.button-toolbar.newtab) {
-    /* flex-shrink: 0 !important; */
+    flex-shrink: 0 !important;
     background-color: var(--tabbar-bg-color-expand) !important;
   }
   & > .button-toolbar.newtab{
     background-color: transparent !important;
-    /* flex-shrink: 0 !important; */
+    flex-shrink: 0 !important;
   }
 }
-
-/* .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget > * {
-  flex-shrink: 0 !important;
-  background-color: var(--tabbar-bg-color-expand) !important;
-} */
 
 body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
   #tabs-container:not(:hover) .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget {
