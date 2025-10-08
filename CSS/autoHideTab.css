@@ -755,7 +755,13 @@ body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-Addres
   );
 }
 
-/* Uncomment the following lines to hide panel_switch */
+
+
+
+
+
+/* Uncomment following lines to enable tabbar toggle */
+
 /* #panel_switch { flex: 0 0 2px !important; background-color: transparent !important; }
 #panel_switch svg { display: none !important; }
 
@@ -768,11 +774,8 @@ body:has(#panel_switch) {
     min-width: calc(var(--tabs-container-expand-width) / 1.2 ) !important;
     max-width: calc(var(--tabs-container-expand-width) / 1.2 ) !important;
   }
-} */
+}
 
-/*=================== Webpage stack margins when panel_switch exists ===================*/
-
-/* Right tabbar margins with panel_switch */
 body:has(#panel_switch) #browser:not(.fullscreen):has(#tabs-tabbar-container.right)
   .inner
   #webpage-stack {
@@ -788,7 +791,6 @@ body:has(#panel_switch) #browser:not(.fullscreen)
   transition: margin-right var(--animation-speed) ease-out !important;
 }
 
-/* Left tabbar margins with panel_switch */
 body:has(#panel_switch) #browser:not(.fullscreen):has(#tabs-tabbar-container.left)
   .inner
   #webpage-stack {
@@ -802,4 +804,4 @@ body:has(#panel_switch) #browser:not(.fullscreen)
   #webpage-stack {
   margin-left: calc((var(--tabs-container-expand-width) / 1.2) * 2);
   transition: margin-left var(--animation-speed) ease-out !important;
-}
+} */
