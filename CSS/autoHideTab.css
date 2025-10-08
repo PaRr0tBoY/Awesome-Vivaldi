@@ -754,3 +754,52 @@ body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-Addres
       var(--tabs-subcontainer-collapse-width)
   );
 }
+
+/* Uncomment the following lines to hide panel_switch */
+/* #panel_switch { flex: 0 0 2px !important; background-color: transparent !important; }
+#panel_switch svg { display: none !important; }
+
+body:has(#panel_switch) {
+  & #tabs-container{
+    min-width: calc(var(--tabs-container-expand-width) / 1.2 ) !important;
+    max-width: calc(var(--tabs-container-expand-width) / 1.2 ) !important;
+  }
+  & #tabs-subcontainer{
+    min-width: calc(var(--tabs-container-expand-width) / 1.2 ) !important;
+    max-width: calc(var(--tabs-container-expand-width) / 1.2 ) !important;
+  }
+} */
+
+/*=================== Webpage stack margins when panel_switch exists ===================*/
+
+/* Right tabbar margins with panel_switch */
+body:has(#panel_switch) #browser:not(.fullscreen):has(#tabs-tabbar-container.right)
+  .inner
+  #webpage-stack {
+  margin-right: calc(var(--tabs-container-expand-width) / 1.2);
+  transition: margin-right var(--animation-speed) ease-out !important;
+}
+
+body:has(#panel_switch) #browser:not(.fullscreen)
+  :has(#tabs-tabbar-container.right)
+  .inner:has(#tabs-subcontainer:is(.left, .right))
+  #webpage-stack {
+  margin-right: calc((var(--tabs-container-expand-width) / 1.2) * 2);
+  transition: margin-right var(--animation-speed) ease-out !important;
+}
+
+/* Left tabbar margins with panel_switch */
+body:has(#panel_switch) #browser:not(.fullscreen):has(#tabs-tabbar-container.left)
+  .inner
+  #webpage-stack {
+  margin-left: calc(var(--tabs-container-expand-width) / 1.2);
+  transition: margin-left var(--animation-speed) ease-out !important;
+}
+
+body:has(#panel_switch) #browser:not(.fullscreen)
+  :has(#tabs-tabbar-container.left)
+  .inner:has(#tabs-subcontainer:is(.left, .right))
+  #webpage-stack {
+  margin-left: calc((var(--tabs-container-expand-width) / 1.2) * 2);
+  transition: margin-left var(--animation-speed) ease-out !important;
+}
