@@ -8,7 +8,8 @@
 
 | Features | Preview |
 |---------|---------|
-| **Auto hide EVERY bars**<br>- Tab bar<br>- Panel bar<br>- Bookmark bar | <img alt="right tabbar" width="200px" src="Others/Showcase/autoHide/tabbar/rightTabbar.gif" /><img alt="panel" width="230px" src="Others/Showcase/autoHide/panel/autoHidePanel1.gif" /><img alt="bookmark" width="630px" src="Others/Showcase/autoHide/bookmarkbar/autoHideBookmarkBar.gif" /> |
+| **Adaptive Color**<br>Adaptive Color according to your browser theme<br>| <img alt="Adaptive Color" width="200px" src="Others/Showcase/autoHide/tabbar/Adaptive.gif" /> |
+| **Auto hide EVERY bars**<br>- Tab bar<br>- Panel bar<br>- Bookmark bar | <img alt="right tabbar" width="200px" src="Others/Showcase/autoHide/tabbar/rightTab.gif" /><img alt="panel" width="230px" src="Others/Showcase/autoHide/panel/autoHidePanel1.gif" /><img alt="bookmark" width="630px" src="Others/Showcase/autoHide/bookmarkbar/autoHideBookmarkBar.gif" /> |
 | **Sleek Audio Icon**<br>- Replace Everywhere<br>- `Playing` : Coloured<br>- `Mute` : Dim | <img alt="tab audio icon" width="315px" src="Others/Showcase/audioIcon/tabAudioIcon.gif" /> |
 | **Vivaldi Peek**<br>- Long Press Right Click On Link<br>- Alt + Left Click On Link | <img alt="peek" width="630px" src="Others/Showcase/Peek/Peek.gif" /> |
 | **Quick File Pane**<br>- Now optimized for latest Vivaldi | <img alt="easy file panel" width="630px" src="Others/Showcase/easy-file-for-latest-vivaldi/easy-file-panel.png" /> |
