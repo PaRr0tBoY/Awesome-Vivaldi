@@ -640,7 +640,7 @@ body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-Addres
   min-height: 85px !important;
   /* padding: 5px !important; */
   pointer-events: auto !important;
-  transition: opacity var(--animation-speed) ease-out calc(var(--transition-delay-time-collapse) + var(--animation-speed)) !important;
+  transition: opacity var(--fast-animation-speed) ease-out calc(var(--transition-delay-time-collapse) + var(--animation-speed)) !important;
 }
 
 body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
