@@ -7,8 +7,8 @@ body:has(.tab-position.is-substack) #vivaldi-tooltip:hover .tooltip-item {
 #vivaldi-tooltip .tooltip-item {
   visibility: hidden;
   opacity: 0;
-  & .thumbnail-image, span.info.size.off {
-    display: none;
+  & .thumbnail-image, span.info.size, span.info.size.off {
+    display: none !important;
   }
 }
 body:has(.tab-position.is-substack:hover) #vivaldi-tooltip .tooltip,
@@ -21,6 +21,14 @@ body:has(.tab-position.is-substack) #vivaldi-tooltip:hover .tooltip {
   max-height: 280px;
   overflow: hidden;
   border-radius: calc(var(--radius) + 3px);
+}
+
+body:has(#tabs-container.left) #vivaldi-tooltip .tooltip {
+  left: var(--tabs-container-expand-width) !important;
+  right: auto !important;
+}
+
+body:has(#tabs-container.right) #vivaldi-tooltip .tooltip {
   right: var(--tabs-container-expand-width) !important;
   left: auto !important;
 }
@@ -32,7 +40,6 @@ div.tooltip .tab-group{
   overflow-y: scroll;
   padding: 3px !important;
   
-  /* 更细的滚动条，不占据空间 */
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
   
@@ -60,6 +67,7 @@ div.tooltip {
     max-width: 100% !important;
     height: 50px !important;
     overflow: hidden;
+    z-index: 10;
     
     & .thumbnail-caption {
       overflow: hidden;
@@ -88,7 +96,8 @@ div.tooltip {
     overflow: hidden;
     text-overflow: ellipsis;
     box-sizing: border-box;
-    font-size: 70%;
+    font-size: 80%;
+    z-index: 30;
   }
   
   & .url {
@@ -100,6 +109,7 @@ div.tooltip {
     box-sizing: border-box;
     font-size: 60%;
     color: grey;
+    z-index: 30;
   }
   
   .tooltip-item::before{
@@ -111,6 +121,7 @@ div.tooltip {
     width:100%;
     height:100%;
     background:rgba(114, 114, 114, 0.4);
+    z-index: 20;
   }
   
   .tooltip-item:hover::before{
