@@ -27,7 +27,7 @@
 
   /* Animation Delay Time */
   --transition-delay-time-expand: 0ms;
-  --transition-delay-time-collapse: 0ms;
+  --transition-delay-time-collapse: 50ms;
 
   /* Adjust tabbars' color when they expand or collapse */
 

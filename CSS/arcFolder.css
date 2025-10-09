@@ -1,9 +1,11 @@
+
 /* Tab tooltip hide thumbnail */
 body:has(.tab-position.is-substack:hover) #vivaldi-tooltip .tooltip-item,
 body:has(.tab-position.is-substack) #vivaldi-tooltip:hover .tooltip-item {
   visibility: visible;
   opacity: 1;
 }
+
 #vivaldi-tooltip .tooltip-item {
   visibility: hidden;
   opacity: 0;
@@ -11,6 +13,29 @@ body:has(.tab-position.is-substack) #vivaldi-tooltip:hover .tooltip-item {
     display: none !important;
   }
 }
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes tooltipFadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
 body:has(.tab-position.is-substack:hover) #vivaldi-tooltip .tooltip,
 body:has(.tab-position.is-substack) #vivaldi-tooltip:hover .tooltip {
   display: flex !important;
@@ -21,16 +46,29 @@ body:has(.tab-position.is-substack) #vivaldi-tooltip:hover .tooltip {
   max-height: 280px;
   overflow: hidden;
   border-radius: calc(var(--radius) + 3px);
+  
+  animation: tooltipFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+#vivaldi-tooltip .tooltip {
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 1, 1) 0.6s, 
+              transform 0.3s cubic-bezier(0.4, 0, 1, 1) 0.6s;
+}
+
+body:not(:has(.tab-position.is-substack:hover)) #vivaldi-tooltip .tooltip:not(:hover) {
+  animation: tooltipFadeOut 0.3s cubic-bezier(0.4, 0, 1, 1) 0.6s forwards;
 }
 
 body:has(#tabs-container.left) #vivaldi-tooltip .tooltip {
   left: var(--tabs-container-expand-width) !important;
   right: auto !important;
+  transform-origin: left center;
 }
 
 body:has(#tabs-container.right) #vivaldi-tooltip .tooltip {
   right: var(--tabs-container-expand-width) !important;
   left: auto !important;
+  transform-origin: right center;
 }
 
 div.tooltip .tab-group{
@@ -81,11 +119,10 @@ div.tooltip {
       width: 100%;
     }
     
-    /* 将按钮置左 */
     & .thumbnail-buttons {
       align-items: flex-start !important;
       justify-content: flex-start !important;
-      order: -1; /* 将按钮移到最前面 */
+      order: -1;
     }
   }
   
@@ -127,4 +164,9 @@ div.tooltip {
   .tooltip-item:hover::before{
     display:block;
   }
+}
+
+body:has(.tab-position > .tab-wrapper[aria-selected="true"]:hover) #vivaldi-tooltip .tooltip,
+body:has(.tab-position:not(.is-substack):hover) #vivaldi-tooltip .tooltip {
+  display: none !important;
 }
