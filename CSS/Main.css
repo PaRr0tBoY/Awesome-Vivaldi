@@ -268,27 +268,6 @@ button[title="显示输入记录"] {
   display: none;
 }
 
-/* Tab tooltip hide thumbnail */
-/* body:has(.tab-position.is-substack:hover) #vivaldi-tooltip .tooltip-item {
-  visibility: visible;
-  opacity: 1;
-}
-
-body:has(.tab-position:not(.is-substack)) #vivaldi-tooltip .tooltip-item {
-  visibility: hidden;
-  opacity: 0;
-} */
-body:has(.tab-position.is-substack:hover) #vivaldi-tooltip .tooltip-item,
-body:has(.tab-position.is-substack) #vivaldi-tooltip:hover .tooltip-item {
-  visibility: visible;
-  opacity: 1;
-}
-
-#vivaldi-tooltip .tooltip-item {
-  visibility: hidden;
-  opacity: 0;
-}
-
 /* ========================================
    TOOLBAR & ADDRESS BAR STYLING
    ======================================== */
