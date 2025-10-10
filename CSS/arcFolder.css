@@ -1,3 +1,11 @@
+.tooltip{
+  display: none !important;
+}
+
+body:has(.tab-position.is-substack > .tab-wrapper[aria-selected="false"]:hover) #vivaldi-tooltip .tooltip{
+  display: flex !important;
+}
+
 #vivaldi-tooltip .tooltip-item .thumbnail-image, span.info.size, span.info.size.off{
   display: none !important;
 }
@@ -28,7 +36,6 @@
 body:has(.tab-position.is-substack) #vivaldi-tooltip:hover .tooltip { */
 
 #vivaldi-tooltip .tooltip {
-  display: flex !important;
   background-color: black;
   flex-direction: column;
   width: 240px !important;
@@ -158,7 +165,8 @@ div.tooltip {
   }
 }
 
-body:has(.tab-position > .tab-wrapper[aria-selected="true"]:hover) #vivaldi-tooltip .tooltip,
-body:has(.tab-position:not(.is-substack):hover) #vivaldi-tooltip .tooltip {
+/* body:has(.tab-position > .tab-wrapper[aria-selected="true"]:hover) #vivaldi-tooltip .tooltip,
+body:has(.tab-position:not(.is-substack):hover) #vivaldi-tooltip .tooltip,
+body:has(.is-substack):not(:hover) #vivaldi-tooltip .tooltip{
   display: none !important;
-}
+} */
