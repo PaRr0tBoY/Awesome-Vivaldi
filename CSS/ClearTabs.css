@@ -1,0 +1,39 @@
+/* Clear Tabs Button Styles */
+.tab-strip.overflow .separator {
+  position: relative;
+  display: inline-block;
+}
+
+.tab-strip.overflow .separator .clear-tabs-below-button {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  font-size: 6px;
+  color: gray;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease, color 0.2s ease;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background-color: var(--colorBg);
+  white-space: nowrap;
+}
+
+/* 鼠标悬浮到#tabs-container时显示按钮 */
+#tabs-container:hover .tab-strip.overflow .separator .clear-tabs-below-button {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* 鼠标悬浮到文字按钮本身时的高光效果 */
+.tab-strip.overflow .separator .clear-tabs-below-button:hover {
+  color: white;
+  background-color: var(--colorHighlightBg);
+}
