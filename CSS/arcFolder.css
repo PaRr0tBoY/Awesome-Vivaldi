@@ -1,9 +1,15 @@
 .tooltip{
-  display: none !important;
+  /* display: none !important; */
+  opacity: 0 !important;
+  pointer-events: none !important;
+  /* transition: opacity 0.4s cubic-bezier(0.4, 0, 1, 1) 1s; */
 }
 
-body:has(.tab-position.is-substack > .tab-wrapper[aria-selected="false"]:hover) #vivaldi-tooltip .tooltip{
-  display: flex !important;
+body:has(.tab-position.is-substack > .tab-wrapper[aria-selected="false"]:hover) #vivaldi-tooltip .tooltip,
+body:has(.tab-position.is-substack > .tab-wrapper[aria-selected="false"]) #vivaldi-tooltip:hover .tooltip{
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  /* transition: opacity 0.4s cubic-bezier(0.4, 0, 1, 1) 1s; */
 }
 
 #vivaldi-tooltip .tooltip-item .thumbnail-image, span.info.size, span.info.size.off{
@@ -49,25 +55,25 @@ body:has(.tab-position.is-substack:hover) #vivaldi-tooltip .tooltip{
   animation: tooltipFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+body:not(:has(.tab-position.is-substack:hover)) #vivaldi-tooltip .tooltip:not(:hover) {
+  animation: tooltipFadeOut 0.4s cubic-bezier(0.4, 0, 1, 1) 1s forwards;
+}
+
 #vivaldi-tooltip .tooltip {
   transition: opacity 0.4s cubic-bezier(0.4, 0, 1, 1) 1s, 
               transform 0.4s cubic-bezier(0.4, 0, 1, 1) 1s;
 }
 
-body:not(:has(.tab-position.is-substack:hover)) #vivaldi-tooltip .tooltip:not(:hover) {
-  animation: tooltipFadeOut 0.4s cubic-bezier(0.4, 0, 1, 1) 1s forwards;
-}
-
 body:has(#tabs-container.left) #vivaldi-tooltip .tooltip {
   left: calc(var(--tabs-container-expand-width) - calc(var(--densityGap) * 2)) !important;
   right: auto !important;
-  transform-origin: left center;
+  transform-origin: left;
 }
 
 body:has(#tabs-container.right) #vivaldi-tooltip .tooltip {
   right: calc(var(--tabs-container-expand-width) - calc(var(--densityGap) * 2)) !important;
   left: auto !important;
-  transform-origin: right center;
+  transform-origin: right;
 }
 
 div.tooltip .tab-group{
