@@ -62,6 +62,9 @@
       "https://app.web-highlights.com/reader/open-website-in-reader-mode?url=";
 
     constructor() {
+      // 检测是否有dialogTab.css支持
+      this.hasDialogCSS = this.checkDialogCSSSupport();
+
       // Setup keyboard shortcuts
       vivaldi.tabsPrivate.onKeyboardShortcut.addListener(
         this.keyCombo.bind(this),
@@ -72,6 +75,47 @@
         (url, fromPanel) => this.dialogTab(url, fromPanel),
         ICON_CONFIG,
       );
+    }
+
+    /**
+     * 检测是否有dialogTab.css支持
+     */
+    checkDialogCSSSupport() {
+      try {
+        // 检查是否存在dialog-open相关的CSS规则
+        const style = document.createElement('style');
+        style.textContent = `
+          body.dialog-open #browser #webpage-stack {
+            transform: scale(0.985) !important;
+          }
+        `;
+        document.head.appendChild(style);
+
+        // 检查样式是否被应用
+        const webpageStack = document.querySelector('#browser #webpage-stack');
+        const originalTransform = webpageStack ? webpageStack.style.transform : '';
+
+        // 触发重绘
+        if (webpageStack) {
+          webpageStack.style.transform = 'scale(0.98)';
+          webpageStack.offsetHeight; // 强制重绘
+        }
+
+        document.body.classList.add('dialog-open');
+        const hasCSS = webpageStack && webpageStack.style.transform === 'scale(0.985)';
+
+        // 清理
+        document.body.classList.remove('dialog-open');
+        document.head.removeChild(style);
+        if (webpageStack) {
+          webpageStack.style.transform = originalTransform;
+        }
+
+        return hasCSS;
+      } catch (e) {
+        console.warn('dialogTab CSS support check failed:', e);
+        return false;
+      }
     }
 
     /**
@@ -181,8 +225,10 @@
         dialogContainer.classList.remove("open");
         dialogContainer.classList.add("closing");
 
-        // 背景网页恢复
-        document.body.classList.remove("dialog-open");
+        // 背景网页恢复 - 仅在有对应的CSS时才操作body类
+        if (this.hasDialogCSS) {
+            document.body.classList.remove("dialog-open");
+        }
 
         // 监听动画结束（只等子元素 dialog-tab 动画结束即可）
         const tabEl = dialogContainer.querySelector(".dialog-tab");
@@ -394,7 +440,11 @@
             .appendChild(dialogContainer);
 
       dialogContainer.classList.add("open");
-      document.body.classList.add("dialog-open");
+
+      // 仅在有对应的CSS时才操作body类，避免在没有CSS时影响网页布局
+      if (this.hasDialogCSS) {
+          document.body.classList.add("dialog-open");
+      }
     }
 
     /**
