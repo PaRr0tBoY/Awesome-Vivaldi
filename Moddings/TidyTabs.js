@@ -77,22 +77,9 @@
                             const actualTabId = tabId.replace('tab-', '');
                             const numericId = parseInt(actualTabId);
                             if (!isNaN(numericId)) {
-                                // 获取标签页的实际URL
-                                chrome.tabs.get(numericId, function(tab) {
-                                    if (chrome.runtime.lastError) {
-                                        console.error('Error getting tab:', chrome.runtime.lastError);
-                                        return;
-                                    }
-                                    
-                                    const hostname = extractHostname(tab.url);
-                                    tabsInfo.push({
-                                        id: numericId,
-                                        url: tab.url,
-                                        hostname: hostname,
-                                        index: tab.index
-                                    });
-
-                                    console.log('Added tab:', {id: numericId, hostname: hostname});
+                                tabsInfo.push({
+                                    id: numericId,
+                                    element: tabPosition
                                 });
                             }
                         }
@@ -102,21 +89,49 @@
             nextElement = nextElement.nextElementSibling;
         }
 
-        // 等待所有标签页信息收集完成后再分组
-        setTimeout(function() {
-            console.log('Tabs to organize:', tabsInfo);
+        console.log('Tabs found:', tabsInfo.length);
+
+        if (tabsInfo.length < 2) {
+            console.log('Not enough tabs to group (need at least 2)');
+            return;
+        }
+
+        // 获取所有标签页的详细信息
+        Promise.all(tabsInfo.map(tab => 
+            new Promise((resolve) => {
+                chrome.tabs.get(tab.id, function(tabInfo) {
+                    if (chrome.runtime.lastError) {
+                        console.error('Error getting tab:', chrome.runtime.lastError);
+                        resolve(null);
+                        return;
+                    }
+                    
+                    const hostname = extractHostname(tabInfo.url);
+                    resolve({
+                        id: tab.id,
+                        url: tabInfo.url,
+                        hostname: hostname,
+                        index: tabInfo.index
+                    });
+                });
+            })
+        )).then(results => {
+            // 过滤掉失败的请求
+            const validTabs = results.filter(t => t !== null);
             
-            // 按域名分组标签页
-            const groupedTabs = groupTabsByHostname(tabsInfo);
+            console.log('Valid tabs:', validTabs);
+
+            // 按域名分组
+            const groupedTabs = groupTabsByHostname(validTabs);
             
             console.log('Grouped tabs:', groupedTabs);
 
-            // 创建标签组
-            createTabGroups(groupedTabs);
+            // 移动相同域名的标签页到相邻位置
+            organizeTabs(groupedTabs);
 
             // 重新添加按钮
-            setTimeout(addTidyButton, 100);
-        }, 500);
+            setTimeout(addTidyButton, 500);
+        });
     }
 
     // 提取主机名
@@ -124,10 +139,8 @@
         if (!url) return 'unknown';
         try {
             const urlObj = new URL(url);
-            // 返回完整主机名
             return urlObj.hostname;
         } catch (e) {
-            // 如果URL解析失败，尝试提取域名
             const match = url.match(/^(?:https?:\/\/)?([^\/]+)/i);
             return match ? match[1] : 'unknown';
         }
@@ -149,6 +162,8 @@
         const filteredGroups = {};
         for (const [hostname, tabs] of Object.entries(groups)) {
             if (tabs.length > 1) {
+                // 按索引排序
+                tabs.sort((a, b) => a.index - b.index);
                 filteredGroups[hostname] = tabs;
             }
         }
@@ -156,52 +171,57 @@
         return filteredGroups;
     }
 
-    // 创建标签组
-    function createTabGroups(groupedTabs) {
+    // 组织标签页：将相同域名的标签页移动到相邻位置
+    function organizeTabs(groupedTabs) {
         const hostnames = Object.keys(groupedTabs);
         
         if (hostnames.length === 0) {
-            console.log('No groups to create (no duplicate hostnames found)');
+            console.log('No groups to organize (no duplicate hostnames found)');
             return;
         }
 
-        console.log('Creating groups for hostnames:', hostnames);
+        console.log('Organizing groups for hostnames:', hostnames);
 
-        // 按顺序处理每个域名组
-        hostnames.forEach((hostname, index) => {
-            const tabs = groupedTabs[hostname];
-            
-            // 按索引排序标签页
-            tabs.sort((a, b) => a.index - b.index);
-            
-            const tabIds = tabs.map(tab => tab.id);
-            
-            console.log(`Grouping ${tabIds.length} tabs for ${hostname}:`, tabIds);
+        // 获取当前窗口ID
+        chrome.windows.getCurrent({}, function(window) {
+            if (chrome.runtime.lastError) {
+                console.error('Error getting window:', chrome.runtime.lastError);
+                return;
+            }
 
-            // 使用chrome.tabs.group API
-            setTimeout(() => {
-                chrome.tabs.group({
-                    tabIds: tabIds
-                }, function(groupId) {
-                    if (chrome.runtime.lastError) {
-                        console.error('Error creating tab group:', chrome.runtime.lastError);
-                    } else {
-                        console.log(`Created group ${groupId} for ${hostname}`);
-                        
-                        // 尝试更新组标题和颜色（如果API支持）
-                        if (chrome.tabs.group && typeof chrome.tabs.group.update === 'function') {
-                            chrome.tabs.group.update(groupId, {
-                                title: hostname,
-                                collapsed: false
-                            }, function() {
-                                if (chrome.runtime.lastError) {
-                                    console.log('Could not update group title:', chrome.runtime.lastError);
-                                }
-                            });
-                        }
+            let currentIndex = -1;
+
+            // 依次处理每个域名组
+            hostnames.forEach((hostname) => {
+                const tabs = groupedTabs[hostname];
+                
+                console.log(`Organizing ${tabs.length} tabs for ${hostname}`);
+
+                // 找到这组标签中索引最小的
+                const minIndex = Math.min(...tabs.map(t => t.index));
+                
+                if (currentIndex === -1) {
+                    currentIndex = minIndex;
+                }
+
+                // 将所有标签移动到相邻位置
+                tabs.forEach((tab, i) => {
+                    const targetIndex = currentIndex + i;
+                    if (tab.index !== targetIndex) {
+                        chrome.tabs.move(tab.id, { index: targetIndex }, function(movedTab) {
+                            if (chrome.runtime.lastError) {
+                                console.error('Error moving tab:', chrome.runtime.lastError);
+                            } else {
+                                console.log(`Moved tab ${tab.id} to index ${targetIndex}`);
+                            }
+                        });
                     }
                 });
-            }, index * 100); // 延迟处理，避免并发问题
+
+                currentIndex += tabs.length;
+            });
+
+            console.log('Tabs have been organized by domain. You can now manually create tab stacks by dragging tabs together.');
         });
     }
 
