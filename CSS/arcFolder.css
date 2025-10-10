@@ -176,3 +176,39 @@ body:has(.tab-position:not(.is-substack):hover) #vivaldi-tooltip .tooltip,
 body:has(.is-substack):not(:hover) #vivaldi-tooltip .tooltip{
   display: none !important;
 } */
+
+.tab-position.is-substack span.favicon.jstest-favicon-image {
+  position: relative !important;
+  display: inline-block !important;
+  width: 28px !important;
+  height: 28px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: visible !important;
+}
+
+.tab-position.is-substack span.favicon.jstest-favicon-image img {
+  display: none !important;
+}
+
+.tab-position.is-substack span.favicon.jstest-favicon-image::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 18px !important;
+  height: 18px !important;
+  display: block !important;
+  /* 将 stroke='currentColor' 改为 stroke='white' 或 stroke='%23ffffff' */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z'/%3E%3C/svg%3E") !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  z-index: 10 !important;
+}
+
+.tab-header .title{
+  color: white;
+  mix-blend-mode: difference;
+}

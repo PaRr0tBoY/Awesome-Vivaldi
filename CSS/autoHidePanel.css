@@ -1,37 +1,64 @@
 /* ========================================
-   AUTO-HIDE PANELS
+   AUTO-HIDE PANELS - 透明悬浮版
    ======================================== */
 
-#panels-container {
-  width: 6px !important;
-  transition: width 280ms ease-out !important;
+#panels-container.left {
+  position: fixed !important;
+  left: 0 !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  width: 10px !important;
+  z-index: 999 !important;
+  opacity: 0.3 !important;
+  background: transparent !important;
+  transition: opacity 280ms ease-out,width 280ms ease-out, background-color 280ms ease-out !important;
+  pointer-events: auto !important;
+}
+
+#panels-container.right {
+  position: fixed !important;
+  right: 0 !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  width: 10px !important;
+  z-index: 999 !important;
+  opacity: 0.3 !important;
+  background: transparent !important;
+  transition: opacity 280ms ease-out,width 280ms ease-out, background-color 280ms ease-out !important;
+  pointer-events: auto !important;
 }
 
 #panels-container:hover {
+  opacity: 1 !important;
+  background: var(--colorBg, #ffffff) !important;
   width: 40px !important;
 }
 
+/* 工具栏编辑器激活时，显示完整面板 */
 body:has(.toolbar-editor) #panels-container:not(:hover),
 body:has(.toolbar-editor) #panels-container:not(:hover) #panels {
   width: 40px !important;
-  opacity: 1;
-  visibility: visible;
+  opacity: 1 !important;
+  visibility: visible !important;
+  background: var(--colorBg, #ffffff) !important;
   transition:
     opacity 280ms ease-out,
     visibility 280ms ease-out;
 }
 
+/* 默认状态下隐藏面板内容 */
 #panels-container:not(:hover) #panels {
-  opacity: 0;
-  visibility: hidden;
+  opacity: 0 !important;
+  visibility: hidden !important;
   transition:
     opacity 280ms ease-out,
     visibility 280ms ease-out;
 }
 
+/* hover时显示面板内容 */
 #panels-container:hover #panels {
-  opacity: 1;
-  visibility: visible;
+  opacity: 1 !important;
+  visibility: visible !important;
   transition:
     opacity 280ms ease-out,
     visibility 280ms ease-out;

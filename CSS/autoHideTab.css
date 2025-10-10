@@ -1,10 +1,10 @@
 /* Adjust Configure In :root */
 :root {
   /* Tabbar's width when they expand or collapse */
-  --tabs-container-collapse-width: 44px; /* min width of main tabbar should not set lower than 6px, which will cause weird issue. */
+  --tabs-container-collapse-width: 7px; /* min width of main tabbar should not set lower than 6px, which will cause weird issue. */
   --tabs-container-expand-width: 300px;
   --tabs-subcontainer-collapse-width: 44px;
-  --tabs-subcontainer-expand-width: 300px;
+  --tabs-subcontainer-expand-width: 337px;
 
   --Button-newtab-main-width: calc(var(--tabs-container-expand-width) / 2);
   --Button-newtab-sub-width: calc(var(--tabs-subcontainer-expand-width) / 2);
@@ -22,12 +22,12 @@
 
   /* Animation speed when tabbars expand or collapse */
   --slow-animation-speed: 560ms;
-  --animation-speed: 280ms;
+  --animation-speed: 240ms;
   --fast-animation-speed: 140ms;
 
   /* Animation Delay Time */
   --transition-delay-time-expand: 0ms;
-  --transition-delay-time-collapse: 50ms;
+  --transition-delay-time-collapse: 200ms;
 
   /* Adjust tabbars' color when they expand or collapse */
 
@@ -760,9 +760,83 @@ body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-Addres
 
 
 
+
+
+
+
+
+#browser #webpage-stack {
+  position: relative !important;
+}
+
+#browser #webpage-stack::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--colorBgAlpha);
+  z-index: 999999999999 !important;
+  pointer-events: none !important;
+  opacity: 0;
+  transition: opacity var(--animation-speed) ease-out var(--transition-delay-time-collapse);
+}
+
+body:has(#tabs-container:hover) #webpage-stack::before,
+body:has(#vivaldi-tooltip .tab-group:hover) #webpage-stack::before,
+body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup)) #webpage-stack::before,
+body:has(#tabs-subcontainer:hover) #webpage-stack::before {
+  opacity: 1 !important;
+}
+/* #browser #webpage-stack::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-color: var(--colorBgAlpha);
+  z-index: 999999999999 !important;
+  pointer-events: none !important;
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition:
+    opacity var(--animation-speed) ease-out,
+    transform var(--slow-animation-speed) cubic-bezier(0.3, 0.8, 0.4, 1);
+    transform var(--fast-animation-speed) cubic-bezier(0.25, 0.10, 0.25, 1.00);
+}
+
+#browser:has(#tabs-tabbar-container.left) #webpage-stack::before {
+  transform-origin: left;
+}
+
+#browser:has(#tabs-tabbar-container.right) #webpage-stack::before {
+  transform-origin: right;
+}
+
+body:has(#tabs-container:hover) #webpage-stack::before,
+body:has(#vivaldi-tooltip .tab-group:hover) #webpage-stack::before,
+body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup)) #webpage-stack::before,
+body:has(#tabs-subcontainer:hover) #webpage-stack::before {
+  opacity: 1 !important;
+  transform: scaleX(1) !important;
+} */
+
+
+
+
+
+
+
+
+
+
+
+
 /* Uncomment following lines to enable tabbar toggle */
 
-/* #panel_switch { flex: 0 0 2px !important; background-color: transparent !important; }
+#panel_switch { flex: 0 0 2px !important; background-color: transparent !important; }
 #panel_switch svg { display: none !important; }
 
 body:has(#panel_switch) {
@@ -804,4 +878,4 @@ body:has(#panel_switch) #browser:not(.fullscreen)
   #webpage-stack {
   margin-left: calc((var(--tabs-container-expand-width) / 1.2) * 2);
   transition: margin-left var(--animation-speed) ease-out !important;
-} */
+}

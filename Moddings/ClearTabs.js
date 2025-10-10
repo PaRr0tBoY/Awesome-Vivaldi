@@ -108,8 +108,8 @@
         console.log('Initializing ClearTabs extension'); // 调试用
         
         // 初始添加按钮
-        setTimeout(addTextButton(), 500); // 延迟执行，确保DOM已加载
-
+        setTimeout(addTextButton, 500); // 延迟执行，确保DOM已加载
+        
         // 监听DOM变化
         const observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
