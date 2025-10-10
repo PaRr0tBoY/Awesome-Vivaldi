@@ -11,13 +11,18 @@
 
     // 添加文字按钮到DOM
     function addTextButton() {
-        const separators = document.querySelectorAll('.tab-strip.overflow .separator');
+        const separators = document.querySelectorAll('.tab-strip .separator');
+        
+        console.log('Found separators:', separators.length); // 调试用
 
         separators.forEach(separator => {
             // 检查是否已经添加了按钮
             if (separator.querySelector('.clear-tabs-below-button')) {
+                console.log('Button already exists'); // 调试用
                 return;
             }
+
+            console.log('Adding button to separator'); // 调试用
 
             // 创建文字按钮
             const textButton = createTextButton();
@@ -49,20 +54,32 @@
                 const tabWrapper = nextElement.querySelector('.tab-wrapper');
                 const tabPosition = nextElement.querySelector('.tab-position');
                 
-                // 检查是否是非固定标签页
-                if (tabPosition && !tabPosition.classList.contains('is-pinned')) {
-                    // 从.tab-wrapper获取data-id
-                    let tabId = null;
-                    if (tabWrapper) {
-                        tabId = tabWrapper.getAttribute('data-id');
-                    }
+                // 检查是否是标签栈：检查是否有is-substack类或svg-tab-stack元素
+                const isStack = tabPosition?.classList.contains('is-substack') || 
+                               nextElement.querySelector('.svg-tab-stack') !== null;
+                
+                if (isStack) {
+                    // 如果是标签栈，跳过它（不关闭标签栈）
+                    console.log('Skipping tab stack');
+                } else if (tabPosition && !tabPosition.classList.contains('is-pinned')) {
+                    // 检查是否是非固定标签页且不是激活状态
+                    // 检查是否包含.active类
+                    const isActive = tabPosition.querySelector('.active') !== null;
                     
-                    if (tabId) {
-                        // 提取实际的tabId（去掉前缀）
-                        const actualTabId = tabId.replace('tab-', '');
-                        const numericId = parseInt(actualTabId);
-                        if (!isNaN(numericId)) {
-                            tabIdsToClose.push(numericId);
+                    if (!isActive) {
+                        // 从.tab-wrapper获取data-id
+                        let tabId = null;
+                        if (tabWrapper) {
+                            tabId = tabWrapper.getAttribute('data-id');
+                        }
+                        
+                        if (tabId) {
+                            // 提取实际的tabId（去掉前缀）
+                            const actualTabId = tabId.replace('tab-', '');
+                            const numericId = parseInt(actualTabId);
+                            if (!isNaN(numericId)) {
+                                tabIdsToClose.push(numericId);
+                            }
                         }
                     }
                 }
@@ -79,6 +96,8 @@
                     console.error('Error closing tabs:', chrome.runtime.lastError);
                 } else {
                     console.log('Successfully closed tabs');
+                    // 关闭标签页后，重新添加按钮
+                    setTimeout(addTextButton, 100);
                 }
             });
         }
@@ -86,38 +105,52 @@
 
     // 初始化函数
     function init() {
-        // 添加文字按钮
-        addTextButton();
+        console.log('Initializing ClearTabs extension'); // 调试用
+        
+        // 初始添加按钮
+        setTimeout(addTextButton(), 500); // 延迟执行，确保DOM已加载
 
-        // 监听DOM变化，确保按钮始终存在
+        // 监听DOM变化
         const observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
-                if (mutation.type === 'childList') {
-                    // 检查是否有新的.tab-strip.overflow元素添加
-                    mutation.addedNodes.forEach(function(node) {
-                        if (node.nodeType === Node.ELEMENT_NODE) {
-                            if (node.classList && node.classList.contains('tab-strip') && node.classList.contains('overflow')) {
-                                addTextButton();
+                if (mutation.type === 'childList' || mutation.type === 'attributes') {
+                    // 检查是否有span元素被添加（标签页变化）
+                    if (mutation.addedNodes.length > 0) {
+                        mutation.addedNodes.forEach(function(node) {
+                            if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'SPAN') {
+                                // 标签页可能被添加，检查按钮
+                                setTimeout(addTextButton, 50);
                             }
-                            // 检查子元素中是否有.tab-strip.overflow
-                            const tabStrips = node.querySelectorAll && node.querySelectorAll('.tab-strip.overflow');
-                            if (tabStrips && tabStrips.length > 0) {
-                                addTextButton();
-                            }
-                        }
-                    });
+                        });
+                    }
+                    
+                    // 检查aria-owns属性变化（工作区切换）
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'aria-owns') {
+                        console.log('aria-owns changed, re-adding button'); // 调试用
+                        setTimeout(addTextButton, 100);
+                    }
                 }
             });
         });
 
-        // 开始观察
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
+        // 观察.tab-strip元素
+        const observeTabStrip = function() {
+            const tabStrip = document.querySelector('.tab-strip');
+            if (tabStrip) {
+                console.log('Found tab-strip, starting observation'); // 调试用
+                observer.observe(tabStrip, {
+                    childList: true,
+                    subtree: true,
+                    attributes: true,
+                    attributeFilter: ['aria-owns']
+                });
+            } else {
+                // 如果还没找到，继续等待
+                setTimeout(observeTabStrip, 500);
+            }
+        };
 
-        // 定期检查按钮是否存在（备用方案）
-        setInterval(addTextButton, 3000);
+        observeTabStrip();
     }
 
     // 等待DOM加载完成

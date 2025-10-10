@@ -1,39 +1,39 @@
 /* Clear Tabs Button Styles */
-.tab-strip.overflow .separator {
+.tab-strip .separator {
   position: relative;
-  display: inline-block;
+  /* display: inline-block; */
+  margin-left: calc(var(--densityGap) * -2);
+  margin-bottom: -15px;
 }
 
-.tab-strip.overflow .separator .clear-tabs-below-button {
+.tab-strip .separator .clear-tabs-below-button {
   position: absolute;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 2px 6px;
+  padding: 2px 2px;
   cursor: pointer;
   border-radius: 4px;
-  transition: all 0.2s ease;
-  font-size: 6px;
-  color: gray;
+  font-size: 10px;
+  color: #808080;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.2s ease, visibility 0.2s ease, color 0.2s ease;
-  right: 5px;
+  transition: opacity 0.2s ease, visibility 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+  right: 15px;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 10;
+  z-index: 100;
   background-color: var(--colorBg);
   white-space: nowrap;
+  pointer-events: none;
 }
 
-/* 鼠标悬浮到#tabs-container时显示按钮 */
-#tabs-container:hover .tab-strip.overflow .separator .clear-tabs-below-button {
+#tabs-container:hover .clear-tabs-below-button {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
 }
 
-/* 鼠标悬浮到文字按钮本身时的高光效果 */
-.tab-strip.overflow .separator .clear-tabs-below-button:hover {
-  color: white;
-  background-color: var(--colorHighlightBg);
+.clear-tabs-below-button:hover {
+  color: white !important;
 }
