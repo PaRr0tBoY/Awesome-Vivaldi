@@ -209,6 +209,41 @@
         console.log('Checked all groups for emptiness:', hasEmptyGroups ? 'found empty groups' : 'no empty groups');
     }
 
+    // 更新所有组标题位置
+    function updateAllGroupHeadersPosition() {
+        const tabStrip = document.querySelector('.tab-strip');
+        if (!tabStrip) return;
+
+        const allHeaders = document.querySelectorAll('.tidy-group-header');
+        console.log('Updating positions for', allHeaders.length, 'group headers');
+
+        allHeaders.forEach(header => {
+            const hostname = header.getAttribute('data-hostname');
+            if (!hostname) return;
+
+            // 找到对应组中的第一个标签页
+            const firstTab = document.querySelector(`span.tidy-group-first[data-hostname="${hostname}"]`);
+            if (firstTab) {
+                // 重新计算位置
+                const posY = parseFloat(firstTab.querySelector('.tab-position')
+                    ?.style.getPropertyValue('--PositionY') || 0);
+                const posX = parseFloat(firstTab.querySelector('.tab-position')
+                    ?.style.getPropertyValue('--PositionX') || 0);
+                const width = parseFloat(firstTab.querySelector('.tab-position')
+                    ?.style.getPropertyValue('--Width') || 180);
+
+                header.style.left = `${posX}px`;
+                header.style.top = `${posY}px`;
+                header.style.width = `${width}px`;
+                console.log(`Updated header position for ${hostname}: left=${posX}px, top=${posY}px, width=${width}px`);
+            } else {
+                // 如果找不到对应的标签页，删除这个组标题
+                header.remove();
+                console.log(`Removed orphaned header for ${hostname}`);
+            }
+        });
+    }
+
     // 为标签页元素添加分组样式
 function applyGroupStyles(groupedTabs) {
     clearGroupHeaders();
@@ -230,6 +265,8 @@ function applyGroupStyles(groupedTabs) {
 
             if (index === 0) {
                 span.classList.add('tidy-group-first');
+                // 为第一个标签页也设置 hostname 属性，便于查找
+                span.setAttribute('data-hostname', hostname);
 
                 const header = createGroupHeader(hostname);
                 tabStrip.insertBefore(header, span); // 插入到对应 tab 前
@@ -260,7 +297,7 @@ function applyGroupStyles(groupedTabs) {
         });
     });
 
-    // 应用样式后检查空组
+    // 应用样式后检查空组和更新位置
     setTimeout(() => {
         checkAllGroupsEmpty();
     }, 100);
@@ -408,8 +445,11 @@ function applyGroupStyles(groupedTabs) {
                             // 延迟显示新工作区的组标题
                             setTimeout(() => {
                                 showGroupHeadersForWorkspace(currentWorkspaceName);
-                                // 检查新工作区的空组
-                                setTimeout(checkAllGroupsEmpty, 300);
+                                // 检查新工作区的空组并更新组标题位置
+                                setTimeout(() => {
+                                    checkAllGroupsEmpty();
+                                    updateAllGroupHeadersPosition();
+                                }, 300);
                             }, 500);
                         }
                     }
@@ -461,20 +501,26 @@ function applyGroupStyles(groupedTabs) {
         const observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.type === 'childList' || mutation.type === 'attributes') {
-                    // 检查是否有span元素被添加（标签页变化）
+                    // 检查是否有元素被添加（标签页变化）
                     if (mutation.addedNodes.length > 0) {
                         mutation.addedNodes.forEach(function(node) {
                             if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'SPAN') {
-                                // 标签页可能被添加，检查按钮
-                                setTimeout(addTidyButton, 50);
+                                // 标签页可能被添加，检查按钮并更新组标题位置
+                                setTimeout(() => {
+                                    addTidyButton();
+                                    updateAllGroupHeadersPosition();
+                                }, 50);
                             }
                         });
                     }
 
                     // 检查是否有元素被移除（标签页关闭）
                     if (mutation.removedNodes.length > 0) {
-                        // 延迟检查空组，给DOM更新一些时间
-                        setTimeout(checkAllGroupsEmpty, 200);
+                        // 延迟检查空组和更新组标题位置，给DOM更新一些时间
+                        setTimeout(() => {
+                            checkAllGroupsEmpty();
+                            updateAllGroupHeadersPosition();
+                        }, 200);
                     }
 
                     // 检查aria-owns属性变化（工作区切换）
