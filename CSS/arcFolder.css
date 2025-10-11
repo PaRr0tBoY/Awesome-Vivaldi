@@ -208,6 +208,11 @@ body:has(.is-substack):not(:hover) #vivaldi-tooltip .tooltip{
   z-index: 10 !important;
 }
 
-.tab-header .title{
+.is-substack .tab-header .title{
+  color: white;
+  mix-blend-mode: difference;
+}
+
+:not(.is-substack) .tab-header .title{
   color: var(--colorFg);
 }

@@ -47,7 +47,7 @@ Ensure the tab-position within the first group tab has proper positioning
 
 .tidy-group-header {
   display: block !important;
-  /* position: absolute; */
+  position: absolute;
   height: 18px;
   line-height: 18px;
   font-size: 10px;
@@ -55,9 +55,26 @@ Ensure the tab-position within the first group tab has proper positioning
   opacity: 0.8;
   background-color: var(--colorBgDarker);
   border-bottom: 1px solid var(--colorBorder);
-  padding: 0 6px;
+  border-radius: 4px 4px 0 0;
+  padding: 0 8px;
   box-sizing: border-box;
   pointer-events: none;
   z-index: 2000;
+  transition: opacity 0.3s ease, display 0.3s ease;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+}
+
+.tidy-group-header:hover {
+  opacity: 1;
+  background-color: var(--colorBg);
+}
+
+.tidy-group-header[data-hostname]::before {
+  content: '📁 ';
+  margin-right: 4px;
+  font-size: 10px;
 }
 

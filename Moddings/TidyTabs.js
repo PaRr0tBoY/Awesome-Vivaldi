@@ -180,6 +180,35 @@
         existingHeaders.forEach(header => header.remove());
     }
 
+    // 检查组内是否还有标签页
+    function checkGroupEmpty(groupHostname) {
+        const headers = document.querySelectorAll(`.tidy-group-header[data-hostname="${groupHostname}"]`);
+        const groupMembers = document.querySelectorAll(`span.tidy-group-member[data-hostname="${groupHostname}"]`);
+
+        // 如果没有组员，删除对应的标题
+        if (groupMembers.length === 0 && headers.length > 0) {
+            headers.forEach(header => header.remove());
+            console.log(`Removed empty group header for: ${groupHostname}`);
+            return true;
+        }
+        return false;
+    }
+
+    // 检查所有组是否为空
+    function checkAllGroupsEmpty() {
+        const allHeaders = document.querySelectorAll('.tidy-group-header');
+        let hasEmptyGroups = false;
+
+        allHeaders.forEach(header => {
+            const hostname = header.getAttribute('data-hostname');
+            if (hostname && checkGroupEmpty(hostname)) {
+                hasEmptyGroups = true;
+            }
+        });
+
+        console.log('Checked all groups for emptiness:', hasEmptyGroups ? 'found empty groups' : 'no empty groups');
+    }
+
     // 为标签页元素添加分组样式
 function applyGroupStyles(groupedTabs) {
     clearGroupHeaders();
@@ -225,9 +254,16 @@ function applyGroupStyles(groupedTabs) {
 
             } else {
                 span.classList.add('tidy-group-member');
+                // 为组员添加数据属性以便后续检查
+                span.setAttribute('data-hostname', hostname);
             }
         });
     });
+
+    // 应用样式后检查空组
+    setTimeout(() => {
+        checkAllGroupsEmpty();
+    }, 100);
 }
 
 
@@ -301,12 +337,125 @@ function applyGroupStyles(groupedTabs) {
         });
     }
 
+    // 获取当前工作区名称
+    function getCurrentWorkspaceName() {
+        const workspaceButton = document.querySelector('.ToolbarButton-Button .button-title');
+        return workspaceButton ? workspaceButton.textContent.trim() : 'default';
+    }
+
+    // 存储工作区分组状态
+    const workspaceGroupState = {};
+
+    // 保存当前工作区的分组状态
+    function saveWorkspaceGroupState(workspaceName, groupedTabs) {
+        if (groupedTabs && Object.keys(groupedTabs).length > 0) {
+            workspaceGroupState[workspaceName] = groupedTabs;
+            console.log(`Saved group state for workspace: ${workspaceName}`);
+        } else {
+            delete workspaceGroupState[workspaceName];
+        }
+    }
+
+    // 隐藏当前工作区的所有组标题
+    function hideGroupHeadersForWorkspace(workspaceName) {
+        if (workspaceGroupState[workspaceName]) {
+            const existingHeaders = document.querySelectorAll('.tidy-group-header');
+            existingHeaders.forEach(header => {
+                header.style.display = 'none';
+            });
+            console.log(`Hidden headers for workspace: ${workspaceName}`);
+        }
+    }
+
+    // 显示当前工作区的组标题（如果有的话）
+    function showGroupHeadersForWorkspace(workspaceName) {
+        if (workspaceGroupState[workspaceName]) {
+            const groupedTabs = workspaceGroupState[workspaceName];
+            applyGroupStyles(groupedTabs);
+            console.log(`Restored headers for workspace: ${workspaceName}`);
+        }
+    }
+
+    // 工作区切换监控
+    let workspaceObserver;
+    let currentWorkspaceName = getCurrentWorkspaceName();
+
+    // 监听工作区变化
+    function observeWorkspaceChanges() {
+        if (workspaceObserver) {
+            workspaceObserver.disconnect();
+        }
+
+        // 观察工作区按钮的变化
+        const workspaceButton = document.querySelector('.ToolbarButton-Button .button-title');
+        if (workspaceButton) {
+            workspaceObserver = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'textContent') {
+                        const newWorkspaceName = getCurrentWorkspaceName();
+                        if (newWorkspaceName !== currentWorkspaceName) {
+                            console.log(`Workspace changed from ${currentWorkspaceName} to ${newWorkspaceName}`);
+
+                            // 保存当前工作区的分组状态
+                            saveWorkspaceGroupState(currentWorkspaceName, getCurrentGroupedTabs());
+
+                            // 隐藏当前工作区的组标题
+                            hideGroupHeadersForWorkspace(currentWorkspaceName);
+
+                            // 更新当前工作区
+                            currentWorkspaceName = newWorkspaceName;
+
+                            // 延迟显示新工作区的组标题
+                            setTimeout(() => {
+                                showGroupHeadersForWorkspace(currentWorkspaceName);
+                                // 检查新工作区的空组
+                                setTimeout(checkAllGroupsEmpty, 300);
+                            }, 500);
+                        }
+                    }
+                });
+            });
+
+            workspaceObserver.observe(workspaceButton, {
+                attributes: true,
+                attributeFilter: ['textContent'],
+                childList: false,
+                subtree: false
+            });
+        }
+    }
+
+    // 获取当前的分组状态
+    function getCurrentGroupedTabs() {
+        const existingHeaders = document.querySelectorAll('.tidy-group-header');
+        const groupedTabs = {};
+
+        existingHeaders.forEach(header => {
+            const hostname = header.getAttribute('data-hostname');
+            if (hostname) {
+                const firstTab = document.querySelector(`span.tidy-group-first[data-hostname="${hostname}"]`);
+                if (firstTab) {
+                    groupedTabs[hostname] = [{
+                        id: firstTab.getAttribute('data-tab-id'),
+                        hostname: hostname,
+                        element: firstTab
+                    }];
+                }
+            }
+        });
+
+        return groupedTabs;
+    }
+
     // 初始化函数
     function init() {
         console.log('Initializing TidyTabs extension');
 
         // 初始添加按钮
         setTimeout(addTidyButton, 500);
+
+        // 监听工作区变化
+        setTimeout(observeWorkspaceChanges, 1000);
 
         // 监听DOM变化
         const observer = new MutationObserver(function(mutations) {
@@ -320,6 +469,12 @@ function applyGroupStyles(groupedTabs) {
                                 setTimeout(addTidyButton, 50);
                             }
                         });
+                    }
+
+                    // 检查是否有元素被移除（标签页关闭）
+                    if (mutation.removedNodes.length > 0) {
+                        // 延迟检查空组，给DOM更新一些时间
+                        setTimeout(checkAllGroupsEmpty, 200);
                     }
 
                     // 检查aria-owns属性变化（工作区切换）
