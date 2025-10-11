@@ -48,7 +48,7 @@
   /* ============================================ */
   /* --tabbar-bg-color-collapse: rgb(27, 27, 28);
   --tabbar-bg-color-expand: rgb(53, 58, 63); */
-  --tabbar-border-color-collapse: rgba(66, 73, 80, 0.856); /* You can still add your own color */
+  /* --tabbar-border-color-collapse: rgba(66, 73, 80, 0.856); You can still add your own color */
   /* --tabbar-border-color-expand: rgb(45, 123, 139); */
   /* ============================================ */
 
@@ -790,6 +790,7 @@ body:has(#vivaldi-tooltip .tab-group:hover) #webpage-stack::before,
 body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup)) #webpage-stack::before,
 body:has(#tabs-subcontainer:hover) #webpage-stack::before {
   opacity: 1 !important;
+  backdrop-filter: blur(5px);
 }
 /* #browser #webpage-stack::before {
   content: '';

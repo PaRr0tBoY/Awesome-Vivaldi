@@ -62,26 +62,22 @@
                     // 如果是标签栈，跳过它
                     console.log('Skipping tab stack');
                 } else if (tabPosition && !tabPosition.classList.contains('is-pinned')) {
-                    // 检查是否是非固定标签页且不是激活状态
-                    const isActive = tabPosition.querySelector('.active') !== null;
+                    // 检查是否是非固定标签页（包括激活的标签页）
+                    // 从.tab-wrapper获取data-id
+                    let tabId = null;
+                    if (tabWrapper) {
+                        tabId = tabWrapper.getAttribute('data-id');
+                    }
 
-                    if (!isActive) {
-                        // 从.tab-wrapper获取data-id
-                        let tabId = null;
-                        if (tabWrapper) {
-                            tabId = tabWrapper.getAttribute('data-id');
-                        }
-
-                        if (tabId) {
-                            // 提取实际的tabId（去掉前缀）
-                            const actualTabId = tabId.replace('tab-', '');
-                            const numericId = parseInt(actualTabId);
-                            if (!isNaN(numericId)) {
-                                tabsInfo.push({
-                                    id: numericId,
-                                    element: tabPosition
-                                });
-                            }
+                    if (tabId) {
+                        // 提取实际的tabId（去掉前缀）
+                        const actualTabId = tabId.replace('tab-', '');
+                        const numericId = parseInt(actualTabId);
+                        if (!isNaN(numericId)) {
+                            tabsInfo.push({
+                                id: numericId,
+                                element: nextElement
+                            });
                         }
                     }
                 }
@@ -111,7 +107,8 @@
                         id: tab.id,
                         url: tabInfo.url,
                         hostname: hostname,
-                        index: tabInfo.index
+                        index: tabInfo.index,
+                        element: tab.element
                     });
                 });
             })
@@ -128,9 +125,6 @@
 
             // 移动相同域名的标签页到相邻位置
             organizeTabs(groupedTabs);
-
-            // 重新添加按钮
-            setTimeout(addTidyButton, 500);
         });
     }
 
@@ -171,6 +165,57 @@
         return filteredGroups;
     }
 
+    // 创建或更新域名分组标题
+    function createGroupHeader(hostname) {
+        const header = document.createElement('div');
+        header.className = 'tidy-group-header';
+        header.textContent = hostname;
+        header.setAttribute('data-hostname', hostname);
+        return header;
+    }
+
+    // 清除所有现有的分组标题
+    function clearGroupHeaders() {
+        const existingHeaders = document.querySelectorAll('.tidy-group-header');
+        existingHeaders.forEach(header => header.remove());
+    }
+
+    // 为标签页元素添加分组样式
+    function applyGroupStyles(groupedTabs) {
+        // 清除所有现有的分组标题和样式
+        clearGroupHeaders();
+        
+        // 清除所有标签页的分组class
+        const allTabs = document.querySelectorAll('.tab-strip span');
+        allTabs.forEach(span => {
+            span.classList.remove('tidy-group-first', 'tidy-group-member');
+            // 移除可能存在的旧标题
+            const oldHeader = span.querySelector('.tidy-group-header');
+            if (oldHeader) {
+                oldHeader.remove();
+            }
+        });
+
+        // 为每个分组添加样式和标题
+        Object.entries(groupedTabs).forEach(([hostname, tabs]) => {
+            tabs.forEach((tab, index) => {
+                const span = tab.element;
+                
+                if (index === 0) {
+                    // 第一个标签页：添加标题
+                    span.classList.add('tidy-group-first');
+                    
+                    // 创建并插入域名标题
+                    const header = createGroupHeader(hostname);
+                    span.insertBefore(header, span.firstChild);
+                } else {
+                    // 其他标签页
+                    span.classList.add('tidy-group-member');
+                }
+            });
+        });
+    }
+
     // 组织标签页：将相同域名的标签页移动到相邻位置
     function organizeTabs(groupedTabs) {
         const hostnames = Object.keys(groupedTabs);
@@ -190,6 +235,7 @@
             }
 
             let currentIndex = -1;
+            let movePromises = [];
 
             // 依次处理每个域名组
             hostnames.forEach((hostname) => {
@@ -208,20 +254,33 @@
                 tabs.forEach((tab, i) => {
                     const targetIndex = currentIndex + i;
                     if (tab.index !== targetIndex) {
-                        chrome.tabs.move(tab.id, { index: targetIndex }, function(movedTab) {
-                            if (chrome.runtime.lastError) {
-                                console.error('Error moving tab:', chrome.runtime.lastError);
-                            } else {
-                                console.log(`Moved tab ${tab.id} to index ${targetIndex}`);
-                            }
+                        const promise = new Promise((resolve) => {
+                            chrome.tabs.move(tab.id, { index: targetIndex }, function(movedTab) {
+                                if (chrome.runtime.lastError) {
+                                    console.error('Error moving tab:', chrome.runtime.lastError);
+                                } else {
+                                    console.log(`Moved tab ${tab.id} to index ${targetIndex}`);
+                                }
+                                resolve();
+                            });
                         });
+                        movePromises.push(promise);
                     }
                 });
 
                 currentIndex += tabs.length;
             });
 
-            console.log('Tabs have been organized by domain. You can now manually create tab stacks by dragging tabs together.');
+            // 等待所有移动操作完成后，应用分组样式
+            Promise.all(movePromises).then(() => {
+                setTimeout(() => {
+                    applyGroupStyles(groupedTabs);
+                    console.log('Tabs have been organized by domain with group headers');
+                    
+                    // 重新添加按钮
+                    setTimeout(addTidyButton, 100);
+                }, 300);
+            });
         });
     }
 
