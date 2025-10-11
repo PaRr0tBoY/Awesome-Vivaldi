@@ -181,40 +181,57 @@
     }
 
     // 为标签页元素添加分组样式
-    function applyGroupStyles(groupedTabs) {
-        // 清除所有现有的分组标题和样式
-        clearGroupHeaders();
-        
-        // 清除所有标签页的分组class
-        const allTabs = document.querySelectorAll('.tab-strip span');
-        allTabs.forEach(span => {
-            span.classList.remove('tidy-group-first', 'tidy-group-member');
-            // 移除可能存在的旧标题
-            const oldHeader = span.querySelector('.tidy-group-header');
-            if (oldHeader) {
-                oldHeader.remove();
+function applyGroupStyles(groupedTabs) {
+    clearGroupHeaders();
+
+    const allTabs = document.querySelectorAll('.tab-strip span');
+    allTabs.forEach(span => {
+        span.classList.remove('tidy-group-first', 'tidy-group-member');
+        const oldHeader = span.querySelector('.tidy-group-header');
+        if (oldHeader) oldHeader.remove();
+    });
+
+    const tabStrip = document.querySelector('.tab-strip');
+    if (!tabStrip) return;
+
+    Object.entries(groupedTabs).forEach(([hostname, tabs]) => {
+        tabs.forEach((tab, index) => {
+            const span = tab.element;
+            if (!span) return;
+
+            if (index === 0) {
+                span.classList.add('tidy-group-first');
+
+                const header = createGroupHeader(hostname);
+                tabStrip.insertBefore(header, span); // 插入到对应 tab 前
+
+                // === 新增：计算并设置绝对定位 ===
+                const posY = parseFloat(span.querySelector('.tab-position')
+                    ?.style.getPropertyValue('--PositionY') || 0);
+                const posX = parseFloat(span.querySelector('.tab-position')
+                    ?.style.getPropertyValue('--PositionX') || 0);
+                const width = parseFloat(span.querySelector('.tab-position')
+                    ?.style.getPropertyValue('--Width') || 180);
+                const height = parseFloat(span.querySelector('.tab-position')
+                    ?.style.getPropertyValue('--Height') || 30);
+
+                header.style.position = 'relative';
+                header.style.left = `${posX}px`;
+                header.style.top = `${posY}px`; // 放在标签上方
+                header.style.width = `${width}px`;
+                header.style.pointerEvents = 'none';
+                header.style.zIndex = '2000';
+                // ============================
+
+            } else {
+                span.classList.add('tidy-group-member');
             }
         });
+    });
+}
 
-        // 为每个分组添加样式和标题
-        Object.entries(groupedTabs).forEach(([hostname, tabs]) => {
-            tabs.forEach((tab, index) => {
-                const span = tab.element;
-                
-                if (index === 0) {
-                    // 第一个标签页：添加标题
-                    span.classList.add('tidy-group-first');
-                    
-                    // 创建并插入域名标题
-                    const header = createGroupHeader(hostname);
-                    span.insertBefore(header, span.firstChild);
-                } else {
-                    // 其他标签页
-                    span.classList.add('tidy-group-member');
-                }
-            });
-        });
-    }
+
+
 
     // 组织标签页：将相同域名的标签页移动到相邻位置
     function organizeTabs(groupedTabs) {

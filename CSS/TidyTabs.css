@@ -31,3 +31,33 @@
 .tidy-tabs-below-button:hover {
   color: white !important;
 }
+
+/* .tab-strip span.tidy-group-first {
+  position: relative;
+  margin-top: 20px;
+}
+Ensure the tab-position within the first group tab has proper positioning
+.tab-strip span.tidy-group-first .tab-position {
+  position: relative;
+  margin-top: 20px;
+} */
+/* .tab-strip span.tidy-group-first {
+  margin-top: 18px !important;
+} */
+
+.tidy-group-header {
+  display: block !important;
+  /* position: absolute; */
+  height: 18px;
+  line-height: 18px;
+  font-size: 10px;
+  color: var(--colorFg);
+  opacity: 0.8;
+  background-color: var(--colorBgDarker);
+  border-bottom: 1px solid var(--colorBorder);
+  padding: 0 6px;
+  box-sizing: border-box;
+  pointer-events: none;
+  z-index: 2000;
+}
+

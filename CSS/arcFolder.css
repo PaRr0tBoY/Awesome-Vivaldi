@@ -209,6 +209,5 @@ body:has(.is-substack):not(:hover) #vivaldi-tooltip .tooltip{
 }
 
 .tab-header .title{
-  color: white;
-  mix-blend-mode: difference;
+  color: var(--colorFg);
 }
