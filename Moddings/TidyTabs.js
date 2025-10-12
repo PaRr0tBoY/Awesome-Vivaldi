@@ -224,7 +224,7 @@ const getAIGrouping = async (tabs, existingStacks = []) => {
 现存标签栈标题与ID：
 ${existingInfo}
 
-待归栈标签页信息：
+待归栈标签页信息(id, 标题, 域名)：
 ${tabsInfo.map(t => `${t.id}. ${t.title} (${t.domain})`).join('\n')}
 
 **按照下述规则对标签页进行归栈**
@@ -248,7 +248,10 @@ ${tabsInfo.map(t => `${t.id}. ${t.title} (${t.domain})`).join('\n')}
 
 4. **每组至少包含 2 个标签页**。单独一个标签页不能成组。
 
-5. 只有一个标签页的组和无法与任何其他页面分组的标签页, 应当归入 "其它" 组（${languageName === '中文' ? '其它' : languageName === 'English' ? 'Others' : languageName === '日本語' ? 'その他' : 'その他'}）, 只有当现有标签栈中**不存在**"其它"组, 你才应该创建"其它"组, 即使其中没有任何标签页。
+5. 创建和归入"其它"标签栈的条件:
+    1. 只有一个标签页的标签栈中的标签页, 应当归入 "其它" 标签栈（${languageName === '中文' ? '其它' : languageName === 'English' ? 'Others' : languageName === '日本語' ? 'その他' : 'その他'})
+    2. 无法与任何其他页面归栈的标签页应归纳入"其它"标签栈
+    3. 当现有标签栈中**不存在**"其它"标签栈, 这时应该创建"其它"标签栈, 即使其中没有任何标签页
 
 6. 每个标签页仅能出现在一个组中。
 
@@ -381,14 +384,21 @@ ${tabsInfo.map(t => `${t.id}. ${t.title} (${t.domain})`).join('\n')}
                 }
             }
             
-            // 将 tab_ids 映射回实际的标签页
+            // 将 tab_ids 映射回实际的标签页，并匹配现有栈ID
             const groupedTabs = result.groups
-                .map(group => ({
-                    name: group.name,
-                    tabs: group.tab_ids.map(id => tabs[id]).filter(t => t)
-                }))
+                .map(group => {
+                    // 查找匹配的现有栈
+                    const existingStack = existingStacks.find(s => s.name === group.name);
+                    
+                    return {
+                        name: group.name,
+                        tabs: group.tab_ids.map(id => tabs[id]).filter(t => t),
+                        stackId: existingStack ? existingStack.id : crypto.randomUUID(), // 使用现有栈ID或生成新ID
+                        isExisting: !!existingStack // 标记是否为现有栈
+                    };
+                })
                 .filter(g => g.tabs.length > 1); // 只保留有多个标签的组
-            
+
             console.log('AI grouping result (before orphan check):', groupedTabs);
             
             // 检查是否有孤立的标签页未被分组
