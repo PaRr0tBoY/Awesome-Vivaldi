@@ -1,6 +1,164 @@
 (function() {
     'use strict';
 
+    // 配置
+    const config = {
+        base_domain: false,  // 使用基础域名 (true) 或完整主机名 (false)
+        rename_stack: 2,     // 0: 不重命名, 1: 使用主机名, 2: 使用基础域名首字母大写
+        
+        // 允许自动标签栈的工作区 (完全一致或 <default_workspace>)
+        // 空数组 = 禁用所有工作区的自动组栈，只能手动点击按钮
+        // Workspaces that allow automatic tab stacking (exact match or <default_workspace>)
+        // Empty array = disable automatic stacking for all workspaces, manual button click only
+        auto_stack_workspaces: [
+            // "<default_workspace>",  // 默认工作区（没有工作区时）
+            "Relax",
+            // "工作区名称2",
+        ],
+    };
+
+    // ==================== 工具函数 ====================
+    
+    // 获取 URL 片段
+    const getUrlFragments = (url) => {
+        try {
+            if (typeof vivaldi !== 'undefined' && vivaldi.utilities && vivaldi.utilities.getUrlFragments) {
+                return vivaldi.utilities.getUrlFragments(url);
+            }
+        } catch (e) {
+            // Fallback to manual parsing
+        }
+        
+        // Fallback 实现
+        try {
+            const urlObj = new URL(url);
+            const hostname = urlObj.hostname;
+            const parts = hostname.split('.');
+            const tld = parts.length > 1 ? parts[parts.length - 1] : '';
+            
+            return {
+                hostForSecurityDisplay: hostname,
+                tld: tld
+            };
+        } catch (e) {
+            return {
+                hostForSecurityDisplay: '',
+                tld: ''
+            };
+        }
+    };
+    
+    // 获取基础域名
+    const getBaseDomain = (url) => {
+        const {hostForSecurityDisplay, tld} = getUrlFragments(url);
+        const match = hostForSecurityDisplay.match(`([^.]+\\.${ tld })$`);
+        return match ? match[1] : hostForSecurityDisplay;
+    };
+    
+    // 获取主机名
+    const getHostname = (url) => {
+        const {hostForSecurityDisplay} = getUrlFragments(url);
+        return config.base_domain ? getBaseDomain(url) : hostForSecurityDisplay;
+    };
+    
+    // 获取标签栈名称
+    const getTabStackName = (url) => {
+        let stackName;
+        
+        switch (config.rename_stack) {
+            case 1:
+                stackName = getHostname(url);
+                break;
+            case 2:
+                stackName = getBaseDomain(url).split('.')[0];
+                stackName = stackName.charAt(0).toUpperCase() + stackName.slice(1);
+                break;
+            default:
+                stackName = '';
+        }
+        return stackName;
+    };
+    
+    // 获取标签页详情
+    const getTab = async (tabId) => {
+        return new Promise((resolve) => {
+            chrome.tabs.get(tabId, function(tab) {
+                if (chrome.runtime.lastError) {
+                    console.error('Error getting tab:', chrome.runtime.lastError);
+                    resolve(null);
+                    return;
+                }
+                
+                if (tab.vivExtData) {
+                    try {
+                        tab.vivExtData = JSON.parse(tab.vivExtData);
+                    } catch (e) {
+                        console.error('Error parsing vivExtData:', e);
+                    }
+                }
+                resolve(tab);
+            });
+        });
+    };
+    
+    // 获取工作区名称
+    const getWorkspaceName = async (workspaceId) => {
+        if (!workspaceId) {
+            return '<default_workspace>';
+        }
+        
+        return new Promise((resolve) => {
+            if (typeof vivaldi !== 'undefined' && vivaldi.prefs) {
+                vivaldi.prefs.get('vivaldi.workspaces.list', (workspaceList) => {
+                    const workspace = workspaceList.find(item => item.id === workspaceId);
+                    resolve(workspace ? workspace.name : '<unknown_workspace>');
+                });
+            } else {
+                resolve('<unknown_workspace>');
+            }
+        });
+    };
+    
+    // 检查工作区是否允许自动组栈
+    const isAutoStackAllowed = async (workspaceId) => {
+        // 如果配置为空数组，则不允许任何工作区自动组栈
+        if (config.auto_stack_workspaces.length === 0) {
+            return false;
+        }
+        
+        const workspaceName = await getWorkspaceName(workspaceId);
+        return config.auto_stack_workspaces.includes(workspaceName);
+    };
+    
+    // 添加到标签栈
+    const addTabStack = async (tabId, stackId, stackName) => {
+        const tab = await getTab(tabId);
+        
+        if (!tab || !tab.vivExtData) {
+            console.warn('Tab has no vivExtData:', tabId);
+            return;
+        }
+        
+        const vivExtData = tab.vivExtData;
+        
+        if (stackName) {
+            vivExtData.fixedGroupTitle = stackName;
+        }
+        vivExtData.group = stackId;
+        
+        chrome.tabs.update(tabId, { 
+            vivExtData: JSON.stringify(vivExtData) 
+        }, function() {
+            if (chrome.runtime.lastError) {
+                console.error('Error updating tab:', chrome.runtime.lastError);
+            } else {
+                console.log(`Added tab ${tabId} to stack ${stackId}`);
+            }
+        });
+    };
+    
+    // ==================== UI 相关 ====================
+
     // 创建Tidy按钮
     function createTidyButton() {
         const button = document.createElement('div');
@@ -38,8 +196,135 @@
         });
     }
 
-    // 整理指定位置以下的标签页
-    function tidyTabsBelow(separator) {
+    // ==================== 核心功能 ====================
+
+    // 获取当前窗口中指定工作区的所有标签页
+    const getTabsByWorkspace = async (workspaceId) => {
+        return new Promise((resolve) => {
+            chrome.tabs.query({ currentWindow: true }, async function(tabs) {
+                if (chrome.runtime.lastError) {
+                    console.error('Error querying tabs:', chrome.runtime.lastError);
+                    resolve([]);
+                    return;
+                }
+                
+                // 过滤出指定工作区的标签页
+                const validTabs = [];
+                for (const tab of tabs) {
+                    if (tab.id === -1 || !tab.vivExtData) continue;
+                    
+                    try {
+                        const vivExtData = JSON.parse(tab.vivExtData);
+                        
+                        // 检查是否属于指定工作区
+                        if (vivExtData.workspaceId === workspaceId) {
+                            // 排除固定标签和面板标签
+                            if (!tab.pinned && !vivExtData.panelId) {
+                                validTabs.push({
+                                    ...tab,
+                                    vivExtData: vivExtData
+                                });
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Error parsing vivExtData:', e);
+                    }
+                }
+                
+                resolve(validTabs);
+            });
+        });
+    };
+
+    // 自动组栈指定工作区的标签页
+    const autoStackWorkspace = async (workspaceId) => {
+        const allowed = await isAutoStackAllowed(workspaceId);
+        
+        if (!allowed) {
+            console.log('Auto-stacking not allowed for this workspace');
+            return;
+        }
+        
+        const workspaceName = await getWorkspaceName(workspaceId);
+        console.log(`Auto-stacking workspace: ${workspaceName}`);
+        
+        const tabs = await getTabsByWorkspace(workspaceId);
+        
+        if (tabs.length < 2) {
+            console.log('Not enough tabs in workspace');
+            return;
+        }
+        
+        // 按域名分组
+        const tabsByHost = {};
+        tabs.forEach(tab => {
+            const hostname = getHostname(tab.url);
+            if (!tabsByHost[hostname]) {
+                tabsByHost[hostname] = [];
+            }
+            tabsByHost[hostname].push(tab);
+        });
+        
+        // 只处理有多个标签的域名组
+        const hostsToStack = Object.entries(tabsByHost)
+            .filter(([_, tabs]) => tabs.length > 1);
+        
+        if (hostsToStack.length === 0) {
+            console.log('No duplicate domains found');
+            return;
+        }
+        
+        // 创建标签栈
+        for (const [hostname, tabs] of hostsToStack) {
+            // 检查是否已经在栈中
+            const existingStackIds = new Set(
+                tabs.map(t => t.vivExtData.group).filter(g => g)
+            );
+            
+            let stackId;
+            if (existingStackIds.size > 0) {
+                // 使用已存在的 stack ID
+                stackId = Array.from(existingStackIds)[0];
+            } else {
+                // 生成新的 stack ID
+                stackId = crypto.randomUUID();
+            }
+            
+            const stackName = getTabStackName(tabs[0].url);
+            
+            console.log(`Auto-stacking ${hostname} with ${tabs.length} tabs`);
+            
+            // 按索引排序
+            tabs.sort((a, b) => a.index - b.index);
+            
+            // 获取第一个标签的位置作为目标位置
+            let targetIndex = tabs[0].index;
+            
+            // 移动所有标签到相邻位置并添加到标签栈
+            for (let i = 0; i < tabs.length; i++) {
+                const tab = tabs[i];
+                const moveIndex = targetIndex + i;
+                
+                // 先移动标签
+                await new Promise((resolve) => {
+                    chrome.tabs.move(tab.id, { index: moveIndex }, function() {
+                        if (chrome.runtime.lastError) {
+                            console.error('Error moving tab:', chrome.runtime.lastError);
+                        }
+                        resolve();
+                    });
+                });
+                
+                // 再添加到标签栈
+                await addTabStack(tab.id, stackId, stackName);
+            }
+        }
+        
+        console.log('Auto-stacking completed!');
+    };
+
+    // 手动整理指定位置以下的标签页
+    async function tidyTabsBelow(separator) {
         // 获取separator后面的span元素
         let nextElement = separator.nextElementSibling;
 
@@ -62,22 +347,26 @@
                     // 如果是标签栈，跳过它
                     console.log('Skipping tab stack');
                 } else if (tabPosition && !tabPosition.classList.contains('is-pinned')) {
-                    // 检查是否是非固定标签页（包括激活的标签页）
-                    // 从.tab-wrapper获取data-id
-                    let tabId = null;
-                    if (tabWrapper) {
-                        tabId = tabWrapper.getAttribute('data-id');
-                    }
+                    // 检查是否是非固定标签页且不是激活状态
+                    const isActive = tabPosition.querySelector('.active') !== null;
 
-                    if (tabId) {
-                        // 提取实际的tabId（去掉前缀）
-                        const actualTabId = tabId.replace('tab-', '');
-                        const numericId = parseInt(actualTabId);
-                        if (!isNaN(numericId)) {
-                            tabsInfo.push({
-                                id: numericId,
-                                element: nextElement
-                            });
+                    if (!isActive) {
+                        // 从.tab-wrapper获取data-id
+                        let tabId = null;
+                        if (tabWrapper) {
+                            tabId = tabWrapper.getAttribute('data-id');
+                        }
+
+                        if (tabId) {
+                            // 提取实际的tabId（去掉前缀）
+                            const actualTabId = tabId.replace('tab-', '');
+                            const numericId = parseInt(actualTabId);
+                            if (!isNaN(numericId)) {
+                                tabsInfo.push({
+                                    id: numericId,
+                                    element: tabPosition
+                                });
+                            }
                         }
                     }
                 }
@@ -93,434 +382,126 @@
         }
 
         // 获取所有标签页的详细信息
-        Promise.all(tabsInfo.map(tab => 
-            new Promise((resolve) => {
-                chrome.tabs.get(tab.id, function(tabInfo) {
-                    if (chrome.runtime.lastError) {
-                        console.error('Error getting tab:', chrome.runtime.lastError);
-                        resolve(null);
-                        return;
-                    }
-                    
-                    const hostname = extractHostname(tabInfo.url);
-                    resolve({
-                        id: tab.id,
-                        url: tabInfo.url,
-                        hostname: hostname,
-                        index: tabInfo.index,
-                        element: tab.element
-                    });
-                });
-            })
-        )).then(results => {
-            // 过滤掉失败的请求
-            const validTabs = results.filter(t => t !== null);
-            
-            console.log('Valid tabs:', validTabs);
+        const tabs = await Promise.all(
+            tabsInfo.map(info => getTab(info.id))
+        );
 
-            // 按域名分组
-            const groupedTabs = groupTabsByHostname(validTabs);
-            
-            console.log('Grouped tabs:', groupedTabs);
-
-            // 移动相同域名的标签页到相邻位置
-            organizeTabs(groupedTabs);
-        });
-    }
-
-    // 提取主机名
-    function extractHostname(url) {
-        if (!url) return 'unknown';
-        try {
-            const urlObj = new URL(url);
-            return urlObj.hostname;
-        } catch (e) {
-            const match = url.match(/^(?:https?:\/\/)?([^\/]+)/i);
-            return match ? match[1] : 'unknown';
-        }
-    }
-
-    // 按主机名分组标签页
-    function groupTabsByHostname(tabs) {
-        const groups = {};
-
-        tabs.forEach(tab => {
-            const hostname = tab.hostname || 'unknown';
-            if (!groups[hostname]) {
-                groups[hostname] = [];
-            }
-            groups[hostname].push(tab);
-        });
-
-        // 只返回有多个标签页的组
-        const filteredGroups = {};
-        for (const [hostname, tabs] of Object.entries(groups)) {
-            if (tabs.length > 1) {
-                // 按索引排序
-                tabs.sort((a, b) => a.index - b.index);
-                filteredGroups[hostname] = tabs;
-            }
-        }
-
-        return filteredGroups;
-    }
-
-    // 创建或更新域名分组标题
-    function createGroupHeader(hostname) {
-        const header = document.createElement('div');
-        header.className = 'tidy-group-header';
-        header.textContent = hostname;
-        header.setAttribute('data-hostname', hostname);
-        return header;
-    }
-
-    // 清除所有现有的分组标题
-    function clearGroupHeaders() {
-        const existingHeaders = document.querySelectorAll('.tidy-group-header');
-        existingHeaders.forEach(header => header.remove());
-    }
-
-    // 检查组内是否还有标签页
-    function checkGroupEmpty(groupHostname) {
-        const headers = document.querySelectorAll(`.tidy-group-header[data-hostname="${groupHostname}"]`);
-        const groupMembers = document.querySelectorAll(`span.tidy-group-member[data-hostname="${groupHostname}"]`);
-
-        // 如果没有组员，删除对应的标题
-        if (groupMembers.length === 0 && headers.length > 0) {
-            headers.forEach(header => header.remove());
-            console.log(`Removed empty group header for: ${groupHostname}`);
-            return true;
-        }
-        return false;
-    }
-
-    // 检查所有组是否为空
-    function checkAllGroupsEmpty() {
-        const allHeaders = document.querySelectorAll('.tidy-group-header');
-        let hasEmptyGroups = false;
-
-        allHeaders.forEach(header => {
-            const hostname = header.getAttribute('data-hostname');
-            if (hostname && checkGroupEmpty(hostname)) {
-                hasEmptyGroups = true;
-            }
-        });
-
-        console.log('Checked all groups for emptiness:', hasEmptyGroups ? 'found empty groups' : 'no empty groups');
-    }
-
-    // 更新所有组标题位置
-    function updateAllGroupHeadersPosition() {
-        const tabStrip = document.querySelector('.tab-strip');
-        if (!tabStrip) return;
-
-        const allHeaders = document.querySelectorAll('.tidy-group-header');
-        console.log('Updating positions for', allHeaders.length, 'group headers');
-
-        allHeaders.forEach(header => {
-            const hostname = header.getAttribute('data-hostname');
-            if (!hostname) return;
-
-            // 找到对应组中的第一个标签页
-            const firstTab = document.querySelector(`span.tidy-group-first[data-hostname="${hostname}"]`);
-            if (firstTab) {
-                // 重新计算位置
-                const posY = parseFloat(firstTab.querySelector('.tab-position')
-                    ?.style.getPropertyValue('--PositionY') || 0);
-                const posX = parseFloat(firstTab.querySelector('.tab-position')
-                    ?.style.getPropertyValue('--PositionX') || 0);
-                const width = parseFloat(firstTab.querySelector('.tab-position')
-                    ?.style.getPropertyValue('--Width') || 180);
-
-                header.style.left = `${posX}px`;
-                header.style.top = `${posY}px`;
-                header.style.width = `${width}px`;
-                console.log(`Updated header position for ${hostname}: left=${posX}px, top=${posY}px, width=${width}px`);
-            } else {
-                // 如果找不到对应的标签页，删除这个组标题
-                header.remove();
-                console.log(`Removed orphaned header for ${hostname}`);
-            }
-        });
-    }
-
-    // 为标签页元素添加分组样式
-function applyGroupStyles(groupedTabs) {
-    clearGroupHeaders();
-
-    const allTabs = document.querySelectorAll('.tab-strip span');
-    allTabs.forEach(span => {
-        span.classList.remove('tidy-group-first', 'tidy-group-member');
-        const oldHeader = span.querySelector('.tidy-group-header');
-        if (oldHeader) oldHeader.remove();
-    });
-
-    const tabStrip = document.querySelector('.tab-strip');
-    if (!tabStrip) return;
-
-    Object.entries(groupedTabs).forEach(([hostname, tabs]) => {
-        tabs.forEach((tab, index) => {
-            const span = tab.element;
-            if (!span) return;
-
-            if (index === 0) {
-                span.classList.add('tidy-group-first');
-                // 为第一个标签页也设置 hostname 属性，便于查找
-                span.setAttribute('data-hostname', hostname);
-
-                const header = createGroupHeader(hostname);
-                tabStrip.insertBefore(header, span); // 插入到对应 tab 前
-
-                // === 新增：计算并设置绝对定位 ===
-                const posY = parseFloat(span.querySelector('.tab-position')
-                    ?.style.getPropertyValue('--PositionY') || 0);
-                const posX = parseFloat(span.querySelector('.tab-position')
-                    ?.style.getPropertyValue('--PositionX') || 0);
-                const width = parseFloat(span.querySelector('.tab-position')
-                    ?.style.getPropertyValue('--Width') || 180);
-                const height = parseFloat(span.querySelector('.tab-position')
-                    ?.style.getPropertyValue('--Height') || 30);
-
-                header.style.position = 'relative';
-                header.style.left = `${posX}px`;
-                header.style.top = `${posY}px`; // 放在标签上方
-                header.style.width = `${width}px`;
-                header.style.pointerEvents = 'none';
-                header.style.zIndex = '2000';
-                // ============================
-
-            } else {
-                span.classList.add('tidy-group-member');
-                // 为组员添加数据属性以便后续检查
-                span.setAttribute('data-hostname', hostname);
-            }
-        });
-    });
-
-    // 应用样式后检查空组和更新位置
-    setTimeout(() => {
-        checkAllGroupsEmpty();
-    }, 100);
-}
-
-
-
-
-    // 组织标签页：将相同域名的标签页移动到相邻位置
-    function organizeTabs(groupedTabs) {
-        const hostnames = Object.keys(groupedTabs);
+        // 过滤掉失败的请求
+        const validTabs = tabs.filter(t => t !== null);
         
-        if (hostnames.length === 0) {
-            console.log('No groups to organize (no duplicate hostnames found)');
+        console.log('Valid tabs:', validTabs.length);
+
+        if (validTabs.length < 2) {
+            console.log('Not enough valid tabs');
             return;
         }
 
-        console.log('Organizing groups for hostnames:', hostnames);
-
-        // 获取当前窗口ID
-        chrome.windows.getCurrent({}, function(window) {
-            if (chrome.runtime.lastError) {
-                console.error('Error getting window:', chrome.runtime.lastError);
-                return;
+        // 按域名分组
+        const tabsByHost = {};
+        validTabs.forEach(tab => {
+            const hostname = getHostname(tab.url);
+            if (!tabsByHost[hostname]) {
+                tabsByHost[hostname] = [];
             }
-
-            let currentIndex = -1;
-            let movePromises = [];
-
-            // 依次处理每个域名组
-            hostnames.forEach((hostname) => {
-                const tabs = groupedTabs[hostname];
-                
-                console.log(`Organizing ${tabs.length} tabs for ${hostname}`);
-
-                // 找到这组标签中索引最小的
-                const minIndex = Math.min(...tabs.map(t => t.index));
-                
-                if (currentIndex === -1) {
-                    currentIndex = minIndex;
-                }
-
-                // 将所有标签移动到相邻位置
-                tabs.forEach((tab, i) => {
-                    const targetIndex = currentIndex + i;
-                    if (tab.index !== targetIndex) {
-                        const promise = new Promise((resolve) => {
-                            chrome.tabs.move(tab.id, { index: targetIndex }, function(movedTab) {
-                                if (chrome.runtime.lastError) {
-                                    console.error('Error moving tab:', chrome.runtime.lastError);
-                                } else {
-                                    console.log(`Moved tab ${tab.id} to index ${targetIndex}`);
-                                }
-                                resolve();
-                            });
-                        });
-                        movePromises.push(promise);
-                    }
-                });
-
-                currentIndex += tabs.length;
-            });
-
-            // 等待所有移动操作完成后，应用分组样式
-            Promise.all(movePromises).then(() => {
-                setTimeout(() => {
-                    applyGroupStyles(groupedTabs);
-                    console.log('Tabs have been organized by domain with group headers');
-                    
-                    // 重新添加按钮
-                    setTimeout(addTidyButton, 100);
-                }, 300);
-            });
+            tabsByHost[hostname].push(tab);
         });
-    }
 
-    // 获取当前工作区名称
-    function getCurrentWorkspaceName() {
-        const workspaceButton = document.querySelector('.ToolbarButton-Button .button-title');
-        return workspaceButton ? workspaceButton.textContent.trim() : 'default';
-    }
+        console.log('Grouped by hostname:', Object.keys(tabsByHost));
 
-    // 存储工作区分组状态
-    const workspaceGroupState = {};
+        // 只处理有多个标签的域名组
+        const hostsToStack = Object.entries(tabsByHost)
+            .filter(([_, tabs]) => tabs.length > 1);
 
-    // 保存当前工作区的分组状态
-    function saveWorkspaceGroupState(workspaceName, groupedTabs) {
-        if (groupedTabs && Object.keys(groupedTabs).length > 0) {
-            workspaceGroupState[workspaceName] = groupedTabs;
-            console.log(`Saved group state for workspace: ${workspaceName}`);
-        } else {
-            delete workspaceGroupState[workspaceName];
-        }
-    }
-
-    // 隐藏当前工作区的所有组标题
-    function hideGroupHeadersForWorkspace(workspaceName) {
-        if (workspaceGroupState[workspaceName]) {
-            const existingHeaders = document.querySelectorAll('.tidy-group-header');
-            existingHeaders.forEach(header => {
-                header.style.display = 'none';
-            });
-            console.log(`Hidden headers for workspace: ${workspaceName}`);
-        }
-    }
-
-    // 显示当前工作区的组标题（如果有的话）
-    function showGroupHeadersForWorkspace(workspaceName) {
-        if (workspaceGroupState[workspaceName]) {
-            const groupedTabs = workspaceGroupState[workspaceName];
-            applyGroupStyles(groupedTabs);
-            console.log(`Restored headers for workspace: ${workspaceName}`);
-        }
-    }
-
-    // 工作区切换监控
-    let workspaceObserver;
-    let currentWorkspaceName = getCurrentWorkspaceName();
-
-    // 监听工作区变化
-    function observeWorkspaceChanges() {
-        if (workspaceObserver) {
-            workspaceObserver.disconnect();
+        if (hostsToStack.length === 0) {
+            console.log('No duplicate domains found');
+            return;
         }
 
-        // 观察工作区按钮的变化
-        const workspaceButton = document.querySelector('.ToolbarButton-Button .button-title');
-        if (workspaceButton) {
-            workspaceObserver = new MutationObserver(function(mutations) {
-                mutations.forEach(function(mutation) {
-                    if (mutation.type === 'attributes' && mutation.attributeName === 'textContent') {
-                        const newWorkspaceName = getCurrentWorkspaceName();
-                        if (newWorkspaceName !== currentWorkspaceName) {
-                            console.log(`Workspace changed from ${currentWorkspaceName} to ${newWorkspaceName}`);
+        // 创建标签栈
+        for (const [hostname, tabs] of hostsToStack) {
+            // 生成唯一的 stack ID
+            const stackId = crypto.randomUUID();
+            const stackName = getTabStackName(tabs[0].url);
+            
+            console.log(`Creating stack for ${hostname} with ${tabs.length} tabs`);
+            console.log(`Stack ID: ${stackId}, Stack Name: ${stackName}`);
 
-                            // 保存当前工作区的分组状态
-                            saveWorkspaceGroupState(currentWorkspaceName, getCurrentGroupedTabs());
+            // 按索引排序
+            tabs.sort((a, b) => a.index - b.index);
 
-                            // 隐藏当前工作区的组标题
-                            hideGroupHeadersForWorkspace(currentWorkspaceName);
+            // 获取第一个标签的位置作为目标位置
+            let targetIndex = tabs[0].index;
 
-                            // 更新当前工作区
-                            currentWorkspaceName = newWorkspaceName;
+            // 移动所有标签到相邻位置并添加到标签栈
+            for (let i = 0; i < tabs.length; i++) {
+                const tab = tabs[i];
+                const moveIndex = targetIndex + i;
 
-                            // 延迟显示新工作区的组标题
-                            setTimeout(() => {
-                                showGroupHeadersForWorkspace(currentWorkspaceName);
-                                // 检查新工作区的空组并更新组标题位置
-                                setTimeout(() => {
-                                    checkAllGroupsEmpty();
-                                    updateAllGroupHeadersPosition();
-                                }, 300);
-                            }, 500);
+                // 先移动标签
+                await new Promise((resolve) => {
+                    chrome.tabs.move(tab.id, { index: moveIndex }, function() {
+                        if (chrome.runtime.lastError) {
+                            console.error('Error moving tab:', chrome.runtime.lastError);
                         }
-                    }
+                        resolve();
+                    });
                 });
-            });
 
-            workspaceObserver.observe(workspaceButton, {
-                attributes: true,
-                attributeFilter: ['textContent'],
-                childList: false,
-                subtree: false
-            });
+                // 再添加到标签栈
+                await addTabStack(tab.id, stackId, stackName);
+            }
         }
+
+        console.log('Tab stacking completed!');
+
+        // 重新添加按钮
+        setTimeout(addTidyButton, 500);
     }
 
-    // 获取当前的分组状态
-    function getCurrentGroupedTabs() {
-        const existingHeaders = document.querySelectorAll('.tidy-group-header');
-        const groupedTabs = {};
+    // ==================== 自动组栈监听器 ====================
 
-        existingHeaders.forEach(header => {
-            const hostname = header.getAttribute('data-hostname');
-            if (hostname) {
-                const firstTab = document.querySelector(`span.tidy-group-first[data-hostname="${hostname}"]`);
-                if (firstTab) {
-                    groupedTabs[hostname] = [{
-                        id: firstTab.getAttribute('data-tab-id'),
-                        hostname: hostname,
-                        element: firstTab
-                    }];
+    // 监听标签页导航事件以触发自动组栈
+    if (chrome.webNavigation) {
+        chrome.webNavigation.onCommitted.addListener(async (details) => {
+            if (details.tabId !== -1 && details.frameType === 'outermost_frame') {
+                const tab = await getTab(details.tabId);
+                
+                if (tab && !tab.pinned && tab.vivExtData && !tab.vivExtData.panelId) {
+                    const workspaceId = tab.vivExtData.workspaceId;
+                    
+                    // 延迟执行自动组栈，避免过于频繁
+                    setTimeout(() => {
+                        autoStackWorkspace(workspaceId);
+                    }, 500);
                 }
             }
         });
-
-        return groupedTabs;
+        
+        console.log('Auto-stacking listener registered');
     }
+
+    // ==================== 初始化 ====================
 
     // 初始化函数
     function init() {
         console.log('Initializing TidyTabs extension');
+        console.log('Auto-stack workspaces:', config.auto_stack_workspaces);
 
         // 初始添加按钮
         setTimeout(addTidyButton, 500);
-
-        // 监听工作区变化
-        setTimeout(observeWorkspaceChanges, 1000);
 
         // 监听DOM变化
         const observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.type === 'childList' || mutation.type === 'attributes') {
-                    // 检查是否有元素被添加（标签页变化）
+                    // 检查是否有span元素被添加（标签页变化）
                     if (mutation.addedNodes.length > 0) {
                         mutation.addedNodes.forEach(function(node) {
                             if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'SPAN') {
-                                // 标签页可能被添加，检查按钮并更新组标题位置
-                                setTimeout(() => {
-                                    addTidyButton();
-                                    updateAllGroupHeadersPosition();
-                                }, 50);
+                                // 标签页可能被添加，检查按钮
+                                setTimeout(addTidyButton, 50);
                             }
                         });
-                    }
-
-                    // 检查是否有元素被移除（标签页关闭）
-                    if (mutation.removedNodes.length > 0) {
-                        // 延迟检查空组和更新组标题位置，给DOM更新一些时间
-                        setTimeout(() => {
-                            checkAllGroupsEmpty();
-                            updateAllGroupHeadersPosition();
-                        }, 200);
                     }
 
                     // 检查aria-owns属性变化（工作区切换）
