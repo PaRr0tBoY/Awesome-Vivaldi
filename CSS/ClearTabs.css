@@ -1,0 +1,39 @@
+/* Clear Tabs Button Styles */
+.tab-strip .separator {
+  position: relative;
+  /* display: inline-block; */
+  margin-left: calc(var(--densityGap) * -2);
+  margin-bottom: -15px;
+}
+
+.tab-strip .separator .clear-tabs-below-button {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 2px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 10px;
+  color: #808080;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  background-color: var(--colorBg);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+#tabs-container:hover .clear-tabs-below-button {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.clear-tabs-below-button:hover {
+  color: white !important;
+}

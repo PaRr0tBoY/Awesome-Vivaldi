@@ -1,0 +1,49 @@
+/* Tidy Tabs Button Styles */
+
+.tab-strip .separator {
+  position: relative;
+}
+
+.tab-strip .separator .tidy-tabs-below-button {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 2px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 10px;
+  color: #808080;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+  right: 50px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  background-color: var(--colorBg);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.tab-strip .separator .tidy-loading-icon {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  right: 80px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  pointer-events: none;
+}
+
+#tabs-container:hover .tidy-tabs-below-button {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.tidy-tabs-below-button:hover {
+  color: white !important;
+}
