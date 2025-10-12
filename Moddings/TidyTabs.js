@@ -5,8 +5,8 @@
     const config = {
         // GLM API 配置
         glm_api_url: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
-        glm_api_key: '', // 请填入您的 API Key
-        glm_model: 'glm-4.5-flash', // 使用 flash 版本以获得更快响应
+        glm_api_key: 'e2105adcbe8d4d6ea49dce2fd94c127f.6dcsB9uMmtNxKXl2', // 请填入您的 API Key
+        glm_model: 'glm-4.5-air', // 使用 flash 版本以获得更快响应
         
         // 允许自动标签栈的工作区 (完全一致或 <default_workspace>)
         // 空数组 = 禁用所有工作区的自动组栈，只能手动点击按钮
@@ -182,7 +182,7 @@
     // ==================== AI 分组功能 ====================
     
     // 调用 GLM API 进行智能分组
-    const getAIGrouping = async (tabs) => {
+const getAIGrouping = async (tabs, existingStacks = []) => {
         if (!config.glm_api_key) {
             console.error('GLM API key not configured');
             showNotification('未配置 GLM API Key，无法使用 AI 分组功能');
@@ -207,42 +207,57 @@
         const languageName = getLanguageName(browserLang);
         
         console.log(`Browser language: ${browserLang} (${languageName})`);
-        
-        // 构建提示词
-        const prompt = `**说明：**
-你将获得一组标签页信息，每条数据包含：
-* id（数字编号）
-* title（页面标题）
-* domain（所属域名）
+        // const existingInfo = existingStacks.map(
+        // (s, i) => `${i}. ${s.name || '未命名栈'} (ID: ${s.id})`
+        // ).join('\n') || '无';
+        const existingInfo = Array.isArray(existingStacks) && existingStacks.length > 0
+        ? existingStacks.map((s, i) => `${i}. 栈标题: ${s.name || '未命名栈'} (ID: ${s.id})`).join('\n')
+        : '无';
 
-标签页列表：
+        // 构建提示词
+        const prompt = `
+        
+**说明：**
+
+下面分别是现有标签栈信息和待分组标签页信息：
+
+现存标签栈标题与ID：
+${existingInfo}
+
+待归栈标签页信息：
 ${tabsInfo.map(t => `${t.id}. ${t.title} (${t.domain})`).join('\n')}
 
-你需要分析这些标签页的内容主题，进行**智能分组**。
+**按照下述规则对标签页进行归栈**
 
-**分组逻辑：**
+# 优先将待归栈标签页分配到现存标签栈
 
-0. 绝对不要输出下述json以外的内容,输出且仅输出**严格有效的 JSON 格式**：
-避免下述情况:
-* 空元素（如 [5, , 7]）
-* 缺少引号或逗号
-* 不允许包含单个 tab 组（如 "tab_ids": [6]）非常重要
-* ***输出中不要有任何附加解释文字、注释或多余内容***非常重要
+1. 如果待归栈标签页的信息与某个现有标签栈的栈标题语义比较相关, 则将其添加到该标签栈中:在你将要输出的Json中将标签页的(tab_ids)匹配到现存栈的栈标题(name)即可[非常重要];
 
-1. **按内容主题分组**：优先依据标题语义内容的相似性进行归类。
+如果待归栈标签页找不到语义相关的现存标签栈, 再考虑创建新的标签栈
 
-2. **组名必须十分具体**：
-- 组名应简洁且具体，分析标签页的标题, 并解析标签页标题之间的联系是否构成一个具体课题, 按此标准分组并命名组
+# 创建新的标签栈时有如下要求:
+
+2. **按内容主题归栈**：创建新的标签栈时, 依据待归栈标签页标题语义内容的相似性进行归类。
+
+3. **组名必须十分具体**：
+- 组名应简洁且具体，分析待归栈标签页的标题, 并解析标签页标题之间的联系是否构成一个具体课题, 按此标准分组并命名组
 - 例如 "css overflow", "javascript异步问题", "xxxAPI集合" 等
 - 不应该出现类似"xxx教程","xxx资源","资料搜索"这样笼统的标题
 - 除非分组具体到只剩下一个标签页, 这时候允许更笼统的分组
-- **所有组名必须使用 ${languageName} 语言**
+- **所有组名必须使用 ${languageName} 语言命名**
 
-3. **每组至少包含 2 个标签页**。单独一个标签页不能成组。
+4. **每组至少包含 2 个标签页**。单独一个标签页不能成组。
 
-4. 只有一个标签页的组和无法与任何其他页面分组的标签页, 应当归入 "其它" 组（${languageName === '中文' ? '其它' : languageName === 'English' ? 'Others' : languageName === '日本語' ? 'その他' : 'その他'}）, 你应该始终创建"其它"组, 即使其中没有任何标签页。
+5. 只有一个标签页的组和无法与任何其他页面分组的标签页, 应当归入 "其它" 组（${languageName === '中文' ? '其它' : languageName === 'English' ? 'Others' : languageName === '日本語' ? 'その他' : 'その他'}）, 只有当现有标签栈中**不存在**"其它"组, 你才应该创建"其它"组, 即使其中没有任何标签页。
 
-5. 每个标签页仅能出现在一个组中。
+6. 每个标签页仅能出现在一个组中。
+
+7. 绝对不要输出下述json以外的内容,输出且仅输出**严格有效的 JSON 格式**：
+避免下述情况:
+* 空元素（如 [5, , 7]）
+* 缺漏引号或逗号
+* tab_ids不允许仅包含单个标签组（如 "tab_ids": [6]）[非常重要]
+* ***输出中不要有任何附加解释文字、注释或多余内容*** [非常重要]
 
 **输出示例（必须严格遵守）：**
 
@@ -261,9 +276,13 @@ ${tabsInfo.map(t => `${t.id}. ${t.title} (${t.domain})`).join('\n')}
       "tab_ids": [5, 6]
     }
   ]
-}`;
+}
+  
+`;
 
         try {
+            console.log('AI Prompt Preview:\n', prompt);
+
             console.log('Calling GLM API for intelligent grouping...');
             console.log('Request payload:', {
                 model: config.glm_model,
@@ -288,7 +307,7 @@ ${tabsInfo.map(t => `${t.id}. ${t.title} (${t.domain})`).join('\n')}
                     max_tokens: 2048,
                     stream: false,
                     thinking: {
-                        "type": "disabled" // 在这里添加，用于关闭思维链
+                        "type": "disabled"
                     }
                 })
             });
@@ -569,10 +588,11 @@ ${tabsInfo.map(t => `${t.id}. ${t.title} (${t.domain})`).join('\n')}
     // 执行标签栈创建
     const createTabStacks = async (groups) => {
         for (const group of groups) {
-            const stackId = crypto.randomUUID();
+            // 如果是现有标签栈，使用已有的 stackId
+            const stackId = group.stackId || crypto.randomUUID();
             const stackName = group.name;
             
-            console.log(`Creating stack "${stackName}" with ${group.tabs.length} tabs`);
+            console.log(`${group.isExisting ? 'Adding to existing' : 'Creating'} stack "${stackName}" with ${group.tabs.length} tabs`);
             
             // 按索引排序
             group.tabs.sort((a, b) => a.index - b.index);
@@ -647,32 +667,67 @@ ${tabsInfo.map(t => `${t.id}. ${t.title} (${t.domain})`).join('\n')}
     async function tidyTabsBelow(separator) {
         let nextElement = separator.nextElementSibling;
         const tabsInfo = [];
+        const existingStacks = []; // 存储现有的标签栈信息
 
         while (nextElement) {
             if (nextElement.tagName === 'SPAN') {
                 const tabWrapper = nextElement.querySelector('.tab-wrapper');
                 const tabPosition = nextElement.querySelector('.tab-position');
 
-                const isStack = tabPosition?.classList.contains('is-substack') ||
-                               nextElement.querySelector('.svg-tab-stack') !== null;
+                // 检查是否是标签栈
+                const isStack =
+                    nextElement.querySelector('.stack-counter') !== null ||
+                    nextElement.querySelector('.svg-tab-stack') !== null ||
+                    nextElement.querySelector('.tab-position.is-substack, .tab-position.is-stack') !== null;
 
                 if (isStack) {
-                    console.log('Skipping tab stack');
-                } else if (tabPosition && !tabPosition.classList.contains('is-pinned')) {
-                    const isActive = tabPosition.querySelector('.active') !== null;
+                console.log('Found existing tab stack DOM:', nextElement.outerHTML.slice(0, 200));
 
-                    if (!isActive) {
-                        let tabId = null;
-                        if (tabWrapper) {
-                            tabId = tabWrapper.getAttribute('data-id');
-                        }
+                const stackWrapper = nextElement.querySelector('.tab-wrapper');
+                const stackTabId = stackWrapper?.getAttribute('data-id')?.replace('tab-', '');
 
-                        if (tabId) {
-                            const actualTabId = tabId.replace('tab-', '');
-                            const numericId = parseInt(actualTabId);
-                            if (!isNaN(numericId)) {
-                                tabsInfo.push({ id: numericId });
-                            }
+                if (stackTabId) {
+                    // 用 query 获取所有 tabs
+                    const allTabs = await new Promise(resolve => {
+                    chrome.tabs.query({ currentWindow: true }, tabs => resolve(tabs));
+                    });
+
+                    // 查找 vivExtData 中有 group 的 tab（即栈头）
+                    const stackTab = allTabs.find(t => {
+                    try {
+                        const data = JSON.parse(t.vivExtData || '{}');
+                        return data && data.group && t.title && t.vivExtData.includes(stackTabId.slice(0, 8));
+                    } catch {
+                        return false;
+                    }
+                    });
+
+                    if (stackTab) {
+                    const viv = JSON.parse(stackTab.vivExtData);
+                    existingStacks.push({
+                        id: viv.group,
+                        name: viv.fixedGroupTitle || stackTab.title || '未命名栈',
+                        tabId: stackTab.id
+                    });
+                    console.log(`Detected existing stack: ${viv.fixedGroupTitle || stackTab.title} (ID: ${viv.group})`);
+                    } else {
+                    console.warn('No matching chrome tab found for DOM id:', stackTabId);
+                    }
+                }
+                }
+
+                else if (tabPosition && !tabPosition.classList.contains('is-pinned')) {
+                    // 不再跳过 active 标签页，收集所有非固定标签页
+                    let tabId = null;
+                    if (tabWrapper) {
+                        tabId = tabWrapper.getAttribute('data-id');
+                    }
+
+                    if (tabId) {
+                        const actualTabId = tabId.replace('tab-', '');
+                        const numericId = parseInt(actualTabId);
+                        if (!isNaN(numericId)) {
+                            tabsInfo.push({ id: numericId });
                         }
                     }
                 }
@@ -681,9 +736,10 @@ ${tabsInfo.map(t => `${t.id}. ${t.title} (${t.domain})`).join('\n')}
         }
 
         console.log('Tabs found:', tabsInfo.length);
+        console.log('Existing stacks found:', existingStacks.length);
 
-        if (tabsInfo.length < 2) {
-            console.log('Not enough tabs to group (need at least 2)');
+        if (tabsInfo.length < 2 && existingStacks.length === 0) {
+            console.log('Not enough tabs to group (need at least 2) and no existing stacks');
             return;
         }
 
@@ -700,8 +756,8 @@ ${tabsInfo.map(t => `${t.id}. ${t.title} (${t.domain})`).join('\n')}
             
             console.log('Valid tabs:', validTabs.length);
 
-            if (validTabs.length < 2) {
-                console.log('Not enough valid tabs');
+            if (validTabs.length < 1 && existingStacks.length === 0) {
+                console.log('No valid tabs or existing stacks');
                 return;
             }
 
@@ -709,7 +765,7 @@ ${tabsInfo.map(t => `${t.id}. ${t.title} (${t.domain})`).join('\n')}
             
             if (config.enable_ai_grouping && config.glm_api_key) {
                 console.log('Using AI grouping...');
-                groups = await getAIGrouping(validTabs);
+                groups = await getAIGrouping(validTabs, existingStacks);
                 
                 if (!groups) {
                     console.log('AI grouping failed, falling back to domain grouping');
