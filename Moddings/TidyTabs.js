@@ -5,8 +5,8 @@
     const config = {
         // GLM API 配置
         glm_api_url: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
-        glm_api_key: '', // 请填入您的 API Key
-        glm_model: 'glm-4.5-flash', // 使用 flash 版本以获得更快响应
+        glm_api_key: 'e2105adcbe8d4d6ea49dce2fd94c127f.6dcsB9uMmtNxKXl2', // 请填入您的 API Key
+        glm_model: 'glm-4.5-air', // 使用 flash 版本以获得更快响应
         
         // 允许自动标签栈的工作区 (完全一致或 <default_workspace>)
         // 空数组 = 禁用所有工作区的自动组栈，只能手动点击按钮
@@ -164,30 +164,63 @@
         }));
         
         // 构建提示词
-        const prompt = `请分析以下标签页，将它们按照内容相关性进行智能分组，并为每组起一个简短的中文名称（2-6个字）。
+        const prompt = `
+        **说明：**
+        你将获得一组标签页信息，每条数据包含：
 
-标签页列表：
-${tabsInfo.map(t => `${t.id}. ${t.title} (${t.domain})`).join('\n')}
+        * id（数字编号）
+        * title（页面标题）
+        * domain（所属域名）
 
-请严格按照以下 JSON 格式返回结果，不要有任何其他文字：
-{
-  "groups": [
-    {
-      "name": "组名",
-      "tab_ids": [0, 1, 2]
-    }
-  ]
-}
+        标签页列表：
+        ${tabsInfo.map(t => `${t.id}. ${t.title} (${t.domain})`).join('\n')}
 
-注意事项：
-1. 每个标签页只能出现在一个组中
-2. 相关性不高的孤立标签页全部分配到"其它"组
-3. 优先考虑内容主题相关性，其次考虑域名
-4. 组名要简洁、准确、易懂
-5. 只返回 JSON，不要有任何其他内容`;
+        你需要分析这些标签页的内容主题，进行**智能分组**。
+
+        **分组逻辑：**
+
+        0. 绝对不要输出下述json以外的内容,输出且仅输出**严格有效的 JSON 格式**：
+        避免下述情况:
+        * 空元素（如 [5, , 7]）
+        * 缺少引号或逗号
+        * 不允许包含单个 tab 组（如 "tab_ids": [6]）非常重要
+        * ***输出中不要有任何附加解释文字、注释或多余内容***非常重要
+        1. **按内容主题分组**：优先依据标题语义内容的相似性进行归类。
+        2. **组名必须十分具体**：组名应简洁且具体，分析标签页的标题, 并解析标签页标题之间的联系是否构成一个具体课题, 按此标准分组并命名组, 例如 "css overflow", "javascript异步问题", "xxxAPI集合" 等, 不应该出现类似"xxx教程","xxx资源","资料搜索"这样笼统的标题
+        3. **每组至少包含 2 个标签页**。单独一个标签页不能成组。
+        4. 若某标签页无法与任何其他页面分组，则归入 "其它" 组。
+        5. 每个标签页仅能出现在一个组中。
+        **输出示例（必须严格遵守）：**
+
+        {
+        "groups": [
+            {
+            "name": "组名",
+            "tab_ids": [0, 1, 2]
+            },
+            {
+            "name": "组名2",
+            "tab_ids": [3, 4]
+            },
+            {
+            "name": "其它",
+            "tab_ids": [5, 6]
+            }
+        ]
+        }
+
+`;
 
         try {
             console.log('Calling GLM API for intelligent grouping...');
+            console.log('Request payload:', {
+                model: config.glm_model,
+                messages: [{ role: 'user', content: prompt }],
+                stream: true,
+                thinking: {
+                "type": "disabled" // 在这里添加，用于关闭思维链
+                }
+            });
             
             const response = await fetch(config.glm_api_url, {
                 method: 'POST',
@@ -205,7 +238,10 @@ ${tabsInfo.map(t => `${t.id}. ${t.title} (${t.domain})`).join('\n')}
                     ],
                     temperature: 0.7,
                     max_tokens: 2048,
-                    stream: false
+                    stream: true,
+                    thinking: {
+                    "type": "disabled" // 在这里添加，用于关闭思维链
+                    }
                 })
             });
             
@@ -213,10 +249,53 @@ ${tabsInfo.map(t => `${t.id}. ${t.title} (${t.domain})`).join('\n')}
                 throw new Error(`GLM API error: ${response.status} ${response.statusText}`);
             }
             
-            const data = await response.json();
-            const content = data.choices[0].message.content;
+            // 处理流式响应
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let content = '';
             
-            console.log('GLM API response:', content);
+            console.log('=== GLM API Stream Response (Raw) ===');
+            
+            while (true) {
+                const { done, value } = await reader.read();
+                
+                if (done) {
+                    console.log('=== Stream Complete ===');
+                    break;
+                }
+                
+                const chunk = decoder.decode(value, { stream: true });
+                console.log('Raw chunk:', chunk);
+                
+                // 处理 SSE 格式的数据
+                const lines = chunk.split('\n');
+                for (const line of lines) {
+                    if (line.startsWith('data: ')) {
+                        const data = line.slice(6).trim();
+                        
+                        if (data === '[DONE]') {
+                            console.log('Stream finished');
+                            continue;
+                        }
+                        
+                        try {
+                            const json = JSON.parse(data);
+                            console.log('Parsed chunk:', json);
+                            
+                            const delta = json.choices?.[0]?.delta?.content;
+                            if (delta) {
+                                content += delta;
+                                console.log('Delta content:', delta);
+                            }
+                        } catch (e) {
+                            console.error('Error parsing chunk:', e, data);
+                        }
+                    }
+                }
+            }
+            
+            console.log('=== Complete Content ===');
+            console.log(content);
             
             // 解析 JSON 响应
             // 尝试提取 JSON（可能包含在 markdown 代码块中）
@@ -286,6 +365,31 @@ ${tabsInfo.map(t => `${t.id}. ${t.title} (${t.domain})`).join('\n')}
         button.className = 'tidy-tabs-below-button';
         button.textContent = 'Tidy';
         return button;
+    }
+
+    // 创建加载图标
+    function createLoadingIcon() {
+        const container = document.createElement('div');
+        container.className = 'tidy-loading-icon';
+        container.innerHTML = `<svg width="28" height="28" style="padding:8px" fill="hsl(228, 97%, 42%)" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="RadialGradient8932"><stop offset="0%" stop-color="currentColor"/><stop offset="100%" stop-color="currentColor" stop-opacity=".25"/></linearGradient></defs><style>@keyframes spin8932{to{transform:rotate(360deg)}}</style><circle cx="10" cy="10" r="8" stroke-width="2" style="transform-origin:50% 50%;stroke:url(#RadialGradient8932);fill:none;animation:spin8932 .5s infinite linear"/></svg>`;
+        return container;
+    }
+
+    // 显示加载状态
+    function showLoading(separator) {
+        const existing = separator.querySelector('.tidy-loading-icon');
+        if (existing) return;
+        
+        const loadingIcon = createLoadingIcon();
+        separator.appendChild(loadingIcon);
+    }
+
+    // 隐藏加载状态
+    function hideLoading(separator) {
+        const loadingIcon = separator.querySelector('.tidy-loading-icon');
+        if (loadingIcon) {
+            loadingIcon.remove();
+        }
     }
 
     // 添加Tidy按钮到DOM
@@ -467,44 +571,51 @@ ${tabsInfo.map(t => `${t.id}. ${t.title} (${t.domain})`).join('\n')}
             return;
         }
 
-        // 获取所有标签页的详细信息
-        const tabs = await Promise.all(
-            tabsInfo.map(info => getTab(info.id))
-        );
+        // 显示加载动画
+        showLoading(separator);
 
-        const validTabs = tabs.filter(t => t !== null);
-        
-        console.log('Valid tabs:', validTabs.length);
+        try {
+            // 获取所有标签页的详细信息
+            const tabs = await Promise.all(
+                tabsInfo.map(info => getTab(info.id))
+            );
 
-        if (validTabs.length < 2) {
-            console.log('Not enough valid tabs');
-            return;
-        }
-
-        let groups;
-        
-        if (config.enable_ai_grouping && config.glm_api_key) {
-            console.log('Using AI grouping...');
-            groups = await getAIGrouping(validTabs);
+            const validTabs = tabs.filter(t => t !== null);
             
-            if (!groups) {
-                console.log('AI grouping failed, falling back to domain grouping');
+            console.log('Valid tabs:', validTabs.length);
+
+            if (validTabs.length < 2) {
+                console.log('Not enough valid tabs');
+                return;
+            }
+
+            let groups;
+            
+            if (config.enable_ai_grouping && config.glm_api_key) {
+                console.log('Using AI grouping...');
+                groups = await getAIGrouping(validTabs);
+                
+                if (!groups) {
+                    console.log('AI grouping failed, falling back to domain grouping');
+                    groups = groupByDomain(validTabs);
+                }
+            } else {
+                console.log('Using domain grouping...');
                 groups = groupByDomain(validTabs);
             }
-        } else {
-            console.log('Using domain grouping...');
-            groups = groupByDomain(validTabs);
+
+            if (groups.length === 0) {
+                console.log('No groups to create');
+                return;
+            }
+
+            await createTabStacks(groups);
+            console.log('Tab stacking completed!');
+        } finally {
+            // 隐藏加载动画
+            hideLoading(separator);
+            setTimeout(addTidyButton, 500);
         }
-
-        if (groups.length === 0) {
-            console.log('No groups to create');
-            return;
-        }
-
-        await createTabStacks(groups);
-        console.log('Tab stacking completed!');
-
-        setTimeout(addTidyButton, 500);
     }
 
     // ==================== 自动组栈监听器 ====================
