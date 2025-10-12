@@ -1,5 +1,9 @@
 /* Tidy Tabs Button Styles */
 
+.tab-strip .separator {
+  position: relative;
+}
+
 .tab-strip .separator .tidy-tabs-below-button {
   position: absolute;
   display: inline-flex;
@@ -22,6 +26,18 @@
   pointer-events: none;
 }
 
+.tab-strip .separator .tidy-loading-icon {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  right: 80px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  pointer-events: none;
+}
+
 #tabs-container:hover .tidy-tabs-below-button {
   opacity: 1;
   visibility: visible;
@@ -31,50 +47,3 @@
 .tidy-tabs-below-button:hover {
   color: white !important;
 }
-
-/* .tab-strip span.tidy-group-first {
-  position: relative;
-  margin-top: 20px;
-}
-Ensure the tab-position within the first group tab has proper positioning
-.tab-strip span.tidy-group-first .tab-position {
-  position: relative;
-  margin-top: 20px;
-} */
-/* .tab-strip span.tidy-group-first {
-  margin-top: 18px !important;
-} */
-
-.tidy-group-header {
-  display: block !important;
-  position: absolute;
-  height: 18px;
-  line-height: 18px;
-  font-size: 10px;
-  color: var(--colorFg);
-  opacity: 0.8;
-  background-color: var(--colorBgDarker);
-  border-bottom: 1px solid var(--colorBorder);
-  border-radius: 4px 4px 0 0;
-  padding: 0 8px;
-  box-sizing: border-box;
-  pointer-events: none;
-  z-index: 2000;
-  transition: opacity 0.3s ease, display 0.3s ease;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 200px;
-}
-
-.tidy-group-header:hover {
-  opacity: 1;
-  background-color: var(--colorBg);
-}
-
-.tidy-group-header[data-hostname]::before {
-  content: '📁 ';
-  margin-right: 4px;
-  font-size: 10px;
-}
-
