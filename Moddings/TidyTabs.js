@@ -5,8 +5,8 @@
     const config = {
         // GLM API 配置
         glm_api_url: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
-        glm_api_key: 'e2105adcbe8d4d6ea49dce2fd94c127f.6dcsB9uMmtNxKXl2', // 请填入您的 API Key
-        glm_model: 'glm-4.5-air', // 使用 flash 版本以获得更快响应
+        glm_api_key: '', // 请填入您的 API Key
+        glm_model: 'glm-4.5-flash', // 使用 flash 版本以获得更快响应
         
         // 允许自动标签栈的工作区 (完全一致或 <default_workspace>)
         // 空数组 = 禁用所有工作区的自动组栈，只能手动点击按钮
@@ -21,37 +21,45 @@
         max_tabs_for_ai: 20,
     };
 
+    // 获取浏览器界面语言
+    const getBrowserLanguage = () => {
+        return chrome.i18n.getUILanguage() || navigator.language || 'zh-CN';
+    };
+
+    // 将语言代码转换为自然语言名称
+    const getLanguageName = (langCode) => {
+        const langMap = {
+            'zh': '中文',
+            'zh-CN': '中文',
+            'zh-TW': '中文',
+            'en': 'English',
+            'en-US': 'English',
+            'en-GB': 'English',
+            'ja': '日本語',
+            'ja-JP': '日本語',
+            'ko': '한국어',
+            'ko-KR': '한국어',
+            'es': 'Español',
+            'fr': 'Français',
+            'de': 'Deutsch',
+            'ru': 'Русский',
+            'pt': 'Português',
+            'it': 'Italiano',
+            'ar': 'العربية',
+            'hi': 'हिन्दी'
+        };
+        
+        // 尝试完整匹配
+        if (langMap[langCode]) {
+            return langMap[langCode];
+        }
+        
+        // 尝试主语言代码匹配
+        const mainLang = langCode.split('-')[0];
+        return langMap[mainLang] || 'English';
+    };
+
     // ==================== 工具函数 ====================
-    
-    // 添加显示通知的函数
-    function showNotification(title, message) {
-        // 创建通知元素
-        const notification = document.createElement('div');
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #333;
-            color: white;
-            padding: 15px;
-            border-radius: 5px;
-            z-index: 10000;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
-            max-width: 300px;
-        `;
-        notification.innerHTML = `<strong>${title}</strong><br>${message}`;
-        document.body.appendChild(notification);
-
-        // 3秒后移除
-        setTimeout(() => {
-            notification.remove();
-        }, 3000);
-    }
-
-    // 获取浏览器语言
-    function getBrowserLanguage() {
-        return navigator.language || navigator.userLanguage || 'en';
-    }
     
     // 获取 URL 片段
     const getUrlFragments = (url) => {
@@ -166,40 +174,25 @@
             if (chrome.runtime.lastError) {
                 console.error('Error updating tab:', chrome.runtime.lastError);
             } else {
-                console.log(`Added tab ${tabId} to stack${stackId} (${stackName})`);
+                console.log(`Added tab ${tabId} to stack ${stackId} (${stackName})`);
             }
         });
     };
     
     // ==================== AI 分组功能 ====================
     
-    // 调用 GLM API 进行智能分组（非流式）
-    const getAIGrouping = async (tabs, existingGroups = []) => {
+    // 调用 GLM API 进行智能分组
+    const getAIGrouping = async (tabs) => {
         if (!config.glm_api_key) {
             console.error('GLM API key not configured');
+            showNotification('未配置 GLM API Key，无法使用 AI 分组功能');
             return null;
         }
         
         if (tabs.length > config.max_tabs_for_ai) {
-            console.warn(`Too many tabs (${tabs.length}), limiting to${config.max_tabs_for_ai}`);
+            console.warn(`Too many tabs (${tabs.length}), limiting to ${config.max_tabs_for_ai}`);
             tabs = tabs.slice(0, config.max_tabs_for_ai);
         }
-        
-        // 获取浏览器语言
-        const language = getBrowserLanguage();
-        const languageMap = {
-            'zh': '中文',
-            'zh-cn': '中文',
-            'zh-tw': '中文',
-            'en': 'English',
-            'ja': '日本語',
-            'ko': '한국어',
-            'fr': 'Français',
-            'de': 'Deutsch',
-            'es': 'Español',
-            'ru': 'Русский'
-        };
-        const displayLanguage = languageMap[language.toLowerCase()] || 'English';
         
         // 准备标签页信息
         const tabsInfo = tabs.map((tab, index) => ({
@@ -209,113 +202,73 @@
             url: tab.url
         }));
         
+        // 获取浏览器界面语言
+        const browserLang = getBrowserLanguage();
+        const languageName = getLanguageName(browserLang);
+        
+        console.log(`Browser language: ${browserLang} (${languageName})`);
+        
         // 构建提示词
-        let prompt = `
-        **说明：**
-        你将获得一组标签页信息，每条数据包含：
-        * id（数字编号）
-        * title（页面标题）
-        * domain（所属域名）
-        
-        标签页列表：
-        ${tabsInfo.map(t => `${t.id}. ${t.title} (${t.domain})`).join('\n')}
-        
-        你需要分析这些标签页的内容主题，进行**智能分组**。
-        
-        **分组逻辑：**
-        
-        0. 绝对不要输出下述json以外的内容,输出且仅输出**严格有效的 JSON 格式**：
-        避免下述情况:
-        * 空元素（如 [5, , 7]）
-        * 缺少引号或逗号
-        * 不允许包含单个 tab 组（如 "tab_ids": [6]）非常重要
-        * ***输出中不要有任何附加解释文字、注释或多余内容***非常重要
-        1. **按内容主题分组**：优先依据标题语义内容的相似性进行归类。
-        2. 
-        - **组名必须十分具体**：组名应简洁且具体，分析标签页的标题, 并解析标签页标题之间的联系是否构成一个具体课题, 按此标准分组并命名组, 例如 "css overflow", "javascript异步问题", "xxxAPI集合" 等
-        - 不应该出现类似"xxx教程","xxx资源","资料搜索"这样笼统的标题, 除非分组具体到只剩下一个标签页, 这时候允许更笼统的分组
-        3. **每组至少包含 2 个标签页**。单独一个标签页不能成组。
-        4. 只有一个标签页的组和无法与任何其他页面分组的标签页, 应当归入 "其它" 组, 你应该始终创建"其它"组, 即使其中没有任何标签页。
-        5. 每个标签页仅能出现在一个组中。
-        6. **使用${displayLanguage}语言命名组名**。
-        
-        **输出示例（必须严格遵守）：**
-        
-        {
-        "groups": [
-            {
-            "name": "组名",
-            "tab_ids": [0, 1, 2]
-            },
-            {
-            "name": "组名2",
-            "tab_ids": [3, 4]
-            },
-            {
-            "name": "其它",
-            "tab_ids": [5, 6]
-            }
-        ]
-        }
-        `;
-        
-        // 如果有已存在的组，添加到提示词中
-        if (existingGroups.length > 0) {
-            prompt = `
-            **说明：**
-            你将获得一组标签页信息，每条数据包含：
-            * id（数字编号）
-            * title（页面标题）
-            * domain（所属域名）
-            
-            已存在的组（你可以将标签页分配到这些组中）：
-            ${existingGroups.map((g, i) => `${i}. ${g.name} (包含:${g.tabs.map(t => t.title).join(', ')})`).join('\n')}
-            
-            新标签页列表：
-            ${tabsInfo.map(t => `${t.id}. ${t.title} (${t.domain})`).join('\n')}
-            
-            你需要分析这些标签页的内容主题，进行**智能分组**。优先将新标签页分配到已存在的组中，如果无法分配则创建新组。
-            
-            **分组逻辑：**
-            
-            0. 绝对不要输出下述json以外的内容,输出且仅输出**严格有效的 JSON 格式**：
-            避免下述情况:
-            * 空元素（如 [5, , 7]）
-            * 缺少引号或逗号
-            * 不允许包含单个 tab 组（如 "tab_ids": [6]）非常重要
-            * ***输出中不要有任何附加解释文字、注释或多余内容***非常重要
-            1. **按内容主题分组**：优先依据标题语义内容的相似性进行归类。
-            2. 
-            - **组名必须十分具体**：组名应简洁且具体，分析标签页的标题, 并解析标签页标题之间的联系是否构成一个具体课题, 按此标准分组并命名组, 例如 "css overflow", "javascript异步问题", "xxxAPI集合" 等
-            - 不应该出现类似"xxx教程","xxx资源","资料搜索"这样笼统的标题, 除非分组具体到只剩下一个标签页, 这时候允许更笼统的分组
-            3. **每组至少包含 2 个标签页**。单独一个标签页不能成组。
-            4. 只有一个标签页的组和无法与任何其他页面分组的标签页, 应当归入 "其它" 组, 你应该始终创建"其它"组, 即使其中没有任何标签页。
-            5. 每个标签页仅能出现在一个组中。
-            6. **使用${displayLanguage}语言命名组名**。
-            
-            **输出示例（必须严格遵守）：**
-            
-            {
-            "groups": [
-                {
-                "name": "组名",
-                "tab_ids": [0, 1, 2]
-                },
-                {
-                "name": "组名2",
-                "tab_ids": [3, 4]
-                },
-                {
-                "name": "其它",
-                "tab_ids": [5, 6]
-                }
-            ]
-            }
-            `;
-        }
-        
+        const prompt = `**说明：**
+你将获得一组标签页信息，每条数据包含：
+* id（数字编号）
+* title（页面标题）
+* domain（所属域名）
+
+标签页列表：
+${tabsInfo.map(t => `${t.id}. ${t.title} (${t.domain})`).join('\n')}
+
+你需要分析这些标签页的内容主题，进行**智能分组**。
+
+**分组逻辑：**
+
+0. 绝对不要输出下述json以外的内容,输出且仅输出**严格有效的 JSON 格式**：
+避免下述情况:
+* 空元素（如 [5, , 7]）
+* 缺少引号或逗号
+* 不允许包含单个 tab 组（如 "tab_ids": [6]）非常重要
+* ***输出中不要有任何附加解释文字、注释或多余内容***非常重要
+
+1. **按内容主题分组**：优先依据标题语义内容的相似性进行归类。
+
+2. **组名必须十分具体**：
+- 组名应简洁且具体，分析标签页的标题, 并解析标签页标题之间的联系是否构成一个具体课题, 按此标准分组并命名组
+- 例如 "css overflow", "javascript异步问题", "xxxAPI集合" 等
+- 不应该出现类似"xxx教程","xxx资源","资料搜索"这样笼统的标题
+- 除非分组具体到只剩下一个标签页, 这时候允许更笼统的分组
+- **所有组名必须使用 ${languageName} 语言**
+
+3. **每组至少包含 2 个标签页**。单独一个标签页不能成组。
+
+4. 只有一个标签页的组和无法与任何其他页面分组的标签页, 应当归入 "其它" 组（${languageName === '中文' ? '其它' : languageName === 'English' ? 'Others' : languageName === '日本語' ? 'その他' : 'その他'}）, 你应该始终创建"其它"组, 即使其中没有任何标签页。
+
+5. 每个标签页仅能出现在一个组中。
+
+**输出示例（必须严格遵守）：**
+
+{
+  "groups": [
+    {
+      "name": "组名",
+      "tab_ids": [0, 1, 2]
+    },
+    {
+      "name": "组名2",
+      "tab_ids": [3, 4]
+    },
+    {
+      "name": "${languageName === '中文' ? '其它' : languageName === 'English' ? 'Others' : 'その他'}",
+      "tab_ids": [5, 6]
+    }
+  ]
+}`;
+
         try {
             console.log('Calling GLM API for intelligent grouping...');
+            console.log('Request payload:', {
+                model: config.glm_model,
+                messages: [{ role: 'user', content: prompt }]
+            });
             
             const response = await fetch(config.glm_api_url, {
                 method: 'POST',
@@ -331,510 +284,525 @@
                             content: prompt
                         }
                     ],
-                    temperature: 0.2,
+                    temperature: 0.7,
                     max_tokens: 2048,
                     stream: false,
                     thinking: {
-                        "type": "disabled"
+                        "type": "disabled" // 在这里添加，用于关闭思维链
                     }
                 })
             });
             
             if (!response.ok) {
-                throw new Error(`GLM API error: ${response.status}${response.statusText}`);
+                const errorText = await response.text();
+                console.error('GLM API error response:', errorText);
+                throw new Error(`GLM API error: ${response.status} ${response.statusText}`);
             }
             
-            const responseData = await response.json();
-            const content = responseData.choices[0].message.content;
+            const data = await response.json();
+            console.log('GLM API full response:', data);
             
-            console.log('GLM API response:', content);
+            const content = data.choices[0].message.content;
+            console.log('GLM API content:', content);
             
+            // 解析 JSON 响应
             // 尝试提取 JSON（可能包含在 markdown 代码块中）
-            let jsonStr = content;
-            const jsonMatch = content.match(/(?:json)?\s*({[\s\S]*?})\s*```/);
+            let jsonStr = content.trim();
+            
+            // 移除可能的 markdown 代码块标记
+            const jsonMatch = content.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
             if (jsonMatch) {
-                jsonStr = jsonMatch[1];
-            }
-
-            const result = JSON.parse(jsonStr);
-        
-        // 验证返回格式
-        if (!result.groups || !Array.isArray(result.groups)) {
-            throw new Error('Invalid response format');
-        }
-        
-        // 将 tab_ids 映射回实际的标签页
-        const groupedTabs = result.groups.map(group => ({
-            name: group.name,
-            tabs: group.tab_ids.map(id => tabs[id]).filter(t => t)
-        })).filter(g => g.tabs.length > 1); // 只保留有多个标签的组
-        
-        console.log('AI grouping result:', groupedTabs);
-        
-        return groupedTabs;
-        
-    } catch (error) {
-        console.error('Error calling GLM API:', error);
-        showNotification('分组失败', `无法解析AI返回的分组结果: ${error.message}`);
-        return null;
-    }
-};
-
-// 新增函数：处理孤立标签页
-const processOrphanTabs = async (tabs, existingGroups) => {
-    if (tabs.length === 0) return [];
-    
-    console.log(`Processing ${tabs.length} orphan tabs with${existingGroups.length} existing groups`);
-    
-    // 尝试将孤立标签页分配到现有组中
-    const newGroups = await getAIGrouping(tabs, existingGroups);
-    
-    if (!newGroups) {
-        console.log('Failed to group orphan tabs, returning them as ungrouped');
-        return [];
-    }
-    
-    // 合并新组到现有组
-    const mergedGroups = [...existingGroups];
-    
-    // 处理新组
-    newGroups.forEach(newGroup => {
-        // 检查是否是"其它"组
-        if (newGroup.name === '其它') {
-            // 将"其它"组的标签页添加到现有的"其它"组（如果存在）
-            const otherGroup = mergedGroups.find(g => g.name === '其它');
-            if (otherGroup) {
-                otherGroup.tabs.push(...newGroup.tabs);
-            } else {
-                mergedGroups.push(newGroup);
-            }
-        } else {
-            // 检查是否与现有组同名
-            const existingGroup = mergedGroups.find(g => g.name === newGroup.name);
-            if (existingGroup) {
-                existingGroup.tabs.push(...newGroup.tabs);
-            } else {
-                mergedGroups.push(newGroup);
-            }
-        }
-    });
-    
-    // 找出仍然未分组的标签页
-    const allGroupedTabIds = new Set();
-    mergedGroups.forEach(group => {
-        group.tabs.forEach(tab => {
-            allGroupedTabIds.add(tab.id);
-        });
-    });
-    
-    const stillOrphanTabs = tabs.filter(tab => !allGroupedTabIds.has(tab.id));
-    
-    if (stillOrphanTabs.length > 0) {
-        console.log(`Still have ${stillOrphanTabs.length} orphan tabs after processing`);
-        // 递归处理剩余的孤立标签页
-        return processOrphanTabs(stillOrphanTabs, mergedGroups);
-    }
-    
-    return mergedGroups;
-};
-
-// 修改后的分组函数
-const groupTabsWithIterativeRefinement = async (tabs) => {
-    console.log(`Starting grouping process with ${tabs.length} tabs`);
-    
-    // 第一次分组
-    let groups = await getAIGrouping(tabs);
-    
-    if (!groups) {
-        console.log('Initial grouping failed, falling back to domain grouping');
-        return groupByDomain(tabs);
-    }
-    
-    // 找出未分组的标签页
-    const groupedTabIds = new Set();
-    groups.forEach(group => {
-        group.tabs.forEach(tab => {
-            groupedTabIds.add(tab.id);
-        });
-    });
-    
-    const orphanTabs = tabs.filter(tab => !groupedTabIds.has(tab.id));
-    
-    if (orphanTabs.length > 0) {
-        console.log(`Found ${orphanTabs.length} orphan tabs, processing them`);
-        // 处理孤立标签页
-        groups = await processOrphanTabs(orphanTabs, groups);
-    }
-    
-    // 过滤掉只有一个标签的组（除了"其它"组）
-    const filteredGroups = groups.filter(group => 
-        group.name === '其它' || group.tabs.length > 1
-    );
-    
-    console.log(`Final grouping result: ${filteredGroups.length} groups`);
-    return filteredGroups;
-};
-
-// 按域名分组（回退方案）
-const groupByDomain = (tabs) => {
-    const tabsByHost = {};
-    
-    tabs.forEach(tab => {
-        const hostname = getHostname(tab.url);
-        if (!tabsByHost[hostname]) {
-            tabsByHost[hostname] = [];
-        }
-        tabsByHost[hostname].push(tab);
-    });
-    
-    // 只返回有多个标签的组
-    const result = Object.entries(tabsByHost)
-        .filter(([_, tabs]) => tabs.length > 1)
-        .map(([hostname, tabs]) => {
-            // 生成组名
-            const baseDomain = getBaseDomain(tabs[0].url).split('.')[0];
-            const name = baseDomain.charAt(0).toUpperCase() + baseDomain.slice(1);
-            
-            return {
-                name: name,
-                tabs: tabs
-            };
-        });
-    
-    return result;
-};
-
-// ==================== UI 相关 ====================
-
-// 创建Tidy按钮
-function createTidyButton() {
-    const button = document.createElement('div');
-    button.className = 'tidy-tabs-below-button';
-    button.textContent = 'Tidy';
-    return button;
-}
-
-// 创建加载图标
-function createLoadingIcon() {
-    const container = document.createElement('div');
-    container.className = 'tidy-loading-icon';
-    container.innerHTML = `<svg width="28" height="28" style="padding:8px" fill="hsl(228, 97%, 42%)" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="RadialGradient8932"><stop offset="0%" stop-color="currentColor"/><stop offset="100%" stop-color="currentColor" stop-opacity=".25"/></linearGradient></defs><style>@keyframes spin8932{to{transform:rotate(360deg)}}</style><circle cx="10" cy="10" r="8" stroke-width="2" style="transform-origin:50% 50%;stroke:url(#RadialGradient8932);fill:none;animation:spin8932 .5s infinite linear"/></svg>`;
-    return container;
-}
-
-// 显示加载状态
-function showLoading(separator) {
-    const existing = separator.querySelector('.tidy-loading-icon');
-    if (existing) return;
-    
-    const loadingIcon = createLoadingIcon();
-    separator.appendChild(loadingIcon);
-}
-
-// 隐藏加载状态
-function hideLoading(separator) {
-    const loadingIcon = separator.querySelector('.tidy-loading-icon');
-    if (loadingIcon) {
-        loadingIcon.remove();
-    }
-}
-
-// 添加Tidy按钮到DOM
-function addTidyButton() {
-    const separators = document.querySelectorAll('.tab-strip .separator');
-
-    console.log('Found separators:', separators.length);
-
-    separators.forEach(separator => {
-        if (separator.querySelector('.tidy-tabs-below-button')) {
-            return;
-        }
-
-        const tidyButton = createTidyButton();
-        separator.appendChild(tidyButton);
-
-        tidyButton.addEventListener('click', function(e) {
-            e.stopPropagation();
-            tidyTabsBelow(separator);
-        });
-    });
-}
-
-// ==================== 核心功能 ====================
-
-// 获取当前窗口中指定工作区的所有标签页
-const getTabsByWorkspace = async (workspaceId) => {
-    return new Promise((resolve) => {
-        chrome.tabs.query({ currentWindow: true }, async function(tabs) {
-            if (chrome.runtime.lastError) {
-                console.error('Error querying tabs:', chrome.runtime.lastError);
-                resolve([]);
-                return;
+                jsonStr = jsonMatch[1].trim();
             }
             
-            const validTabs = [];
-            for (const tab of tabs) {
-                if (tab.id === -1 || !tab.vivExtData) continue;
+            // 移除可能的前后文字
+            const firstBrace = jsonStr.indexOf('{');
+            const lastBrace = jsonStr.lastIndexOf('}');
+            if (firstBrace !== -1 && lastBrace !== -1) {
+                jsonStr = jsonStr.substring(firstBrace, lastBrace + 1);
+            }
+            
+            console.log('Extracted JSON string:', jsonStr);
+            
+            let result;
+            try {
+                result = JSON.parse(jsonStr);
+            } catch (parseError) {
+                console.error('JSON parse error:', parseError);
+                console.error('Failed JSON string:', jsonStr);
+                showNotification('AI 返回的数据格式无效，无法解析 JSON。请查看控制台了解详情。');
+                return null;
+            }
+            
+            // 验证返回格式
+            if (!result.groups || !Array.isArray(result.groups)) {
+                console.error('Invalid response format: missing or invalid groups array');
+                showNotification('AI 返回的数据格式不正确：缺少 groups 数组');
+                return null;
+            }
+            
+            // 验证每个组
+            for (const group of result.groups) {
+                if (!group.name || typeof group.name !== 'string') {
+                    console.error('Invalid group: missing or invalid name', group);
+                    showNotification('AI 返回的分组缺少有效的组名');
+                    return null;
+                }
                 
-                try {
-                    const vivExtData = JSON.parse(tab.vivExtData);
-                    
-                    if (vivExtData.workspaceId === workspaceId) {
-                        if (!tab.pinned && !vivExtData.panelId) {
-                            validTabs.push({
-                                ...tab,
-                                vivExtData: vivExtData
-                            });
-                        }
-                    }
-                } catch (e) {
-                    console.error('Error parsing vivExtData:', e);
+                if (!Array.isArray(group.tab_ids)) {
+                    console.error('Invalid group: tab_ids is not an array', group);
+                    showNotification('AI 返回的分组中 tab_ids 不是数组');
+                    return null;
+                }
+                
+                // 检查是否有单个标签页的组（排除"其它"组）
+                const othersNames = ['其它', 'Others', 'その他', 'Other', 'Outros', 'Andere', 'Autres'];
+                if (group.tab_ids.length === 1 && !othersNames.includes(group.name)) {
+                    console.warn('Warning: Group has only one tab:', group);
                 }
             }
             
-            resolve(validTabs);
-        });
-    });
-};
-
-// 执行标签栈创建
-const createTabStacks = async (groups) => {
-    for (const group of groups) {
-        const stackId = crypto.randomUUID();
-        const stackName = group.name;
-        
-        console.log(`Creating stack "${stackName}" with${group.tabs.length} tabs`);
-        
-        // 按索引排序
-        group.tabs.sort((a, b) => a.index - b.index);
-        
-        // 获取第一个标签的位置作为目标位置
-        let targetIndex = group.tabs[0].index;
-        
-        // 移动所有标签到相邻位置并添加到标签栈
-        for (let i = 0; i < group.tabs.length; i++) {
-            const tab = group.tabs[i];
-            const moveIndex = targetIndex + i;
+            // 将 tab_ids 映射回实际的标签页
+            const groupedTabs = result.groups
+                .map(group => ({
+                    name: group.name,
+                    tabs: group.tab_ids.map(id => tabs[id]).filter(t => t)
+                }))
+                .filter(g => g.tabs.length > 1); // 只保留有多个标签的组
             
-            // 先移动标签
-            await new Promise((resolve) => {
-                chrome.tabs.move(tab.id, { index: moveIndex }, function() {
-                    if (chrome.runtime.lastError) {
-                        console.error('Error moving tab:', chrome.runtime.lastError);
-                    }
-                    resolve();
-                });
+            console.log('AI grouping result (before orphan check):', groupedTabs);
+            
+            // 检查是否有孤立的标签页未被分组
+            const groupedTabIds = new Set();
+            groupedTabs.forEach(group => {
+                group.tabs.forEach(tab => groupedTabIds.add(tab.id));
             });
             
-            // 再添加到标签栈
-            await addTabStack(tab.id, stackId, stackName);
+            const orphanTabs = tabs.filter(tab => !groupedTabIds.has(tab.id));
+            
+            if (orphanTabs.length > 0) {
+                console.log(`Found ${orphanTabs.length} orphan tabs:`, orphanTabs.map(t => t.title));
+                
+                // 如果有孤立标签页，检查是否已存在"其它"组
+                const othersNames = ['其它', 'Others', 'その他', 'Other', 'Outros', 'Andere', 'Autres', 'Otros', 'Altri'];
+                let othersGroup = groupedTabs.find(g => othersNames.includes(g.name));
+                
+                if (othersGroup) {
+                    // 将孤立标签页添加到现有"其它"组
+                    console.log('Adding orphan tabs to existing "Others" group');
+                    othersGroup.tabs.push(...orphanTabs);
+                } else if (orphanTabs.length > 1) {
+                    // 创建新的"其它"组（只有多个孤立标签时）
+                    const othersName = languageName === '中文' ? '其它' : 
+                                      languageName === 'English' ? 'Others' : 
+                                      languageName === '日本語' ? 'その他' : 'Others';
+                    console.log(`Creating new "Others" group with ${orphanTabs.length} tabs`);
+                    groupedTabs.push({
+                        name: othersName,
+                        tabs: orphanTabs
+                    });
+                } else {
+                    // 只有一个孤立标签页，不创建组
+                    console.log('Only 1 orphan tab found, not creating group');
+                }
+            } else {
+                console.log('No orphan tabs found, all tabs are grouped');
+            }
+            
+            console.log('AI grouping result (final):', groupedTabs);
+            
+            if (groupedTabs.length === 0) {
+                console.warn('No valid groups created (all groups have less than 2 tabs)');
+                showNotification('AI 分组失败：所有分组都少于 2 个标签页');
+                return null;
+            }
+            
+            return groupedTabs;
+            
+        } catch (error) {
+            console.error('Error calling GLM API:', error);
+            showNotification(`调用 GLM API 时出错: ${error.message}`);
+            return null;
         }
-    }
-};
-
-// 自动组栈指定工作区的标签页
-const autoStackWorkspace = async (workspaceId) => {
-    const allowed = await isAutoStackAllowed(workspaceId);
+    };
     
-    if (!allowed) {
-        return;
-    }
-    
-    const workspaceName = await getWorkspaceName(workspaceId);
-    console.log(`Auto-stacking workspace: ${workspaceName}`);
-    
-    const tabs = await getTabsByWorkspace(workspaceId);
-    
-    if (tabs.length < 2) {
-        console.log('Not enough tabs in workspace');
-        return;
-    }
-    
-    let groups;
-    
-    if (config.enable_ai_grouping && config.glm_api_key) {
-        // 尝试 AI 分组
-        console.log('Using AI grouping with iterative refinement...');
-        groups = await groupTabsWithIterativeRefinement(tabs);
+    // 按域名分组（回退方案）
+    const groupByDomain = (tabs) => {
+        const tabsByHost = {};
         
-        if (!groups) {
-            console.log('AI grouping failed, falling back to domain grouping');
-            groups = groupByDomain(tabs);
+        tabs.forEach(tab => {
+            const hostname = getHostname(tab.url);
+            if (!tabsByHost[hostname]) {
+                tabsByHost[hostname] = [];
+            }
+            tabsByHost[hostname].push(tab);
+        });
+        
+        // 只返回有多个标签的组
+        const result = Object.entries(tabsByHost)
+            .filter(([_, tabs]) => tabs.length > 1)
+            .map(([hostname, tabs]) => {
+                // 生成组名
+                const baseDomain = getBaseDomain(tabs[0].url).split('.')[0];
+                const name = baseDomain.charAt(0).toUpperCase() + baseDomain.slice(1);
+                
+                return {
+                    name: name,
+                    tabs: tabs
+                };
+            });
+        
+        return result;
+    };
+    
+    // ==================== UI 相关 ====================
+
+    // 显示通知
+    function showNotification(message, type = 'error') {
+        // 使用 Vivaldi 的通知 API（如果可用）
+        if (typeof chrome !== 'undefined' && chrome.notifications) {
+            chrome.notifications.create({
+                type: 'basic',
+                iconUrl: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><text y="32" font-size="32">⚠️</text></svg>',
+                title: 'TidyTabs',
+                message: message,
+                priority: type === 'error' ? 2 : 1
+            });
+        } else {
+            // Fallback: 在控制台显示
+            console.error(`[TidyTabs] ${message}`);
+            alert(`TidyTabs: ${message}`);
         }
-    } else {
-        // 使用域名分组
-        groups = groupByDomain(tabs);
     }
-    
-    if (groups.length === 0) {
-        console.log('No groups to create');
-        return;
+
+    // 创建Tidy按钮
+    function createTidyButton() {
+        const button = document.createElement('div');
+        button.className = 'tidy-tabs-below-button';
+        button.textContent = 'Tidy';
+        return button;
     }
-    
-    await createTabStacks(groups);
-    console.log('Auto-stacking completed!');
-};
 
-// 手动整理指定位置以下的标签页
-async function tidyTabsBelow(separator) {
-    let nextElement = separator.nextElementSibling;
-    const tabsInfo = [];
+    // 创建加载图标
+    function createLoadingIcon() {
+        const container = document.createElement('div');
+        container.className = 'tidy-loading-icon';
+        container.innerHTML = `<svg width="28" height="28" style="padding:8px" fill="hsl(228, 97%, 42%)" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="RadialGradient8932"><stop offset="0%" stop-color="currentColor"/><stop offset="100%" stop-color="currentColor" stop-opacity=".25"/></linearGradient></defs><style>@keyframes spin8932{to{transform:rotate(360deg)}}</style><circle cx="10" cy="10" r="8" stroke-width="2" style="transform-origin:50% 50%;stroke:url(#RadialGradient8932);fill:none;animation:spin8932 .5s infinite linear"/></svg>`;
+        return container;
+    }
 
-    while (nextElement) {
-        if (nextElement.tagName === 'SPAN') {
-            const tabWrapper = nextElement.querySelector('.tab-wrapper');
-            const tabPosition = nextElement.querySelector('.tab-position');
+    // 显示加载状态
+    function showLoading(separator) {
+        const existing = separator.querySelector('.tidy-loading-icon');
+        if (existing) return;
+        
+        const loadingIcon = createLoadingIcon();
+        separator.appendChild(loadingIcon);
+    }
 
-            const isStack = tabPosition?.classList.contains('is-substack') ||
-                           nextElement.querySelector('.svg-tab-stack') !== null;
+    // 隐藏加载状态
+    function hideLoading(separator) {
+        const loadingIcon = separator.querySelector('.tidy-loading-icon');
+        if (loadingIcon) {
+            loadingIcon.remove();
+        }
+    }
 
-            if (isStack) {
-                console.log('Skipping tab stack');
-            } else if (tabPosition && !tabPosition.classList.contains('is-pinned')) {
-                const isActive = tabPosition.querySelector('.active') !== null;
+    // 添加Tidy按钮到DOM
+    function addTidyButton() {
+        const separators = document.querySelectorAll('.tab-strip .separator');
 
-                if (!isActive) {
-                    let tabId = null;
-                    if (tabWrapper) {
-                        tabId = tabWrapper.getAttribute('data-id');
-                    }
+        console.log('Found separators:', separators.length);
 
-                    if (tabId) {
-                        const actualTabId = tabId.replace('tab-', '');
-                        const numericId = parseInt(actualTabId);
-                        if (!isNaN(numericId)) {
-                            tabsInfo.push({ id: numericId });
+        separators.forEach(separator => {
+            if (separator.querySelector('.tidy-tabs-below-button')) {
+                return;
+            }
+
+            const tidyButton = createTidyButton();
+            separator.appendChild(tidyButton);
+
+            tidyButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                tidyTabsBelow(separator);
+            });
+        });
+    }
+
+    // ==================== 核心功能 ====================
+
+    // 获取当前窗口中指定工作区的所有标签页
+    const getTabsByWorkspace = async (workspaceId) => {
+        return new Promise((resolve) => {
+            chrome.tabs.query({ currentWindow: true }, async function(tabs) {
+                if (chrome.runtime.lastError) {
+                    console.error('Error querying tabs:', chrome.runtime.lastError);
+                    resolve([]);
+                    return;
+                }
+                
+                const validTabs = [];
+                for (const tab of tabs) {
+                    if (tab.id === -1 || !tab.vivExtData) continue;
+                    
+                    try {
+                        const vivExtData = JSON.parse(tab.vivExtData);
+                        
+                        if (vivExtData.workspaceId === workspaceId) {
+                            if (!tab.pinned && !vivExtData.panelId) {
+                                validTabs.push({
+                                    ...tab,
+                                    vivExtData: vivExtData
+                                });
+                            }
                         }
+                    } catch (e) {
+                        console.error('Error parsing vivExtData:', e);
                     }
                 }
+                
+                resolve(validTabs);
+            });
+        });
+    };
+
+    // 执行标签栈创建
+    const createTabStacks = async (groups) => {
+        for (const group of groups) {
+            const stackId = crypto.randomUUID();
+            const stackName = group.name;
+            
+            console.log(`Creating stack "${stackName}" with ${group.tabs.length} tabs`);
+            
+            // 按索引排序
+            group.tabs.sort((a, b) => a.index - b.index);
+            
+            // 获取第一个标签的位置作为目标位置
+            let targetIndex = group.tabs[0].index;
+            
+            // 移动所有标签到相邻位置并添加到标签栈
+            for (let i = 0; i < group.tabs.length; i++) {
+                const tab = group.tabs[i];
+                const moveIndex = targetIndex + i;
+                
+                // 先移动标签
+                await new Promise((resolve) => {
+                    chrome.tabs.move(tab.id, { index: moveIndex }, function() {
+                        if (chrome.runtime.lastError) {
+                            console.error('Error moving tab:', chrome.runtime.lastError);
+                        }
+                        resolve();
+                    });
+                });
+                
+                // 再添加到标签栈
+                await addTabStack(tab.id, stackId, stackName);
             }
         }
-        nextElement = nextElement.nextElementSibling;
-    }
+    };
 
-    console.log('Tabs found:', tabsInfo.length);
-
-    if (tabsInfo.length < 2) {
-        console.log('Not enough tabs to group (need at least 2)');
-        return;
-    }
-
-    // 显示加载动画
-    showLoading(separator);
-
-    try {
-        // 获取所有标签页的详细信息
-        const tabs = await Promise.all(
-            tabsInfo.map(info => getTab(info.id))
-        );
-
-        const validTabs = tabs.filter(t => t !== null);
+    // 自动组栈指定工作区的标签页
+    const autoStackWorkspace = async (workspaceId) => {
+        const allowed = await isAutoStackAllowed(workspaceId);
         
-        console.log('Valid tabs:', validTabs.length);
-
-        if (validTabs.length < 2) {
-            console.log('Not enough valid tabs');
+        if (!allowed) {
             return;
         }
-
+        
+        const workspaceName = await getWorkspaceName(workspaceId);
+        console.log(`Auto-stacking workspace: ${workspaceName}`);
+        
+        const tabs = await getTabsByWorkspace(workspaceId);
+        
+        if (tabs.length < 2) {
+            console.log('Not enough tabs in workspace');
+            return;
+        }
+        
         let groups;
         
         if (config.enable_ai_grouping && config.glm_api_key) {
-            console.log('Using AI grouping with iterative refinement...');
-            groups = await groupTabsWithIterativeRefinement(validTabs);
+            // 尝试 AI 分组
+            groups = await getAIGrouping(tabs);
             
             if (!groups) {
                 console.log('AI grouping failed, falling back to domain grouping');
-                groups = groupByDomain(validTabs);
+                groups = groupByDomain(tabs);
             }
         } else {
-            console.log('Using domain grouping...');
-            groups = groupByDomain(validTabs);
+            // 使用域名分组
+            groups = groupByDomain(tabs);
         }
-
+        
         if (groups.length === 0) {
             console.log('No groups to create');
             return;
         }
-
+        
         await createTabStacks(groups);
-        console.log('Tab stacking completed!');
-    } finally {
-        // 隐藏加载动画
-        hideLoading(separator);
-        setTimeout(addTidyButton, 500);
-    }
-}
+        console.log('Auto-stacking completed!');
+    };
 
-// ==================== 自动组栈监听器 ====================
+    // 手动整理指定位置以下的标签页
+    async function tidyTabsBelow(separator) {
+        let nextElement = separator.nextElementSibling;
+        const tabsInfo = [];
 
-if (chrome.webNavigation) {
-    chrome.webNavigation.onCommitted.addListener(async (details) => {
-        if (details.tabId !== -1 && details.frameType === 'outermost_frame') {
-            const tab = await getTab(details.tabId);
-            
-            if (tab && !tab.pinned && tab.vivExtData && !tab.vivExtData.panelId) {
-                const workspaceId = tab.vivExtData.workspaceId;
-                
-                setTimeout(() => {
-                    autoStackWorkspace(workspaceId);
-                }, 1000);
-            }
-        }
-    });
-    
-    console.log('Auto-stacking listener registered');
-}
+        while (nextElement) {
+            if (nextElement.tagName === 'SPAN') {
+                const tabWrapper = nextElement.querySelector('.tab-wrapper');
+                const tabPosition = nextElement.querySelector('.tab-position');
 
-// ==================== 初始化 ====================
+                const isStack = tabPosition?.classList.contains('is-substack') ||
+                               nextElement.querySelector('.svg-tab-stack') !== null;
 
-function init() {
-    console.log('Initializing TidyTabs extension');
-    console.log('AI grouping:', config.enable_ai_grouping ? 'enabled' : 'disabled');
-    console.log('Auto-stack workspaces:', config.auto_stack_workspaces);
+                if (isStack) {
+                    console.log('Skipping tab stack');
+                } else if (tabPosition && !tabPosition.classList.contains('is-pinned')) {
+                    const isActive = tabPosition.querySelector('.active') !== null;
 
-    setTimeout(addTidyButton, 500);
-
-    const observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-            if (mutation.type === 'childList' || mutation.type === 'attributes') {
-                if (mutation.addedNodes.length > 0) {
-                    mutation.addedNodes.forEach(function(node) {
-                        if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'SPAN') {
-                            setTimeout(addTidyButton, 50);
+                    if (!isActive) {
+                        let tabId = null;
+                        if (tabWrapper) {
+                            tabId = tabWrapper.getAttribute('data-id');
                         }
-                    });
-                }
 
-                if (mutation.type === 'attributes' && mutation.attributeName === 'aria-owns') {
-                    console.log('aria-owns changed, re-adding Tidy button');
-                    setTimeout(addTidyButton, 100);
+                        if (tabId) {
+                            const actualTabId = tabId.replace('tab-', '');
+                            const numericId = parseInt(actualTabId);
+                            if (!isNaN(numericId)) {
+                                tabsInfo.push({ id: numericId });
+                            }
+                        }
+                    }
+                }
+            }
+            nextElement = nextElement.nextElementSibling;
+        }
+
+        console.log('Tabs found:', tabsInfo.length);
+
+        if (tabsInfo.length < 2) {
+            console.log('Not enough tabs to group (need at least 2)');
+            return;
+        }
+
+        // 显示加载动画
+        showLoading(separator);
+
+        try {
+            // 获取所有标签页的详细信息
+            const tabs = await Promise.all(
+                tabsInfo.map(info => getTab(info.id))
+            );
+
+            const validTabs = tabs.filter(t => t !== null);
+            
+            console.log('Valid tabs:', validTabs.length);
+
+            if (validTabs.length < 2) {
+                console.log('Not enough valid tabs');
+                return;
+            }
+
+            let groups;
+            
+            if (config.enable_ai_grouping && config.glm_api_key) {
+                console.log('Using AI grouping...');
+                groups = await getAIGrouping(validTabs);
+                
+                if (!groups) {
+                    console.log('AI grouping failed, falling back to domain grouping');
+                    groups = groupByDomain(validTabs);
+                }
+            } else {
+                console.log('Using domain grouping...');
+                groups = groupByDomain(validTabs);
+            }
+
+            if (groups.length === 0) {
+                console.log('No groups to create');
+                return;
+            }
+
+            await createTabStacks(groups);
+            console.log('Tab stacking completed!');
+        } finally {
+            // 隐藏加载动画
+            hideLoading(separator);
+            setTimeout(addTidyButton, 500);
+        }
+    }
+
+    // ==================== 自动组栈监听器 ====================
+
+    if (chrome.webNavigation) {
+        chrome.webNavigation.onCommitted.addListener(async (details) => {
+            if (details.tabId !== -1 && details.frameType === 'outermost_frame') {
+                const tab = await getTab(details.tabId);
+                
+                if (tab && !tab.pinned && tab.vivExtData && !tab.vivExtData.panelId) {
+                    const workspaceId = tab.vivExtData.workspaceId;
+                    
+                    setTimeout(() => {
+                        autoStackWorkspace(workspaceId);
+                    }, 1000);
                 }
             }
         });
-    });
+        
+        console.log('Auto-stacking listener registered');
+    }
 
-    const observeTabStrip = function() {
-        const tabStrip = document.querySelector('.tab-strip');
-        if (tabStrip) {
-            console.log('Found tab-strip, starting observation');
-            observer.observe(tabStrip, {
-                childList: true,
-                subtree: true,
-                attributes: true,
-                attributeFilter: ['aria-owns']
+    // ==================== 初始化 ====================
+
+    function init() {
+        console.log('Initializing TidyTabs extension');
+        console.log('AI grouping:', config.enable_ai_grouping ? 'enabled' : 'disabled');
+        console.log('Auto-stack workspaces:', config.auto_stack_workspaces);
+
+        setTimeout(addTidyButton, 500);
+
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList' || mutation.type === 'attributes') {
+                    if (mutation.addedNodes.length > 0) {
+                        mutation.addedNodes.forEach(function(node) {
+                            if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'SPAN') {
+                                setTimeout(addTidyButton, 50);
+                            }
+                        });
+                    }
+
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'aria-owns') {
+                        console.log('aria-owns changed, re-adding Tidy button');
+                        setTimeout(addTidyButton, 100);
+                    }
+                }
             });
-        } else {
-            setTimeout(observeTabStrip, 500);
-        }
-    };
+        });
 
-    observeTabStrip();
-}
+        const observeTabStrip = function() {
+            const tabStrip = document.querySelector('.tab-strip');
+            if (tabStrip) {
+                console.log('Found tab-strip, starting observation');
+                observer.observe(tabStrip, {
+                    childList: true,
+                    subtree: true,
+                    attributes: true,
+                    attributeFilter: ['aria-owns']
+                });
+            } else {
+                setTimeout(observeTabStrip, 500);
+            }
+        };
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-} else {
-    init();
-}
+        observeTabStrip();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
 })();
