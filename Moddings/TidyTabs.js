@@ -5,8 +5,8 @@
     const config = {
         // GLM API 配置
         glm_api_url: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
-        glm_api_key: 'e2105adcbe8d4d6ea49dce2fd94c127f.6dcsB9uMmtNxKXl2', // 请填入您的 API Key
-        glm_model: 'glm-4.5-air', // 使用 flash 版本以获得更快响应
+        glm_api_key: '', // 请填入您的 API Key
+        glm_model: 'glm-4.5-flash', // 使用 flash 版本以获得更快响应
         
         // 允许自动标签栈的工作区 (完全一致或 <default_workspace>)
         // 空数组 = 禁用所有工作区的自动组栈，只能手动点击按钮
@@ -284,7 +284,7 @@ ${tabsInfo.map(t => `${t.id}. ${t.title} (${t.domain})`).join('\n')}
 `;
 
         try {
-            console.log('AI Prompt Preview:\n', prompt);
+            // console.log('AI Prompt Preview:\n', prompt);
 
             console.log('Calling GLM API for intelligent grouping...');
             console.log('Request payload:', {
@@ -385,58 +385,84 @@ ${tabsInfo.map(t => `${t.id}. ${t.title} (${t.domain})`).join('\n')}
             }
             
             // 将 tab_ids 映射回实际的标签页，并匹配现有栈ID
-            const groupedTabs = result.groups
-                .map(group => {
-                    // 查找匹配的现有栈
-                    const existingStack = existingStacks.find(s => s.name === group.name);
-                    
-                    return {
-                        name: group.name,
-                        tabs: group.tab_ids.map(id => tabs[id]).filter(t => t),
-                        stackId: existingStack ? existingStack.id : crypto.randomUUID(), // 使用现有栈ID或生成新ID
-                        isExisting: !!existingStack // 标记是否为现有栈
-                    };
-                })
-                .filter(g => g.tabs.length > 1); // 只保留有多个标签的组
+            // 第一步：将 AI 返回的组映射为内部格式，并标记是否匹配现有栈
+            const initialGroups = result.groups.map(group => {
+                // 查找匹配的现有栈
+                const existingStack = existingStacks.find(s => s.name === group.name);
+                
+                return {
+                    name: group.name,
+                    tabs: group.tab_ids.map(id => tabs[id]).filter(t => t),
+                    stackId: existingStack ? existingStack.id : crypto.randomUUID(),
+                    isExisting: !!existingStack // 关键：标记这是否是一个已存在的栈
+                };
+            });
 
-            console.log('AI grouping result (before orphan check):', groupedTabs);
-            
-            // 检查是否有孤立的标签页未被分组
+            // 第二步：应用更智能的过滤规则
+            const groupedTabs = initialGroups.filter(group => {
+                // 规则1：如果匹配到现有栈，则保留，即使只有一个标签页
+                if (group.isExisting) {
+                    return true;
+                }
+                // 规则2：如果是AI创建的新栈，则必须有至少2个标签页才保留
+                return group.tabs.length > 1;
+            });
+
+            console.log('AI grouping result after smart filtering:', groupedTabs);
+
+            // 第三步：处理孤立标签页（需要修改这部分逻辑）
             const groupedTabIds = new Set();
             groupedTabs.forEach(group => {
                 group.tabs.forEach(tab => groupedTabIds.add(tab.id));
             });
-            
+
             const orphanTabs = tabs.filter(tab => !groupedTabIds.has(tab.id));
-            
+
             if (orphanTabs.length > 0) {
                 console.log(`Found ${orphanTabs.length} orphan tabs:`, orphanTabs.map(t => t.title));
                 
-                // 如果有孤立标签页，检查是否已存在"其它"组
-                const othersNames = ['其它', 'Others', 'その他', 'Other', 'Outros', 'Andere', 'Autres', 'Otros', 'Altri'];
+                const othersNames = ['其它', 'Others', 'その他', 'Other', 'Outros', 'Andere', 'Autres'];
+                
+                // 检查是否已存在"其它"组（在AI结果中）
                 let othersGroup = groupedTabs.find(g => othersNames.includes(g.name));
                 
                 if (othersGroup) {
-                    // 将孤立标签页添加到现有"其它"组
-                    console.log('Adding orphan tabs to existing "Others" group');
+                    // 情况A：AI成功创建了一个多标签页的"其它"组
+                    console.log('Adding orphan tabs to existing "Others" group from AI result');
                     othersGroup.tabs.push(...orphanTabs);
-                } else if (orphanTabs.length > 1) {
-                    // 创建新的"其它"组（只有多个孤立标签时）
-                    const othersName = languageName === '中文' ? '其它' : 
-                                      languageName === 'English' ? 'Others' : 
-                                      languageName === '日本語' ? 'その他' : 'Others';
-                    console.log(`Creating new "Others" group with ${orphanTabs.length} tabs`);
-                    groupedTabs.push({
-                        name: othersName,
-                        tabs: orphanTabs
-                    });
                 } else {
-                    // 只有一个孤立标签页，不创建组
-                    console.log('Only 1 orphan tab found, not creating group');
+                    // 情况B：AI没有创建有效的"其它"组，或者只有一个标签页的"其它"组被我们保留了
+                    // 我们需要检查原始的现有栈中是否有"其它"组
+                    const existingOthersStack = existingStacks.find(s => othersNames.includes(s.name));
+                    
+                    if (existingOthersStack) {
+                        // 找到了现有的"其它"栈，将孤立标签页添加到它
+                        console.log('Adding orphan tabs to EXISTING "Others" stack from original list');
+                        groupedTabs.push({
+                            name: existingOthersStack.name,
+                            tabs: orphanTabs,
+                            stackId: existingOthersStack.id,
+                            isExisting: true
+                        });
+                    } else if (orphanTabs.length > 1) {
+                        // 没有找到任何"其它"组，且孤立标签页>1，创建一个新的
+                        const othersName = languageName === '中文' ? '其它' : 
+                                        languageName === 'English' ? 'Others' : 
+                                        languageName === '日本語' ? 'その他' : 'Others';
+                        console.log(`Creating new "Others" group with ${orphanTabs.length} tabs`);
+                        groupedTabs.push({
+                            name: othersName,
+                            tabs: orphanTabs
+                        });
+                    } else {
+                        // 只有一个孤立标签页，且没有"其它"组，不创建
+                        console.log('Only 1 orphan tab found and no "Others" stack, not creating group');
+                    }
                 }
             } else {
                 console.log('No orphan tabs found, all tabs are grouped');
             }
+
             
             console.log('AI grouping result (final):', groupedTabs);
             

@@ -13,16 +13,13 @@
     function addTextButton() {
         const separators = document.querySelectorAll('.tab-strip .separator');
         
-        console.log('Found separators:', separators.length); // 调试用
 
         separators.forEach(separator => {
             // 检查是否已经添加了按钮
             if (separator.querySelector('.clear-tabs-below-button')) {
-                console.log('Button already exists'); // 调试用
                 return;
             }
 
-            console.log('Adding button to separator'); // 调试用
 
             // 创建文字按钮
             const textButton = createTextButton();
@@ -87,7 +84,6 @@
             nextElement = nextElement.nextElementSibling;
         }
 
-        console.log('Tabs to close:', tabIdsToClose); // 调试用
 
         // 关闭收集到的标签页
         if (tabIdsToClose.length > 0) {
@@ -126,7 +122,6 @@
                     
                     // 检查aria-owns属性变化（工作区切换）
                     if (mutation.type === 'attributes' && mutation.attributeName === 'aria-owns') {
-                        console.log('aria-owns changed, re-adding button'); // 调试用
                         setTimeout(addTextButton, 100);
                     }
                 }
