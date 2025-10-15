@@ -13,7 +13,8 @@
   grid-template-columns: repeat(var(--pinned-column-count), 1fr);
   grid-auto-rows: min-content;
   gap: var(--pinned-gap);
-  justify-content: center;
+  width: 98% !important;
+  justify-content: center !important;
 }
 
 /* 强制固定标签元素参与网格排列 */
