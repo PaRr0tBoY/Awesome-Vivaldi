@@ -31,10 +31,14 @@
   border-radius: var(--radius);
   margin: 0 !important;
   padding: 0 !important;
+  & .tab-header{
+    padding-left: 0 !important;
+  }
 }
 
 /* 仅保留 favicon 图标 */
 #tabs-container .is-pinned .title,
+#tabs-container .is-pinned .stack-counter,
 #tabs-container .is-pinned .close {
   display: none !important;
 }
@@ -42,7 +46,8 @@
 #tabs-container .is-pinned .favicon {
   width: var(--pinned-icon-size) !important;
   height: var(--pinned-icon-size) !important;
-  margin: 0 auto !important;
+  /* margin: 0 auto !important; */
+  margin: auto !important;
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
@@ -79,6 +84,7 @@
 .tab-strip .separator
 {
     align-items: center;
+    margin-bottom: var(--pinned-gap);
 }
 
 .tab-strip .separator hr
@@ -87,11 +93,23 @@
     width: 100%;
 }
 
+/* 让未固定标签页也在同一网格流中正常排列 */
+#tabs-container .tab-position:not(.is-pinned),
+#tabs-container .tab-position:not(.is-pinned) .tab-wrapper,
+#tabs-container .tab-position:not(.is-pinned) .separator,
+#tabs-container .tab-position:not(.is-pinned) .newtab {
+  grid-column: 1 / span var(--pinned-column-count) !important;
+  position: relative !important;
+  transform: none !important;
+}
 
+/* 未固定标签组的容器保持文档流 */
+#tabs-container .tab-position:not(.is-pinned) {
+  display: contents !important;
+}
 
-
-
-
-
-
-
+.tab-wrapper {
+  width: 98% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
