@@ -1,64 +1,67 @@
-/* pinned-grid.css */
-/* 固定标签页多列图标按钮布局 */
+/* 独立固定标签页网格布局 for Vivaldi */
 
 :root {
-  --PinnedTab: 45px; /* 固定标签页高度 */
-  --biggertab: 40px; /* 普通标签页高度 */
+  --pinned-column-count: 4;
+  --pinned-gap: 6px;
+  --pinned-bg: var(--colorAccentBgAlphaHeavy, rgba(255,255,255,0.1));
+  --pinned-icon-size: 20px;
 }
 
-/* 网格布局容器 */
-#tabs-container .resize {
+/* 关键：让 pinned tabs 容器自身使用 grid */
+#tabs-container .tab-strip {
   display: grid !important;
-  height: calc(100% - 28px);
-  flex: unset !important;
-  grid-auto-rows: max-content;
-  gap: .5em;
+  grid-template-columns: repeat(var(--pinned-column-count), 1fr);
+  grid-auto-rows: min-content;
+  gap: var(--pinned-gap);
+  justify-content: center;
+}
 
-  /* 保持 tab-strip 内部内容显示 */
-  .tab-strip,
-  .sync-and-trash-container {
-    display: contents;
-  }
+/* 强制固定标签元素参与网格排列 */
+#tabs-container .tab-position.is-pinned {
+  display: contents !important; /* 打散默认垂直容器结构 */
+}
 
-  /* 各种 tab 元素 */
-  .tab-position,
-  .newtab,
-  .separator {
-    transform: unset !important;
-    position: relative;
-  }
+/* 单个固定标签按钮方形化 */
+#tabs-container .is-pinned .tab-wrapper {
+  aspect-ratio: 1 / 1 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  background-color: var(--pinned-bg) !important;
+  border-radius: var(--radius);
+  margin: 0 !important;
+  padding: 0 !important;
+}
 
-  /* 固定标签页布局为方形图标 */
-  .tab-position.is-pinned {
-    grid-column: span 1;
-    min-width: 100%;
-    max-width: 100%;
-    height: var(--PinnedTab);
-  }
+/* 仅保留 favicon 图标 */
+#tabs-container .is-pinned .title,
+#tabs-container .is-pinned .close {
+  display: none !important;
+}
 
-  .tab-position.is-pinned .tab {
-    background-color: rgba(230, 234, 241, 0.15);
-    max-height: var(--PinnedTab);
-  }
+#tabs-container .is-pinned .favicon {
+  width: var(--pinned-icon-size) !important;
+  height: var(--pinned-icon-size) !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
 
-  .tab-position.is-pinned .tab-header {
-    justify-content: center;
-    padding: 0;
-    flex-basis: var(--PinnedTab) !important;
-  }
+/* 分隔线和新建按钮独占整行 */
+#tabs-container .tab-strip .separator,
+#tabs-container .tab-strip .newtab {
+  grid-column: 1 / -1 !important;
+}
 
-  .tab-position.is-pinned .tab-header .title {
-    display: none;
-  }
+/* hover 与 active 效果 */
+#tabs-container .is-pinned .tab-wrapper:hover {
+  background-color: var(--colorAccentBgAlpha, rgba(255,255,255,0.2)) !important;
+}
+#tabs-container .is-pinned.active .tab-wrapper {
+  outline: 2px solid var(--colorAccentBg, #4A90E2);
+}
 
-  /* 非固定标签页独占一行 */
-  .tab-position:not(.is-pinned),
-  .newtab,
-  .separator {
-    grid-column: 1 / -1;
-    min-width: 100%;
-  }
-
-  /* 设置固定标签页列数 */
-  grid-template-columns: repeat(4, minmax(var(--PinnedTab), auto)) !important;
+#tabs-container .tab-strip .separator {
+  margin-top: auto !important;
 }
