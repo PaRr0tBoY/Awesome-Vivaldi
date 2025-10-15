@@ -1,7 +1,7 @@
 /* Adjust Configure In :root */
 :root {
   /* Tabbar's width when they expand or collapse */
-  --tabs-container-collapse-width: 7px; /* min width of main tabbar should not set lower than 6px, which will cause weird issue. */
+  --tabs-container-collapse-width: 44px; /* min width of main tabbar should not set lower than 6px, which will cause weird issue. */
   --tabs-container-expand-width: 300px;
   --tabs-subcontainer-collapse-width: 44px;
   --tabs-subcontainer-expand-width: 337px;
@@ -480,7 +480,7 @@ body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-Addres
   margin-bottom: 7px;
   transform: scaleY(1);
   transform-origin: top !important;
-  overflow: hidden;
+  overflow: hidden !important;
   opacity: 1;
   max-height: 35px;
   flex-shrink: 0 !important;
@@ -654,10 +654,15 @@ body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-Addres
 }
 
 #tabs-tabbar-container #tabs-container {
-  /* overflow: hidden !important; */
+  overflow: hidden !important;
   box-sizing: border-box !important;
 }
 
+
+body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup)) #tabs-container,
+body:has(.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover) #tabs-container{
+  overflow: visible !important;
+}
 /* ========================================
    FLOATING TABBAR
    ======================================== */
@@ -782,7 +787,7 @@ body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-Addres
   z-index: 999999999999 !important;
   pointer-events: none !important;
   opacity: 0;
-  transition: opacity var(--animation-speed) ease-out var(--transition-delay-time-collapse);
+  transition: opacity var(--animation-speed) ease-out;
 }
 
 body:has(#tabs-container:hover) #webpage-stack::before,
