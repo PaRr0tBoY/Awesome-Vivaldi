@@ -556,7 +556,7 @@ button[title="显示输入记录"] {
 .UrlBar-AddressField {
   border-radius: var(--mod-border-radius);
   height: auto;
-  overflow: visible !important;
+  /* overflow: visible !important; */
 }
 
 .UrlBar-SearchField .pageload-indicator,
