@@ -48,12 +48,6 @@
   align-items: center !important;
 }
 
-/* 分隔线和新建按钮独占整行 */
-#tabs-container .tab-strip .separator,
-#tabs-container .tab-strip .newtab {
-  grid-column: 1 / -1 !important;
-}
-
 /* hover 与 active 效果 */
 #tabs-container .is-pinned .tab-wrapper:hover {
   background-color: var(--colorAccentBgAlpha, rgba(255,255,255,0.2)) !important;
@@ -62,6 +56,42 @@
   outline: 2px solid var(--colorAccentBg, #4A90E2);
 }
 
-#tabs-container .tab-strip .separator {
-  margin-top: auto !important;
+/* 分隔线和新建按钮独占整行 */
+#tabs-container .tab-strip .separator,
+#tabs-container .tab-strip .newtab {
+  grid-column: 1 / -1 !important;
 }
+
+.tab-wrapper,
+.tab-strip .separator,
+.newtab
+{
+    grid-column: 1 / span var(--phi--pinned-column-count);
+}
+
+.tab-wrapper,
+.tab-strip .separator
+{
+    position: relative;
+    transform: none;
+}
+
+.tab-strip .separator
+{
+    align-items: center;
+}
+
+.tab-strip .separator hr
+{
+    margin: 0;
+    width: 100%;
+}
+
+
+
+
+
+
+
+
+
