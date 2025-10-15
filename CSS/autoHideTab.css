@@ -1,7 +1,7 @@
 /* Adjust Configure In :root */
 :root {
   /* Tabbar's width when they expand or collapse */
-  --tabs-container-collapse-width: 44px; /* min width of main tabbar should not set lower than 6px, which will cause weird issue. */
+  --tabs-container-collapse-width: 7px; /* min width of main tabbar should not set lower than 6px, which will cause weird issue. */
   --tabs-container-expand-width: 300px;
   --tabs-subcontainer-collapse-width: 44px;
   --tabs-subcontainer-expand-width: 337px;
