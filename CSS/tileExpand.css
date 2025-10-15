@@ -1,0 +1,30 @@
+.tiled.visible {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, 1fr) !important; /* 初始等宽 */
+  transition: grid-template-columns 0.3s ease-out !important;
+}
+
+.tiled.visible:has(.tile > .webpageview.active) {
+  grid-template-columns: 80% 20% !important;
+}
+
+.tiled.visible:has(.tile:first-child > .webpageview.active) {
+  grid-template-columns: 80% 20% !important;
+}
+.tiled.visible:has(.tile:last-child > .webpageview.active) {
+  grid-template-columns: 20% 80% !important;
+}
+
+
+/* .tiled.visible:has(.tile > .webpageview:hover) {
+  grid-template-columns: 80% 20% !important;
+}
+
+.tiled.visible:has(.tile:first-child > .webpageview:hover) {
+  grid-template-columns: 80% 20% !important;
+  transition: grid-template-columns 0.3s ease-out !important;
+}
+.tiled.visible:has(.tile:last-child > .webpageview:hover) {
+  grid-template-columns: 20% 80% !important;
+  transition: grid-template-columns 0.3s ease-out !important;
+} */
