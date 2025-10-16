@@ -123,7 +123,7 @@
 }
 
 /* Window Button Group Mac */
-#browser.mac:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+/* #browser.mac:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
   #header
   .window-buttongroup
   button {
@@ -131,7 +131,12 @@
   height: calc(var(--mac-header) * var(--uiZoomLevel));
   padding-right: 4px;
   margin: 0;
+  margin-bottom: 20px !important;
   flex: 0 0 calc(var(--window-border) - 4px);
+} */
+
+.window-buttongroup button {
+	height: 30px !important;
 }
 
 /* Window Button Group Windows */
