@@ -5,7 +5,7 @@
 /* Bookmark bar container - 默认透明，不占据文档空间 */
 .bookmark-bar {
   position: fixed !important;
-  top: 0 !important;
+  top: var(--mod-mainbar-height) !important;
   left: 0 !important;
   right: 0 !important;
   height: 10px !important;
