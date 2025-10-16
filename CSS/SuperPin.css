@@ -13,7 +13,6 @@
   grid-template-columns: repeat(var(--pinned-column-count), 1fr);
   grid-auto-rows: min-content;
   gap: var(--pinned-gap);
-  width: 98% !important;
   justify-content: center !important;
 }
 
