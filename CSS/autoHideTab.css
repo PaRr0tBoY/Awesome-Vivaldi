@@ -448,16 +448,18 @@ transition: filter 200ms linear !important
 
   /* margin: 0 max(calc(var(--densityGap) * 2), 1px) !important;
 } */
-#tabs-container .tab-strip.overflow {
+#tabs-container .tab-strip {
   min-width: auto !important;
   max-width: auto !important;
-  margin: 0 max(calc(var(--densityGap) * 2), 1px) !important;
+  /* margin: 0 max(calc(var(--densityGap) * 2), 1px) !important; */
+  margin: auto !important;
 }
 
-#tabs-subcontainer .tab-strip.overflow{
+#tabs-subcontainer .tab-strip{
   min-width: auto !important;
   max-width: auto !important;
   margin: 0 max(calc(var(--densityGap) * 2), 1px) !important;
+  /* margin: auto !important; */
 }
 
 body:not(:has(.button-popup)):not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
