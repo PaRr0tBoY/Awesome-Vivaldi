@@ -37,10 +37,9 @@
   max-height: var(--pinned-tab-height) !important;
   min-height: var(--pinned-tab-height) !important;
   display: flex !important;
-  justify-content: center !important;
+  justify-content: flex-start !important;
   align-items: center !important;
   background-color: var(--pinned-bg) !important;
-  border-radius: var(--radius);
   margin: 0 !important;
   padding: 0 !important;
   & .tab {
@@ -49,7 +48,9 @@
     max-height: unset !important;
   }
   & .tab-header {
-    padding-left: 0 !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    /* padding-left: 0 !important; */
     width: 100% !important;
     height: 100% !important;
     flex: auto !important;
@@ -60,28 +61,52 @@
   }
 }
 
-#tabs-container .is-pinned .title,
-#tabs-container .is-pinned .stack-counter,
-#tabs-container .is-pinned .close {
-  display: none !important;
+/* 1 */
+/* #tabs-container .is-pinned .favicon {
+  width: var(--pinned-icon-size) !important;
+  height: var(--pinned-icon-size) !important;
+  margin: auto !important;
+  display: flex !important;
+  justify-self: flex-start;
+  transition: margin 0.3s cubic-bezier(0.4, 0, 0.2, 1) important;
 }
 
+#tabs-container .is-pinned .tab-wrapper:hover .favicon {
+  margin: 0 8px 0 0 !important;
+} */
+
+/* 2 */
 #tabs-container .is-pinned .favicon {
   width: var(--pinned-icon-size) !important;
   height: var(--pinned-icon-size) !important;
-  /* margin: 0 auto !important; */
   margin: auto !important;
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
+  justify-self: flex-start;
+  transition: margin 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+#tabs-container .is-pinned .tab-wrapper:hover .favicon {
+  margin: auto !important;
+  transform: translateX(calc(-50% + 8px)) !important;
+}
+
+/* Peek Pinned Tabs Title */
+#tabs-container .is-pinned .tab-wrapper {
+  /* position: relative; */
+  /* transition: 
+    background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.3s cubic-bezier(0.4, 0, 0.2, 1); */
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+  overflow: visible;
+  isolation: isolate;
 }
 
 #tabs-container .is-pinned .tab-wrapper:hover {
   background-color: var(
-    --colorAccentBgAlpha,
+    --colorAccentBg,
     rgba(255, 255, 255, 0.2)
   ) !important;
   
+  overflow: visible;
   position: relative !important;
   z-index: 100000000;
   
@@ -89,42 +114,45 @@
   width: calc(var(--pinned-column-count) * 100% + (var(--pinned-column-count) - 1) * var(--pinned-gap)) !important;
 }
 
-/* 左列 */
+/* 左列 - 保持原位 */
 #tabs-container .tab-strip span:nth-of-type(3n+1) .tab-position.is-pinned .tab-wrapper:hover {
-  justify-self: start !important;
+  transform: translateX(0);
 }
 
-/* 中间列 */
+/* 中间列 - 向左移动到起始位置 */
 #tabs-container .tab-strip span:nth-of-type(3n+2) .tab-position.is-pinned .tab-wrapper:hover {
-  justify-self: center !important;
+  transform: translateX(calc(-50% + 50% / var(--pinned-column-count) - var(--pinned-gap) / 2));
 }
 
-/* 右列 */
+/* 右列 - 向左移动到起始位置 */
 #tabs-container .tab-strip span:nth-of-type(3n) .tab-position.is-pinned .tab-wrapper:hover {
-  justify-self: end !important;
+  transform: translateX(calc(-100% + 100% / var(--pinned-column-count) - var(--pinned-gap) / 2));
 }
 
-/* hover时显示标题，内容靠左对齐 */
-/* #tabs-container .is-pinned .tab-wrapper:hover .title {
-  display: block !important;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-} */
+#tabs-container .is-pinned .title,
+#tabs-container .is-pinned .stack-counter,
+#tabs-container .is-pinned .close {
+  /* display: none !important; */
+  opacity: 0 !important;
+  max-width: 0 !important;
+  /* padding: 0 !important; */
+  margin: 0 !important;
+  transition:
+    opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.3s,
+    max-width 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.3s; 
+}
 
 #tabs-container .is-pinned .tab-wrapper:hover .title,
 #tabs-container .is-pinned .tab-wrapper:hover .stack-counter,
 #tabs-container .is-pinned .tab-wrapper:hover .close{
-  display: flex !important;
+  /* display: flex !important; */
+  opacity: 1 !important;
+  max-width: 100% !important;
 }
 
 #tabs-container .is-pinned .tab-wrapper:hover .tab-header {
   justify-content: flex-start !important;
   padding-left: 6px !important;
-}
-
-#tabs-container .is-pinned .tab-wrapper:hover .favicon {
-  margin: 0 8px 0 0 !important;
 }
 
 #tabs-container .is-pinned.active .tab-wrapper {
@@ -182,11 +210,3 @@
   display: none !important;
 }
 
-/*====================================================================================*/
-#tabs-container .is-pinned .tab-wrapper {
-  position: relative;
-  transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: var(--radius, 8px);
-  overflow: visible;
-  isolation: isolate;
-}
