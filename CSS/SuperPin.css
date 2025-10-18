@@ -81,7 +81,52 @@
     --colorAccentBgAlpha,
     rgba(255, 255, 255, 0.2)
   ) !important;
+  
+  position: relative !important;
+  z-index: 100000000;
+  
+  /* 扩展到整行 */
+  width: calc(var(--pinned-column-count) * 100% + (var(--pinned-column-count) - 1) * var(--pinned-gap)) !important;
 }
+
+/* 左列 */
+#tabs-container .tab-strip span:nth-of-type(3n+1) .tab-position.is-pinned .tab-wrapper:hover {
+  justify-self: start !important;
+}
+
+/* 中间列 */
+#tabs-container .tab-strip span:nth-of-type(3n+2) .tab-position.is-pinned .tab-wrapper:hover {
+  justify-self: center !important;
+}
+
+/* 右列 */
+#tabs-container .tab-strip span:nth-of-type(3n) .tab-position.is-pinned .tab-wrapper:hover {
+  justify-self: end !important;
+}
+
+/* hover时显示标题，内容靠左对齐 */
+/* #tabs-container .is-pinned .tab-wrapper:hover .title {
+  display: block !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+} */
+
+#tabs-container .is-pinned .tab-wrapper:hover .title,
+#tabs-container .is-pinned .tab-wrapper:hover .stack-counter,
+#tabs-container .is-pinned .tab-wrapper:hover .close{
+  display: flex !important;
+}
+
+#tabs-container .is-pinned .tab-wrapper:hover .tab-header {
+  justify-content: flex-start !important;
+  padding-left: 6px !important;
+}
+
+#tabs-container .is-pinned .tab-wrapper:hover .favicon {
+  margin: 0 8px 0 0 !important;
+}
+
 #tabs-container .is-pinned.active .tab-wrapper {
   outline: 2px solid var(--colorAccentBg, #4a90e2);
 }
@@ -144,17 +189,4 @@
   border-radius: var(--radius, 8px);
   overflow: visible;
   isolation: isolate;
-}
-
-#tabs-container .is-pinned .tab-wrapper:hover {
-  grid-column: 1 / span var(--pinned-column-count) !important;
-  position: relative !important;
-  transform: none !important;
-
-  /*padding: 3px 15px 30px;
-  margin: -3px -15px -30px;*/
-  background: dark;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-  border-radius: var(--radius, 8px);
-  z-index: 100000000;
 }
