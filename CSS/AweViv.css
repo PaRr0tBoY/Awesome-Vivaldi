@@ -1,18 +1,19 @@
 /* Import modules folder CSS files */
 @import "modules/AdaptiveBF.css";
 @import "modules/autoHideBookmarkBar.css";
-@import "modules/autoHideTab.css";
 @import "modules/dialogTab.css";
 @import "modules/Indicator.css";
 @import "modules/Main.css";
 @import "modules/Quietify.css";
 @import "modules/theme-previewer.css";
 @import "modules/TidyTabs.css";
+@import "modules/autoHideTab.css";
 
 /* Import notstable folder CSS files */
-/* @import "notstable/arcFolder.css"; */
 @import "notstable/autoHidePanel.css";
+@import "notstable/tileExpand.css";
+
 @import "notstable/ClearTabs.css";
 @import "notstable/SuperPins.css";
-@import "notstable/tileExpand.css";
 /* @import "notstable/tools.cssssss"; */
+/* @import "notstable/arcFolder.css"; */
