@@ -22,9 +22,9 @@
 
 .tiled.visible:has(.tile:first-child > .webpageview:hover) {
   grid-template-columns: 80% 20% !important;
-  transition: grid-template-columns 0.3s ease-out !important;
+  transition: grid-template-columns 0.3s ease-out 3s !important;
 }
 .tiled.visible:has(.tile:last-child > .webpageview:hover) {
   grid-template-columns: 20% 80% !important;
-  transition: grid-template-columns 0.3s ease-out !important;
+  transition: grid-template-columns 0.3s ease-out 3s !important;
 } */

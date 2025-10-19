@@ -5,7 +5,7 @@
     const config = {
         // GLM API 配置
         glm_api_url: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
-        glm_api_key: '', // 请填入您的 API Key
+        glm_api_key: 'e2105adcbe8d4d6ea49dce2fd94c127f.6dcsB9uMmtNxKXl2', // 请填入您的 API Key
         glm_model: 'glm-4.5-flash', // 使用 flash 版本以获得更快响应
         
         // 允许自动标签栈的工作区 (完全一致或 <default_workspace>)
@@ -18,7 +18,7 @@
         enable_ai_grouping: true,
         
         // AI 分析的最大标签页数量（避免请求过大）
-        max_tabs_for_ai: 20,
+        max_tabs_for_ai: 50,
     };
 
     // 获取浏览器界面语言
@@ -306,7 +306,7 @@ ${tabsInfo.map(t => `${t.id}. ${t.title} (${t.domain})`).join('\n')}
                             content: prompt
                         }
                     ],
-                    temperature: 0.7,
+                    temperature: 0.3,
                     max_tokens: 2048,
                     stream: false,
                     thinking: {

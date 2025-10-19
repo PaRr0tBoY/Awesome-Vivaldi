@@ -59,7 +59,7 @@
 }
 
 /* Green trail show when tab is hovered (but not close button) */
-.tab-position .tab:hover:not(:has(.close:hover)) .tab-header::before {
+.tab-position:not(.is-pinned) .tab:hover:not(:has(.close:hover)) .tab-header::before {
   /* border-radius: 12px !important; */
   transform: translateX(0);
   opacity: 1;

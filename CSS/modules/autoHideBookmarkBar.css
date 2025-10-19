@@ -1,0 +1,43 @@
+#browser {
+  --bookmark-bar-hide-delay: 400ms;
+  --bookmark-bar-show-ctrlkey: true;
+}
+
+.bookmark-bar-top:is(.address-top, .tabs-top) {
+  #main:has(.bookmark-bar:hover) #webview-container {
+      pointer-events: none !important;
+  }
+  &.tabs-top #tabs-subcontainer {
+      -webkit-app-region: no-drag !important;
+  }
+  
+  .bookmark-bar {
+      height: 0 !important;
+      border: none !important;
+  }
+  .bookmark-bar .observer {
+      position: absolute !important;
+      z-index: 4 !important;
+      width: 100% !important;
+      border-bottom: solid 1px var(--colorBorder) !important;
+      clip-path: inset(0 0 100% 0) !important;
+      transition-delay: var(--bookmark-bar-hide-delay) !important;
+  }
+  &:has(.button-disabled-preview):has(.tabbar-wrapper:hover).tabs-top .bookmark-bar .observer,
+  &:has(.button-disabled-preview).address-top .bookmark-bar:is(.mainbar:not(:has(.OmniDropdown, nav.menu)):hover ~ *) .observer,
+  .bookmark-bar:is(:focus-within, :hover) .observer {
+      clip-path: inset(0 0 -1px 0) !important;
+      transition: clip-path 150ms cubic-bezier(0, 1, 0, 0.9) 50ms !important;
+  }
+  @container not style(--bookmark-bar-show-ctrlkey: true) {
+      &:has(.tabbar-wrapper:hover).tabs-top .bookmark-bar .observer,
+      &.address-top .bookmark-bar:is(.mainbar:not(:has(.OmniDropdown, nav.menu)):hover ~ *) .observer,
+      .bookmark-bar:is(:focus-within, :hover) .observer {
+          clip-path: inset(0 0 -1px 0) !important;
+          transition: clip-path 150ms cubic-bezier(0, 1, 0, 0.9) 50ms !important;
+      }
+  }
+  &.animation-off .bookmark-bar .observer {
+      transition-duration: 0ms !important;
+  }
+}

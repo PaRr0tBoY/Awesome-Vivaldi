@@ -1,0 +1,13 @@
+/* ========================================
+   HIDE DISABLED NAVIGATION BUTTONS
+   ======================================== */
+
+/* Hide disabled forward/back navigation buttons */
+.mainbar .toolbar-mainbar button.ToolbarButton-Button[disabled]:not([name="Divider"])[name="Back"] {
+  display: none !important;
+}
+
+/* Show only enabled navigation buttons */
+.mainbar .toolbar-mainbar button.ToolbarButton-Button:not([disabled])[name="Back"] {
+  display: inline-flex !important;
+}

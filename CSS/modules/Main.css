@@ -9,8 +9,7 @@
   --addressbar-height: 36px;
   --window-button-scale: 0.8;
   --window-button-opacity: 0.3
-  /*--tab-padding: calc(var(--window-border) / 2);*/
-  --tab-padding: 0;
+    /*--tab-padding: calc(var(--window-border) / 2);*/ --tab-padding: 0;
   --colorToviTransparent: transparent;
 
   /* Shadow Effects */
@@ -26,8 +25,31 @@
   --mod-whitespace-y: 5px;
   --mod-whitespace-tabbar-right: 15px;
   --mod-highlight-color: #c00;
-  --mod-mainbar-height: 45px;
+  --mod-mainbar-height: 25px;
   --mod-border-radius: 10px;
+}
+
+/* #browser:not(.fullscreen):not(.address-top-off, .address-bottom-off, .address-bottom) #header {
+  display: none;
+} */
+
+/* #browser:not(.address-top-off, .address-bottom-off, .address-bottom) .mainbar:not(:has(.window-buttongroup.on-mainbar)) {
+  min-height: calc(35px / var(--uiZoomLevel));
+} */
+
+#browser:not(.fullscreen):not(
+    .address-top-off,
+    .address-bottom-off,
+    .address-bottom
+  )
+  .mainbar:not(:has(.window-buttongroup.on-mainbar)) {
+  padding-left: calc(68px / var(--uiZoomLevel));
+}
+
+#browser:not(.address-top-off, .address-bottom-off, .address-bottom)
+  .mainbar
+  > .toolbar-mainbar {
+  min-height: calc(34px / var(--uiZoomLevel));
 }
 
 /* ========================================
@@ -136,7 +158,7 @@
 } */
 
 .window-buttongroup button {
-	height: 30px !important;
+  height: 30px !important;
 }
 
 /* Window Button Group Windows */
@@ -228,27 +250,41 @@
    HIDDEN ELEMENTS
    ======================================== */
 
-/* URL obfuscation warning */
-.UrlBar-UrlObfuscationWarning {
-  display: none !important;
+.hasfocus .webpageview.tiled.active {
+  /* box-shadow: 0 0 0 2px var(--colorHighlightBgFaded), var(--bgCoverShadow); */
+  box-shadow: none !important;
 }
 
+#browser .tile:has(> .tiled.webpageview) {
+  /* border: var(--mosaicPadding) solid var(--colorBgDarker); */
+  border: 0 3px !important;
+}
+/* .toolbar.toolbar-small.toolbar-insideinput {
+  display: none !important;
+} */
+
+/* URL obfuscation warning */
+/* .UrlBar-UrlObfuscationWarning {
+  display: none !important;
+} */
 
 /* .ToolbarButton-Button{
   display: none !important;
 } */
 /* Content blocker */
-.UrlBar-AddressField .ToolbarButton-Button[title*="Feed"],
-.UrlBar-AddressField .ToolbarButton-Button[title*="Block"],
+/* .UrlBar-AddressField .ToolbarButton-Button[title*="Feed"],
 .UrlBar-AddressField .ToolbarButton-Button[title*="Reader"],
-.UrlBar-AddressField .ToolbarButton-Button[title*="Bookmark"],
 .UrlBar-AddressField .ToolbarButton-Button[title*="Translate"],
 .UrlBar-AddressField .ToolbarButton-Button[title*="订阅"],
-.UrlBar-AddressField .ToolbarButton-Button[title*="拦截"],
 .UrlBar-AddressField .ToolbarButton-Button[title*="阅读"],
-.UrlBar-AddressField .ToolbarButton-Button[title*="书签"],
 .UrlBar-AddressField .ToolbarButton-Button[title*="翻译"],
 .UrlBar-AddressField .ToolbarButton-Button[title*="页面"] {
+  display: none !important;
+} */
+.UrlBar-AddressField .ToolbarButton-Button[title*="Bookmark"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="书签"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="Block"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="拦截"] {
   display: none !important;
 }
 
@@ -278,38 +314,71 @@ button[title="显示输入记录"] {
    ======================================== */
 
 /* Address field center alignment */
-#urlFieldInput {
+/* #urlFieldInput {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 200px;
-}
+  height: 200px !important;
+} */
 
 /* URL fragment wrapper positioning */
-.UrlFragment-Wrapper {
+/* .UrlFragment-Wrapper {
   position: absolute;
   left: 45%;
   transform: translateX(-50%);
+} */
+
+/* Address field styling */
+/* .UrlBar-SearchField,
+.UrlBar-AddressField {
+  border-radius: var(--radius);
+  height: auto;
+  overflow: visible !important;
+}
+
+.UrlBar-SearchField .pageload-indicator,
+.UrlBar-AddressField .pageload-indicator {
+  border-radius: var(--radius);
+  height: 100% !important;
+}
+
+.UrlField {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  max-width: 100%;
+  height: calc(var(--mod-mainbar-height) - (var(--mod-whitespace-y) * 2));
+} */
+
+.UrlBar-AddressField {
+  /* background: var(--colorAccentBgDark) !important; */
+  border-color: transparent !important;
+}
+
+.UrlBar-UrlFieldWrapper {
+  height: auto !important;
 }
 
 [class*="button-popup"] {
   border-radius: var(--radius) !important;
 }
+
+.density-on .UrlBar-SearchField,
+.density-on .UrlBar-AddressField {
+  height: auto;
+}
+
+.url {
+  mix-blend-mode: difference !important;
+}
+
+.mainbar .toolbar-mainbar button.ToolbarButton-Button {
+  height: unset !important;
+  min-width: unset !important;
+}
 /* ========================================
    QUICK COMMAND MODAL
    ======================================== */
 
-/*.modal-wrapper:has(.quick-command-container) {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, 20%);
-  border-radius: 15px !important;
-  opacity: 0.91 !important;
-  width: 650px;
-  max-height: 80vh;
-  overflow: hidden;
-}*/
 .modal-wrapper:has(.quick-command-container) {
   position: fixed;
   left: 50%;
@@ -363,13 +432,12 @@ button[title="显示输入记录"] {
 }
 
 .WorkspacePopup-Items {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-    &::-webkit-scrollbar {
-        display: none;
-    }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
-
 
 /* ========================================
    DOWNLOAD PROGRESS STYLING
@@ -550,37 +618,19 @@ button[title="显示输入记录"] {
    ======================================== */
 
 /* Mainbar styling */
-.mainbar > .toolbar-mainbar {
+.mainbar .toolbar-mainbar {
   align-items: stretch;
-  height: var(--mod-mainbar-height);
-  padding: var(--mod-whitespace-y);
+  height: var(--mod-mainbar-height) !important;
+  border: none !important;
 }
+/* padding: var(--mod-whitespace-y) !important; */
 
-/* Address field styling */
-.UrlBar-SearchField,
-.UrlBar-AddressField {
-  border-radius: var(--mod-border-radius);
-  height: auto;
-  /* overflow: visible !important; */
-}
-
-.UrlBar-SearchField .pageload-indicator,
-.UrlBar-AddressField .pageload-indicator {
-  border-radius: var(--mod-border-radius);
-  height: 100% !important;
-}
-
-.UrlField {
-  /*flex: 0 0 auto !important;
-  width: auto !important;
-  max-width: 100%;*/
-  height: calc(var(--mod-mainbar-height) - (var(--mod-whitespace-y) * 2));
-}
-
-/* Hide small tools inside urlfield */
-
-.toolbar.toolbar-small.toolbar-insideinput {
-  opacity: 0 !important;
+.color-behind-tabs-off .mainbar {
+  border: none !important;
+  border-color: transparent !important;
+  overflow-x: auto;
+  /*overflow-y: hidden;*/
+  scrollbar-width: none;
 }
 
 /* Omni dropdown positioning */
@@ -596,9 +646,8 @@ button[title="显示输入记录"] {
 /* ========================================
    EXTENSIONS MENU STYLING
    ======================================== */
-/* 浏览器扩展图标换行解决方案 - 完整版 */
 
-.toolbar-extensions {
+/* .toolbar-extensions {
   display: flex !important;
   flex-wrap: wrap !important;
   align-items: center !important;
@@ -608,27 +657,10 @@ button[title="显示输入记录"] {
   gap: 3px !important;
 }
 
-/* 扩展按钮样式 */
-.toolbar-extensions button,
-.toolbar-extensions div[class*="button"],
-button[class*="ToolbarButton"] {
-  flex-shrink: 0 !important;
-  min-width: 22px !important;
-  min-height: 22px !important;
-  margin: 1px !important;
-  padding: 2px !important;
-  box-sizing: border-box !important;
-}
-
-/* 确保所有扩展元素有适当间距 */
-/*.toolbar-extensions > * {
-  margin: 1px 2px !important;
-}*/
 
 .toolbar-extensions {
   margin-left: 10px !important;
 }
-/* 响应式调整 */
 @media (max-width: 1200px) {
   .toolbar-extensions {
     max-width: 220px !important;
@@ -641,13 +673,34 @@ button[class*="ToolbarButton"] {
   }
 }
 
-/* 可选：限制高度并添加滚动 */
 .toolbar-extensions {
   max-height: 35px !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
+} */
+
+.toolbar-extensions {
+  max-width: 140px !important;
+  overflow-y: hidden !important;
+  overflow-x: auto !important;
+  white-space: nowrap;
 }
 
+/*.toolbar-extensions::-webkit-scrollbar {
+  display: none;
+}*/
+
+.toolbar-extensions {
+  scrollbar-width: none;
+  gap: var(--densityGap);
+}
+
+.toolbar-extensions button,
+.toolbar-extensions div[class*="button"] {
+  /*display: inline-block;*/
+  white-space: normal;
+  vertical-align: top;
+}
 /*============================================================================*/
 
 .extensionIconPopupMenu {
@@ -679,21 +732,6 @@ button[class*="ToolbarButton"] {
 }
 
 /* ========================================
-   LOADING BAR
-   ======================================== */
-
-/* #loading-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 4px;
-  width: 0;
-  background: linear-gradient(to right, #eaf4d3, #dbd8ae, #ca907e);
-  transition: width 0.3s ease;
-  z-index: 9999;
-} */
-
-/* ========================================
    STATUS BAR STYLING
    ======================================== */
 
@@ -707,7 +745,7 @@ button[class*="ToolbarButton"] {
    HIDE ADDRESS BAR WHEN TABS ARE HIDDEN
    ======================================== */
 
-/*#browser.tabs-off .toolbar-mainbar.toolbar-required,
+#browser.tabs-off .toolbar-mainbar.toolbar-required,
 #browser.tabs-off .UrlBar-AddressField,
 #browser.tabs-off .toolbar-mainbar[aria-label="Address"] {
   display: none !important;
@@ -716,7 +754,7 @@ button[class*="ToolbarButton"] {
 #browser:is(.tabs-left, .tabs-right).tabs-off .toolbar-mainbar.toolbar-required,
 #browser:is(.tabs-left, .tabs-right).tabs-off .UrlBar-AddressField {
   display: none !important;
-}*/
+}
 
 /* ========================================
    STATUS INFO STYLING
@@ -741,14 +779,361 @@ button[class*="ToolbarButton"] {
   border: 1px solid rgba(26, 34, 32, 0.5) !important;
 }
 
-/* Modify tile window border color */
+/* :root:has(#browser:is(.tabs-left, .tabs-right):not(.fullscreen, .minimal-ui), #browser.tabs-off:not(.fullscreen, .minimal-ui) #panels-container:not(.switcher)) .button-toolbar.toolbar-command:has(> button[title^=vvh-insert-linebreak]) {
+  flex: 1 1 100%;
+}
+:root:has(#browser:is(.tabs-left, .tabs-right):not(.fullscreen, .minimal-ui), #browser.tabs-off:not(.fullscreen, .minimal-ui) #panels-container:not(.switcher)) #browser:not(.toolbar-edit-mode) .button-toolbar.toolbar-command:has(> button[title^=vvh-insert-linebreak]) {
+  height: 0;
+}
+:root:has(#browser:is(.tabs-left, .tabs-right):not(.fullscreen, .minimal-ui), #browser.tabs-off:not(.fullscreen, .minimal-ui) #panels-container:not(.switcher)) #browser:not(.toolbar-edit-mode) .button-toolbar.toolbar-command:has(> button[title^=vvh-insert-linebreak]) > button {
+  display: none;
+}
+:root:not(:has(#browser:is(.tabs-left, .tabs-right):not(.fullscreen, .minimal-ui), #browser.tabs-off:not(.fullscreen, .minimal-ui) #panels-container:not(.switcher))) #browser:not(.toolbar-edit-mode) .button-toolbar.toolbar-command:has(> button[title^=vvh-insert-linebreak]) {
+  display: none;
+}
+:root:has(#browser:is(.tabs-left, .tabs-right):not(.fullscreen, .minimal-ui), #browser.tabs-off:not(.fullscreen, .minimal-ui) #panels-container:not(.switcher)) #browser.toolbar-edit-mode .button-toolbar.toolbar-command:has(> button[title^=vvh-insert-linebreak]) {
+  height: 26px;
+  opacity: 0.5;
+}
+:root:has(#browser:is(.tabs-left, .tabs-right):not(.fullscreen, .minimal-ui), #browser.tabs-off:not(.fullscreen, .minimal-ui) #panels-container:not(.switcher)) #browser.toolbar-edit-mode .button-toolbar.toolbar-command:has(> button[title^=vvh-insert-linebreak]) > button {
+  height: 26px;
+}
+#browser.toolbar-edit-mode .button-toolbar.toolbar-command:has(> button[title^=vvh-insert-linebreak]) {
+  opacity: 0.5;
+}
+#browser.toolbar-edit-mode .button-toolbar.toolbar-command:has(> button[title^=vvh-insert-linebreak]) > button::before {
+  content: " ";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border: 1px dashed;
+  border-radius: var(--radius);
+}
+:root:has(#browser:is(.tabs-left, .tabs-right):not(.fullscreen, .minimal-ui), #browser.tabs-off:not(.fullscreen, .minimal-ui) #panels-container:not(.switcher)) #browser:is(.address-top, .address-bottom) #main .toolbar-mainbar .button-toolbar.toolbar-command:has(> button[title^=vvh-insert-linebreak]) + .SearchField:not(.UrlBar-SearchField):has(+ .button-toolbar.toolbar-command > button[title^=vvh-insert-linebreak]),
+:root:has(#browser:is(.tabs-left, .tabs-right):not(.fullscreen, .minimal-ui), #browser.tabs-off:not(.fullscreen, .minimal-ui) #panels-container:not(.switcher)) footer .toolbar-statusbar .button-toolbar.toolbar-command:has(> button[title^=vvh-insert-linebreak]) + .SearchField:not(.UrlBar-SearchField):has(+ .button-toolbar.toolbar-command > button[title^=vvh-insert-linebreak]) {
+  flex: 1 1 100%;
+} */
 
-/* Override border removal for tiled layouts */
-/*#browser:not(.tabs-top):not(.tabs-bottom):not(.fullscreen)
-  .webpageview.active.tiled.visible.pagefocusstop {
-  border-color: #008080 !important;
-  border: 2px solid #008080 !important;
-}*/
-/*.tile {
-  border-color: #008080 !important;
-}*/
+:root:has(
+    #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
+    #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
+  )
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"]) {
+  flex: 1 1 100%;
+}
+:root:has(
+    #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
+    #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
+  )
+  #browser:not(.toolbar-edit-mode)
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"]) {
+  height: 0;
+}
+:root:has(
+    #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
+    #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
+  )
+  #browser:not(.toolbar-edit-mode)
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"])
+  > button {
+  display: none;
+}
+:root:not(
+    :has(
+      #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
+      #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
+    )
+  )
+  #browser:not(.toolbar-edit-mode)
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"]) {
+  display: none;
+}
+:root:has(
+    #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
+    #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
+  )
+  #browser.toolbar-edit-mode
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"]) {
+  height: 26px;
+  opacity: 0.5;
+}
+:root:has(
+    #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
+    #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
+  )
+  #browser.toolbar-edit-mode
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"])
+  > button {
+  height: 26px;
+}
+#browser.toolbar-edit-mode
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"]) {
+  opacity: 0.5;
+}
+#browser.toolbar-edit-mode
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"])
+  > button::before {
+  content: " ";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border: 1px dashed;
+  border-radius: var(--radius);
+}
+:root:has(
+    #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
+    #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
+  )
+  #browser:is(.address-top, .address-bottom)
+  #main
+  .toolbar-mainbar
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"])
+  + .SearchField:not(.UrlBar-SearchField):has(
+    + .button-toolbar.toolbar-command > button[title^="vvh-insert-linebreak"]
+  ),
+:root:has(
+    #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
+    #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
+  )
+  footer
+  .toolbar-statusbar
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"])
+  + .SearchField:not(.UrlBar-SearchField):has(
+    + .button-toolbar.toolbar-command > button[title^="vvh-insert-linebreak"]
+  ) {
+  flex: 1 1 100%;
+}
+
+/* 为包含workspace的按钮组添加统一的圆角矩形边框 */
+
+.toolbar-tabbar-after {
+  position: relative;
+}
+
+/* 使用容器的伪元素创建统一的圆角矩形边框 */
+/* 只包裹ToolbarButton，忽略其他子元素如.newtab */
+.toolbar-tabbar-after::before {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(var(--tabs-container-expand-width) - 12px);
+  height: 35%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius);
+  pointer-events: none;
+  z-index: 0;
+  background-color: rgba(119, 116, 116, 0.165);
+}
+
+/* 确保ToolbarButton按钮在边框之上 */
+.toolbar-tabbar-after .button-toolbar:has(.ToolbarButton-Button) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Hover高亮效果 */
+.toolbar-tabbar-after button.ToolbarButton-Button[title*="workspace"]:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: calc(var(--radius) * 0.7);
+  transition: background 0.2s ease;
+}
+
+/* :root {
+  --address-bar-focus-height: 80px;
+
+  --address-bar-radius: 12px;
+
+  --address-bar-hover-opacity: 0.5;
+
+  --transition-speed: 0.5s;
+}
+
+.toolbar-mainbar[aria-label] {
+  position: relative !important;
+}
+
+.UrlBar-AddressField {
+  transition: all var(--transition-speed) ease !important;
+  overflow: hidden !important;
+}
+
+.UrlBar-AddressField::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #000;
+  mix-blend-mode: exclusion;
+  opacity: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  transition: opacity var(--transition-speed) ease;
+  z-index: 1;
+}
+
+.UrlBar-AddressField:hover::before {
+  opacity: var(--address-bar-hover-opacity);
+}
+
+.UrlBar-AddressField:has(#urlFieldInput:focus) {
+  position: absolute !important;
+  z-index: 100 !important;
+
+  left: fit-content !important;
+  right: fit-content !important;
+  height: var(--address-bar-focus-height) !important;
+  top: 0 !important;
+
+  border-radius: var(--address-bar-radius) !important;
+  background-color: var(--colorBg) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.UrlBar-AddressField:has(#urlFieldInput:focus) .UrlBar-UrlField {
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+}
+
+.toolbar.toolbar-mainbar.toolbar-mailbar.toolbar-hidden.toolbar-large.toolbar-droptarget {
+  display: none;
+} */
+
+/* 地址栏容器基础样式 */
+.UrlBar-AddressField {
+  position: relative;
+  transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: var(--radius, 8px);
+  overflow: visible;
+  isolation: isolate; /* 创建新的层叠上下文 */
+}
+
+/* 悬浮蒙版效果 */
+.UrlBar-AddressField::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  transition: opacity 200ms ease;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 暗色主题检测 - 使用媒体查询 */
+@media (prefers-color-scheme: dark) {
+  .UrlBar-AddressField::before {
+    background: rgba(255, 255, 255, 0.12);
+  }
+}
+
+/* 或者通过父容器的类来检测暗色主题 */
+.UrlBar-AddressField.dark::before {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* 悬浮时显示蒙版 */
+.UrlBar-AddressField:hover::before {
+  opacity: 1;
+}
+
+/* 聚焦时的扩展效果 - 使用:focus-within伪类 */
+.UrlBar-AddressField:focus-within {
+  padding: 3px 15px 30px;
+  margin: -3px -15px -30px;
+  background: dark;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  border-radius: var(--radius, 8px);
+  z-index: 100000000;
+}
+
+/* 暗色主题背景 */
+@media (prefers-color-scheme: dark) {
+  .UrlBar-AddressField:focus-within {
+    background: var(--colorBgDark, #2a2a2a);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  }
+}
+
+.UrlBar-AddressField.dark:focus-within {
+  background: var(--colorBgDark, #2a2a2a);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* 输入框容器样式 */
+.UrlBar-UrlFieldWrapper {
+  position: relative;
+  z-index: 2;
+}
+
+/* 工具栏按钮样式调整 */
+.toolbar.toolbar-insideinput {
+  z-index: 3;
+}
+
+/* 动画关键帧 */
+@keyframes expand {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 聚焦时的微动画 */
+.UrlBar-AddressField:focus-within {
+  animation: expand 280ms ease;
+}
+
+/* 输入框样式调整 */
+.UrlBar-UrlField {
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: inherit;
+}
+
+/* 确保输入框占位符可见 */
+.UrlBar-UrlField::placeholder {
+  color: var(--colorTextSecondary, #999);
+}
+
+/* 暗色主题占位符 */
+@media (prefers-color-scheme: dark) {
+  .UrlBar-UrlField::placeholder {
+    color: var(--colorTextSecondaryDark, #aaa);
+  }
+}
+
+.UrlBar-AddressField.dark .UrlBar-UrlField::placeholder {
+  color: var(--colorTextSecondaryDark, #aaa);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .UrlBar-AddressField:focus-within {
+    padding: 80px 10px 30px;
+    margin: -80px -10px -30px;
+  }
+}
+
+/* 确保扩展后的地址栏不会影响其他元素 */
+.UrlBar-AddressField:focus-within {
+  position: relative;
+  z-index: 9999;
+}

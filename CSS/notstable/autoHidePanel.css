@@ -1,0 +1,100 @@
+/* ========================================
+   AUTO-HIDE PANELS
+   ======================================== */
+
+/* 基础面板容器样式 */
+#panels-container.left,
+#panels-container.right {
+  position: fixed !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  z-index: 999 !important;
+  pointer-events: auto !important;
+  transition:
+    opacity 280ms ease-out,
+    width 280ms ease-out,
+    background-color 280ms ease-out !important;
+}
+
+#panels-container.left {
+  left: 0 !important;
+}
+
+#panels-container.right {
+  right: 0 !important;
+}
+
+/* 只在有 .icons 类时应用自动隐藏效果 */
+#panels-container.icons.left,
+#panels-container.icons.right {
+  width: 10px !important;
+  opacity: 0 !important;
+  background: transparent !important;
+}
+
+/* hover 时显示完整面板 */
+#panels-container.icons:hover {
+  opacity: 1 !important;
+  background: var(--colorBg, #ffffff) !important;
+  width: 40px !important;
+}
+
+/* 编辑器工具栏打开时保持可见 */
+body:has(:is(.toolbar-editor, .addwebpanel-wrapper))
+  #panels-container.icons:not(:hover),
+body:has(:is(.toolbar-editor, .addwebpanel-wrapper))
+  #panels-container.icons:not(:hover)
+  #panels {
+  width: 40px !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  background: var(--colorBg, #ffffff) !important;
+}
+
+/* 只在有 .icons 类时隐藏面板内容 */
+#panels-container.icons:not(:hover) #panels {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transition:
+    opacity 280ms ease-out,
+    visibility 280ms ease-out;
+}
+
+/* hover 时显示面板内容 */
+#panels-container.icons:hover #panels {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transition:
+    opacity 280ms ease-out,
+    visibility 280ms ease-out;
+}
+
+/* 没有 .icons 类时的默认样式 */
+#panels-container:not(.icons) {
+  width: auto !important;
+  opacity: 1 !important;
+  background: var(--colorBg, #ffffff) !important;
+}
+
+#panels-container:not(.icons) #panels {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.panel-group {
+  margin-top: calc(var(--mod-mainbar-height) + 6px);
+}
+
+/* Debug styles (commented out) */
+/*
+#panels-container.icons {
+  width: 40px !important;
+}
+
+#panels-container.icons #panels {
+  width: 40px !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transition: opacity 280ms ease-out, visibility 280ms ease-out;
+}
+*/
