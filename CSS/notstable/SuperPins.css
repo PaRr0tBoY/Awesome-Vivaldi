@@ -16,7 +16,7 @@
   --pinned-gap: 8px;
   /* --pinned-bg: var(--colorAccentBgAlphaHeavy, rgba(255, 255, 255, 0.1)); */
   --pinned-icon-size: 20px;
-  --pinned-tab-height: 45px;
+  --pinned-tab-height: 50px;
 }
 
 .resize{
