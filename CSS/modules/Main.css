@@ -367,8 +367,13 @@ button[title="显示输入记录"] {
   height: auto;
 }
 
-.url {
-  mix-blend-mode: difference !important;
+.UrlFragment--Highlight {
+  color: var(--ColorFg);
+}
+
+.UrlFragment-Wrapper--ShouldHighlight {
+  --HighlightColor: none;
+  --LowlightColor: none;
 }
 
 .mainbar .toolbar-mainbar button.ToolbarButton-Button {
@@ -628,9 +633,11 @@ button[title="显示输入记录"] {
 .color-behind-tabs-off .mainbar {
   border: none !important;
   border-color: transparent !important;
+  &:not(:has(.UrlBar-AddressField:focus-within)){
   overflow-x: auto;
-  /*overflow-y: hidden;*/
+  overflow-y: hidden;
   scrollbar-width: none;
+  }
 }
 
 /* Omni dropdown positioning */
@@ -910,8 +917,6 @@ button[title="显示输入记录"] {
   position: relative;
 }
 
-/* 使用容器的伪元素创建统一的圆角矩形边框 */
-/* 只包裹ToolbarButton，忽略其他子元素如.newtab */
 .toolbar-tabbar-after::before {
   content: "";
   position: absolute;
@@ -919,7 +924,7 @@ button[title="显示输入记录"] {
   left: 50%;
   transform: translate(-50%, -50%);
   width: calc(var(--tabs-container-expand-width) - 12px);
-  height: 35%;
+  height: 34%;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius);
   pointer-events: none;
@@ -927,13 +932,11 @@ button[title="显示输入记录"] {
   background-color: rgba(119, 116, 116, 0.165);
 }
 
-/* 确保ToolbarButton按钮在边框之上 */
 .toolbar-tabbar-after .button-toolbar:has(.ToolbarButton-Button) {
   position: relative;
   z-index: 1;
 }
 
-/* Hover高亮效果 */
 .toolbar-tabbar-after button.ToolbarButton-Button[title*="workspace"]:hover {
   background: rgba(255, 255, 255, 0.1);
   border-radius: calc(var(--radius) * 0.7);
@@ -1020,28 +1023,16 @@ button[title="显示输入记录"] {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.12);
   opacity: 0;
   transition: opacity 200ms ease;
   border-radius: inherit;
   pointer-events: none;
-  z-index: 1;
-}
-
-/* 暗色主题检测 - 使用媒体查询 */
-@media (prefers-color-scheme: dark) {
-  .UrlBar-AddressField::before {
-    background: rgba(255, 255, 255, 0.12);
-  }
-}
-
-/* 或者通过父容器的类来检测暗色主题 */
-.UrlBar-AddressField.dark::before {
-  background: rgba(255, 255, 255, 0.12);
+  z-index: 3;
 }
 
 /* 悬浮时显示蒙版 */
-.UrlBar-AddressField:hover::before {
+.UrlBar-AddressField:hover:not(:focus-within)::before {
   opacity: 1;
 }
 
@@ -1056,12 +1047,17 @@ button[title="显示输入记录"] {
 }
 
 /* 暗色主题背景 */
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) { */
+.UrlBar-AddressField:focus-within {
+  background-color: var(--colorBgLighter, #2a2a2a) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+/* @media (prefers-color-scheme: light) {
   .UrlBar-AddressField:focus-within {
-    background: var(--colorBgDark, #2a2a2a);
+    background-color: var(--colorBg, #2a2a2a) !important;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   }
-}
+} */
 
 .UrlBar-AddressField.dark:focus-within {
   background: var(--colorBgDark, #2a2a2a);
@@ -1071,7 +1067,7 @@ button[title="显示输入记录"] {
 /* 输入框容器样式 */
 .UrlBar-UrlFieldWrapper {
   position: relative;
-  z-index: 2;
+  z-index: 1;
 }
 
 /* 工具栏按钮样式调整 */

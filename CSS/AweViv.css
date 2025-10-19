@@ -10,9 +10,9 @@
 @import "modules/TidyTabs.css";
 
 /* Import notstable folder CSS files */
-@import "notstable/arcFolder.css";
+/* @import "notstable/arcFolder.css"; */
 @import "notstable/autoHidePanel.css";
 @import "notstable/ClearTabs.css";
 @import "notstable/SuperPins.css";
 @import "notstable/tileExpand.css";
-@import "notstable/tools.cssssss";
+/* @import "notstable/tools.cssssss"; */

@@ -150,12 +150,19 @@
 
 const applyColorToAddressBar = (colorData) => {
 	const mainbar = getMainBar();
+	// const tabbars = document.querySelector('#tabs-tabbar-container:not(:has(#tabs-subcontainer)) #tabs-container');
+	// const subtabbars = document.querySelector('#tabs-tabbar-container:not(:hover):not(:has(#tabs-container:hover)) #tabs-subcontainer');
+	
+	// const tabbars = document.querySelector('#tabs-container:not(:hover)');
+	// const subtabbars = document.querySelector('#tabs-subcontainer:not(:hover)');
 	const addressField = document.querySelector('.UrlBar-AddressField');
-	const observerEl = document.querySelector('.observer');
-	if (!mainbar && !addressField && !observerEl) return;
+	// const bookmarkbar = document.querySelector('.color-behind-tabs-off .bookmark-bar button');
+	// const panel = document.querySelector('#panels-container.icons');
+	// if (!mainbar && !tabbars && !subtabbars && !addressField && !bookmarkbar && !panel) return;
+	// const targets = [mainbar, tabbars, subtabbars, addressField, bookmarkbar, panel];
 
-	const targets = [mainbar, addressField, observerEl];
-
+	if (!mainbar && !addressField) return;
+	const targets = [mainbar, addressField];
 	if (!colorData) {
 		const reset = (el) => {
 			if (!el) return;
@@ -326,6 +333,13 @@ const applyColorToAddressBar = (colorData) => {
 			updateAddressBarColor(activeTab);
 		}
 
+    // 页面加载完成时更新主色调
+    chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+      if (changeInfo.status === 'complete' && tab.active && !tab.incognito) {
+        await updateAddressBarColor(tab);
+      }
+    });
+
 		// Listen for tab activation
 		chrome.tabs.onActivated.addListener(async ({ tabId }) => {
 			currentTabId = tabId;
@@ -338,14 +352,7 @@ const applyColorToAddressBar = (colorData) => {
 			if (tab.active && (changeInfo.status === 'complete' || changeInfo.url)) {
 				scheduleUpdate(tab);
 			}
-		})
-    // 页面加载完成时更新主色调
-    chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-      if (changeInfo.status === 'complete' && tab.active && !tab.incognito) {
-        await updateAddressBarColor(tab);
-      }
-    });
-;
+		});
 
 		// Listen for window focus changes
 		chrome.windows.onFocusChanged.addListener(async (windowId) => {

@@ -10,7 +10,7 @@
   --Button-newtab-sub-width: calc(var(--tabs-subcontainer-expand-width) / 2);
 
   /* Adjust tabbar margin and padding */
-  --tabbar-margin-top: -5px;
+  --tabbar-margin-top: -6px;
   --tabbar-margin-bottom: 1px;
   --tabbar-padding: 7px; /* Set to 0 if any tabs position problem */
 
@@ -70,12 +70,13 @@
    ======================================== */
 
 /* Main Tabbar*/
-
 /* Adjust hide animation and width of main tabbar here */
 /* I set its width very small since I think this has more of a "hidden" vibe,
 and I figure people may want to focus more on sub-stack when they're working on a certain subject
 with a tab-stack. Which is why we need tab-stack no? */
 #tabs-container {
+  container-type: inline-size;
+  container-name: tabs-container;
   min-width: var(--tabs-container-collapse-width) !important;
   max-width: var(--tabs-container-collapse-width) !important;
   margin-top: var(--tabbar-margin-top) !important;
@@ -100,12 +101,18 @@ with a tab-stack. Which is why we need tab-stack no? */
   overflow-x: hidden !important; */
 }
 
+@container tabs-container (max-width: 15px) {
+  .tab-position .tab-wrapper {
+    opacity: 0 !important;
+  }
+}
 /* When the tabs-subcontainer is hovered, the tabs-container immediately collapses. */
 #tabs-tabbar-container:has(#tabs-subcontainer:hover) #tabs-container {
   transition-delay: var(--transition-delay-time-expand) !important;
 }
 
 /* Adjust expand width of main tabbar here */
+body:not(:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #panel_switch)))
 #tabs-container:hover {
   min-width: var(--tabs-container-expand-width) !important;
   max-width: var(--tabs-container-expand-width) !important;
@@ -127,11 +134,12 @@ with a tab-stack. Which is why we need tab-stack no? */
   /* transition-delay: 60ms !important; */
 }
 
-
-/* Better Handler */
-#tabs-tabbar-container:hover #tabs-container:not(:hover) {
-  min-width: calc(var(--tabs-subcontainer-collapse-width) - 6px) !important;
-  max-width: calc(var(--tabs-subcontainer-collapse-width) - 6px) !important;
+/* Main Tabbar Peek */
+body:not(:has(:is(#panel_switch, .toolbar-editor, .UrlBar-AddressField:focus-within))) #tabs-tabbar-container:hover #tabs-container:not(:hover) {
+  /*min-width: calc(var(--tabs-subcontainer-collapse-width) - 6px) !important;
+  max-width: calc(var(--tabs-subcontainer-collapse-width) - 6px) !important;*/
+  min-width: calc(var(--tabs-container-collapse-width) + 30px) !important;
+  max-width: calc(var(--tabs-container-collapse-width) + 30px) !important;
   margin-top: var(--tabbar-margin-top) !important;
   margin-bottom: var(--tabbar-margin-bottom) !important;
   background-color: var(--tabbar-bg-color-collapse, var(--colorBg)) !important;
@@ -150,14 +158,19 @@ with a tab-stack. Which is why we need tab-stack no? */
   box-sizing: border-box !important;
   position: relative !important;
   overflow: hidden !important;
-  /* overflow-y: auto !important;
-  overflow-x: hidden !important; */
-  & .tab-position .tab-header .title {
-    display: none !important;
+  & .tab-position .tab-header {
+    padding-left: 0 !important;
+    justify-content: center !important;
   }
-  /* & .is-pinned .tab-wrapper{
-    background-color: var(--colorAccentBg, rgba(255,255,255,0.2)) !important;
-  } */
+
+  &
+    .tab-strip
+    > span:has(.is-pinned):nth-child(-n + 9)
+    .is-pinned
+    .tab-wrapper {
+    background-color: var(--colorBg, rgba(255, 255, 255, 0.2)) !important;
+    border: 1px solid var(--colorHighlightBgDark) !important;
+  }
 }
 
 #tabs-container .tab.tab-small.tab-mini .tab-header,
@@ -175,6 +188,11 @@ with a tab-stack. Which is why we need tab-stack no? */
   border-radius: calc(var(--radius) + 5px) 0px 0px calc(var(--radius) + 5px) !important;
 }
 
+body:not(:has(:is(#panel_switch, .WorkSpacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #vivaldi-tooltip:hover))) #tabs-tabbar-container:not(:has(#tabs-subcontainer))
+  #tabs-container:not(:hover) {
+  min-width: calc(var(--tabs-container-collapse-width) + 30px) !important;
+  max-width: calc(var(--tabs-container-collapse-width) + 30px) !important;
+}
 /* SubStack / Secondary Tabbar */
 
 #tabs-subcontainer {
@@ -223,7 +241,7 @@ body:has(
       /*.button-popup,*/
       .WorkspacePopup,
       .toolbar-editor,
-      .UrlBar-AddressField:focus-within,
+      #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within,
       #vivaldi-tooltip:hover
     )
   )
@@ -247,7 +265,7 @@ body:has(
   box-sizing: border-box !important;
 }
 
-body:has(:is(.toolbar-editor, .UrlBar-AddressField:focus-within))
+body:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within))
   #tabs-subcontainer {
   transition-delay: var(--transition-delay-time-expand) !important;
 }
@@ -255,7 +273,8 @@ body:has(:is(.toolbar-editor, .UrlBar-AddressField:focus-within))
 /* ================================================================================= */
 
 /* Adjust expand width of Secondary tabbar here */
-body:not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
+/* body:not(:has(.toolbar-editor)):not(:has(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within)) */
+body:not(:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #panel_switch)))
   #tabs-subcontainer:hover {
   /* #tabs-subcontainer:hover { */
   min-width: var(--tabs-subcontainer-expand-width) !important;
@@ -289,23 +308,23 @@ body:not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
   border-radius: calc(var(--radius) + 5px) 0px 0px calc(var(--radius) + 5px) !important;
 }
 
-body:has(:is(.toolbar-editor, .UrlBar-AddressField:focus-within))
+body:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within))
   #tabs-subcontainer.left {
   border-radius: 0 calc(var(--radius) + 5px) calc(var(--radius) + 5px) 0 !important;
 }
 
-body:has(:is(.toolbar-editor, .UrlBar-AddressField:focus-within))
+body:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within))
   #tabs-subcontainer.right {
   border-radius: calc(var(--radius) + 5px) 0 0 calc(var(--radius) + 5px) !important;
 }
 
-body:has(:is(.toolbar-editor, .UrlBar-AddressField:focus-within))
+body:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within))
   :not(:has(#tabs-subcontainer))
   #tabs-container.left {
   border-radius: 0 calc(var(--radius) + 5px) calc(var(--radius) + 5px) 0 !important;
 }
 
-body:has(:is(.toolbar-editor, .UrlBar-AddressField:focus-within))
+body:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within))
   :not(:has(#tabs-subcontainer))
   #tabs-container.right {
   border-radius: calc(var(--radius) + 5px) 0 0 calc(var(--radius) + 5px) !important;
@@ -366,14 +385,12 @@ body:has(:is(.toolbar-editor, .UrlBar-AddressField:focus-within))
 
 /* Border Color */
 #tabs-tabbar-container #tabs-container:hover {
-  border: 1px solid var(--colorHighlightBgDark) !important;
   border: 1px solid
-    var(--tabbar-border-color-expand, var(--colorHighlightBgDark)) !important;
+    var(--tabbar-border-color-expand, var(--colorAccentBgFadedMost)) !important;
 }
 #tabs-tabbar-container #tabs-subcontainer:hover {
-  border: 1px solid var(--colorHighlightBgDark) !important;
   border: 1px solid
-    var(--tabbar-border-color-expand, var(--colorHighlightBgDark)) !important;
+    var(--tabbar-border-color-expand, var(--colorAccentBgFadedMost)) !important;
 }
 
 /* Tabbar Order */
@@ -586,7 +603,7 @@ body:not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
   border-radius: 12px !important;
 }
 
-body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor))
+body:has(:is(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, .toolbar-editor))
   .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
 .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover {
   transform: scaleY(1) !important;
@@ -665,7 +682,7 @@ body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor))
   }
 }
 
-body:not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
+body:not(:has(.toolbar-editor)):not(:has(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within))
   #tabs-container:not(:hover)
   .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget {
   opacity: 0 !important;
@@ -687,7 +704,7 @@ body:not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
       ease-out 0s !important;
 }
 
-body:not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
+body:not(:has(.toolbar-editor)):not(:has(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within))
   #tabs-container:hover
   .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget {
   opacity: 1 !important;
@@ -701,13 +718,13 @@ body:not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
     calc(var(--transition-delay-time-collapse) + var(--animation-speed)) !important;
 }
 
-body:not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
+body:not(:has(.toolbar-editor)):not(:has(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within))
   #tabs-container
   .resize {
   padding-bottom: 85px !important;
 }
 
-body:not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
+body:not(:has(.toolbar-editor)):not(:has(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within))
   #tabs-container:not(:hover)
   .resize {
   padding-bottom: 0px !important;
@@ -718,7 +735,7 @@ body:not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
   box-sizing: border-box !important;
 }
 
-body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup))
+body:has(:is(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup))
   #tabs-container,
 body:has(.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover)
   #tabs-container {
@@ -763,7 +780,7 @@ body:has(.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover)
 #browser:not(.fullscreen):has(#tabs-tabbar-container.right)
   .inner
   #webpage-stack {
-  margin-right: var(--tabs-container-collapse-width);
+  margin-right: calc(var(--tabs-container-collapse-width) + 30px);
   transition: margin-right var(--animation-speed) ease-out !important;
 }
 
@@ -778,7 +795,7 @@ body:has(.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover)
 }
 
 #browser:not(.fullscreen) #tabs-tabbar-container.right ~ #webpage-stack {
-  margin-right: var(--tabs-container-collapse-width);
+  margin-right: calc(var(--tabs-container-collapse-width) + 30px);
 }
 
 #browser:not(.fullscreen)
@@ -794,7 +811,7 @@ body:has(.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover)
 #browser:not(.fullscreen):has(#tabs-tabbar-container.left)
   .inner
   #webpage-stack {
-  margin-left: var(--tabs-container-collapse-width);
+  margin-left: calc(var(--tabs-container-collapse-width) + 30px);
   transition: margin-left var(--animation-speed) ease-out !important;
 }
 
@@ -809,7 +826,7 @@ body:has(.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover)
 }
 
 #browser:not(.fullscreen) #tabs-tabbar-container.left ~ #webpage-stack {
-  margin-left: var(--tabs-container-collapse-width);
+  margin-left: calc(var(--tabs-container-collapse-width) + 30px);
 }
 
 #browser:not(.fullscreen)

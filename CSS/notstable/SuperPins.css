@@ -1,6 +1,6 @@
 :root {
   --pinned-column-count: 3;
-  --pinned-row-count: 3; /* 新增：指定显示为方形按钮的行数 */
+  --pinned-row-count: 3;
   --pinned-gap: 8px;
   /* --pinned-bg: var(--colorAccentBgAlphaHeavy, rgba(255, 255, 255, 0.1)); */
   --pinned-icon-size: 20px;
@@ -27,6 +27,7 @@
 .tab-header {
   min-width: 0;
   box-sizing: border-box;
+  /*padding-left: 0 !important;*/
 }
 
 #tabs-container .tab-position.is-pinned {
@@ -34,8 +35,12 @@
 }
 
 /* 基础方形按钮样式 - 应用到所有固定标签页 */
-#tabs-container .tab-strip > span:has(.is-pinned):nth-child(-n+9) .is-pinned .tab-wrapper{
-/* #tabs-container .tab-strip > span:has(.is-pinned) .is-pinned .tab-wrapper { */
+#tabs-container
+  .tab-strip
+  > span:has(.is-pinned):nth-child(-n + 9)
+  .is-pinned
+  .tab-wrapper {
+  /* #tabs-container .tab-strip > span:has(.is-pinned) .is-pinned .tab-wrapper { */
   max-height: var(--pinned-tab-height) !important;
   min-height: var(--pinned-tab-height) !important;
   display: flex !important;
@@ -52,20 +57,35 @@
   max-height: unset !important;
 }
 
-#tabs-container .tab-strip > span:has(.is-pinned) .is-pinned .tab-wrapper .tab-header {
-  justify-content: flex-start !important;
+#tabs-container
+  .tab-strip
+  > span:has(.is-pinned)
+  .is-pinned
+  .tab-wrapper
+  .tab-header {
+  /*justify-content: flex-start !important;*/
+  justify-content: center !important;
   align-items: center !important;
   width: 100% !important;
   height: 100% !important;
   flex: auto !important;
 }
 
-#tabs-container .tab-strip > span:has(.is-pinned) .is-pinned .tab-wrapper svg.svg-tab-stack {
+#tabs-container
+  .tab-strip
+  > span:has(.is-pinned)
+  .is-pinned
+  .tab-wrapper
+  svg.svg-tab-stack {
   height: 100% !important;
   max-height: unset !important;
 }
 
-#tabs-container .tab-strip > span:has(.is-pinned):nth-child(-n+9) .is-pinned .favicon {
+#tabs-container
+  .tab-strip
+  > span:has(.is-pinned):nth-child(-n + 9)
+  .is-pinned
+  .favicon {
   width: var(--pinned-icon-size) !important;
   height: var(--pinned-icon-size) !important;
   margin: auto !important;
@@ -73,7 +93,12 @@
   transition: margin 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-#tabs-container .tab-strip > span:has(.is-pinned):nth-child(-n+9) .is-pinned .tab-wrapper:hover .favicon {
+#tabs-container
+  .tab-strip
+  > span:has(.is-pinned):nth-child(-n + 9)
+  .is-pinned
+  .tab-wrapper:hover
+  .favicon {
   margin: auto !important;
   transform: translateX(calc(-50% + 8px)) !important;
 }
@@ -86,63 +111,91 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-#tabs-container .tab-strip > span:has(.is-pinned):nth-child(-n+9) .is-pinned .tab-wrapper:not(.active):hover {
+#tabs-container
+  .tab-strip
+  > span:has(.is-pinned):nth-child(-n + 9)
+  .is-pinned
+  .tab-wrapper:not(.active):hover {
   /* background-color: var(--colorAccentBgAlpha) !important; */
-  background-color: var(--colorAccentBg, rgba(255,255,255,0.2)) !important;
+  background-color: var(--colorAccentBg, rgba(255, 255, 255, 0.2)) !important;
   overflow: hidden;
   position: relative !important;
   z-index: 100000000;
-  
+
   /* 展开到整行宽度 */
-  width: calc(var(--pinned-column-count) * 100% + (var(--pinned-column-count) - 1) * var(--pinned-gap)) !important;
+  width: calc(
+    var(--pinned-column-count) * 100% + (var(--pinned-column-count) - 1) *
+      var(--pinned-gap)
+  ) !important;
   min-height: calc(var(--pinned-tab-height) + var(--pinned-gap)) !important;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.8s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.8s;
 }
 
 /* 左列 - 向右展开，左侧边界固定 */
-#tabs-container .tab-strip > span:nth-child(3n+1):has(.is-pinned) .is-pinned .tab-wrapper:not(.active):hover {
+#tabs-container
+  .tab-strip
+  > span:nth-child(3n + 1):nth-child(-n + 9):has(.is-pinned)
+  .is-pinned
+  .tab-wrapper:not(.active):hover {
   margin-left: 0 !important;
 }
 
 /* 中间列 - 向两侧展开，居中对齐 */
-#tabs-container .tab-strip > span:nth-child(3n+2):has(.is-pinned) .is-pinned .tab-wrapper:not(.active):hover {
+#tabs-container
+  .tab-strip
+  > span:nth-child(3n + 2):nth-child(-n + 9):has(.is-pinned)
+  .is-pinned
+  .tab-wrapper:not(.active):hover {
   margin-left: calc(-100% - var(--pinned-gap)) !important;
 }
 
 /* 右列 - 向左展开，右侧边界固定 */
-#tabs-container .tab-strip > span:nth-child(3n):has(.is-pinned) .is-pinned .tab-wrapper:not(.active):hover {
+#tabs-container
+  .tab-strip
+  > span:nth-child(3n):nth-child(-n + 9):has(.is-pinned)
+  .is-pinned
+  .tab-wrapper:not(.active):hover {
   margin-left: calc(-200% - 2 * var(--pinned-gap)) !important;
 }
 
-#tabs-container .tab-strip > span:has(.is-pinned) .is-pinned .title {
+/* Hide Pinned Tabs Title */
+#tabs-container .tab-strip > span:has(.is-pinned):nth-child(-n+9) .is-pinned .title {
   opacity: 0 !important;
   max-width: 0 !important;
   transition:
-    opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-    max-width 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+    opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-#tabs-container .tab-strip > span:has(.is-pinned) .is-pinned .stack-counter {
+#tabs-container
+  .tab-strip
+  > span:has(.is-pinned)
+  .is-pinned
+  .tab-wrapper:hover
+  .title:nth-child(-n+9) {
+  opacity: 1 !important;
+  max-width: 100% !important;
+}
+
+/* ========================================== */
+/* Stack-counter Auto Hide for Essential Tabs */
+#tabs-container .tab-strip > span:has(.is-pinned):nth-child(-n+9) .is-pinned .stack-counter {
   /* display: none !important; */
   padding: 0 !important;
   margin: 0 !important;
   max-width: 0 !important;
   min-width: 0 !important;
   opacity: 0 !important;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-#tabs-container .tab-strip > span:has(.is-pinned) .is-pinned .close {
-  display: none !important;
-}
-
-#tabs-container .tab-strip > span:has(.is-pinned) .is-pinned .tab-wrapper:hover .title {
-  opacity: 1 !important;
-  max-width: 100% !important;
-}
-
-#tabs-container .tab-strip > span:has(.is-pinned) .is-pinned .tab-wrapper:hover .stack-counter {
-  /* display: flex !important; */
+#tabs-container
+  .tab-strip
+  > span:has(.is-pinned)
+  .is-pinned
+  .tab-wrapper:hover
+  .stack-counter {
+  display: flex !important;
   padding: 1px 4px !important;
   margin-right: 6px !important;
   max-width: auto !important;
@@ -150,23 +203,47 @@
   opacity: 1 !important;
   z-index: 10000000000000000000;
 }
+/* ========================================== */
+/* Close Button disabling for Essential Tabs */
+#tabs-container
+  .tab-strip
+  > span:has(.is-pinned):nth-child(-n + 9)
+  .is-pinned
+  /*.tab:hover*/
+  .close {
+  display: none !important;
+}
+/* ========================================== */
 
-#tabs-container .tab-strip > span:has(.is-pinned) .is-pinned .tab-wrapper:hover .tab-header {
+#tabs-container
+  .tab-strip
+  > span:has(.is-pinned)
+  .is-pinned
+  .tab-wrapper:hover
+  .tab-header {
   justify-content: flex-start !important;
   padding-left: 6px !important;
 }
 
-#tabs-container .tab-strip > span:has(.is-pinned) .is-pinned.active .tab-wrapper {
+#tabs-container
+  .tab-strip
+  > span:has(.is-pinned)
+  .is-pinned.active
+  .tab-wrapper {
   outline: 2px solid var(--colorAccentBg, #4a90e2);
 }
 
-/* 超出行数限制的固定标签页使用普通样式 */
+/* ========================================== */
 /* 当 --pinned-row-count: 2 和 --pinned-column-count: 3 时，第7个及之后使用普通样式 */
-#tabs-container .tab-strip > span:has(.is-pinned):nth-child(n+10) .is-pinned {
+#tabs-container .tab-strip > span:has(.is-pinned):nth-child(n + 10) .is-pinned {
   grid-column: 1 / span var(--pinned-column-count) !important;
 }
 
-#tabs-container .tab-strip > span:has(.is-pinned):nth-child(n+10) .is-pinned .tab-wrapper {
+#tabs-container
+  .tab-strip
+  > span:has(.is-pinned):nth-child(n + 10)
+  .is-pinned
+  .tab-wrapper {
   grid-column: 1 / -1 !important;
   width: 100% !important;
   min-width: 0 !important;
@@ -176,28 +253,71 @@
   background-color: transparent !important;
 }
 
-#tabs-container .tab-strip > span:has(.is-pinned):nth-child(n+10) .is-pinned .tab-wrapper:hover {
+#tabs-container
+  .tab-strip
+  > span:has(.is-pinned):nth-child(n + 10)
+  .is-pinned
+  .tab-wrapper:hover {
   width: 100% !important;
   margin-left: 0 !important;
   /* background-color: var(--colorBgDark) !important; */
 }
 
-#tabs-container .tab-strip > span:has(.is-pinned):nth-child(n+10) .is-pinned .title {
-  opacity: 1 !important;
-  max-width: 100% !important;
+body:not(:has(:is(#panel_switch, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within)))
+#tabs-container:not(:hover)
+  .tab-strip
+  > span:has(.is-pinned):nth-child(n + 10)
+  .is-pinned
+  .title {
+  opacity: 0 !important;
+  max-width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  transition:
+    opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    padding 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-#tabs-container .tab-strip > span:has(.is-pinned):nth-child(n+10) .is-pinned .close {
+#tabs-container:hover
+  .tab-strip
+  > span:has(.is-pinned):nth-child(n + 10)
+  .is-pinned
+  .title {
+  opacity: 1 !important;
+  max-width: 100% !important;
+  padding-left: 4px;
+  margin-right: 3px;
+  transition:
+    opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#tabs-container
+  .tab-strip
+  > span:has(.is-pinned):nth-child(n + 10)
+  .is-pinned
+  .tab:hover
+  .close {
   display: flex !important;
 }
 
-#tabs-container .tab-strip > span:has(.is-pinned):nth-child(n+10) .is-pinned .favicon {
+#tabs-container
+  .tab-strip
+  > span:has(.is-pinned):nth-child(n + 10)
+  .is-pinned
+  .favicon {
   width: 16px !important;
   height: 16px !important;
   /* margin: 0 !important; */
   transform: none !important;
 }
 
+/* ========================================== */
+/* Separator and Newtab occupy full width */
 #tabs-container .tab-strip .separator,
 #tabs-container .tab-strip .newtab {
   grid-column: 1 / -1 !important;
@@ -247,14 +367,32 @@
   display: none !important;
 }
 
-/* 
+#tabs-container.left .tab-strip.overflow,
+#tabs-container.right .tab-strip.overflow {
+  min-width: unset;
+}
+/*
   注意：由于 nth-child() 不支持 CSS 变量计算，
   如果需要不同的行数限制，需要手动修改第 7 的数字。
-  
+
   计算公式：nth-child(n+X)，其中 X = (行数 × 列数) + 1
-  
+
   示例：
   - 2行3列 = 6个方形按钮，第7个开始用普通样式：nth-child(n+7)
   - 3行3列 = 9个方形按钮，第10个开始用普通样式：nth-child(n+10)
   - 1行4列 = 4个方形按钮，第5个开始用普通样式：nth-child(n+5)
 */
+
+#tabs-container
+  .tab-strip
+  > span:has(.is-pinned):nth-child(-n + 9)
+  .is-pinned
+  .tab-wrapper {
+  background-color: var(--colorBg, rgba(255, 255, 255, 0.2)) !important;
+  border: 1px solid var(--colorHighlightBgDark) !important;
+}
+
+#tabs-container .tab.tab-small.tab-mini .tab-header, #tabs-container .tab.pinned.tab-mini .tab-header {
+    border-left: none;
+    border-right: none;
+}
