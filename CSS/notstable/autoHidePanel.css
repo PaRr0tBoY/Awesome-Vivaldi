@@ -8,6 +8,7 @@
   position: fixed !important;
   top: 0 !important;
   bottom: 0 !important;
+  margin-top: calc(var(--mod-mainbar-height) + 6px);
   z-index: 999 !important;
   pointer-events: auto !important;
   transition:
@@ -81,9 +82,9 @@ body:has(:is(.toolbar-editor, .addwebpanel-wrapper))
   visibility: visible !important;
 }
 
-.panel-group {
+/* .panel-group {
   margin-top: calc(var(--mod-mainbar-height) + 6px);
-}
+} */
 
 /* Debug styles (commented out) */
 /*

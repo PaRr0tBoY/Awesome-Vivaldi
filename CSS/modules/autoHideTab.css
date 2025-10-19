@@ -167,10 +167,7 @@ body:not(:has(:is(.WorkspacePopup, #panel_switch, .toolbar-editor, .UrlBar-Addre
   & .tab-strip .is-pinned .tab:hover .close{
     display: flex;
   }
-
-
 }
-
 
 #tabs-container .tab.tab-small.tab-mini .tab-header,
 #tabs-container .tab.pinned.tab-mini .tab-header {
@@ -523,9 +520,9 @@ transition: filter 200ms linear !important
   flex: 1 !important;
 } */
 
-/* #tabs-subcontainer .tab .title {
+#tabs-subcontainer .tab .title {
   display: flex !important;
-} */
+}
 
 /* .tab-position:not(.is-pinned) .tab-header,
 #tabs-subcontainer .tab-header {
@@ -651,9 +648,13 @@ transition: filter 200ms linear !important
   }
 }
 
+/* .toolbar-tabbar-before:has(:is(.UrlBar-AddressField, .workspace-popup)){ */
 .toolbar-tabbar-before{
-  max-height: 35px !important;
-  margin: 3px !important;
+  margin: var(--densityGap) !important;
+  &:has(.button-toolbar){
+    min-height: 35px !important;
+    margin: 3px !important;
+  }
 }
 
 #tabs-tabbar-container #tabs-container {

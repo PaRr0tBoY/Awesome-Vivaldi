@@ -920,11 +920,11 @@ button[title="显示输入记录"] {
 .toolbar-tabbar-after::before {
   content: "";
   position: absolute;
-  bottom: -10px;
+  bottom: -12px;
   left: 50%;
   transform: translate(-50%, -50%);
   width: calc(var(--tabs-container-expand-width) - 12px);
-  height: 2.8%;
+  height: 28px !important;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius);
   pointer-events: none;

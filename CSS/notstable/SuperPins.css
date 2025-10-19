@@ -1,3 +1,15 @@
+/*
+  Note: Since nth-child() doesn't support CSS variable calculations,
+  if you need different row limits, you'll need to manually modify the number in the selector.
+
+  Formula: nth-child(n+X), where X = (rows × columns) + 1
+
+  Examples:
+  - 2 rows × 3 columns = 6 square buttons, apply normal style from the 7th: nth-child(n+7)
+  - 3 rows × 3 columns = 9 square buttons, apply normal style from the 10th: nth-child(n+10)
+  - 1 row × 4 columns = 4 square buttons, apply normal style from the 5th: nth-child(n+5)
+*/
+
 :root {
   --pinned-column-count: 3;
   --pinned-row-count: 3;
@@ -131,7 +143,7 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.8s;
 }
 
-/* 左列 - 向右展开，左侧边界固定 */
+/* left column */
 #tabs-container
   .tab-strip
   > span:nth-child(3n + 1):nth-child(-n + 9):has(.is-pinned)
@@ -140,7 +152,7 @@
   margin-left: 0 !important;
 }
 
-/* 中间列 - 向两侧展开，居中对齐 */
+/* middle column */
 #tabs-container
   .tab-strip
   > span:nth-child(3n + 2):nth-child(-n + 9):has(.is-pinned)
@@ -149,7 +161,7 @@
   margin-left: calc(-100% - var(--pinned-gap)) !important;
 }
 
-/* 右列 - 向左展开，右侧边界固定 */
+/* right column */
 #tabs-container
   .tab-strip
   > span:nth-child(3n):nth-child(-n + 9):has(.is-pinned)
@@ -229,7 +241,7 @@
 }
 
 /* ========================================== */
-/* 当 --pinned-row-count: 2 和 --pinned-column-count: 3 时，第7个及之后使用普通样式 */
+/* 当 --pinned-row-count: 2, --pinned-column-count: 3, 7th tabs and after is in regular style  */
 #tabs-container .tab-strip > span:has(.is-pinned):nth-child(n + 10) .is-pinned {
   grid-column: 1 / span var(--pinned-column-count) !important;
 }
@@ -358,18 +370,6 @@
 #tabs-container .tab-position:not(.is-pinned) {
   display: contents !important;
 }
-
-/*
-  注意：由于 nth-child() 不支持 CSS 变量计算，
-  如果需要不同的行数限制，需要手动修改第 7 的数字。
-
-  计算公式：nth-child(n+X)，其中 X = (行数 × 列数) + 1
-
-  示例：
-  - 2行3列 = 6个方形按钮，第7个开始用普通样式：nth-child(n+7)
-  - 3行3列 = 9个方形按钮，第10个开始用普通样式：nth-child(n+10)
-  - 1行4列 = 4个方形按钮，第5个开始用普通样式：nth-child(n+5)
-*/
 
 #tabs-container
   .tab-strip
