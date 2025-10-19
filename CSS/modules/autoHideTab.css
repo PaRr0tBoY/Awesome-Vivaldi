@@ -101,11 +101,6 @@ with a tab-stack. Which is why we need tab-stack no? */
   overflow-x: hidden !important; */
 }
 
-@container tabs-container (max-width: 15px) {
-  .tab-position .tab-wrapper {
-    opacity: 0 !important;
-  }
-}
 /* When the tabs-subcontainer is hovered, the tabs-container immediately collapses. */
 #tabs-tabbar-container:has(#tabs-subcontainer:hover) #tabs-container {
   transition-delay: var(--transition-delay-time-expand) !important;
@@ -135,7 +130,7 @@ body:not(:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before
 }
 
 /* Main Tabbar Peek */
-body:not(:has(:is(#panel_switch, .toolbar-editor, .UrlBar-AddressField:focus-within))) #tabs-tabbar-container:hover #tabs-container:not(:hover) {
+body:not(:has(:is(.WorkspacePopup, #panel_switch, .toolbar-editor, .UrlBar-AddressField:focus-within))) #tabs-tabbar-container:hover #tabs-container:not(:hover) {
   /*min-width: calc(var(--tabs-subcontainer-collapse-width) - 6px) !important;
   max-width: calc(var(--tabs-subcontainer-collapse-width) - 6px) !important;*/
   min-width: calc(var(--tabs-container-collapse-width) + 30px) !important;
@@ -524,7 +519,23 @@ transition: filter 200ms linear !important
   transition: margin var(--animation-speed) ease-out !important;
   transition-delay: 0ms !important;
 } */
+/* body:not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
+  #tabs-container
+  .resize {
+  max-height: none !important;
+  height: 100% !important;
+  flex: 1 !important;
+} */
 
+#tabs-subcontainer .tab .title {
+  display: flex !important;
+}
+
+.tab-position:not(.is-pinned) .tab-header,
+#tabs-subcontainer .tab-header {
+  padding-left: 6px !important;
+}
+/* ====
 /* margin: 0 max(calc(var(--densityGap) * 2), 1px) !important;
 } */
 #tabs-container .tab-strip {
@@ -541,193 +552,54 @@ transition: filter 200ms linear !important
   /* margin: auto !important; */
 }
 
-body:not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
-  #tabs-container
-  .resize {
-  max-height: none !important;
-  height: 100% !important;
-  flex: 1 !important;
-}
 
-#tabs-subcontainer .tab .title {
-  display: flex !important;
-}
-
-.tab-position:not(.is-pinned) .tab-header,
-#tabs-subcontainer .tab-header {
-  padding-left: 6px !important;
-}
-/* ========================================
-   BEFORE TOOLBAR
-   ======================================== */
-
-.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget {
-  z-index: 99999999999 !important; /* Fixed search suggestions popup covered by tabs */
-  margin: 3px !important;
-  transform: scaleY(1);
-  transform-origin: top !important;
-  overflow: hidden !important;
-  opacity: 1;
-  max-height: 35px;
-  flex-shrink: 0 !important;
-  transition:
-    transform var(--animation-speed) ease-out,
-    max-height var(--animation-speed) ease-out,
-    background-color var(--animation-speed) ease-out,
-    opacity var(--fast-animation-speed) ease-out;
-  position: relative;
-
-  & > *:not(:is(.UrlBar-AddressField, .workspace-popup)) {
-    opacity: 0;
-    max-height: 0px;
-    overflow: hidden;
-    transition:
-      max-height var(--animation-speed) ease-out,
-      transform var(--animation-speed) ease-out,
-      opacity var(--animation-speed) ease-out;
-  }
-
-  .UrlBar-AddressField {
-    background-color: var(--tabbar-bg-color-collapse, var(--colorBg));
-    border-color: var(--tabbar-bg-color-collapse, var(--colorBg));
-  }
-  border: 1px solid var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important;
-  border-radius: 12px !important;
-}
-
-#tabs-container:hover
-  .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget {
-  background-color: var(--colorBgDarker);
-  background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker));
-  border: 1px solid var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important;
-  border-radius: 12px !important;
-}
-
-body:has(:is(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, .toolbar-editor))
-  .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
-.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover {
-  transform: scaleY(1) !important;
-  opacity: 1 !important;
-  max-height: 150px;
-  overflow: visible !important;
-  transform-origin: top !important;
-  background-color: var(
-    --tabbar-bg-color-expand,
-    var(--colorBgDarker)
-  ) !important;
-  transition:
-    transform var(--animation-speed) ease-out,
-    max-height var(--animation-speed) ease-out,
-    background-color var(--animation-speed) ease-out,
-    opacity var(--fast-animation-speed) ease-out;
-
-  & > *:not(:is(.UrlBar-AddressField, .workspace-popup)) {
-    opacity: 1;
-    max-height: 200px;
-    transition:
-      max-height var(--animation-speed) ease-out,
-      transform var(--animation-speed) ease-out,
-      opacity var(--animation-speed) ease-out;
-  }
-
-  .UrlBar-AddressField {
-    background-color: black;
-    border-color: grey;
-  }
-}
-
-/* ========================================
-   AFTER TOOLBAR
-   ======================================== */
-
-.toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget {
-  /* background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important; */
-  background-color: transparent !important;
-  position: absolute !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  display: flex !important;
-  justify-content: center !important;
-  flex-wrap: wrap !important;
-  align-items: flex-end !important;
-  align-content: flex-end !important;
-  overflow: visible !important;
-  max-height: 150px !important;
-  min-height: 85px !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-  pointer-events: auto !important;
-  transition: none !important;
-  z-index: 10 !important;
-  padding: 5px !important;
-  border-radius: calc(var(--radius) + 5px) !important;
-
-  & > *:not(.button-toolbar.newtab) {
-    /* background-color: var(--colorBgDarker) !important;
-    background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important; */
-    flex-shrink: 0 !important;
-    transition: none !important;
-    transform: none !important;
-    opacity: 1 !important;
-    max-height: none !important;
-    min-height: auto !important;
-    margin: 0 !important;
+/* @container tabs-container (max-width: 15px) {
+  #tabs-container:not(:hover) > *:not(:is(.UrlBar-AddressField, .workspace-popup)) {
+    min-width: 0 !important;
+    max-width: 0 !important;
     padding: 0 !important;
-    overflow: visible !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+    transition:
+      min-width 0s ease-out var(--transition-delay-time-collapse),
+      max-width 0s ease-out var(--transition-delay-time-collapse),
+      opacity var(--slow-animation-speed) ease-out 0s !important;
+    pointer-events: none !important;
   }
-  & > .button-toolbar.newtab {
-    background-color: transparent !important;
-    flex-shrink: 0 !important;
+} */
+
+@container tabs-container (max-width: 15px) {
+  .tab-position .tab-wrapper {
+    opacity: 0 !important;
   }
 }
 
-body:not(:has(.toolbar-editor)):not(:has(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within))
-  #tabs-container:not(:hover)
-  .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget {
-  opacity: 0 !important;
-  /* visibility: hidden !important; */
-  max-width: 0px !important;
-  max-height: 0px !important;
-  min-height: 0px !important;
-  padding: 0px !important;
-  pointer-events: none !important;
-  /* transition: none !important; */
-  transition:
-    max-width 0s ease-out
-      calc(var(--transition-delay-time-collapse) + var(--animation-speed)),
-    max-height 0s ease-out
-      calc(var(--transition-delay-time-collapse) + var(--animation-speed)),
-    min-height 0s ease-out
-      calc(var(--transition-delay-time-collapse) + var(--animation-speed)),
-    /*opacity var(--fast-animation-speed) ease-out 0s !important;*/ opacity 1ms
-      ease-out 0s !important;
+/* Process toolbar */
+#tabs-tabbar-container .toolbar-tabbar-after {
+  align-content: flex-end;
 }
 
-body:not(:has(.toolbar-editor)):not(:has(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within))
-  #tabs-container:hover
-  .toolbar.toolbar-tabbar-after.toolbar-large.toolbar-droptarget {
-  opacity: 1 !important;
-  visibility: visible !important;
-  max-width: var(--tabs-container-expand-width) !important;
-  max-height: 150px !important;
-  min-height: 85px !important;
-  /* padding: 5px !important; */
-  pointer-events: auto !important;
-  transition: opacity var(--fast-animation-speed) ease-out
-    calc(var(--transition-delay-time-collapse) + var(--animation-speed)) !important;
-}
-
-body:not(:has(.toolbar-editor)):not(:has(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within))
-  #tabs-container
-  .resize {
-  padding-bottom: 85px !important;
-}
-
-body:not(:has(.toolbar-editor)):not(:has(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within))
-  #tabs-container:not(:hover)
-  .resize {
-  padding-bottom: 0px !important;
+/* @container tabs-container (max-width: calc(var(--tabs-container-expand-width) - 6px)) { */
+@container tabs-container (max-width: 275px) {
+  .toolbar-tabbar-before > *:not(:is(.UrlBar-AddressField, .workspace-popup)),
+  /* .toolbar-tabbar-after > *, */
+  .toolbar-tabbar-after
+  {
+    min-width: 0 !important;
+    max-width: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+    transition:
+      min-width 0s ease-out calc(var(--transition-delay-time-collapse) + var(--animation-speed)),
+      max-width 0s ease-out calc(var(--transition-delay-time-collapse) + var(--animation-speed)),
+      min-height 0s ease-out calc(var(--transition-delay-time-collapse) + var(--animation-speed)),
+      max-height 0s ease-out calc(var(--transition-delay-time-collapse) + var(--animation-speed)),
+      opacity 0ms ease-out 0s !important;
+    pointer-events: none !important;
+  }
 }
 
 #tabs-tabbar-container #tabs-container {
