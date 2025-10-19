@@ -4,20 +4,20 @@
   --tabs-container-collapse-width: 7px; /* min width of main tabbar should not set lower than 6px, which will cause weird issue. */
   --tabs-container-expand-width: 281px;
   --tabs-subcontainer-collapse-width: 44px;
-  --tabs-subcontainer-expand-width: 287px;
+  --tabs-subcontainer-expand-width: 282px;
 
   --Button-newtab-main-width: calc(var(--tabs-container-expand-width) / 2);
   --Button-newtab-sub-width: calc(var(--tabs-subcontainer-expand-width) / 2);
 
   /* Adjust tabbar margin and padding */
   --tabbar-margin-top: -6px;
-  --tabbar-margin-bottom: 1px;
+  --tabbar-margin-bottom: 0px;
   --tabbar-padding: 7px; /* Set to 0 if any tabs position problem */
 
   /* Adjust tabbars' border radius when they expand or collapse */
   /* --tabbar-border-radius-expand: 17px; */
   /* Expand tab bar border change accordingly to border radius set in browser theme*/
-  --tabbar-border-radius-collapse: 3px;
+  --tabbar-border-radius-collapse: 0px;
   /* Set to zero if you don't want round corner when tabbar collapsed */
 
   /* Animation speed when tabbars expand or collapse */
@@ -27,7 +27,7 @@
 
   /* Animation Delay Time */
   --transition-delay-time-expand: 0ms;
-  --transition-delay-time-collapse: 50ms;
+  --transition-delay-time-collapse: 100ms;
 
   /* Adjust tabbars' color when they expand or collapse */
 
@@ -127,14 +127,19 @@ body:not(:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before
   margin-bottom: var(--tabbar-margin-bottom) !important;
   box-sizing: border-box !important;
   /* transition-delay: 60ms !important; */
+  & .tab-position.is-pinned .tab-header {
+    padding-left: 6px !important;
+    justify-content: space-around !important;
+    transition: all var(--animation-speed) ease-out !important;
+  }
 }
 
 /* Main Tabbar Peek */
 body:not(:has(:is(.WorkspacePopup, #panel_switch, .toolbar-editor, .UrlBar-AddressField:focus-within))) #tabs-tabbar-container:hover #tabs-container:not(:hover) {
   /*min-width: calc(var(--tabs-subcontainer-collapse-width) - 6px) !important;
   max-width: calc(var(--tabs-subcontainer-collapse-width) - 6px) !important;*/
-  min-width: calc(var(--tabs-container-collapse-width) + 30px) !important;
-  max-width: calc(var(--tabs-container-collapse-width) + 30px) !important;
+  min-width: calc(var(--tabs-container-collapse-width) + 36px) !important;
+  max-width: calc(var(--tabs-container-collapse-width) + 36px) !important;
   margin-top: var(--tabbar-margin-top) !important;
   margin-bottom: var(--tabbar-margin-bottom) !important;
   background-color: var(--tabbar-bg-color-collapse, var(--colorBg)) !important;
@@ -153,24 +158,23 @@ body:not(:has(:is(.WorkspacePopup, #panel_switch, .toolbar-editor, .UrlBar-Addre
   box-sizing: border-box !important;
   position: relative !important;
   overflow: hidden !important;
-  & .tab-position .tab-header {
+  /* & .tab-position.is-pinned .tab-header {
     padding-left: 0 !important;
     justify-content: center !important;
+    transition: all var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1);
+  } */
+
+  & .tab-strip .is-pinned .tab:hover .close{
+    display: flex;
   }
 
-  &
-    .tab-strip
-    > span:has(.is-pinned):nth-child(-n + 9)
-    .is-pinned
-    .tab-wrapper {
-    background-color: var(--colorBg, rgba(255, 255, 255, 0.2)) !important;
-    border: 1px solid var(--colorHighlightBgDark) !important;
-  }
+
 }
+
 
 #tabs-container .tab.tab-small.tab-mini .tab-header,
 #tabs-container .tab.pinned.tab-mini .tab-header {
-  justify-content: left;
+  justify-content: center;
 }
 
 #tabs-tabbar-container:not(:has(#tabs-subcontainer))
@@ -183,10 +187,16 @@ body:not(:has(:is(.WorkspacePopup, #panel_switch, .toolbar-editor, .UrlBar-Addre
   border-radius: calc(var(--radius) + 5px) 0px 0px calc(var(--radius) + 5px) !important;
 }
 
+/* When there's no substack */
 body:not(:has(:is(#panel_switch, .WorkSpacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #vivaldi-tooltip:hover))) #tabs-tabbar-container:not(:has(#tabs-subcontainer))
   #tabs-container:not(:hover) {
-  min-width: calc(var(--tabs-container-collapse-width) + 30px) !important;
-  max-width: calc(var(--tabs-container-collapse-width) + 30px) !important;
+  min-width: calc(var(--tabs-container-collapse-width) + 36px) !important;
+  max-width: calc(var(--tabs-container-collapse-width) + 36px) !important;
+  /* & .tab-position.is-pinned .tab-header {
+    padding-left: 0 !important;
+    justify-content: center !important;
+    transition: all var(--animation-speed) ease-out !important;
+  } */
 }
 /* SubStack / Secondary Tabbar */
 
@@ -269,7 +279,7 @@ body:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .Url
 
 /* Adjust expand width of Secondary tabbar here */
 /* body:not(:has(.toolbar-editor)):not(:has(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within)) */
-body:not(:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #panel_switch)))
+body:not(:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #panel_switch)))
   #tabs-subcontainer:hover {
   /* #tabs-subcontainer:hover { */
   min-width: var(--tabs-subcontainer-expand-width) !important;
@@ -481,20 +491,6 @@ body:not(:has(.toolbar-editor)) .button-toolbar.newtab {
   border-radius: 5px !important;
 }
 
-/* .button-toolbar.newtab{
-  left: 0px !important;
-  width: 150px;
-} */
-/* I hate newtab button. But if you have the opposite opinion,replace below codes with these
-
-
-And of course you don't need those lockers icon when your tabbar expand on hover so here's how you hide em.
-
-.button-toolbar.tabs-locked,
-.button-toolbar.tabs-unlocked {
-  display: none !important;
-}
-*/
 .button-toolbar.tabs-locked,
 .button-toolbar.tabs-unlocked {
   display: none !important;
@@ -527,20 +523,16 @@ transition: filter 200ms linear !important
   flex: 1 !important;
 } */
 
-#tabs-subcontainer .tab .title {
+/* #tabs-subcontainer .tab .title {
   display: flex !important;
-}
+} */
 
-.tab-position:not(.is-pinned) .tab-header,
+/* .tab-position:not(.is-pinned) .tab-header,
 #tabs-subcontainer .tab-header {
   padding-left: 6px !important;
-}
-/* ====
-/* margin: 0 max(calc(var(--densityGap) * 2), 1px) !important;
 } */
+
 #tabs-container .tab-strip {
-  /*min-width: auto !important;
-  max-width: auto !important;*/
   /* margin: 0 max(calc(var(--densityGap) * 2), 1px) !important; */
   margin: unset !important;
 }
@@ -568,9 +560,66 @@ transition: filter 200ms linear !important
   }
 } */
 
+#tabs-container .tab-strip .tab .stack-counter {
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: 0 !important;
+  min-width: 0 !important;
+  opacity: 0 !important;
+  transition: all var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@container tabs-container (min-width: 100px){
+  #tabs-container .tab-strip
+  .tab:hover
+  .stack-counter {
+    display: flex !important;
+    padding: 1px 4px !important;
+    margin-right: 6px !important;
+    max-width: auto !important;
+    min-width: 1.5em !important;
+    opacity: 1 !important;
+  transition: all var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+/* Hide Pinned Tabs Title */
+/* @container tabs-container (max-width: 100px){ */
+#tabs-container .tab-strip > span:has(.is-pinned) .is-pinned .title {
+  padding: 0 !important;
+  margin: 0 !important;
+  opacity: 0 !important;
+  max-width: 0 !important;
+  /* transition:
+    opacity var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1),
+    max-width var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1); */
+  /* transition: all calc(var(--animation-speed) + var(--transition-delay-time-collapse)) cubic-bezier(0.4, 0, 0.2, 1); */
+  /* transition: all var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1); */
+}
+/* } */
+
+@container tabs-container (min-width: 100px){
+  #tabs-container
+    .tab-strip
+    > span:has(.is-pinned)
+    .is-pinned
+    .tab-wrapper
+    .title {
+    padding-left: 4px !important;
+    margin-right: 3px !important;
+    opacity: 1 !important;
+    max-width: 100% !important;
+    /* transition:
+      opacity var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1),
+      max-width var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1); */
+    /* transition: all var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1); */
+  }
+}
+
 @container tabs-container (max-width: 15px) {
   .tab-position .tab-wrapper {
     opacity: 0 !important;
+    /* transition: opacity var(--animation-speed) !important; */
   }
 }
 
@@ -600,6 +649,11 @@ transition: filter 200ms linear !important
       opacity 0ms ease-out 0s !important;
     pointer-events: none !important;
   }
+}
+
+.toolbar-tabbar-before{
+  max-height: 35px !important;
+  margin: 3px !important;
 }
 
 #tabs-tabbar-container #tabs-container {
@@ -652,7 +706,7 @@ body:has(.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover)
 #browser:not(.fullscreen):has(#tabs-tabbar-container.right)
   .inner
   #webpage-stack {
-  margin-right: calc(var(--tabs-container-collapse-width) + 30px);
+  margin-right: calc(var(--tabs-container-collapse-width) + 36px);
   transition: margin-right var(--animation-speed) ease-out !important;
 }
 
@@ -667,7 +721,7 @@ body:has(.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover)
 }
 
 #browser:not(.fullscreen) #tabs-tabbar-container.right ~ #webpage-stack {
-  margin-right: calc(var(--tabs-container-collapse-width) + 30px);
+  margin-right: calc(var(--tabs-container-collapse-width) + 36px);
 }
 
 #browser:not(.fullscreen)
@@ -683,7 +737,7 @@ body:has(.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover)
 #browser:not(.fullscreen):has(#tabs-tabbar-container.left)
   .inner
   #webpage-stack {
-  margin-left: calc(var(--tabs-container-collapse-width) + 30px);
+  margin-left: calc(var(--tabs-container-collapse-width) + 36px);
   transition: margin-left var(--animation-speed) ease-out !important;
 }
 
@@ -698,7 +752,7 @@ body:has(.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover)
 }
 
 #browser:not(.fullscreen) #tabs-tabbar-container.left ~ #webpage-stack {
-  margin-left: calc(var(--tabs-container-collapse-width) + 30px);
+  margin-left: calc(var(--tabs-container-collapse-width) + 36px);
 }
 
 #browser:not(.fullscreen)
@@ -828,3 +882,55 @@ body:has(#panel_switch)
   margin-left: calc((var(--tabs-container-expand-width) / 1.2) * 2);
   transition: margin-left var(--animation-speed) ease-out !important;
 }
+
+
+.resize {
+  justify-content: center !important;
+  align-items: center !important;
+  /* max-height: fit-content !important; */
+}
+
+#tabs-container .tab-strip {
+  width: 95%;
+}
+
+#tabs-container
+  .tab-strip
+  > span:has(.is-pinned)
+  .is-pinned
+  .tab-wrapper
+  .tab-header {
+  /* justify-content: flex-start !important; */
+  /* padding-left: 6px !important; */
+  justify-content: space-around !important;
+  align-items: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  flex: auto !important;
+}
+
+
+
+.tabs-right#browser.density-on .accordion-toggle-arrow:after,
+.tabs-right#browser.density-on .tab-wrapper:after {
+  display: none !important;
+}
+
+#tabs-container.left .tab-strip.overflow,
+#tabs-container.right .tab-strip.overflow {
+  min-width: unset;
+}
+
+#tabs-container .tab.tab-small.tab-mini .tab-header, #tabs-container .tab.pinned.tab-mini .tab-header {
+  border-left: none;
+  border-right: none;
+}
+
+/* #tabs-container:not(:hover){
+  & span.favicon.jstest-favicon-image {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) !important;
+}
+} */

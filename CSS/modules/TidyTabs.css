@@ -21,7 +21,7 @@
   top: 50%;
   transform: translateY(-50%);
   z-index: 100;
-  background-color: var(--colorBg);
+  background-color: var(--colorBgDarker);
   white-space: nowrap;
   pointer-events: none;
 }
