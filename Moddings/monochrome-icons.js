@@ -28,6 +28,9 @@
 .button-toolbar-webpanel img {
   filter: brightness(0.77) sepia(1) hue-rotate(${hue}deg);
 }
+.toolbar-extensions img {
+  filter: brightness(0.77) sepia(1) hue-rotate(${hue}deg);
+}
 #browser.isblurred.dim-blurred .button-toolbar-webpanel img {
   filter: brightness(0.77) sepia(1) hue-rotate(${hue}deg) opacity(0.65) !important;
 }

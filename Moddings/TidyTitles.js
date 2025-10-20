@@ -1,325 +1,472 @@
-/**
- * TidyTitle.js - Vivaldi 标签页智能重命名模组
- * 
- * 功能：
- * - 监控被用户固定的标签页。
- * - 调用 GLM API，根据标签页的标题、URL和页面正文内容，生成一个更美观、统一的新标题。
- * - 采用流式输出，在AI生成标题时实时更新标签页名称。
- * - 如果重命名失败，则保持原标题并显示通知。
- * 
- * 作者：AI & User
- * 版本：1.0
- * 日期：2025-10-12
- */
-
+// Vivaldi AI Title 
 (function() {
     'use strict';
 
-    // ==================== 配置 ====================
-    // 注意：此配置应与 TidyTabs.js 中的配置保持同步
-    const config = {
-        // GLM API 配置
-        glm_api_url: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
-        glm_api_key: 'e2105adcbe8d4d6ea49dce2fd94c127f.6dcsB9uMmtNxKXl2', // 请填入您的 API Key
-        glm_model: 'glm-4.5-flash', // 使用 flash 版本以获得更快响应
-        
-        // 内容提取配置
-        max_content_length: 800, // 提取页面正文的最大长度
+  // ========== CONFIG ==========
+    const CONFIG = {
+    
+    // === GLM(free) ===
+    BASE_URL: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
+    API_TOKEN: 'ebc51472aa5d4c46bc367a769f618248.dv4nrCh5waLpooDS',
+    MODEL: 'glm-4.5-flash',
+
+    // === Deepseek ===
+    // BASE_URL: 'https://api.deepseek.com/v1/chat/completions',
+    // API_TOKEN: '<token>',
+    // MODEL: 'deepseek-chat',
     };
 
-    // ==================== 工具函数 ====================
+  // 存储已处理过的标签页 ID（避免重复处理）
+    const processedTabs = new Set();
+
+  // ========== 工具函数 ==========
+
 
     // 获取浏览器界面语言
     const getBrowserLanguage = () => {
         return chrome.i18n.getUILanguage() || navigator.language || 'zh-CN';
     };
-
-    // 将语言代码转换为自然语言名称
+  // 将语言代码转换为自然语言名称
     const getLanguageName = (langCode) => {
         const langMap = {
-            'zh': '中文', 'zh-CN': '中文', 'zh-TW': '中文',
-            'en': 'English', 'en-US': 'English', 'en-GB': 'English',
-            'ja': '日本語', 'ja-JP': '日本語',
-            'ko': '한국어', 'ko-KR': '한국어',
-            'es': 'Español', 'fr': 'Français', 'de': 'Deutsch',
-            'ru': 'Русский', 'pt': 'Português', 'it': 'Italiano',
-            'ar': 'العربية', 'hi': 'हिन्दी'
+            'zh': '中文',
+            'zh-CN': '简体中文',
+            'zh-TW': '繁体中文',
+            'en': 'English',
+            'en-US': 'English',
+            'en-GB': 'English',
+            'ja': '日本語',
+            'ja-JP': '日本語',
+            'ko': '한국어',
+            'ko-KR': '한국어',
+            'es': 'Español',
+            'fr': 'Français',
+            'de': 'Deutsch',
+            'ru': 'Русский',
+            'pt': 'Português',
+            'it': 'Italiano',
+            'ar': 'العربية',
+            'hi': 'हिन्दी'
         };
-        if (langMap[langCode]) return langMap[langCode];
+
+      // 尝试完整匹配
+        if (langMap[langCode]) {
+            return langMap[langCode];
+        }
+        
+        // 尝试主语言代码匹配
         const mainLang = langCode.split('-')[0];
         return langMap[mainLang] || 'English';
     };
 
-    // 显示通知 (复用自 TidyTabs.js)
-    function showNotification(message, type = 'error') {
-        if (typeof chrome !== 'undefined' && chrome.notifications) {
-            chrome.notifications.create({
-                type: 'basic',
-                iconUrl: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><text y="32" font-size="32">🔖</text></svg>',
-                title: 'TidyTitle',
-                message: message,
-                priority: type === 'error' ? 2 : 1
-            });
-        } else {
-            console.error(`[TidyTitle] ${message}`);
-            alert(`TidyTitle: ${message}`);
-        }
-    }
-
-    // 根据Tab ID查找标题元素
-    const findTabTitleElement = (tabId) => {
-        const tabWrapper = document.querySelector(`.tab-wrapper[data-id="tab-${tabId}"]`);
-        if (tabWrapper) {
-            return tabWrapper.querySelector('.title');
-        }
-        return null;
-    };
-
-    // ==================== 核心功能 ====================
-
     /**
-     * 使用混合策略提取页面内容
-     * @param {number} tabId - 标签页ID
-     * @returns {Promise<string>} 提取到的页面内容
-     */
-    const getPageContent = async (tabId) => {
-        // 定义注入到页面中的函数，用于提取内容
-        const extractContentFunction = function() {
-            let content = '';
-            try {
-                // 策略1: 智能提取 - 优先获取 <main> 标签内容
-                const mainElement = document.querySelector('main');
-                if (mainElement && mainElement.innerText.length > 100) {
-                    content = mainElement.innerText;
-                } else {
-                    // 策略2: 智能提取 - 获取所有 <p> 标签内容
-                    const paragraphs = Array.from(document.querySelectorAll('p')).map(p => p.innerText).join('\n');
-                    if (paragraphs.length > 100) {
-                        content = paragraphs;
-                    }
-                }
-
-                // 策略3: 回退 - 如果智能提取内容太少，则截取 body
-                if (content.length < 100) {
-                    content = document.body.innerText || '';
-                }
-            } catch (e) {
-                // 在某些特殊页面（如about:blank）可能会出错
-                content = document.body.innerText || '';
-            }
-            
-            // 返回截取后的内容
-            return content.substring(0, 800); // 从配置中读取长度
-        };
-
-        try {
-            const results = await chrome.scripting.executeScript({
-                target: { tabId: tabId },
-                func: extractContentFunction
-            });
-            if (results && results[0] && results[0].result) {
-                return results[0].result;
-            }
-        } catch (e) {
-            console.error(`[TidyTitle] Failed to execute script on tab ${tabId}:`, e);
-            // 可能是 chrome:// 等无法注入脚本的页面
-        }
-        
-        return ''; // 提取失败则返回空字符串
-    };
-
-    /**
-     * 调用 GLM API 进行流式标题生成
-     * @param {string} originalTitle - 原始标题
-     * @param {string} url - 页面URL
-     * @param {string} content - 页面内容
-     * @param {function} onChunk - 接收到新内容块时的回调函数
-     * @returns {Promise<string>} 最终生成的完整标题
-     */
-    const generateTitleWithStreaming = async (originalTitle, url, content, onChunk) => {
-        if (!config.glm_api_key) {
-            throw new Error('GLM API key not configured');
-        }
-
-        const browserLang = getBrowserLanguage();
-        const languageName = getLanguageName(browserLang);
-
-        const prompt = `
-你是一个专业的标签页标题优化助手。请根据提供的信息，生成一个简洁、可读性强、美观且统一的标签页标题。
-
-**语言要求：**
-- 生成的标题必须使用 "${languageName}" 语言。
+   * 调用 GLM API 生成优化后的标题
+   */
+    async function generateOptimizedTitle(originalTitle, url, content) {
+    // const languageName = getBrowserLanguage();
+        // 获取浏览器界面语言
+    const browserLang = getBrowserLanguage();
+    const languageName = getLanguageName(browserLang);
+    
+    const prompt = `
+你是一个专业的标签页标题优化助手。请根据提供的信息，生成一个简洁、统一、美观且高可读性的标签页标题。
 
 **输入信息：**
-- 原始标题: "${originalTitle}"
-- 页面URL: "${url}"
-- 页面正文摘要: "${content.substring(0, 400)}"
+
+* 原始标题: "${originalTitle}"
+* 页面URL: "${url}"
+* 页面正文摘要: "${content.substring(0, 400)}"
+* 用户界面语言: "${languageName}"
 
 **优化规则：**
-1.  **简洁性**：去除不必要的词语，如 "首页"、"欢迎来到"、"官方" 等。如果是搜索引擎标签页, 标题只保留搜索词
-2.  **可读性**：使用清晰、易于理解的词汇, 尽量保持简短, 用简单的词汇描述页面内容, 避免使用句子或超过两个形容词
-3.  **统一性**：对于同类型网站（如GitHub、知乎），尽量保持命名风格一致。
-4.  **美观性**：避免使用过多的符号或无意义的字符。
-5.  **信息保留**：如果原标题包含核心信息（如文章名、项目名），应予以保留。
-6.  **保守原则**：如果无法确定更好的标题，或者信息不足，可以返回原标题。
 
-**请直接输出优化后的标题，不要包含任何解释或多余的文字。**
+1. **简洁性**：去除无意义或冗余词（如“首页”“官方”“欢迎来到”等）。
+
+2. **可读性**：标题应短小直观，避免复杂句和多重修饰。
+
+3. **统一性**：同类网站保持一致命名风格（如 GitHub、知乎、Medium、Bilibili）。
+
+4. **美观性**：避免重复标点、符号或装饰性字符。
+
+5. **信息保留**：优先保留关键信息（文章名、项目名、主题名）。
+
+6. **保守原则**：若无可靠替代方案，返回原标题。
+
+7. **标题提取逻辑：**
+
+   * 若正文摘要中存在明显标题（如 H1、首句完整标题），优先使用。
+   * 若正文摘要缺乏有效信息，则基于 URL 路径提取关键词（如 "/blog/css-performance-tips" → “css 性能优化”）。
+   * URL 提取处理：
+
+     * 全部小写化
+     * 去除连字符、下划线、数字
+     * 分词并自然化组合成短语
+     * 英文标题自动首字母大写
+   * 若 URL 关键词提取结果为空或无意义，则回退至 **原始标题** 提取核心短语。
+
+     * 删除站点名、冗余副标题（如“ - 知乎”“ | GitHub”等）
+     * 保留主体部分作为优化基础。
+
+8. **网站识别逻辑：**
+
+   * 允许根据 URL 自动识别网站类型（如 github.com → [GitHub]，zhihu.com → [知乎]）。
+   * 若域名不在已知列表中，则取域名首段并首字母大写作为网页标题（如 example.com → [Example]）。
+
+9. **多语言命名逻辑：**
+
+   * 若 **${languageName}** = 中文 → 输出中文标题，如 [GitHub] CSS性能优化
+   * 若 **${languageName}** = English → 输出英文标题，如 [GitHub] CSS Optimization
+   * 保持语言一致性，不混用中英文
+
+10. **输出格式：**
+
+[网页标题]优化后的标签页标题
+
+* “网页标题”为网站短标题或识别出的站点名；
+* “优化后的标签页标题” ≤ 6个汉字或12个英文字母
+
+11. **输出要求：**
+    仅输出最终标题，不包含任何解释、标点或附加说明。
+
+---
+
+**示例输出：**
+
+* 输入：
+
+  * 原始标题: "Welcome to Google Developers - Home"
+  * URL: "[https://developers.google.com/web/fundamentals/performance](https://developers.google.com/web/fundamentals/performance)"
+  * 摘要: "This guide covers web performance optimization best practices..."
+  * languageName: 中文
+  * 输出 → [Google] 网站性能优化
+
+* 输入：
+
+  * 原始标题: "GitHub - vercel/next.js: The React Framework"
+  * URL: "[https://github.com/vercel/next.js](https://github.com/vercel/next.js)"
+  * 摘要: "Next.js is a React framework for production..."
+  * languageName: English
+  * 输出 → [GitHub] Next.js Framework
+
+* 输入：
+
+  * 原始标题: "ZHIHU - 如何高效学习编程？"
+  * URL: "[https://www.zhihu.com/question/123456](https://www.zhihu.com/question/123456)"
+  * 摘要: "本文探讨了快速学习编程的技巧与心态..."
+  * languageName: 中文
+  * 输出 → [知乎] 编程学习
+
+* 输入：
+
+  * 原始标题: "My Blog - Post 2024/10/20/why-css-is-hard"
+  * URL: "[https://example.com/2024/10/20/why-css-is-hard](https://example.com/2024/10/20/why-css-is-hard)"
+  * 摘要: ""
+  * languageName: English
+  * 输出 → [Example] Why CSS Is Hard
+
+* 输入：
+
+  * 原始标题: "Untitled | Example Site"
+  * URL: "[https://example.com/home](https://example.com/home)"
+  * 摘要: ""
+  * languageName: English
+  * 输出 → [Example] home
 `;
 
-        const response = await fetch(config.glm_api_url, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${config.glm_api_key}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                model: config.glm_model,
-                messages: [{ role: 'user', content: prompt }],
-                temperature: 0.2, // 使用较低的温度以确保输出的稳定性和准确性
-                max_tokens: 50,
-                stream: true,
-                thinking: {
-                    "type": "disabled"
-                }
-            })
+    // 输出完整提示词到控制台供调试
+    console.log('=== 发送给 AI 的完整提示词 ===');
+    console.log(prompt);
+    console.log('=== 提示词结束 ===');
+
+    const requestBody = {
+      model: CONFIG.MODEL,
+      messages: [
+        { role: "system", content: "你是一个专业的标签页标题优化助手。" },
+        { role: "user", content: prompt }
+      ],
+      temperature: 0.7,
+      max_tokens: 100,
+      stream: false,
+      thinking: { "type": "disabled" }
+    };
+
+    try {
+      const response = await fetch(CONFIG.BASE_URL, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${CONFIG.API_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const optimizedTitle = data.choices?.[0]?.message?.content?.trim();
+      
+      if (optimizedTitle) {
+        return optimizedTitle;
+      } else {
+        console.warn('AI 返回空标题，保持原标题');
+        return originalTitle;
+      }
+    } catch (error) {
+      console.error('GLM API 调用失败:', error);
+      return originalTitle; // 失败时返回原标题
+    }
+  }
+
+  /**
+   * 获取页面正文内容摘要
+   */
+  async function getPageContent(tabId) {
+    return new Promise((resolve) => {
+      try {
+        chrome.scripting.executeScript(tabId, {
+          code: `
+            (function() {
+              const bodyText = document.body?.innerText || '';
+              return bodyText.substring(0, 400);
+            })();
+          `
+        }, (results) => {
+          if (chrome.runtime.lastError) {
+            console.warn('无法获取页面内容:', chrome.runtime.lastError);
+            resolve('');
+          } else {
+            resolve(results?.[0] || '');
+          }
         });
+      } catch (error) {
+        console.error('获取页面内容时出错:', error);
+        resolve('');
+      }
+    });
+  }
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`GLM API error: ${response.status} ${response.statusText}`);
+  /**
+   * 更新标签页的 fixedTitle
+   */
+  function updateTabTitle(tabId, newTitle) {
+    chrome.tabs.get(tabId, (tab) => {
+      if (chrome.runtime.lastError) {
+        console.error('获取标签页失败:', chrome.runtime.lastError);
+        return;
+      }
+
+      let vivExtData = {};
+      try {
+        vivExtData = tab.vivExtData ? JSON.parse(tab.vivExtData) : {};
+      } catch (e) {
+        console.error('JSON 解析错误:', e);
+      }
+
+      // 设置 fixedTitle
+      vivExtData.fixedTitle = newTitle;
+
+      chrome.tabs.update(tabId, {
+        vivExtData: JSON.stringify(vivExtData)
+      }, () => {
+        if (chrome.runtime.lastError) {
+          console.error('更新标签页失败:', chrome.runtime.lastError);
+        } else {
+          console.log(`✓ 标签页 ${tabId} 标题已优化为: ${newTitle}`);
+          processedTabs.add(tabId);
         }
+      });
+    });
+  }
 
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder("utf-8");
-        let buffer = "";
-        let fullTitle = "";
-
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-
-            buffer += decoder.decode(value, { stream: true });
-            const lines = buffer.split('\n');
-            buffer = lines.pop(); // 保留最后一行（可能不完整）
-
-            for (const line of lines) {
-                if (line.trim() === '') continue;
-                if (line.startsWith('data: ')) {
-                    const data = line.slice(6);
-                    if (data === '[DONE]') return fullTitle;
-                    try {
-                        const json = JSON.parse(data);
-                        const content = json.choices[0]?.delta?.content;
-                        if (content) {
-                            fullTitle += content;
-                            onChunk(fullTitle); // 调用回调，更新UI
-                        }
-                    } catch (e) {
-                        console.error('[TidyTitle] Error parsing stream data:', e);
-                    }
-                }
-            }
-        }
-        return fullTitle.trim();
-    };
-
-    /**
-     * 处理单个被固定的标签页
-     * @param {HTMLElement} tabPosition - .tab-position DOM元素
-     */
-    const handlePinnedTab = async (tabPosition) => {
-        const tabWrapper = tabPosition.querySelector('.tab-wrapper');
-        if (!tabWrapper) return;
-
-        const dataId = tabWrapper.dataset.id;
-        if (!dataId || !dataId.startsWith('tab-')) return;
-        
-        const tabId = parseInt(dataId.replace('tab-', ''));
-        if (isNaN(tabId)) return;
-
-        // 防止重复处理
-        if (tabPosition.dataset.tidyTitleProcessed === 'true') return;
-        tabPosition.dataset.tidyTitleProcessed = 'true';
-
-        const titleElement = findTabTitleElement(tabId);
-        if (!titleElement) return;
-
-        const originalTitle = titleElement.innerText;
-        console.log(`[TidyTitle] Processing pinned tab: ${originalTitle} (ID: ${tabId})`);
-
-        try {
-            // 1. 获取标签页信息
-            const tab = await new Promise((resolve) => chrome.tabs.get(tabId, resolve));
-            if (!tab || !tab.url) throw new Error('Could not get tab info.');
-            
-            const pageContent = await getPageContent(tabId);
-            
-            // 2. 开始流式生成标题
-            const newTitle = await generateTitleWithStreaming(
-                originalTitle,
-                tab.url,
-                pageContent,
-                (streamedTitle) => {
-                    // 3. 流式更新UI
-                    titleElement.innerText = streamedTitle;
-                }
-            );
-
-            // 4. 最终确认标题
-            titleElement.innerText = newTitle || originalTitle; // 如果新标题为空，则回退
-            console.log(`[TidyTitle] Renamed "${originalTitle}" to "${newTitle}"`);
-
-        } catch (error) {
-            console.error(`[TidyTitle] Failed to rename tab "${originalTitle}":`, error);
-            // 5. 错误处理：恢复原标题并显示通知
-            titleElement.innerText = originalTitle;
-            showNotification(`重命名标签页 "${originalTitle}" 失败: ${error.message}`);
-        }
-    };
-
-    // ==================== 初始化与监听 ====================
-
-    const init = () => {
-        console.log('[TidyTitle] Initializing TidyTitle module...');
-
-        const observer = new MutationObserver((mutations) => {
-            for (const mutation of mutations) {
-                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                    const target = mutation.target;
-                    // 检查是否是 .tab-position 元素，并且新增了 .is-pinned 类，但不是 .is-substack
-                    if (target.classList.contains('tab-position') &&
-                        target.classList.contains('is-pinned') &&
-                        !target.classList.contains('is-substack')) {
-                        
-                        // 延迟一小段时间，确保Vivaldi内部状态稳定
-                        setTimeout(() => handlePinnedTab(target), 100);
-                    }
-                }
-            }
-        });
-
-        const observeTabStrip = () => {
-            const tabStrip = document.querySelector('.tab-strip');
-            if (tabStrip) {
-                console.log('[TidyTitle] Found tab-strip, starting observation.');
-                observer.observe(tabStrip, {
-                    attributes: true,
-                    attributeFilter: ['class'],
-                    subtree: true // 监视所有后代元素
-                });
-            } else {
-                // 如果找不到 tab-strip，则延迟重试
-                setTimeout(observeTabStrip, 1000);
-            }
-        };
-
-        observeTabStrip();
-    };
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
+  /**
+   * 处理单个标签页
+   */
+  async function processSingleTab(tabElement) {
+    const tabIdStr = tabElement.getAttribute('data-id');
+    if (!tabIdStr) {
+      console.warn('标签页元素缺少 data-id 属性，跳过');
+      return;
     }
 
+    const tabId = parseInt(tabIdStr.replace('tab-', ''));
+    
+    // 跳过已处理的标签页
+    if (processedTabs.has(tabId)) {
+      return;
+    }
+
+    console.log(`检测到新固定的标签页 ID: ${tabId}`);
+
+    try {
+      // 获取标签页信息
+      chrome.tabs.get(tabId, async (tab) => {
+        if (chrome.runtime.lastError) {
+          console.error('获取标签页失败:', chrome.runtime.lastError);
+          return;
+        }
+
+        // 检查是否已设置 fixedTitle
+        let vivExtData = {};
+        try {
+          vivExtData = tab.vivExtData ? JSON.parse(tab.vivExtData) : {};
+        } catch (e) {
+          console.error('JSON 解析错误:', e);
+        }
+
+        // 如果已有 fixedTitle，跳过
+        if (vivExtData.fixedTitle) {
+          console.log(`标签页 ${tabId} 已有自定义标题，跳过`);
+          processedTabs.add(tabId);
+          return;
+        }
+
+        // 获取页面内容
+        const content = await getPageContent(tabId);
+        
+        // 调用 AI 生成优化标题
+        console.log(`正在为标签页 ${tabId} 生成优化标题...`);
+        const optimizedTitle = await generateOptimizedTitle(
+          tab.title || '',
+          tab.url || '',
+          content
+        );
+
+        // 更新标签页标题
+        updateTabTitle(tabId, optimizedTitle);
+      });
+    } catch (error) {
+      console.error(`处理标签页 ${tabId} 时出错:`, error);
+    }
+  }
+
+  /**
+   * 检查并处理固定的标签页（仅用于初始化）
+   */
+  async function checkPinnedTabs() {
+    // 排除标签栈：只选择固定标签页，但不包含 .is-substack 类
+    const pinnedTabElements = document.querySelectorAll('.tab-position.is-pinned:not(.is-substack) .tab-wrapper');
+    
+    console.log(`初始化：检测到 ${pinnedTabElements.length} 个固定标签页`);
+    
+    for (const tabElement of pinnedTabElements) {
+      await processSingleTab(tabElement);
+    }
+  }
+
+  /**
+   * 监听标签页被固定事件
+   */
+  function observePinnedTabs() {
+    const tabStrip = document.querySelector('.tab-strip');
+    if (!tabStrip) {
+      console.warn('未找到 .tab-strip 元素，稍后重试');
+      setTimeout(observePinnedTabs, 1000);
+      return;
+    }
+
+    // 使用 MutationObserver 监听 class 属性变化
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        // 只处理 class 属性变化
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+          const target = mutation.target;
+          
+          // 检查是否是 .tab-position 元素
+          if (!target.classList?.contains('tab-position')) {
+            continue;
+          }
+          
+          // 检查是否是标签栈（排除）
+          if (target.classList.contains('is-substack')) {
+            continue;
+          }
+          
+          // 检查是否刚刚获得 is-pinned 类
+          const isPinnedNow = target.classList.contains('is-pinned');
+          const wasPinnedBefore = mutation.oldValue?.includes('is-pinned') || false;
+          
+          // 只在从未固定变为固定时触发
+          if (isPinnedNow && !wasPinnedBefore) {
+            console.log('🔖 检测到标签页被固定');
+            const tabWrapper = target.querySelector('.tab-wrapper');
+            if (tabWrapper) {
+              processSingleTab(tabWrapper);
+            }
+          }
+        }
+      }
+    });
+
+    // 监听配置：只监听属性变化，并记录旧值
+    observer.observe(tabStrip, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class'],
+      attributeOldValue: true  // 关键：记录旧的 class 值
+    });
+
+    console.log('✓ AI 标签页标题优化模组已启动');
+    
+    // 初始检查已固定的标签页
+    checkPinnedTabs();
+  }
+
+  // ========== 启动模组 ==========
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', observePinnedTabs);
+  } else {
+    observePinnedTabs();
+  }
+
 })();
+
+// ✓ AI 标签页标题优化模组已启动
+// TidyTitles.js:358 初始化：检测到 5 个固定标签页
+// TidyTitles.js:307 检测到新固定的标签页 ID: 1175647132
+// TidyTitles.js:307 检测到新固定的标签页 ID: 1175647133
+// TidyTitles.js:307 检测到新固定的标签页 ID: 1175647170
+// TidyTitles.js:307 检测到新固定的标签页 ID: 1175647171
+// TidyTitles.js:307 检测到新固定的标签页 ID: 1175647283
+// TidyTitles.js:251 获取页面内容时出错: TypeError: Error in invocation of scripting.executeScript(scripting.ScriptInjection injection, optional function callback): No matching signature.
+//     at TidyTitles.js:235:26
+//     at new Promise (<anonymous>)
+//     at getPageContent (TidyTitles.js:233:12)
+//     at TidyTitles.js:333:31
+// （匿名） @ TidyTitles.js:251
+// TidyTitles.js:336 正在为标签页 1175647132 生成优化标题...
+// TidyTitles.js:251 获取页面内容时出错: TypeError: Error in invocation of scripting.executeScript(scripting.ScriptInjection injection, optional function callback): No matching signature.
+//     at TidyTitles.js:235:26
+//     at new Promise (<anonymous>)
+//     at getPageContent (TidyTitles.js:233:12)
+//     at TidyTitles.js:333:31
+// （匿名） @ TidyTitles.js:251
+// TidyTitles.js:336 正在为标签页 1175647133 生成优化标题...
+// TidyTitles.js:251 获取页面内容时出错: TypeError: Error in invocation of scripting.executeScript(scripting.ScriptInjection injection, optional function callback): No matching signature.
+//     at TidyTitles.js:235:26
+//     at new Promise (<anonymous>)
+//     at getPageContent (TidyTitles.js:233:12)
+//     at TidyTitles.js:333:31
+// （匿名） @ TidyTitles.js:251
+// TidyTitles.js:336 正在为标签页 1175647170 生成优化标题...
+// TidyTitles.js:251 获取页面内容时出错: TypeError: Error in invocation of scripting.executeScript(scripting.ScriptInjection injection, optional function callback): No matching signature.
+//     at TidyTitles.js:235:26
+//     at new Promise (<anonymous>)
+//     at getPageContent (TidyTitles.js:233:12)
+//     at TidyTitles.js:333:31
+// （匿名） @ TidyTitles.js:251
+// TidyTitles.js:336 正在为标签页 1175647171 生成优化标题...
+// TidyTitles.js:251 获取页面内容时出错: TypeError: Error in invocation of scripting.executeScript(scripting.ScriptInjection injection, optional function callback): No matching signature.
+//     at TidyTitles.js:235:26
+//     at new Promise (<anonymous>)
+//     at getPageContent (TidyTitles.js:233:12)
+//     at TidyTitles.js:333:31
+// （匿名） @ TidyTitles.js:251
+// TidyTitles.js:336 正在为标签页 1175647283 生成优化标题...
+// 5TidyTitles.js:76 Uncaught (in promise) ReferenceError: getBrowserLanguage is not defined
+//     at generateOptimizedTitle (TidyTitles.js:76:26)
+//     at TidyTitles.js:337:38
+// monochrome-icons.js:26 hue-change: -109.60°
+// window.html:1 This console bypasses security protections and can let attackers steal your passwords and personal information. Do NOT enter or paste code that you do not understand.
+// 4window.html:1 Uncaught (in promise) Error: Cannot access contents of url "devtools://devtools/bundled/devtools_app.html?remoteBase=https://chrome-devtools-frontend.appspot.com/serve_file/@37329e0d7477a24a033f308f112b01e646708940/&targetType=tab&panel=elements". Extension manifest must request permission to access this host.

@@ -6,8 +6,7 @@ osascript -e 'quit app "Vivaldi.app"'
 # Find path to Framework folder of current version and save it as variable
 findPath="$(find /Applications/Vivaldi.app -name Vivaldi\ Framework.framework)"
 
-# Copy custom files to Vivaldi.app
-cp /Users/acid/Desktop/VivaldiModpack/moddings/color_tabs.js "$findPath"/Resources/vivaldi/
+# Copy custom yb_address_baresktop/VivaldiModpack/moddings/color_tabs.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/moddings/monochrome-icons.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/moddings/import-export-command-chains.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/moddings/chroma.min.js "$findPath"/Resources/vivaldi/
@@ -20,8 +19,15 @@ cp /Users/acid/Desktop/VivaldiModpack/moddings/vivaldi-dashboard-camo.js "$findP
 cp /Users/acid/Desktop/VivaldiModpack/moddings/autoHidePanel_personal.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/moddings/feedIcon.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/moddings/mdNotes.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivaldiModpack/moddings/ClearTabs.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivaldiModpack/moddings/TidyTabs.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivaldiModpack/moddings/dialogTab.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivaldiModpack/moddings/ImmersiveAddressbar.js "$findPath"/Resources/vivaldi/
+#cp /Users/acid/Desktop/VivaldiModpack/moddings/SuperPins.js "$findPath"/Resources/vivaldi/
+#cp /Users/acid/Desktop/VivaldiModpack/moddings/TidyDownloads.js "$findPath"/Resources/vivaldi/
+#cp /Users/acid/Desktop/VivaldiModpack/moddings/TidyTitles.js "$findPath"/Resources/vivaldi/
+#cp /Users/acid/Desktop/VivaldiModpack/moddings/Vividly.js "$findPath"/Resources/vivaldi/
 #cp /Users/acid/Desktop/VivaldiModpack/moddings/ClickAddBlockList.js "$findPath"/Resources/vivaldi/
-#cp /Users/acid/Desktop/VivaldiModpack/moddings/dialogTab.js "$findPath"/Resources/vivaldi/
 #cp /Users/acid/Desktop/VivaldiModpack/moddings/colorful_loading_top_bar.js "$findPath"/Resources/vivaldi/
 # cp /Users/acid/Desktop/VivaldiModpack/moddings/moreFuncInWebPanel.js "$findPath"/Resources/vivaldi/
 # cp /Users/acid/Desktop/VivaldiModpack/moddings/widgets.js "$findPath"/Resources/vivaldi/
@@ -58,11 +64,19 @@ sed -i '' -e '/<\/body>/i\
 <script src="feedIcon.js"></script>\
 <script src="mdNotes.js"></script>\
 <script src="yb_address_bar.js"></script>\
+<script src="ClearTabs.js"></script>\
+<script src="TidyTabs.js"></script>\
+<script src="dialogTab.js"></script>\
+<script src="ImmersiveAddressbar.js"></script>\
 ' "$browserHtml"
 
+#<script src="daily-wrap.js"></script>\
+#<script src="SuperPins.js"></script>\
+#<script src="Vividly.js"></script>\
+#<script src="TidyDownloads.js"></script>\
+#<script src="TidyTitles.js"></script>\
 #<script src="ClickAddBlockList.js"></script>\
 #<script src="colorful_loading_top_bar.js"></script>\
-#<script src="dialogTab.js"></script>\
 
 # Pause script
 read -rsp $'Press [Enter] to restart Vivaldi...\n'
@@ -72,5 +86,5 @@ read -rsp $'Press [Enter] to restart Vivaldi...\n'
 # open "$findPath"/Resources/vivaldi/custom.js
 
 # Open Vivaldi
-# open /Applications/Vivaldi.app --args --debug-packed-apps --silent-debugger-extension-api
-open /Applications/Vivaldi.app
+open /Applications/Vivaldi.app --args --debug-packed-apps --silent-debugger-extension-api
+# open /Applications/Vivaldi.app
