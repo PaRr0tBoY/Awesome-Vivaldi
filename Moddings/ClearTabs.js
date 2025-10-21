@@ -91,7 +91,7 @@
                 if (chrome.runtime.lastError) {
                     console.error('Error closing tabs:', chrome.runtime.lastError);
                 } else {
-                    console.log('Successfully closed tabs');
+                    // console.log('Successfully closed tabs');
                     // 关闭标签页后，重新添加按钮
                     setTimeout(addTextButton, 100);
                 }
@@ -101,8 +101,6 @@
 
     // 初始化函数
     function init() {
-        console.log('Initializing ClearTabs extension'); // 调试用
-        
         // 初始添加按钮
         setTimeout(addTextButton, 500); // 延迟执行，确保DOM已加载
         
@@ -132,7 +130,7 @@
         const observeTabStrip = function() {
             const tabStrip = document.querySelector('.tab-strip');
             if (tabStrip) {
-                console.log('Found tab-strip, starting observation'); // 调试用
+                // console.log('Found tab-strip, starting observation'); // 调试用
                 observer.observe(tabStrip, {
                     childList: true,
                     subtree: true,

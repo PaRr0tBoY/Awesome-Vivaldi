@@ -567,7 +567,7 @@ ${tabsInfo.map(t => `${t.id}. ${t.title} (${t.domain})`).join('\n')}
     function addTidyButton() {
         const separators = document.querySelectorAll('.tab-strip .separator');
 
-        console.log('Found separators:', separators.length);
+        // console.log('Found separators:', separators.length);
 
         separators.forEach(separator => {
             if (separator.querySelector('.tidy-tabs-below-button')) {
@@ -877,7 +877,7 @@ ${tabsInfo.map(t => `${t.id}. ${t.title} (${t.domain})`).join('\n')}
         const observeTabStrip = function() {
             const tabStrip = document.querySelector('.tab-strip');
             if (tabStrip) {
-                console.log('Found tab-strip, starting observation');
+                // console.log('Found tab-strip, starting observation');
                 observer.observe(tabStrip, {
                     childList: true,
                     subtree: true,

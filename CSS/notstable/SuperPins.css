@@ -60,14 +60,11 @@
   max-height: unset !important;
 }
 
-.tab-wrapper,
+/* .tab-wrapper,
 .tab,
 .tab-header {
   min-width: 0;
   box-sizing: border-box;
-  /* container-type: inline-size;
-  container-name: tab-header; */
-  /*padding-left: 0 !important;*/
 }
 
 #tabs-container
@@ -81,7 +78,7 @@
   width: 100% !important;
   height: 100% !important;
   flex: auto !important;
-}
+} */
 
 #tabs-container
   .tab-strip

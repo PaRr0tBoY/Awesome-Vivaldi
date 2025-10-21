@@ -23,7 +23,7 @@
     const srgb = getComputedStyle(color).getPropertyValue("color");
     color.removeAttribute("style");
     const hue = convert(srgb);
-    console.info(`hue-change: ${hue}°`);
+    // console.info(`hue-change: ${hue}°`);
     css.innerHTML = `
 .button-toolbar-webpanel img {
   filter: brightness(0.77) sepia(1) hue-rotate(${hue}deg);

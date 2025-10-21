@@ -686,6 +686,7 @@ button[title="显示输入记录"] {
   overflow-x: hidden !important;
 } */
 
+/* ============================= */
 /* .toolbar-extensions {
   max-width: 140px !important;
   overflow-y: hidden !important;
@@ -693,10 +694,6 @@ button[title="显示输入记录"] {
   white-space: nowrap;
 }
 
-.toolbar-extensions {
-  scrollbar-width: none;
-  gap: var(--densityGap);
-}
 
 .toolbar-extensions button,
 .toolbar-extensions div[class*="button"] {
@@ -707,6 +704,11 @@ button[title="显示输入记录"] {
 /*.toolbar-extensions::-webkit-scrollbar {
   display: none;
 }*/
+
+.toolbar-extensions {
+  /* scrollbar-width: none; */
+  gap: var(--densityGap);
+}
 /*============================================================================*/
 
 .extensionIconPopupMenu {

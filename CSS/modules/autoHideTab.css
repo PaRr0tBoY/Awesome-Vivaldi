@@ -1,10 +1,21 @@
 /* Adjust Configure In :root */
 :root {
-  /* Tabbar's width when they expand or collapse */
-  --tabs-container-collapse-width: 7px; /* min width of main tabbar should not set lower than 6px, which will cause weird issue. */
-  --tabs-container-expand-width: 281px;
+  --fluid-compact-mode: off; /*on or off*/
+  --fluid-mask: off; /*on or off*/
+
+  --fluid-preview-mode: off; /*on or off, Alpha*/
+
+  /* Main Tabbar's default width when it collapse  */
+  /* Default is set 44px and better keep it this way */
+  --tabs-container-collapse-width-default: 44px;
+  /* Main Tabbar's default width when it collapse in **compact mode** */
+  /* This value should not set lower than 6px, which will cause weird issue. Default is set 7px and better keep it this way */
+  --tabs-container-collapse-width-compact: 7px; 
+
+
+  --tabs-container-expand-width: 280px;
   --tabs-subcontainer-collapse-width: 44px;
-  --tabs-subcontainer-expand-width: 282px;
+  --tabs-subcontainer-expand-width: calc(var(--tabs-container-expand-width) + var(--tabs-subcontainer-collapse-width) - var(--tabs-container-collapse-width-default));
 
   --Button-newtab-main-width: calc(var(--tabs-container-expand-width) / 2);
   --Button-newtab-sub-width: calc(var(--tabs-subcontainer-expand-width) / 2);
@@ -22,12 +33,12 @@
 
   /* Animation speed when tabbars expand or collapse */
   --slow-animation-speed: 560ms;
-  --animation-speed: 240ms;
+  --animation-speed: 260ms;
   --fast-animation-speed: 140ms;
 
   /* Animation Delay Time */
   --transition-delay-time-expand: 0ms;
-  --transition-delay-time-collapse: 100ms;
+  --transition-delay-time-collapse: 50ms;
 
   /* Adjust tabbars' color when they expand or collapse */
 
@@ -65,6 +76,7 @@
   --tabs-subcontainer-bg-color: green; */
 }
 
+
 /* ========================================
    AUTO-HIDE TABBAR
    ======================================== */
@@ -77,8 +89,8 @@ with a tab-stack. Which is why we need tab-stack no? */
 #tabs-container {
   container-type: inline-size;
   container-name: tabs-container;
-  min-width: var(--tabs-container-collapse-width) !important;
-  max-width: var(--tabs-container-collapse-width) !important;
+  min-width: var(--tabs-container-collapse-width-default) !important;
+  max-width: var(--tabs-container-collapse-width-default) !important;
   margin-top: var(--tabbar-margin-top) !important;
   margin-bottom: var(--tabbar-margin-bottom) !important;
   background-color: var(--tabbar-bg-color-collapse, var(--colorBg)) !important;
@@ -126,52 +138,40 @@ body:not(:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before
   margin-top: var(--tabbar-margin-top) !important;
   margin-bottom: var(--tabbar-margin-bottom) !important;
   box-sizing: border-box !important;
-  /* transition-delay: 60ms !important; */
-  & .tab-position.is-pinned .tab-header {
-    padding-left: 6px !important;
-    justify-content: space-around !important;
-    transition: all var(--animation-speed) ease-out !important;
+}
+
+/* Preview main tabbar when tabbar-container is hovered */
+@container style(--fluid-preview-mode: on){
+  body:not(:has(:is(.WorkspacePopup, #panel_switch, .toolbar-editor, .UrlBar-AddressField:focus-within))) #tabs-tabbar-container:hover #tabs-container:not(:hover) {
+    min-width: var(--tabs-container-collapse-width-default) !important;
+    max-width: var(--tabs-container-collapse-width-default) !important;
+    margin-top: var(--tabbar-margin-top) !important;
+    margin-bottom: var(--tabbar-margin-bottom) !important;
+    background-color: var(--tabbar-bg-color-collapse, var(--colorBg)) !important;
+    border-radius: var(--tabbar-border-radius-collapse) !important;
+    border: 1px dotted var(--tabbar-border-color-collapse, var(--colorBgLighter)) !important;
+    transition:
+      border-radius var(--animation-speed) ease-out,
+      border var(--animation-speed) ease-out,
+      background-color var(--animation-speed) ease-out,
+      min-width var(--animation-speed) ease-out,
+      max-width var(--animation-speed) ease-out !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    overflow: hidden !important;
+
+    & .tab-strip .is-pinned .tab:hover .close{
+      display: flex;
+    }
   }
 }
 
-/* Main Tabbar Peek */
-body:not(:has(:is(.WorkspacePopup, #panel_switch, .toolbar-editor, .UrlBar-AddressField:focus-within))) #tabs-tabbar-container:hover #tabs-container:not(:hover) {
-  /*min-width: calc(var(--tabs-subcontainer-collapse-width) - 6px) !important;
-  max-width: calc(var(--tabs-subcontainer-collapse-width) - 6px) !important;*/
-  min-width: calc(var(--tabs-container-collapse-width) + 36px) !important;
-  max-width: calc(var(--tabs-container-collapse-width) + 36px) !important;
-  margin-top: var(--tabbar-margin-top) !important;
-  margin-bottom: var(--tabbar-margin-bottom) !important;
-  background-color: var(--tabbar-bg-color-collapse, var(--colorBg)) !important;
-  border-radius: var(--tabbar-border-radius-collapse) !important;
-  border: 1px dotted var(--tabbar-border-color-collapse, var(--colorBgLighter)) !important;
-  /* will-change: transform !important; */
-  transition:
-    /* transform var(--smooth-animation-speed) ease-out, */
-    border-radius var(--animation-speed) ease-out,
-    border var(--animation-speed) ease-out,
-    background-color var(--animation-speed) ease-out,
-    min-width var(--animation-speed) ease-out,
-    max-width var(--animation-speed) ease-out !important;
-  /* transition-delay: var(--transition-delay-time-collapse) !important; */
-  /* transition-delay: var(--transition-delay-time-expand) !important; */
-  box-sizing: border-box !important;
-  position: relative !important;
-  overflow: hidden !important;
-  /* & .tab-position.is-pinned .tab-header {
-    padding-left: 0 !important;
-    justify-content: center !important;
-    transition: all var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1);
-  } */
-
-  & .tab-strip .is-pinned .tab:hover .close{
-    display: flex;
+@container style(--fluid-compact-mode: on){
+  body:not(:has(:is(#panel_switch, .WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #vivaldi-tooltip:hover)))
+  #tabs-container {
+    min-width: var(--tabs-container-collapse-width-compact) !important;
+    max-width: var(--tabs-container-collapse-width-compact) !important;
   }
-}
-
-#tabs-container .tab.tab-small.tab-mini .tab-header,
-#tabs-container .tab.pinned.tab-mini .tab-header {
-  justify-content: center;
 }
 
 #tabs-tabbar-container:not(:has(#tabs-subcontainer))
@@ -184,17 +184,6 @@ body:not(:has(:is(.WorkspacePopup, #panel_switch, .toolbar-editor, .UrlBar-Addre
   border-radius: calc(var(--radius) + 5px) 0px 0px calc(var(--radius) + 5px) !important;
 }
 
-/* When there's no substack */
-body:not(:has(:is(#panel_switch, .WorkSpacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #vivaldi-tooltip:hover))) #tabs-tabbar-container:not(:has(#tabs-subcontainer))
-  #tabs-container:not(:hover) {
-  min-width: calc(var(--tabs-container-collapse-width) + 36px) !important;
-  max-width: calc(var(--tabs-container-collapse-width) + 36px) !important;
-  /* & .tab-position.is-pinned .tab-header {
-    padding-left: 0 !important;
-    justify-content: center !important;
-    transition: all var(--animation-speed) ease-out !important;
-  } */
-}
 /* SubStack / Secondary Tabbar */
 
 #tabs-subcontainer {
@@ -244,7 +233,9 @@ body:has(
       .WorkspacePopup,
       .toolbar-editor,
       #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within,
-      #vivaldi-tooltip:hover
+      #vivaldi-tooltip:hover,
+      .toolbar-tabbar-before .ToolbarButton-Button.button-pressed,
+      .toolbar-tabbar-after .ToolbarButton-Button.button-pressed
     )
   )
   #tabs-container {
@@ -278,7 +269,6 @@ body:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .Url
 /* body:not(:has(.toolbar-editor)):not(:has(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within)) */
 body:not(:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #panel_switch)))
   #tabs-subcontainer:hover {
-  /* #tabs-subcontainer:hover { */
   min-width: var(--tabs-subcontainer-expand-width) !important;
   max-width: var(--tabs-subcontainer-expand-width) !important;
   background-color: var(
@@ -299,9 +289,18 @@ body:not(:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .tool
   box-sizing: border-box !important;
 }
 
+@container style(--fluid-compact-mode: on){
+  body:not(:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #panel_switch)))
+    #tabs-subcontainer:hover {
+      min-width: calc(var(--tabs-subcontainer-expand-width) + var(--tabs-container-collapse-width-default) - var(--tabs-container-collapse-width-compact)) !important;
+      max-width: calc(var(--tabs-subcontainer-expand-width) + var(--tabs-container-collapse-width-default) - var(--tabs-container-collapse-width-compact)) !important;
+    }
+}
+
 #tabs-subcontainer.left:hover {
   border-radius: 0px calc(var(--radius) + 5px) calc(var(--radius) + 5px) 0px !important;
 }
+
 /* #tabs-subcontainer.right:hover {
   border-radius: calc(var(--radius) + 5px) 0px 0px calc(var(--radius) + 5px) !important;
 } */
@@ -336,7 +335,7 @@ body:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .Url
 #tabs-tabbar-container {
   width: auto !important;
   min-width: var(
-    --tabs-container-collapse-width
+    --tabs-container-collapse-width-default
   ) !important; /* main stack width when it fold */
   max-width: calc(
     var(--tabs-container-expand-width)+var(--tabs-subcontainer-collapse-width)
@@ -361,6 +360,13 @@ body:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .Url
   /* width: calc(var(--tabs-container-collapse-width) + var(--tabs-subcontainer-collapse-width)) !important; */
 }
 
+@container style(--fluid-compact-mode: on){
+  #tabs-tabbar-container {
+    min-width: var(
+      --tabs-container-collapse-width-compact
+    ) !important;
+  }
+}
 /* When the tabs-container is hovered, the container width increases. */
 /* #tabs-tabbar-container:has(#tabs-container:hover) {
   width: calc(var(--tabs-container-expand-width) + var(--tabs-subcontainer-collapse-width)) !important;
@@ -406,7 +412,6 @@ body:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .Url
   order: 2 !important;
   flex-shrink: 0 !important;
 }
-
 #tabs-tabbar-container.left #tabs-container.left {
   order: 1 !important;
   flex-shrink: 0 !important;
@@ -416,6 +421,21 @@ body:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .Url
   order: 2 !important;
   flex-shrink: 0 !important;
 }
+
+/* #tabs-tabbar-container:hover{
+  & #tabs-container.right{
+    order: 1 !important;
+  }
+  & #tabs-subcontainer.right{
+    order: 2 !important;
+  }
+  & #tabs-container.left{
+    order: 2 !important;
+  }
+  & #tabs-subcontainer.left{
+    order: 1 !important;
+  }
+} */
 
 /* Tab bar styling */
 .tabbar-workspace-button {
@@ -520,13 +540,13 @@ transition: filter 200ms linear !important
   flex: 1 !important;
 } */
 
-#tabs-subcontainer .tab .title {
-  display: flex !important;
-}
-
 /* .tab-position:not(.is-pinned) .tab-header,
 #tabs-subcontainer .tab-header {
   padding-left: 6px !important;
+} */
+
+/* #tabs-subcontainer .tab .title {
+  display: flex !important;
 } */
 
 #tabs-container .tab-strip {
@@ -581,21 +601,15 @@ transition: filter 200ms linear !important
 }
 
 /* Hide Pinned Tabs Title */
-/* @container tabs-container (max-width: 100px){ */
-#tabs-container .tab-strip > span:has(.is-pinned) .is-pinned .title {
+/* #tabs-container .tab-strip > span:has(.is-pinned) .is-pinned .title {
   padding: 0 !important;
   margin: 0 !important;
   opacity: 0 !important;
   max-width: 0 !important;
-  /* transition:
-    opacity var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1),
-    max-width var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1); */
-  /* transition: all calc(var(--animation-speed) + var(--transition-delay-time-collapse)) cubic-bezier(0.4, 0, 0.2, 1); */
-  /* transition: all var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1); */
+  transition: max-width 0s cubic-bezier(0.4, 0, 0.2, 1);
 }
-/* } */
 
-@container tabs-container (min-width: 100px){
+@container tabs-container (min-width: 45px){
   #tabs-container
     .tab-strip
     > span:has(.is-pinned)
@@ -606,29 +620,111 @@ transition: filter 200ms linear !important
     margin-right: 3px !important;
     opacity: 1 !important;
     max-width: 100% !important;
-    /* transition:
-      opacity var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1),
-      max-width var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1); */
-    /* transition: all var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1); */
+    transition: max-width 0s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+} */
+/* 基础 tab-header 设置 */
+#tabs-container
+  .tab-strip
+  > span:has(.is-pinned)
+  .is-pinned
+  .tab-wrapper
+  .tab-header {
+  /* justify-content: flex-start !important; */
+  align-items: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  flex: auto !important;
+  position: relative !important;
+  display: flex !important;
+}
+
+/* favicon 应该始终保持固定位置 */
+#tabs-container .tab-strip > span:has(.is-pinned) .is-pinned .favicon {
+  flex-shrink: 0 !important;
+  flex-grow: 0 !important;
+}
+
+/* collapse */
+@container tabs-container (max-width: 45px) {
+  #tabs-container
+    .tab-strip
+    /* > span:has(.is-pinned)
+    .is-pinned */
+    .tab-wrapper
+    .tab-header {
+    justify-content: space-evenly !important;
+    /* padding-left: 0 !important; */
   }
 }
 
-@container tabs-container (max-width: 15px) {
+/* hover */
+@container tabs-container (min-width: 45px) {
+  #tabs-container:hover
+    .tab-strip
+    /* > span:has(.is-pinned)
+    .is-pinned */
+    .tab-wrapper
+    .tab-header {
+    justify-content: flex-start !important;
+    padding-left: 6px !important;
+  }
+}
+
+/* Hide Pinned Tabs Title */
+#tabs-container .tab-strip > span:has(.is-pinned) .is-pinned .title {
+  padding: 0 !important;
+  margin: 0 !important;
+  opacity: 0 !important;
+  max-width: 0 !important;
+  min-width: 0 !important;
+  flex-shrink: 1 !important;
+  flex-grow: 0 !important;
+  flex-basis: 0 !important;
+  overflow: hidden !important;
+  transition: 
+    max-width 0s cubic-bezier(0.4, 0, 0.2, 1),
+    min-width 0s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Show Pinned Tabs Title  */
+@container tabs-container (min-width: 45px){
+  #tabs-container
+    .tab-strip
+    > span:has(.is-pinned)
+    .is-pinned
+    .tab-wrapper
+    .title {
+    padding-left: 4px !important;
+    margin-right: 3px !important;
+    opacity: 1 !important;
+    max-width: 100% !important;
+    min-width: auto !important;
+    flex-shrink: 1 !important;
+    flex-grow: 1 !important;
+    flex-basis: auto !important;
+    transition: 
+      max-width 0s cubic-bezier(0.4, 0, 0.2, 1),
+      min-width 0s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+@container tabs-container (max-width: 30px) {
   .tab-position .tab-wrapper {
     opacity: 0 !important;
-    /* transition: opacity var(--animation-speed) !important; */
+    transition: opacity var(--animation-speed) !important;
   }
 }
 
 /* Process toolbar */
 #tabs-tabbar-container .toolbar-tabbar-after {
-  align-content: flex-end;
+  align-content: flex-end; /* Avoid Bland Under toolbar */
 }
 
 /* @container tabs-container (max-width: calc(var(--tabs-container-expand-width) - 6px)) { */
 @container tabs-container (max-width: 275px) {
-  .toolbar-tabbar-before > *:not(:is(.UrlBar-AddressField, .workspace-popup)),
-  /* .toolbar-tabbar-after > *, */
   .toolbar-tabbar-after
   {
     min-width: 0 !important;
@@ -648,14 +744,48 @@ transition: filter 200ms linear !important
   }
 }
 
-/* .toolbar-tabbar-before:has(:is(.UrlBar-AddressField, .workspace-popup)){ */
-.toolbar-tabbar-before{
-  margin: var(--densityGap) !important;
-  &:has(.button-toolbar){
-    min-height: 35px !important;
-    margin: 3px !important;
+.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget {
+  margin: 3px !important;
+  min-height: 35px !important;
+  max-height: 35px !important;
+  background-color: var(
+    --tabbar-bg-color-expand,
+    var(--colorBgDarker)
+  ) !important;
+  overflow: hidden !important;
+  transition: all var(--animation-speed) ease-out;
+  
+  & > *:not(:is(.UrlBar-AddressField, .workspace-popup)) {
+    opacity: 0;
+    min-height: 0px;
+    max-height: 0px;
+    overflow: hidden;
+    transition: all var(--animation-speed) ease-out;
   }
 }
+
+body:has(:is(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField, .toolbar-editor,.toolbar-tabbar-before .ToolbarButton-Button.button-pressed)) .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
+.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover{
+  margin: 3px !important;
+  min-height: 35px !important;
+  max-height: 100000px !important;
+  overflow: visible !important;
+  background-color: var(
+    --tabbar-bg-color-expand,
+    var(--colorBgDarker)
+  ) !important;
+  transition: all var(--animation-speed) ease-out;
+  
+  & > *:not(:is(.UrlBar-AddressField, .workspace-popup)) {
+    opacity: 1;
+    min-height: 30px;
+    max-height: 30px;
+    overflow: visible;
+    transition: all var(--animation-speed) ease-out;
+  }
+}
+
+
 
 #tabs-tabbar-container #tabs-container {
   overflow: hidden !important;
@@ -707,93 +837,165 @@ body:has(.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover)
 #browser:not(.fullscreen):has(#tabs-tabbar-container.right)
   .inner
   #webpage-stack {
-  margin-right: calc(var(--tabs-container-collapse-width) + 36px);
+  margin-right: var(--tabs-container-collapse-width-default);
   transition: margin-right var(--animation-speed) ease-out !important;
 }
+@container style(--fluid-compact-mode: on){
+  #browser:not(.fullscreen):has(#tabs-tabbar-container.right)
+  .inner
+  #webpage-stack {
+    margin-right: var(--tabs-container-collapse-width-compact);
+    transition: margin-right var(--animation-speed) ease-out !important;
+  }
+}
+
 
 #browser:not(.fullscreen)
   :has(#tabs-tabbar-container.right)
   .inner:has(#tabs-subcontainer:is(.left, .right))
   #webpage-stack {
   margin-right: calc(
-    var(--tabs-container-collapse-width) +
+    var(--tabs-container-collapse-width-default) +
       var(--tabs-subcontainer-collapse-width)
   );
 }
 
+@container style(--fluid-compact-mode: on){
+  #browser:not(.fullscreen)
+    :has(#tabs-tabbar-container.right)
+    .inner:has(#tabs-subcontainer:is(.left, .right))
+    #webpage-stack {
+    margin-right: calc(
+      var(--tabs-container-collapse-width-compact) +
+        var(--tabs-subcontainer-collapse-width)
+    );
+  }
+}
+
 #browser:not(.fullscreen) #tabs-tabbar-container.right ~ #webpage-stack {
-  margin-right: calc(var(--tabs-container-collapse-width) + 36px);
+  margin-right: var(--tabs-container-collapse-width-default);
+}
+
+@container style(--fluid-compact-mode: on){
+  #browser:not(.fullscreen) #tabs-tabbar-container.right ~ #webpage-stack {
+    margin-right: var(--tabs-container-collapse-width-compact);
+  }
 }
 
 #browser:not(.fullscreen)
   #tabs-tabbar-container.right
   ~ #webpage-stack:has(#tabs-subcontainer.right) {
   margin-right: calc(
-    var(--tabs-container-collapse-width) +
+    var(--tabs-container-collapse-width-default) +
       var(--tabs-subcontainer-collapse-width)
   );
 }
 
+@container style(--fluid-compact-mode: on){
+  #browser:not(.fullscreen)
+    #tabs-tabbar-container.right
+    ~ #webpage-stack:has(#tabs-subcontainer.right) {
+    margin-right: calc(
+      var(--tabs-container-collapse-width-compact) +
+        var(--tabs-subcontainer-collapse-width)
+    );
+  }
+}
 /* Left tabbar margins */
 #browser:not(.fullscreen):has(#tabs-tabbar-container.left)
   .inner
   #webpage-stack {
-  margin-left: calc(var(--tabs-container-collapse-width) + 36px);
+  margin-left: var(--tabs-container-collapse-width-default);
   transition: margin-left var(--animation-speed) ease-out !important;
 }
-
+@container style(--fluid-compact-mode: on){
+  #browser:not(.fullscreen):has(#tabs-tabbar-container.left)
+  .inner
+  #webpage-stack {
+    margin-left: var(--tabs-container-collapse-width-compact);
+    transition: margin-left var(--animation-speed) ease-out !important;
+  }
+}
 #browser:not(.fullscreen)
   :has(#tabs-tabbar-container.left)
   .inner:has(#tabs-subcontainer:is(.left, .right))
   #webpage-stack {
   margin-left: calc(
-    var(--tabs-container-collapse-width) +
+    var(--tabs-container-collapse-width-default) +
       var(--tabs-subcontainer-collapse-width)
   );
 }
+@container style(--fluid-compact-mode: on){
+  #browser:not(.fullscreen)
+  :has(#tabs-tabbar-container.left)
+  .inner:has(#tabs-subcontainer:is(.left, .right))
+  #webpage-stack {
+  margin-left: calc(
+    var(--tabs-container-collapse-width-compact) +
+      var(--tabs-subcontainer-collapse-width)
+    );
+  }
+}
 
 #browser:not(.fullscreen) #tabs-tabbar-container.left ~ #webpage-stack {
-  margin-left: calc(var(--tabs-container-collapse-width) + 36px);
+  margin-left: var(--tabs-container-collapse-width-default);
+}
+@container style(--fluid-compact-mode: on){
+  #browser:not(.fullscreen) #tabs-tabbar-container.left ~ #webpage-stack {
+    margin-left: var(--tabs-container-collapse-width-compact);
+  }
 }
 
 #browser:not(.fullscreen)
   #tabs-tabbar-container.left
   ~ #webpage-stack:has(#tabs-subcontainer.left) {
   margin-left: calc(
-    var(--tabs-container-collapse-width) +
+    var(--tabs-container-collapse-width-default) +
       var(--tabs-subcontainer-collapse-width)
   );
 }
+@container style(--fluid-compact-mode: on){
+  #browser:not(.fullscreen)
+    #tabs-tabbar-container.left
+    ~ #webpage-stack:has(#tabs-subcontainer.left) {
+    margin-left: calc(
+      var(--tabs-container-collapse-width-compact) +
+        var(--tabs-subcontainer-collapse-width)
+    );
+  }
+}
 
 /* Blur Effect */
-/*#browser #webpage-stack {
-  position: relative !important;
-}
+@container style(--fluid-mask: on){
+  #browser #webpage-stack {
+    position: relative !important;
+  }
 
-#browser #webpage-stack::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-  background-color: var(--colorBgAlpha);
-  z-index: 999999999999 !important;
-  pointer-events: none !important;
-  opacity: 0;
-  transition: opacity var(--animation-speed) ease-out;
-}
+  #browser #webpage-stack::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--colorBgAlpha);
+    z-index: 999999999999 !important;
+    pointer-events: none !important;
+    opacity: 0;
+    transition: opacity var(--animation-speed) ease-out;
+  }
 
-body:has(#tabs-container:hover) #webpage-stack::before,
-body:has(#vivaldi-tooltip .tab-group:hover) #webpage-stack::before,
-body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup))
-  #webpage-stack::before,
-body:has(#tabs-subcontainer:hover) #webpage-stack::before {
-  opacity: 1 !important;
-  backdrop-filter: blur(5px);
-}*/
+  body:has(#tabs-container:hover) #webpage-stack::before,
+  body:has(#vivaldi-tooltip .tab-group:hover) #webpage-stack::before,
+  body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup))
+    #webpage-stack::before,
+  body:has(#tabs-subcontainer:hover) #webpage-stack::before {
+    opacity: 1 !important;
+    backdrop-filter: blur(5px);
+  }
+}
 
 /* AnimatedBlur */
 
@@ -895,20 +1097,6 @@ body:has(#panel_switch)
   width: 95%;
 }
 
-#tabs-container
-  .tab-strip
-  > span:has(.is-pinned)
-  .is-pinned
-  .tab-wrapper
-  .tab-header {
-  /* justify-content: flex-start !important; */
-  /* padding-left: 6px !important; */
-  justify-content: space-around !important;
-  align-items: center !important;
-  width: 100% !important;
-  height: 100% !important;
-  flex: auto !important;
-}
 
 
 
@@ -922,16 +1110,14 @@ body:has(#panel_switch)
   min-width: unset;
 }
 
+/* tab-mini */
 #tabs-container .tab.tab-small.tab-mini .tab-header, #tabs-container .tab.pinned.tab-mini .tab-header {
   border-left: none;
   border-right: none;
 }
 
-/* #tabs-container:not(:hover){
-  & span.favicon.jstest-favicon-image {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%) !important;
+#tabs-container .tab.tab-small.tab-mini .tab-header,
+#tabs-container .tab.pinned.tab-mini .tab-header {
+  justify-content: center;
 }
-} */
+

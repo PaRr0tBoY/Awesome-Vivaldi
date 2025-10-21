@@ -109,8 +109,8 @@
 
 8. **网站识别逻辑：**
 
-   * 允许根据 URL 自动识别网站类型（如 github.com → [GitHub]，zhihu.com → [知乎]）。
-   * 若域名不在已知列表中，则取域名首段并首字母大写作为网页标题（如 example.com → [Example]）。
+   * 允许根据 URL 自动识别网站类型（如 github.com → [GitHub]，zhihu.com → 知乎）。
+   * 若域名不在已知列表中，则取域名首段并首字母大写作为网页标题（如 example.com → Example）。
 
 9. **多语言命名逻辑：**
 
@@ -120,7 +120,7 @@
 
 10. **输出格式：**
 
-[网页标题]优化后的标签页标题
+网页标题|优化后的标签页标题
 
 * “网页标题”为网站短标题或识别出的站点名；
 * “优化后的标签页标题” ≤ 6个汉字或12个英文字母
@@ -138,7 +138,7 @@
   * URL: "[https://developers.google.com/web/fundamentals/performance](https://developers.google.com/web/fundamentals/performance)"
   * 摘要: "This guide covers web performance optimization best practices..."
   * languageName: 中文
-  * 输出 → [Google] 网站性能优化
+  * 输出 → Google| 网站性能优化
 
 * 输入：
 
@@ -146,7 +146,7 @@
   * URL: "[https://github.com/vercel/next.js](https://github.com/vercel/next.js)"
   * 摘要: "Next.js is a React framework for production..."
   * languageName: English
-  * 输出 → [GitHub] Next.js Framework
+  * 输出 → GitHub| Next.js Framework
 
 * 输入：
 
@@ -154,7 +154,7 @@
   * URL: "[https://www.zhihu.com/question/123456](https://www.zhihu.com/question/123456)"
   * 摘要: "本文探讨了快速学习编程的技巧与心态..."
   * languageName: 中文
-  * 输出 → [知乎] 编程学习
+  * 输出 → 知乎| 编程学习
 
 * 输入：
 
@@ -162,7 +162,7 @@
   * URL: "[https://example.com/2024/10/20/why-css-is-hard](https://example.com/2024/10/20/why-css-is-hard)"
   * 摘要: ""
   * languageName: English
-  * 输出 → [Example] Why CSS Is Hard
+  * 输出 → Example| Why CSS Is Hard
 
 * 输入：
 
@@ -170,13 +170,13 @@
   * URL: "[https://example.com/home](https://example.com/home)"
   * 摘要: ""
   * languageName: English
-  * 输出 → [Example] home
+  * 输出 → Example| home
 `;
 
     // 输出完整提示词到控制台供调试
-    console.log('=== 发送给 AI 的完整提示词 ===');
-    console.log(prompt);
-    console.log('=== 提示词结束 ===');
+    // console.log('=== 发送给 AI 的完整提示词 ===');
+    // console.log(prompt);
+    // console.log('=== 提示词结束 ===');
 
     const requestBody = {
       model: CONFIG.MODEL,

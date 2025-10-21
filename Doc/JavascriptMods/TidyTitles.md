@@ -39,3 +39,11 @@
 * This mod takes the favicon from a tab and places it into the address bar site info box
 * Assumes presence of both the tab bar and the address bar
 */
+
+# Test
+
+
+
+
+
+适用于文档和提示词的模板

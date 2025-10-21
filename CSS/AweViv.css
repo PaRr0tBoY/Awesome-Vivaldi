@@ -10,8 +10,8 @@
 @import "modules/autoHideTab.css";
 
 /* Import notstable folder CSS files */
-@import "notstable/autoHidePanel.css";
-@import "notstable/tileExpand.css";
+/* @import "notstable/autoHidePanel.css";
+@import "notstable/tileExpand.css"; */
 
 @import "notstable/ClearTabs.css";
 @import "notstable/SuperPins.css";
