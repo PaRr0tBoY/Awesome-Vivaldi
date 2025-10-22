@@ -1,33 +1,4 @@
-/* Vival Arc Legacy - Optimized */
-:root {
-  /* Window & Border Settings */
-  --window-border: 4px;
-  /*--mac-header: calc(var(--window-border));*/
-  --mac-header: 0px;
-  --win-header: calc(var(--window-border) + 20px);
-  --linux-header: calc(var(--window-border) + 20px);
-  --addressbar-height: 36px;
-  --window-button-scale: 0.8;
-  --window-button-opacity: 0.3
-    /*--tab-padding: calc(var(--window-border) / 2);*/ --tab-padding: 0;
-  --colorToviTransparent: transparent;
-
-  /* Shadow Effects */
-  --webview-shadow-light:
-    0px 1px 3px 0px rgba(0, 0, 0, 0.1),
-    0px 0px var(--window-border) 0px rgba(0, 0, 0, 0.1);
-  --webview-shadow-dark:
-    0px 2px 2px 0px rgba(0, 0, 0, 0.05), 0px 2px 8px 0px rgba(0, 0, 0, 0.05),
-    0px 0px 0px 1.2px #ffffff18;
-
-  /* Tab Styling Variables */
-  --mod-whitespace-x: 3px;
-  --mod-whitespace-y: 5px;
-  --mod-whitespace-tabbar-right: 15px;
-  --mod-highlight-color: #c00;
-  --mod-mainbar-height: 25px;
-  --mod-border-radius: 10px;
-}
+/* VivalArc Legacy */
 
 /* #browser:not(.fullscreen):not(.address-top-off, .address-bottom-off, .address-bottom) #header {
   display: none;

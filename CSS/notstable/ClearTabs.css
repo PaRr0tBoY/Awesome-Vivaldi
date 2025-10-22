@@ -1,9 +1,7 @@
 /* Clear Tabs Button Styles */
 .tab-strip .separator {
   position: relative;
-  /* display: inline-block; */
   margin-left: calc(var(--densityGap) * -2);
-  margin-bottom: -15px;
 }
 
 .tab-strip .separator .clear-tabs-below-button {

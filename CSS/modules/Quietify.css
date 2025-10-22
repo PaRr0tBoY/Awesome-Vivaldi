@@ -1,11 +1,6 @@
 /* This mod only works when the Vivaldi UI language is set to English/Chinese.
    Add your own language support by editing the selectors below. */
 
-:root {
-  --tab-icon-size: 16px;
-  --popup-icon-size: 14px;
-  --panel-icon-size: 10px;
-}
 
 /* Icon Position */
 .tab-audio,

@@ -102,3 +102,9 @@
     transform 150ms ease-out,
     opacity 150ms ease-out;
 }
+
+#tabs-subcontainer .tab.tab-small.tab-mini .tab-header, #tabs-subcontainer .tab.pinned.tab-mini .tab-header,
+#tabs-container .tab.tab-small.tab-mini .tab-header, #tabs-container .tab.pinned.tab-mini .tab-header {
+  border-left: none;
+  border-right: none;
+}

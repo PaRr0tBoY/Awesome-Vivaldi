@@ -7,12 +7,11 @@
 @import "modules/Quietify.css";
 @import "modules/theme-previewer.css";
 @import "modules/TidyTabs.css";
-@import "modules/autoHideTab.css";
+@import "modules/FluidTabbar.css";
 
 /* Import notstable folder CSS files */
-/* @import "notstable/autoHidePanel.css";
-@import "notstable/tileExpand.css"; */
-
+@import "notstable/autoHidePanel.css";
+@import "notstable/tileExpand.css";
 @import "notstable/ClearTabs.css";
 @import "notstable/SuperPins.css";
 /* @import "notstable/tools.cssssss"; */

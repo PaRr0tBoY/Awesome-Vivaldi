@@ -1,23 +1,7 @@
-/*
-  Note: Since nth-child() doesn't support CSS variable calculations,
-  if you need different row limits, you'll need to manually modify the number in the selector.
-
-  Formula: nth-child(n+X), where X = (rows × columns) + 1
-
-  Examples:
-  - 2 rows × 3 columns = 6 square buttons, apply normal style from the 7th: nth-child(n+7)
-  - 3 rows × 3 columns = 9 square buttons, apply normal style from the 10th: nth-child(n+10)
-  - 1 row × 4 columns = 4 square buttons, apply normal style from the 5th: nth-child(n+5)
-*/
-
-:root {
-  --pinned-column-count: 3;
-  --pinned-row-count: 3;
-  --pinned-gap: 8px;
-  /* --pinned-bg: var(--colorAccentBgAlphaHeavy, rgba(255, 255, 255, 0.1)); */
-  --pinned-icon-size: 20px;
-  --pinned-tab-height: 50px;
-}
+/* When fluid-tabs-grid is on
+The favicon is a little out of center
+Also Switch all animation duration time into various */
+@container style(--fluid-tabs-grid: on) {
 
 .resize{
   max-height: fit-content !important;
@@ -99,7 +83,7 @@
   height: var(--pinned-icon-size) !important;
   margin: auto !important;
   justify-self: flex-start;
-  transition: margin 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition: margin var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 #tabs-container
@@ -117,7 +101,7 @@
   overflow: hidden;
   isolation: isolate;
   z-index: 1000000;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #tabs-container
@@ -137,7 +121,7 @@
       var(--pinned-gap)
   ) !important;
   min-height: calc(var(--pinned-tab-height) + var(--pinned-gap)) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.8s;
+  transition: all var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1) 0.8s;
 }
 
 /* left column */
@@ -177,8 +161,8 @@
   opacity: 0 !important;
   max-width: 0 !important;
   transition:
-    opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1),
+    max-width var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #tabs-container
@@ -200,7 +184,7 @@
   max-width: 0 !important;
   min-width: 0 !important;
   opacity: 0 !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #tabs-container
@@ -267,40 +251,52 @@
   /* background-color: var(--colorBgDark) !important; */
 }
 
-/* @container tab-header (max-width: 100px){
-  body:not(:has(:is(#panel_switch, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within)))
-  #tabs-container:not(:hover)
-    .tab-strip
-    > span:has(.is-pinned):nth-child(n + 10)
-    .is-pinned
-    .title {
-    opacity: 0 !important;
-    max-width: 0 !important;
+/* ===Tab Title=== */
+
+/* Collapse */
+/* @container style(--fluid-tabs-grid: off) { */
+  /* body:not(:has(:is(#panel_switch, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within))) */
+  #tabs-container .tab-strip > span:has(.is-pinned):nth-child(n + 10) .is-pinned .title {
     padding: 0 !important;
     margin: 0 !important;
-    transition:
-      opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-      max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-      padding 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-      margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0 !important;
+    max-width: 0 !important;
+    min-width: 0 !important;
+    flex-shrink: 1 !important;
+    flex-grow: 0 !important;
+    flex-basis: 0 !important;
+    overflow: hidden !important;
+    transition: 
+      max-width 0s cubic-bezier(0.4, 0, 0.2, 1),
+      min-width 0s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0s cubic-bezier(0.4, 0, 0.2, 1);
+    transition-delay: var(--transition-delay-time-collapse);
   }
-}
-
-#tabs-container:hover
-  .tab-strip
-  > span:has(.is-pinned):nth-child(n + 10)
-  .is-pinned
-  .title {
-  opacity: 1 !important;
-  max-width: 100% !important;
-  padding-left: 4px;
-  margin-right: 3px;
-  transition:
-    opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-} */
+  
+  /* Expand */
+  @container tabs-container (min-width: 45px){
+    #tabs-container
+      .tab-strip
+      > span:has(.is-pinned):nth-child(n + 10)
+      .is-pinned
+      .tab-wrapper
+      .title {
+      padding-left: 4px !important;
+      margin-right: 3px !important;
+      opacity: 1 !important;
+      max-width: 100% !important;
+      min-width: auto !important;
+      flex-shrink: 1 !important;
+      flex-grow: 1 !important;
+      flex-basis: auto !important;
+      transition: 
+        max-width 0s cubic-bezier(0.4, 0, 0.2, 1),
+        min-width 0s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0s cubic-bezier(0.4, 0, 0.2, 1);
+      /* transition-delay: var(--transition-delay-time-collapse); */
+    }
+  }
+/* } */
 
 #tabs-container
   .tab-strip
@@ -342,7 +338,7 @@
 
 .tab-strip .separator {
   align-items: center;
-  margin-bottom: 0px;
+  margin-bottom: -6px;
 }
 
 .tab-strip .separator hr {
@@ -380,4 +376,5 @@
 body:not(:has(:is(.WorkspacePopup, #panel_switch, .toolbar-editor, .UrlBar-AddressField:focus-within))) #tabs-tabbar-container:hover #tabs-container:not(:hover) .tab-strip > span:has(.is-pinned):nth-child(-n + 9) .is-pinned .tab-wrapper {
     background-color: var(--colorBg, rgba(255, 255, 255, 0.2)) !important;
     border: 1px solid var(--colorHighlightBgDark) !important;
+}
 }
