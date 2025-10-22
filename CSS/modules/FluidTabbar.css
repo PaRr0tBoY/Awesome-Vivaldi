@@ -466,6 +466,7 @@ body:has(:is(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField,
     opacity: 1;
     min-height: 30px;
     max-height: 30px;
+    z-index: 200px !important;
     overflow: visible;
     transition: all var(--animation-speed) ease-out;
   }
