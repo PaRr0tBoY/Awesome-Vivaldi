@@ -263,7 +263,8 @@ body:not(:has(.toolbar-editor)) .button-toolbar.newtab {
 
 /* Hide When Tab Bar too Thin to Fit Tab Favicon */
 @container tabs-container (max-width: 30px) {
-  .tab-position .tab-wrapper {
+  .tab-position .tab-wrapper,
+  .separator {
     opacity: 0 !important;
     transition: opacity var(--animation-speed) !important;
   }
@@ -358,7 +359,7 @@ body:not(:has(.toolbar-editor)) .button-toolbar.newtab {
         max-width 0s cubic-bezier(0.4, 0, 0.2, 1),
         min-width 0s cubic-bezier(0.4, 0, 0.2, 1),
         opacity 0s cubic-bezier(0.4, 0, 0.2, 1);
-      transition-delay: var(--transition-delay-time-collapse);
+      /* transition-delay: var(--transition-delay-time-collapse); */
     }
   }
 }
@@ -388,6 +389,11 @@ body:not(:has(.toolbar-editor)) .button-toolbar.newtab {
   }
 }
 
+.separator {
+    justify-self: center !important;
+    margin-bottom: -8px;
+}
+
 /* ===Toolbar=== */
 
 /* ==After Toolbar== */
@@ -414,6 +420,9 @@ body:not(:has(.toolbar-editor)) .button-toolbar.newtab {
 /* Avoid Weird Space Under After Toolbar */
 #tabs-tabbar-container .toolbar-tabbar-after {
   align-content: flex-end; /* Avoid Bland Under toolbar */
+  min-height: 35px !important;
+  min-width: 100% !important;
+  background-color: var(--tabbar-bg-color-expand, var(--colorBgDark));
 }
 
 /* ==Before Toolbar== */
@@ -973,7 +982,7 @@ body:has(#panel_switch)
 .resize {
   justify-content: center !important;
   align-items: center !important;
-  /* max-height: fit-content !important; */
+  max-height: 100% !important;
 }
 #tabs-container .tab-strip {
   width: 95%;
@@ -988,6 +997,9 @@ body:has(#panel_switch)
   max-width: auto !important;
   margin: 0 max(calc(var(--densityGap) * 2), 1px) !important;
   /* margin: auto !important; */
+}
+#tabs-container.left .tab-strip, #tabs-container.right .tab-strip {
+  overflow-y: visible;
 }
 
 @container style(--fluid-blur-hibernate-tab: on) {
@@ -1026,17 +1038,17 @@ body:has(#panel_switch)
   display: none !important;
 }
 
-#tabs-tabbar-container #tabs-container {
+/* #tabs-tabbar-container #tabs-container {
   overflow: hidden !important;
   box-sizing: border-box !important;
-}
+} */
 
-body:has(:is(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup))
+/* body:has(:is(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup))
   #tabs-container,
 body:has(.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover)
   #tabs-container {
   overflow: visible !important;
-}
+} */
 
 /* tab-mini */
 
