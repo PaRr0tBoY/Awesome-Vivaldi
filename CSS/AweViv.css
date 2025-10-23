@@ -8,6 +8,12 @@
 @import "modules/theme-previewer.css";
 @import "modules/TidyTabs.css";
 @import "modules/FluidTabbar.css";
+@import "modules/SelectableText.css";
+@import "modules/braveTabs.css";
+@import "modules/EdgeCurve.css";
+@import "modules/StatusClock.css";
+@import "modules/stressingFocusButton.css";
+/* @import "modules/panel.css"; */
 
 /* Import notstable folder CSS files */
 /*@import "notstable/autoHidePanel.css";*/
@@ -21,16 +27,15 @@
 :root {
   /*on or off*/
   --fluid-compact-mode: off; /* Toggle on to Have a Thinner Main Tabbar */
-  --fluid-preview-mode: off; /*Experimental, use along with compact mode */
 
   --fluid-float-tabbar: on; /* Make Tabbar Float Over Webpage When Expanding */
-  --fluid-mask: on; /* When Tabbar Expand Show A Blurry Mask Over Webpage */
+  --fluid-mask: off; /* When Tabbar Expand Show A Blurry Mask Over Webpage */
   --fluid-blur-hibernate-tab: off; /* Blur Hibernated Tabs */
 
   --fluid-delay: on; /* Whether to delay the tabbar expand/collapse animation */
   --fluid-border-radius: on; /* Whether to round the tabbar border radius when it expand */
 
-  --fluid-transparent-mode: off;  /* Useless For Now */
+  --fluid-transparent-mode: off; /* Useless For Now */
 
   --fluid-tabs-grid: on; /* Whether to Show "Favourite Tabs" Grid */
   --fluid-pin-at-top: off; /* Experimental, Whether to Pin the "Favourite Tabs" at Top */
@@ -41,7 +46,7 @@
   --pinned-icon-size: 20px;
   --pinned-tab-height: 50px;
 
-  --tabs-container-collapse-width-default: 44px; 
+  --tabs-container-collapse-width-default: 44px;
   --tabs-container-collapse-width-compact: 7px; /* Compact Mode */
 
   --tabs-container-expand-width: 280px;
@@ -69,17 +74,29 @@
 
   /* Animation Delay Time */
   --transition-delay-time-expand: 0ms;
-  --transition-delay-time-collapse: 100ms;
+  --transition-delay-time-collapse: 200ms;
 
   /* Adaptive Skin */
   /* If you didn't set custom theme color, Tab bar accent from your browser theme color automatically */
   /* You can still add your own color, checkout example below */
 
+  /* Transparent Color */
+  /* --tabbar-bg-color-collapse: transparent;
+  --tabbar-bg-color-expand: transparent;
+  --tabbar-border-color-collapse: transparent;
+  --tabbar-border-color-expand: transparent; */
+
+  /* Theme Color */
+  --tabbar-bg-color-collapse: unset;
+  --tabbar-bg-color-expand: unset;
+  --tabbar-border-color-collapse: unset;
+  --tabbar-border-color-expand: unset;
+
   /* Dark Skin */
   /* --tabbar-bg-color-collapse: rgb(27, 27, 28);
-  --tabbar-bg-color-expand: rgb(53, 58, 63); */
-  /* --tabbar-border-color-collapse: rgba(66, 73, 80, 0.856);
-  /* --tabbar-border-color-expand: rgb(45, 123, 139); */
+  --tabbar-bg-color-expand: rgb(53, 58, 63);
+  --tabbar-border-color-collapse: rgba(66, 73, 80, 0.856);
+  --tabbar-border-color-expand: rgb(45, 123, 139); */
 
   /* ============================================ */
   /* Config Quietify.css */

@@ -41,3 +41,9 @@
       transition-duration: 0ms !important;
   }
 }
+/* Automate SD Bookmarks Bar */
+/* #browser:not(:has(.startpage)) .bookmark-bar:not(:hover):not(:focus-within) {max-height: 0; overflow: hidden; border:0; z-index:1;}
+#browser.bookmark-bar-top:has(.startpage) .bookmark-bar, .bookmark-bar-top .bookmark-bar:is(:hover, :focus-within) {margin-bottom: -29px; z-index:1;}
+#browser.bookmark-bar-top:not(:has(.startpage)) .bookmark-bar::before {content:''; position: absolute; left:0; right:0; top:0; height: 5px;}
+#browser.bookmark-bar-bottom:not(:has(.startpage)) .bookmark-bar::before {content:''; position: absolute; left:0; right:0; bottom:0; height: 7px;}
+ */

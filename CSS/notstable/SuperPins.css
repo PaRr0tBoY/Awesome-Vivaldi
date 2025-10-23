@@ -3,6 +3,7 @@
 	/* Container adjustments */
 	.resize {
 		max-height: fit-content !important;
+		overflow: hidden !important;
 	}
 
 	/* Grid layout for tab strip */
@@ -193,64 +194,43 @@
 	}
 
 	/* Separator and new tab full width */
-	/* #tabs-container .tab-strip .separator,
 	#tabs-container .tab-strip .newtab {
 		grid-column: 1 / -1 !important;
 	}
 
-	.tab-strip .separator,
-	.newtab {
-		grid-column: 1 / span 1;
+	/* Separator - 居中样式 */
+	#tabs-container .tab-strip .separator {
+		grid-column: 1 / -1 !important;
+		position: relative !important;
+		width: calc(100% - 12px) !important;
+		margin: 0 6px !important;
+		display: flex !important;
+		justify-content: center !important;
+		align-items: center !important;
+		transform: none !important;
+		/* margin-bottom: -6px !important; */
 	}
 
-	.tab-wrapper,
-	.tab-strip .separator {
+	#tabs-container .tab-strip .separator hr {
+		width: 100% !important;
+		margin: 0 !important;
+		height: 1px !important;
+		border: none !important;
+		/* background-color: var(--colorBgLighter) !important; */
+	}
+
+	.tab-wrapper {
 		position: relative;
 		transform: none;
 	}
 
-	.tab-strip .separator {
-		align-items: center;
-		margin-bottom: -6px;
+	.tab-header {
+		min-height: 100%;
 	}
 
-	.tab-strip .separator hr {
-		margin: 0;
-		width: 100%;
-	} */
-/* Separator and new tab full width */
-#tabs-container .tab-strip .newtab {
-  grid-column: 1 / -1 !important;
-}
-
-/* Separator - 居中样式 */
-#tabs-container .tab-strip .separator {
-  grid-column: 1 / -1 !important;
-  position: relative !important;
-  width: calc(100% - 12px) !important;
-  margin: 0 6px !important;
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  transform: none !important;
-  /* margin-bottom: -6px !important; */
-}
-
-#tabs-container .tab-strip .separator hr {
-  width: 100% !important;
-  margin: 0 !important;
-  height: 1px !important;
-  border: none !important;
-  /* background-color: var(--colorBgLighter) !important; */
-}
-
-.tab-wrapper {
-  position: relative;
-  transform: none;
-}
-
-
-
+	.svg-tab-selection{
+		min-height: 100%;
+	}
 
 	/* Non-pinned tabs layout */
 	#tabs-container .tab-position:not(.is-pinned),

@@ -1,0 +1,28 @@
+#panels span, #panels h1, #panels h2, #panels h3, #panels li, #panels p,
+.startpage span, .startpage h1, .startpage h2, .startpage h3, .startpage li, .startpage p,
+.vivaldi-settings span, .vivaldi-settings h1, .vivaldi-settings h2, .vivaldi-settings h3, .vivaldi-settings li,
+.vivaldi-settings .ReactVirtualized__Grid, .keyboardShortcutsWrapper{
+    user-select: text !important;
+    -webkit-user-select: text !important;
+}
+
+.UrlBar-AddressField .pageload:not(.unstarted).progressing .pageload-indicator {opacity: 1 !important; box-shadow: inset 0 0 0 .2px lime; background: rgb(0 255 0 / 10%);}
+.theme-dark .UrlBar-AddressField .pageload:not(.unstarted).progressing .pageload-indicator {background: rgb(0 255 0 / 20%);}
+
+/* Pageload ring indicator */
+.UrlBar-AddressField .pageload:not(.unstarted).progressing .pageload-indicator ~ .pageload-ticker:last-child {position:fixed; bottom:5px; right:0; width: 40px; height:40px; line-height:40px; color: white; text-align: center; text-shadow: 1px 1px 1px black, 0 0 3px black, 0 0 6px black; overflow: visible !important; display: flex; justify-content: center; align-items: center; padding:0 !important; border: none; opacity: 1;}
+.UrlBar-AddressField .pageload:not(.unstarted).progressing .pageload-indicator ~ .pageload-ticker:last-child::before {content:''; position: absolute; z-index:-1; width:40px; height:40px; border-radius:50%; background: conic-gradient(deepskyblue, blue 27% 73%, deepskyblue); -webkit-mask-image: -webkit-radial-gradient(center, circle, transparent 0 17px, black 17.5px 20px); animation: spin 1s steps(60) infinite !important; transition: all .12s linear !important;}
+
+.UrlBar-AddressField .pageload:not(.unstarted).progressing .pageload-indicator[value^='9']:not([value='9']) ~ .pageload-ticker:last-child::before {background: conic-gradient(#9995 0 10%, royalblue 0);}
+.UrlBar-AddressField .pageload:not(.unstarted).progressing .pageload-indicator[value^='8']:not([value='8']) ~ .pageload-ticker:last-child::before {background: conic-gradient(#9995 0 20%, dodgerblue 0);}
+.UrlBar-AddressField .pageload:not(.unstarted).progressing .pageload-indicator[value^='7']:not([value='7']) ~ .pageload-ticker:last-child::before {background: conic-gradient(#9995 0 30%, limegreen 0);}
+.UrlBar-AddressField .pageload:not(.unstarted).progressing .pageload-indicator[value^='6']:not([value='6']) ~ .pageload-ticker:last-child::before {background: conic-gradient(#9995 0 40%, chartreuse 0);}
+.UrlBar-AddressField .pageload:not(.unstarted).progressing .pageload-indicator[value^='5']:not([value='5']) ~ .pageload-ticker:last-child::before {background: conic-gradient(#9995 0 50%, gold 0);}
+.UrlBar-AddressField .pageload:not(.unstarted).progressing .pageload-indicator[value^='4']:not([value='4']) ~ .pageload-ticker:last-child::before {background: conic-gradient(#9995 0 60%, orange 0);}
+.UrlBar-AddressField .pageload:not(.unstarted).progressing .pageload-indicator[value^='3']:not([value='3']) ~ .pageload-ticker:last-child::before {background: conic-gradient(#9995 0 70%, darkorange 0);}
+.UrlBar-AddressField .pageload:not(.unstarted).progressing .pageload-indicator[value^='2']:not([value='2']) ~ .pageload-ticker:last-child::before {background: conic-gradient(#9995 0 80%, orangered 0);}
+.UrlBar-AddressField .pageload:not(.unstarted).progressing .pageload-indicator[value^='1']:not([value='1']):not([value='100']) ~ .pageload-ticker:last-child::before {background: conic-gradient(#9995 0 90%, red 0);}
+.UrlBar-AddressField .pageload:not(.unstarted).progressing .pageload-indicator[value^='0'] ~ .pageload-ticker:last-child::before {background: conic-gradient(#ff90ba, MediumVioletRed 27% 73%, #ff90ba);}
+
+
+

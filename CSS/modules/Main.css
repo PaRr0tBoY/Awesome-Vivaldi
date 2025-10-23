@@ -715,10 +715,10 @@ button[title="显示输入记录"] {
    ======================================== */
 
 /* Status bar height and color */
-.toolbar-statusbar {
+/* .toolbar-statusbar {
   height: 6px !important;
   background-color: rgba(29, 37, 33, 1) !important;
-}
+} */
 
 /* ========================================
    HIDE ADDRESS BAR WHEN TABS ARE HIDDEN
@@ -883,37 +883,6 @@ button[title="显示输入记录"] {
   flex: 1 1 100%;
 }
 
-/* 为包含workspace的按钮组添加统一的圆角矩形边框 */
-
-.toolbar-tabbar-after {
-  position: relative;
-}
-
-.toolbar-tabbar-after::before {
-  content: "";
-  position: absolute;
-  bottom: -12px;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: calc(var(--tabs-container-expand-width) - 12px);
-  height: 28px !important;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: var(--radius);
-  pointer-events: none;
-  z-index: 0;
-  background-color: rgba(119, 116, 116, 0.165);
-}
-
-.toolbar-tabbar-after .button-toolbar:has(.ToolbarButton-Button) {
-  position: relative;
-  z-index: 1;
-}
-
-.toolbar-tabbar-after button.ToolbarButton-Button[title*="workspace"]:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: calc(var(--radius) * 0.7);
-  transition: background 0.2s ease;
-}
 
 /* :root {
   --address-bar-focus-height: 80px;
