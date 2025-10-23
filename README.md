@@ -1,10 +1,35 @@
-# INDEX
+<div align="center">
+    <!-- <img width="200" height="200" src="/Others/Showcase/AV.png"> -->
+</div>
 
-- [Features](#features)
-- [Installation](#installation)
-- [Modlist](#community-js-mods-and-css-included-in-this-modpack)
 
-# Features
+
+<div align="center">
+    <h1>Awesome Vivaldi</h1>
+<div align="center">
+    
+[![DeepWiki](https://img.shields.io/badge/DeepWiki-Docs-blue)](https://deepwiki.com/PaRr0tBoY/Awesome-Vivaldi/2.3.1-main-ui-styles)
+[![Vivaldi Forum](https://img.shields.io/badge/Vivaldi-Forum-red)](https://forum.vivaldi.net/topic/112064/modpack-community-essentials-mods-collection?_=1761221602450)
+![GitHub repo size](https://img.shields.io/github/repo-size/PaRr0tBoY/Awesome-Vivaldi) 
+![GitHub Repo stars](https://img.shields.io/github/stars/PaRr0tBoY/Awesome-Vivaldi) 
+</div>
+    <p>A Curated Community Mod Pack</p>
+    
+<!-- <img src="" width="32%" alt="home" />
+<img src="" width="32%" alt="home" />
+<img src="" width="32%" alt="home" />
+<br/>
+<img src="" width="96%" alt="home" />
+<br/> -->
+</div>
+
+
+<br/>
+
+
+
+<details>
+<summary>Features</summary>
 
 | Features | Preview |
 |---------|---------|
@@ -16,51 +41,87 @@
 | **Better Tab Indicator**<br>- and More… | <img alt="indicator" width="630px" src="Others/Showcase/indicator/indicator.gif" /> |
 | **And More…** |  |
 
-# INSTALLATION
+</details>
 
-0. **BACKUP ALL NECESSARY FILES BEFORE STARTING**
+<details>
+<summary>How to Install:</summary>
 
-To install CSS:
+==**BACKUP ALL NECESSARY FILES BEFORE STARTING**==
 
-1. Open Vivaldi://experiments in Vivaldi and check Allow CSS Modification
+## To install CSS:
+
+1. Open 'Vivaldi://experiments' in Vivaldi and check 'Allow CSS Modification'
 2. Restart Vivaldi
-3. Go to Settings->Appearance and you'll see CUSTOM UI MODIFICATIONS. Select file location as "/path/to/your/css"
-4. Restart Vivaldi, you're all set!
+3. Clone this repo
+4. Under 'CSS/' there's a file called 'AweViv.css' that import all css mods in this modpack,
+   You can also find all configurations of all the css mods in this mod pack;
+   Which means you can toggle on/off all your css mods as well as persist your configuration when updating all in one place.
+5. Go to Settings->Appearance and you'll see 'CUSTOM UI MODIFICATIONS'. Select file location as "/path/to/Awesome-Vivaldi/CSS"
+6. Restart Vivaldi, you're all set!
 
-To install Javascript moddings:
+## To install Javascript moddings(Automatically)
 
-1. Duplicate js in moddings to `<YOURVIVALDIDIRECTORY>`\Application\<VERSI0N>\resources\vivaldi
-2. Under the same folder, there's a window.html  and you should fill in your js file name one by one in `<body>` like this
+1. If you're on windows, use [Vivaldi Mod Manager](https://github.com/eximido/vivaldimodmanager)
+2. If you're on linux, see [Vivaldi-Autoinject-Custom-js-ui](https://aur.archlinux.org/vivaldi-autoinject-custom-js-ui.git) for more info
+3. See also [Patching Vivaldi with batch scripts](https://forum.vivaldi.net/topic/10592/patching-vivaldi-with-batch-scripts/21?page=2) for all platform
+4. If you're on macOS use [macOS_Patch_Scripts | upviv](https://github.com/PaRr0tBoY/Vivaldi-Mods/blob/8a1e9f8a63f195f67f27ab2e5b86c4aff0081096/macOS_Patch_Scripts/upviv) as a reference for patchscript
+   
+## To install Javascript moddings(Manually):
+
+1. Duplicate javascripts file under moddings to `<YOURVIVALDIDIRECTORY>`\Application\<VERSI0N>\resources\vivaldi.
+2. Under the same folder, there's a window.html  and you should fill in your js file name one by one in `<body>`, after that
+   your window.html should look something like this.
 
 ```html
+<!-- Vivaldi window document -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Vivaldi</title>
+  <link rel="stylesheet" href="style/common.css" />
+  <link rel="stylesheet" href="chrome://vivaldi-data/css-mods/css" />
+</head>
+
 <body>
-<script src="color_tabs.js"></script>\
-<script src="monochrome-icons.js"></script>\
-<script src="import-export-command-chains.js"></script>\
-<script src="chroma.min.js"></script>\
-<script src="easy-files.js"></script>\
-<script src="element-capture.js"></script>\
-<script src="global-media-controls.js"></script>\
-<script src="AdaptiveWebPanelHeaders.js"></script>\
-<script src="vivaldi-dashboard-camo.js"></script>\
-<script src="autoHidePanel.js"></script>\
-<script src="ClickAddBlockList.js"></script>\
-<script src="colorful_loading_top_bar.js"></script>\
-<script src="feedIcon.js"></script>\
-<script src="mdNotes.js"></script>\
-<script src="yb_address_bar.js"></script>\
+<script src="color_tabs.js"></script>
+<script src="monochrome-icons.js"></script>
+<script src="import-export-command-chains.js"></script>
+<script src="chroma.min.js"></script>
+<script src="easy-files.js"></script>
+<script src="element-capture.js"></script>
+<script src="global-media-controls.js"></script>
+<script src="AdaptiveWebPanelHeaders.js"></script>
+<script src="autoHidePanel_personal.js"></script>
+<script src="feedIcon.js"></script>
+<script src="mdNotes.js"></script>
+<script src="yb_address_bar.js"></script>
+<script src="ClearTabs.js"></script>
+<script src="TidyTabs.js"></script>
+<script src="dialogTab.js"></script>
+<script src="ImmersiveAddressbar.js"></script>
+<script src="TidyTitles.js"></script>
+<script src="MoonPhase.js"></script>
+
 </body>
+
+</html>
+
 ```
+3. That's it!
+   
+### Advanced Reading
 
-3. Advanced Reading
-
-   a. you can patch vivaldi with bash scripts. To learn more check [Patching Vivaldi with batch scripts](https://forum.vivaldi.net/topic/10592/patching-vivaldi-with-batch-scripts/21?page=2)
-
-   b. To learn more about js modification for Vivaldi check [Modding Vivaldi | Vivaldi Forum](https://forum.vivaldi.net/topic/10549/modding-vivaldi?page=1)
-
-   c. To learn more about css modification for Vivaldi by yourself check [Inspecting the Vivaldi UI with DevTools | Vivaldi Forum](https://forum.vivaldi.net/topic/16684/inspecting-the-vivaldi-ui-with-devtools?page=1)
+1. you can patch vivaldi with batch scripts. To learn more check [Patching Vivaldi with batch scripts](https://forum.vivaldi.net/topic/10592/patching-vivaldi-with-batch-scripts/21?page=2)
+2. To learn more about js modification for Vivaldi check [Modding Vivaldi | Vivaldi Forum](https://forum.vivaldi.net/topic/10549/modding-vivaldi?page=1)
+3. To learn more about css modification for Vivaldi by yourself check [Inspecting the Vivaldi UI with DevTools | Vivaldi Forum](https://forum.vivaldi.net/topic/16684/inspecting-the-vivaldi-ui-with-devtools?page=1)
 4. If you're on macOS use [macOS_Patch_Scripts | upviv](https://github.com/PaRr0tBoY/Vivaldi-Mods/blob/8a1e9f8a63f195f67f27ab2e5b86c4aff0081096/macOS_Patch_Scripts/upviv) as a reference for patchscript
 
+</details>
+
+<details>
+<summary>Community Mods:</summary>
+   
 # Community JS Mods And CSS Included In This Modpack
 
 [📸 Element Capture](https://forum.vivaldi.net/topic/103686/element-capture?_=1758777284963)
@@ -139,3 +200,5 @@ To install Javascript moddings:
 [tovifun/VivalArc: With just a few tweaks, you can give Vivaldi that cool Arc vibe](https://github.com/tovifun/VivalArc)
 
 > Part of codes in this repo is used.
+
+</details>
