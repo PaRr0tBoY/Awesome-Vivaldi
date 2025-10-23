@@ -1,4 +1,7 @@
 # INDEX
+[![DeepWiki](https://img.shields.io/badge/DeepWiki-Docs-blue)](https://deepwiki.com/PaRr0tBoY/Awesome-Vivaldi/2.3.1-main-ui-styles)
+[![Vivaldi Forum](https://img.shields.io/badge/Vivaldi-Forum-red)](https://forum.vivaldi.net/topic/112064/modpack-community-essentials-mods-collection?_=1761221602450)
+
 
 - [Features](#features)
 - [Installation](#installation)
