@@ -113,18 +113,20 @@ body:not(:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .tool
 }
 
 /* Sub tab bar expansion squeezes main tab bar */
-body:not(:has(:is(.WorkspacePopup, #panel_switch, .toolbar-editor, .UrlBar-AddressField:focus-within)))
-#tabs-tabbar-container:has(#tabs-subcontainer:hover),
-body:has(.StackEditor) #tabs-tabbar-container {
-	& #tabs-container {
-		min-width: var(--tabs-container-collapse-width-compact) !important;
-		max-width: var(--tabs-container-collapse-width-compact) !important;
-	}
-	& #tabs-subcontainer {
-		min-width: calc(var(--tabs-container-expand-width) + var(--tabs-subcontainer-collapse-width) - var(--tabs-container-collapse-width-compact)) !important;
-		max-width: calc(var(--tabs-container-expand-width) + var(--tabs-subcontainer-collapse-width) - var(--tabs-container-collapse-width-compact)) !important;
-		--tabs-subcontainer-expand-width: ;
-	}
+@container not style(--fluid-compact-mode: on) {
+  body:not(:has(:is(.WorkspacePopup, #panel_switch, .toolbar-editor, .UrlBar-AddressField:focus-within)))
+  #tabs-tabbar-container:has(#tabs-subcontainer:hover),
+  body:has(.StackEditor) #tabs-tabbar-container {
+    & #tabs-container {
+      min-width: var(--tabs-container-collapse-width-compact) !important;
+      max-width: var(--tabs-container-collapse-width-compact) !important;
+    }
+    & #tabs-subcontainer {
+      min-width: calc(var(--tabs-container-expand-width) + var(--tabs-subcontainer-collapse-width) - var(--tabs-container-collapse-width-compact)) !important;
+      max-width: calc(var(--tabs-container-expand-width) + var(--tabs-subcontainer-collapse-width) - var(--tabs-container-collapse-width-compact)) !important;
+      --tabs-subcontainer-expand-width: ;
+    }
+  }
 }
 
 /* Overall tab bar container */
@@ -412,6 +414,7 @@ body:has(:is(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField,
 /* Floating Tab Bar */
 /* ============================================ */
 
+@container style(--fluid-float-tabbar: on) {
 #main > .inner > div:has(#tabs-tabbar-container) {
 	position: absolute;
 	top: 0;
@@ -486,6 +489,7 @@ body:has(:is(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField,
 		var(--tabs-container-collapse-width-default) +
 		var(--tabs-subcontainer-collapse-width)
 	);
+}
 }
 
 /* ============================================ */
@@ -743,28 +747,19 @@ body:has(#panel_switch) #browser:not(.fullscreen) :has(#tabs-tabbar-container.le
 @container style(--fluid-preview-mode: on) {
 	/* Show preview of main tab bar when hovering overall container */
 	body:not(:has(:is(.WorkspacePopup, #panel_switch, .toolbar-editor, .UrlBar-AddressField:focus-within))) 
-	#tabs-tabbar-container:hover #tabs-container:not(:hover) {
-		min-width: var(--tabs-container-collapse-width-default) !important;
-		max-width: var(--tabs-container-collapse-width-default) !important;
-		margin-top: var(--tabbar-margin-top) !important;
-		margin-bottom: var(--tabbar-margin-bottom) !important;
-		background-color: var(--tabbar-bg-color-collapse, var(--colorBg)) !important;
-		border-radius: var(--tabbar-border-radius-collapse) !important;
-		border: 1px dotted var(--tabbar-border-color-collapse, var(--colorBgLighter)) !important;
-		transition:
-			border-radius var(--animation-speed) ease-out,
-			border var(--animation-speed) ease-out,
-			background-color var(--animation-speed) ease-out,
-			min-width var(--animation-speed) ease-out,
-			max-width var(--animation-speed) ease-out !important;
-		box-sizing: border-box !important;
-		position: relative !important;
-		overflow: hidden !important;
-
-		& .tab-strip .is-pinned .tab:hover .close {
-			display: flex;
-		}
-	}
+	#tabs-tabbar-container:hover{
+    & #tabs-container:not(:hover) {
+      min-width: var(--tabs-container-collapse-width-default) !important;
+      max-width: var(--tabs-container-collapse-width-default) !important;
+      & .tab-strip .is-pinned .tab:hover .close {
+        display: flex;
+      }
+    }
+    & #tabs-subcontainer:hover {
+      min-width: var(--tabs-subcontainer-expand-width) !important;
+      max-width: var(--tabs-subcontainer-expand-width) !important;
+    }
+  }
 }
 
 /* ============================================ */

@@ -19,27 +19,30 @@
 
 /* Adjust Configure In :root */
 :root {
-  /* ============================================ */
-  /* Config FluidTabbar.css */
-  /* ============================================ */
-
   /*on or off*/
-  --fluid-compact-mode: off;
-  --fluid-mask: on;
-  --fluid-delay: on;
-  --fluid-tabs-grid: on;
-  --fluid-pin-at-top: off;
-  --fluid-border-radius: on;
-  --fluid-blur-hibernate-tab: off;
-  --fluid-transparent-mode: off;
-  --fluid-preview-mode: off;
+  --fluid-compact-mode: off; /* Toggle on to Have a Thinner Main Tabbar */
+  --fluid-preview-mode: off; /*Experimental, use along with compact mode */
 
-  /* Main Tabbar's default width when it collapse  */
-  /* Default is set 44px and better keep it this way */
-  --tabs-container-collapse-width-default: 44px;
-  /* Main Tabbar's default width when it collapse in **compact mode** */
-  /* This value should not set lower than 6px, which will cause weird issue. Default is set 7px and better keep it this way */
-  --tabs-container-collapse-width-compact: 7px;
+  --fluid-float-tabbar: on; /* Make Tabbar Float Over Webpage When Expanding */
+  --fluid-mask: on; /* When Tabbar Expand Show A Blurry Mask Over Webpage */
+  --fluid-blur-hibernate-tab: off; /* Blur Hibernated Tabs */
+
+  --fluid-delay: on; /* Whether to delay the tabbar expand/collapse animation */
+  --fluid-border-radius: on; /* Whether to round the tabbar border radius when it expand */
+
+  --fluid-transparent-mode: off;  /* Useless For Now */
+
+  --fluid-tabs-grid: on; /* Whether to Show "Favourite Tabs" Grid */
+  --fluid-pin-at-top: off; /* Experimental, Whether to Pin the "Favourite Tabs" at Top */
+
+  --pinned-column-count: 3;
+  --pinned-row-count: 3;
+  --pinned-gap: 8px;
+  --pinned-icon-size: 20px;
+  --pinned-tab-height: 50px;
+
+  --tabs-container-collapse-width-default: 44px; 
+  --tabs-container-collapse-width-compact: 7px; /* Compact Mode */
 
   --tabs-container-expand-width: 280px;
   --tabs-subcontainer-collapse-width: 44px;
@@ -52,16 +55,12 @@
   --Button-newtab-main-width: calc(var(--tabs-container-expand-width) / 2);
   --Button-newtab-sub-width: calc(var(--tabs-subcontainer-expand-width) / 2);
 
-  /* Adjust tabbar margin and padding */
   --tabbar-margin-top: -6px;
   --tabbar-margin-bottom: 0px;
   --tabbar-padding: 7px; /* Set to 0 if any tabs position problem */
 
-  /* Adjust tabbars' border radius when they expand or collapse */
-  /* --tabbar-border-radius-expand: 17px; */
   /* Expand tab bar border change accordingly to border radius set in browser theme*/
-  --tabbar-border-radius-collapse: 0px;
-  /* Set to zero if you don't want round corner when tabbar collapsed */
+  --tabbar-border-radius-collapse: 0px; /* Set to zero if you don't want round corner when tabbar collapsed */
 
   /* Animation speed when tabbars expand or collapse */
   --slow-animation-speed: 560ms;
@@ -70,47 +69,17 @@
 
   /* Animation Delay Time */
   --transition-delay-time-expand: 0ms;
-  /* --transition-delay-time-collapse: 120ms; */
   --transition-delay-time-collapse: 100ms;
-
-  /* Adjust tabbars' color when they expand or collapse */
 
   /* Adaptive Skin */
   /* If you didn't set custom theme color, Tab bar accent from your browser theme color automatically */
   /* You can still add your own color, checkout example below */
-
-  /* Light Skin */
-  /* --tabbar-bg-color-collapse: rgb(160, 177, 178);
-  --tabbar-bg-color-expand: rgb(201, 222, 223);
-  --tabbar-border-color-collapse: rgba(223, 249, 253, 1);
-  --tabbar-border-color-expand: rgba(0, 251, 255, 1); */
 
   /* Dark Skin */
   /* --tabbar-bg-color-collapse: rgb(27, 27, 28);
   --tabbar-bg-color-expand: rgb(53, 58, 63); */
   /* --tabbar-border-color-collapse: rgba(66, 73, 80, 0.856);
   /* --tabbar-border-color-expand: rgb(45, 123, 139); */
-
-  /* My Skin(Green) */
-  /* --tabbar-bg-color-collapse: rgba(25, 30, 25, 1); */
-  /* --tabbar-bg-color-expand: rgba(11, 41, 17, 0.4); */
-  /* --tabbar-border-color-collapse: rgba(0, 73, 45, 1); */
-  /* --tabbar-border-color-expand: rgba(1, 131, 133, 1); */
-
-  /* Debug */
-  /* --tabs-container-bg-color: red;
-  --tabs-subcontainer-bg-color: green; */
-
-  /* ============================================ */
-  /* Config Superpins.css */
-  /* ============================================ */
-
-  --pinned-column-count: 3;
-  --pinned-row-count: 3;
-  --pinned-gap: 8px;
-  /* --pinned-bg: var(--colorAccentBgAlphaHeavy, rgba(255, 255, 255, 0.1)); */
-  --pinned-icon-size: 20px;
-  --pinned-tab-height: 50px;
 
   /* ============================================ */
   /* Config Quietify.css */
@@ -131,20 +100,11 @@
   --linux-header: calc(var(--window-border) + 20px);
   --addressbar-height: 36px;
   --window-button-scale: 0.8;
-  --window-button-opacity: 0.3
-    /*--tab-padding: calc(var(--window-border) / 2);*/ --tab-padding: 0;
+  --window-button-opacity: 0.3;
+  /*--tab-padding: calc(var(--window-border) / 2);*/
+  --tab-padding: 0;
   --colorTransparent: transparent;
 
-  /* Shadow Effects */
-  /* --webview-shadow-light:
-    0px 1px 3px 0px rgba(0, 0, 0, 0.1),
-    0px 0px var(--window-border) 0px rgba(0, 0, 0, 0.1);
-  --webview-shadow-dark:
-    0px 2px 2px 0px rgba(0, 0, 0, 0.05), 0px 2px 8px 0px rgba(0, 0, 0, 0.05),
-    0px 0px 0px 1.2px #ffffff18; */
-
-  /* --mod-highlight-color: #c00; */
-  /* --mod-border-radius: 10px; */
   /* Tab Styling Variables */
   --mod-whitespace-x: 3px;
   --mod-whitespace-y: 5px;
