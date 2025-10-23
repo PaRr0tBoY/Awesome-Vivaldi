@@ -10,7 +10,7 @@
 @import "modules/FluidTabbar.css";
 
 /* Import notstable folder CSS files */
-@import "notstable/autoHidePanel.css";
+/*@import "notstable/autoHidePanel.css";*/
 @import "notstable/tileExpand.css";
 @import "notstable/ClearTabs.css";
 @import "notstable/SuperPins.css";
@@ -39,12 +39,15 @@
   --tabs-container-collapse-width-default: 44px;
   /* Main Tabbar's default width when it collapse in **compact mode** */
   /* This value should not set lower than 6px, which will cause weird issue. Default is set 7px and better keep it this way */
-  --tabs-container-collapse-width-compact: 7px; 
-
+  --tabs-container-collapse-width-compact: 7px;
 
   --tabs-container-expand-width: 280px;
   --tabs-subcontainer-collapse-width: 44px;
-  --tabs-subcontainer-expand-width: calc(var(--tabs-container-expand-width) + var(--tabs-subcontainer-collapse-width) - var(--tabs-container-collapse-width-default));
+  --tabs-subcontainer-expand-width: calc(
+    var(--tabs-container-expand-width) +
+      var(--tabs-subcontainer-collapse-width) -
+      var(--tabs-container-collapse-width-default)
+  );
 
   --Button-newtab-main-width: calc(var(--tabs-container-expand-width) / 2);
   --Button-newtab-sub-width: calc(var(--tabs-subcontainer-expand-width) / 2);
@@ -85,7 +88,7 @@
   /* Dark Skin */
   /* --tabbar-bg-color-collapse: rgb(27, 27, 28);
   --tabbar-bg-color-expand: rgb(53, 58, 63); */
-  /* --tabbar-border-color-collapse: rgba(66, 73, 80, 0.856); 
+  /* --tabbar-border-color-collapse: rgba(66, 73, 80, 0.856);
   /* --tabbar-border-color-expand: rgb(45, 123, 139); */
 
   /* My Skin(Green) */
