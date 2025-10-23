@@ -114,8 +114,8 @@
 
 9. **多语言命名逻辑：**
 
-   * 若 **${languageName}** = 中文 → 输出中文标题，如 [GitHub] CSS性能优化
-   * 若 **${languageName}** = English → 输出英文标题，如 [GitHub] CSS Optimization
+   * 若 **${languageName}** = 中文 → 输出中文标题，如 GitHub | CSS性能优化
+   * 若 **${languageName}** = English → 输出英文标题，如 GitHub | CSS Optimization
    * 保持语言一致性，不混用中英文
 
 10. **输出格式：**
@@ -138,7 +138,7 @@
   * URL: "[https://developers.google.com/web/fundamentals/performance](https://developers.google.com/web/fundamentals/performance)"
   * 摘要: "This guide covers web performance optimization best practices..."
   * languageName: 中文
-  * 输出 → Google| 网站性能优化
+  * 输出 → Google | 网站性能优化
 
 * 输入：
 
@@ -146,7 +146,7 @@
   * URL: "[https://github.com/vercel/next.js](https://github.com/vercel/next.js)"
   * 摘要: "Next.js is a React framework for production..."
   * languageName: English
-  * 输出 → GitHub| Next.js Framework
+  * 输出 → GitHub | Next.js Framework
 
 * 输入：
 
@@ -154,7 +154,7 @@
   * URL: "[https://www.zhihu.com/question/123456](https://www.zhihu.com/question/123456)"
   * 摘要: "本文探讨了快速学习编程的技巧与心态..."
   * languageName: 中文
-  * 输出 → 知乎| 编程学习
+  * 输出 → 知乎 | 编程学习
 
 * 输入：
 
@@ -162,7 +162,7 @@
   * URL: "[https://example.com/2024/10/20/why-css-is-hard](https://example.com/2024/10/20/why-css-is-hard)"
   * 摘要: ""
   * languageName: English
-  * 输出 → Example| Why CSS Is Hard
+  * 输出 → Example | Why CSS Is Hard
 
 * 输入：
 
@@ -170,7 +170,7 @@
   * URL: "[https://example.com/home](https://example.com/home)"
   * 摘要: ""
   * languageName: English
-  * 输出 → Example| home
+  * 输出 → Example | home
 `;
 
     // 输出完整提示词到控制台供调试

@@ -1,1059 +1,875 @@
 /* ============================================ */
-/* Main Tab bar */
+/* Vivaldi Fluid Tabbar - Collapsible Tab Bar */
 /* ============================================ */
 
-/* Collapse */
+/* ============================================ */
+/* Core Layout & Container Sizing */
+/* ============================================ */
+
+/* Main tab bar container */
 #tabs-container {
-  container-type: inline-size;
-  container-name: tabs-container;
-  min-width: var(--tabs-container-collapse-width-default) !important;
-  max-width: var(--tabs-container-collapse-width-default) !important;
-  margin-top: var(--tabbar-margin-top) !important;
-  margin-bottom: var(--tabbar-margin-bottom) !important;
-  background-color: var(--tabbar-bg-color-collapse, var(--colorBg)) !important;
-  border-radius: var(--tabbar-border-radius-collapse) !important;
-  border: 1px dotted var(--tabbar-border-color-collapse, var(--colorBgLighter)) !important;
-  transition:
-    border-radius var(--animation-speed) ease-out,
-    border var(--animation-speed) ease-out,
-    background-color var(--animation-speed) ease-out,
-    min-width var(--animation-speed) ease-out,
-    max-width var(--animation-speed) ease-out !important;
-  box-sizing: border-box !important;
-  position: relative !important;
-  overflow: visible !important;
+	container-type: inline-size;
+	container-name: tabs-container;
+	min-width: var(--tabs-container-collapse-width-default) !important;
+	max-width: var(--tabs-container-collapse-width-default) !important;
+	margin-top: var(--tabbar-margin-top) !important;
+	margin-bottom: var(--tabbar-margin-bottom) !important;
+	background-color: var(--tabbar-bg-color-collapse, var(--colorBg)) !important;
+	border-radius: var(--tabbar-border-radius-collapse) !important;
+	border: 1px dotted var(--tabbar-border-color-collapse, var(--colorBgLighter)) !important;
+	transition:
+		border-radius var(--animation-speed) ease-out,
+		border var(--animation-speed) ease-out,
+		background-color var(--animation-speed) ease-out,
+		min-width var(--animation-speed) ease-out,
+		max-width var(--animation-speed) ease-out !important;
+	box-sizing: border-box !important;
+	position: relative !important;
+	overflow: visible !important;
 }
 
-/* Expand */
+/* Main tab bar expansion on hover */
 body:not(:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #panel_switch)))
 #tabs-container:hover {
-  min-width: var(--tabs-container-expand-width) !important;
-  max-width: var(--tabs-container-expand-width) !important;
-  background-color: var(
-    --tabbar-bg-color-expand,
-    var(--colorBgDarker)
-  ) !important;
-  transition:
-    border-radius var(--animation-speed) ease-out,
-    border var(--animation-speed) ease-out,
-    background-color var(--animation-speed) ease-out,
-    min-width var(--animation-speed) ease-out,
-    max-width var(--animation-speed) ease-out !important;
-  margin-top: var(--tabbar-margin-top) !important;
-  margin-bottom: var(--tabbar-margin-bottom) !important;
-  box-sizing: border-box !important;
+	min-width: var(--tabs-container-expand-width) !important;
+	max-width: var(--tabs-container-expand-width) !important;
+	background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important;
+	transition:
+		border-radius var(--animation-speed) ease-out,
+		border var(--animation-speed) ease-out,
+		background-color var(--animation-speed) ease-out,
+		min-width var(--animation-speed) ease-out,
+		max-width var(--animation-speed) ease-out !important;
+	margin-top: var(--tabbar-margin-top) !important;
+	margin-bottom: var(--tabbar-margin-bottom) !important;
+	box-sizing: border-box !important;
 }
 
-/* Keep Expanded In Specific Conditions */
+/* Keep expanded when specific UI elements are active */
 body:has(
-    :is(
-      .WorkspacePopup,
-      .toolbar-editor,
-      #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within,
-      #vivaldi-tooltip:hover,
-      .toolbar-tabbar-before .ToolbarButton-Button.button-pressed,
-      .toolbar-tabbar-after .ToolbarButton-Button.button-pressed
-    )
-  )
-  #tabs-container {
-  min-width: var(--tabs-container-expand-width) !important;
-  max-width: var(--tabs-container-expand-width) !important;
-  background-color: var(
-    --tabbar-bg-color-expand,
-    var(--colorBgDarker)
-  ) !important;
-  transition:
-    border-radius var(--animation-speed) ease-out,
-    border var(--animation-speed) ease-out,
-    background-color var(--animation-speed) ease-out,
-    min-width var(--animation-speed) ease-out,
-    max-width var(--animation-speed) ease-out !important;
-  margin-top: var(--tabbar-margin-top) !important;
-  margin-bottom: var(--tabbar-margin-bottom) !important;
-  box-sizing: border-box !important;
+	:is(
+		.WorkspacePopup,
+		.toolbar-editor,
+		#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within,
+		#vivaldi-tooltip:hover,
+		.toolbar-tabbar-before .ToolbarButton-Button.button-pressed,
+		.toolbar-tabbar-after .ToolbarButton-Button.button-pressed
+	)
+)
+#tabs-container {
+	min-width: var(--tabs-container-expand-width) !important;
+	max-width: var(--tabs-container-expand-width) !important;
+	background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important;
+	transition:
+		border-radius var(--animation-speed) ease-out,
+		border var(--animation-speed) ease-out,
+		background-color var(--animation-speed) ease-out,
+		min-width var(--animation-speed) ease-out,
+		max-width var(--animation-speed) ease-out !important;
+	margin-top: var(--tabbar-margin-top) !important;
+	margin-bottom: var(--tabbar-margin-bottom) !important;
+	box-sizing: border-box !important;
 }
 
-/* ============================================ */
-/* Sub Tab Bar */
-/* ============================================ */
-
-/* Collapse */
+/* Sub tab bar container */
 #tabs-subcontainer {
-  min-width: var(--tabs-subcontainer-collapse-width) !important;
-  max-width: var(--tabs-subcontainer-collapse-width) !important;
-  margin-top: var(--tabbar-margin-top) !important;
-  margin-bottom: var(--tabbar-margin-bottom) !important;
-  padding-top: var(--tabbar-padding) !important;
-  background-color: var(--tabbar-bg-color-collapse, var(--colorBg)) !important;
-  border-radius: var(--tabbar-border-radius-collapse) !important;
-  border: 1px dotted var(--tabbar-border-color-collapse, var(--colorBgLighter)) !important;
-  transition:
-    min-width var(--animation-speed) ease-out,
-    max-width var(--animation-speed) ease-out,
-    background-color var(--animation-speed) ease-out,
-    border-radius var(--animation-speed) ease-out,
-    border var(--animation-speed) ease-out,
-    transform var(--animation-speed) ease-out !important;
-  box-sizing: border-box !important;
-  position: relative !important;
-  will-change: transform !important;
+	min-width: var(--tabs-subcontainer-collapse-width) !important;
+	max-width: var(--tabs-subcontainer-collapse-width) !important;
+	margin-top: var(--tabbar-margin-top) !important;
+	margin-bottom: var(--tabbar-margin-bottom) !important;
+	padding-top: var(--tabbar-padding) !important;
+	background-color: var(--tabbar-bg-color-collapse, var(--colorBg)) !important;
+	border-radius: var(--tabbar-border-radius-collapse) !important;
+	border: 1px dotted var(--tabbar-border-color-collapse, var(--colorBgLighter)) !important;
+	transition:
+		min-width var(--animation-speed) ease-out,
+		max-width var(--animation-speed) ease-out,
+		background-color var(--animation-speed) ease-out,
+		border-radius var(--animation-speed) ease-out,
+		border var(--animation-speed) ease-out,
+		transform var(--animation-speed) ease-out !important;
+	box-sizing: border-box !important;
+	position: relative !important;
+	will-change: transform !important;
 }
 
-/* Expand */
-body:not(:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #panel_switch))) #tabs-subcontainer:hover {
-  min-width: var(--tabs-subcontainer-expand-width) !important;
-  max-width: var(--tabs-subcontainer-expand-width) !important;
-  background-color: var(
-    --tabbar-bg-color-expand,
-    var(--colorBgDarker)
-  ) !important;
-  transition:
-    border-radius var(--animation-speed) ease-out,
-    border var(--animation-speed) ease-out,
-    min-width var(--animation-speed) ease-out,
-    max-width var(--animation-speed) ease-out,
-    background-color var(--animation-speed) ease-out,
-    transform var(--animation-speed) ease-out !important;
-  margin-top: var(--tabbar-margin-top) !important;
-  margin-bottom: var(--tabbar-margin-bottom) !important;
-  padding-top: var(--tabbar-padding) !important;
-  box-sizing: border-box !important;
+/* Sub tab bar expansion on hover */
+body:not(:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #panel_switch))) 
+#tabs-subcontainer:hover {
+	min-width: var(--tabs-subcontainer-expand-width) !important;
+	max-width: var(--tabs-subcontainer-expand-width) !important;
+	background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important;
+	transition:
+		border-radius var(--animation-speed) ease-out,
+		border var(--animation-speed) ease-out,
+		min-width var(--animation-speed) ease-out,
+		max-width var(--animation-speed) ease-out,
+		background-color var(--animation-speed) ease-out,
+		transform var(--animation-speed) ease-out !important;
+	margin-top: var(--tabbar-margin-top) !important;
+	margin-bottom: var(--tabbar-margin-bottom) !important;
+	padding-top: var(--tabbar-padding) !important;
+	box-sizing: border-box !important;
 }
 
-/* Expand and Squeeze main tab bar */
+/* Sub tab bar expansion squeezes main tab bar */
 body:not(:has(:is(.WorkspacePopup, #panel_switch, .toolbar-editor, .UrlBar-AddressField:focus-within)))
 #tabs-tabbar-container:has(#tabs-subcontainer:hover),
 body:has(.StackEditor) #tabs-tabbar-container {
-  & #tabs-container {
-  min-width: var(--tabs-container-collapse-width-compact) !important;
-  max-width: var(--tabs-container-collapse-width-compact) !important;
-  }
-  & #tabs-subcontainer {
-  min-width: calc(var(--tabs-container-expand-width) + var(--tabs-subcontainer-collapse-width) - var(--tabs-container-collapse-width-compact)) !important;
-  max-width: calc(var(--tabs-container-expand-width) + var(--tabs-subcontainer-collapse-width) - var(--tabs-container-collapse-width-compact)) !important;
-  --tabs-subcontainer-expand-width: ;
-  }
+	& #tabs-container {
+		min-width: var(--tabs-container-collapse-width-compact) !important;
+		max-width: var(--tabs-container-collapse-width-compact) !important;
+	}
+	& #tabs-subcontainer {
+		min-width: calc(var(--tabs-container-expand-width) + var(--tabs-subcontainer-collapse-width) - var(--tabs-container-collapse-width-compact)) !important;
+		max-width: calc(var(--tabs-container-expand-width) + var(--tabs-subcontainer-collapse-width) - var(--tabs-container-collapse-width-compact)) !important;
+		--tabs-subcontainer-expand-width: ;
+	}
 }
 
-/* ============================================ */
-/* Overall Tab Bar */
-/* ============================================ */
-
+/* Overall tab bar container */
 #tabs-tabbar-container {
-  width: auto !important;
-  min-width: var(--tabs-container-collapse-width-default) !important;
-  max-width: calc(var(--tabs-container-expand-width)+var(--tabs-subcontainer-collapse-width)) !important;
-  background-color: transparent !important;
-  background-image: none !important;
-  border: none !important;
-  border-radius: calc(var(--radius) + 6px);
-  box-shadow: none !important;
-  box-sizing: border-box !important;
-  transition:
-    width var(--animation-speed) ease-out,
-    min-width var(--animation-speed) ease-out,
-    max-width var(--animation-speed) ease-out !important;
-  position: relative !important;
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: stretch !important;
+	width: auto !important;
+	min-width: var(--tabs-container-collapse-width-default) !important;
+	max-width: calc(var(--tabs-container-expand-width) + var(--tabs-subcontainer-collapse-width)) !important;
+	background-color: transparent !important;
+	background-image: none !important;
+	border: none !important;
+	border-radius: calc(var(--radius) + 6px);
+	box-shadow: none !important;
+	box-sizing: border-box !important;
+	transition:
+		width var(--animation-speed) ease-out,
+		min-width var(--animation-speed) ease-out,
+		max-width var(--animation-speed) ease-out !important;
+	position: relative !important;
+	display: flex !important;
+	flex-direction: row !important;
+	align-items: stretch !important;
 }
 
 /* ============================================ */
-/* Border Color */
+/* Border Styling */
 /* ============================================ */
 
 #tabs-tabbar-container #tabs-container:hover {
-  border: 1px solid
-    var(--tabbar-border-color-expand, var(--colorAccentBgFadedMost)) !important;
+	border: 1px solid var(--tabbar-border-color-expand, var(--colorAccentBgFadedMost)) !important;
 }
 
 #tabs-tabbar-container #tabs-subcontainer:hover {
-  border: 1px solid
-    var(--tabbar-border-color-expand, var(--colorAccentBgFadedMost)) !important;
+	border: 1px solid var(--tabbar-border-color-expand, var(--colorAccentBgFadedMost)) !important;
 }
 
 /* ============================================ */
-/* Tabbar Order */
+/* Tab Bar Positioning (Left/Right) */
 /* ============================================ */
 
 #tabs-tabbar-container.right #tabs-subcontainer.right {
-  order: 1 !important;
-  flex-shrink: 0 !important;
+	order: 1 !important;
+	flex-shrink: 0 !important;
 }
 
 #tabs-tabbar-container.right #tabs-container.right {
-  order: 2 !important;
-  flex-shrink: 0 !important;
+	order: 2 !important;
+	flex-shrink: 0 !important;
 }
+
 #tabs-tabbar-container.left #tabs-container.left {
-  order: 1 !important;
-  flex-shrink: 0 !important;
+	order: 1 !important;
+	flex-shrink: 0 !important;
 }
 
 #tabs-tabbar-container.left #tabs-subcontainer.left {
-  order: 2 !important;
-  flex-shrink: 0 !important;
+	order: 2 !important;
+	flex-shrink: 0 !important;
 }
-
-/* ============================================ */
-/* Tabbar Order Swap when Hover*/
-/* ============================================ */
-
-/* #tabs-tabbar-container:hover{
-  & #tabs-container.right{
-    order: 1 !important;
-  }
-  & #tabs-subcontainer.right{
-    order: 2 !important;
-  }
-  & #tabs-container.left{
-    order: 2 !important;
-  }
-  & #tabs-subcontainer.left{
-    order: 1 !important;
-  }
-} */
 
 /* ============================================ */
 /* New Tab Button */
 /* ============================================ */
 
-/* Hover on Toolbar and Show */
+/* Show button when toolbar is hovered or in edit mode */
 body:has(.toolbar-editor) .button-toolbar.newtab,
 .toolbar.toolbar-tabbar:hover .button-toolbar.newtab,
 .toolbar.toolbar-tabbar-after:hover .button-toolbar.newtab,
 .toolbar.toolbar-tabbar-before:hover .button-toolbar.newtab {
-  opacity: 1;
-  visibility: visible;
+	opacity: 1;
+	visibility: visible;
 }
 
-/* Auto Hide */
+/* Hide button by default */
 body:not(:has(.toolbar-editor)) .button-toolbar.newtab {
-  z-index: 100 !important;
-  opacity: 0;
-  visibility: hidden;
-  transition:
-    opacity 0.2s ease-in-out,
-    visibility 0.2s ease-in-out;
-  overflow: hidden;
+	z-index: 100 !important;
+	opacity: 0;
+	visibility: hidden;
+	transition:
+		opacity 0.2s ease-in-out,
+		visibility 0.2s ease-in-out;
+	overflow: hidden;
 }
 
-/* Style On Main Tab Bar */
+/* Main tab bar new tab button */
 #tabs-container .button-toolbar.newtab {
-  width: var(--Button-newtab-main-width);
-  z-index: 100 !important;
-  border-radius: 5px !important;
+	width: var(--Button-newtab-main-width);
+	z-index: 100 !important;
+	border-radius: 5px !important;
 }
-/* Style On Sub Tab Bar */
+
+/* Sub tab bar new tab button */
 #tabs-subcontainer .button-toolbar.newtab {
-  width: var(--Button-newtab-sub-width);
-  position: absolute !important;
-  bottom: 10px !important;
-  left: calc(50% - var(--Button-newtab-sub-width) / 2) !important;
-  z-index: 100 !important;
-  border-radius: 5px !important;
+	width: var(--Button-newtab-sub-width);
+	position: absolute !important;
+	bottom: 10px !important;
+	left: calc(50% - var(--Button-newtab-sub-width) / 2) !important;
+	z-index: 100 !important;
+	border-radius: 5px !important;
 }
 
-/* ========================================
-   Hide Elements When Tab Bar Collapsed
-   ======================================== */
+/* ============================================ */
+/* Tab Elements Visibility (Responsive) */
+/* ============================================ */
 
-/* ===Tab=== */
-
-/* Hide When Tab Bar too Thin to Fit Tab Favicon */
+/* Hide tabs when container is too narrow for favicons */
 @container tabs-container (max-width: 30px) {
-  .tab-position .tab-wrapper,
-  .separator {
-    opacity: 0 !important;
-    transition: opacity var(--animation-speed) !important;
-  }
+	.tab-position .tab-wrapper,
+	.separator {
+		opacity: 0 !important;
+		transition: opacity var(--animation-speed) !important;
+	}
 }
 
-/* ===Tab Header=== */
-#tabs-container
-  .tab-strip
-  > span:has(.is-pinned)
-  .is-pinned
-  .tab-wrapper
-  .tab-header {
-  /* justify-content: flex-start !important; */
-  align-items: center !important;
-  width: 100% !important;
-  height: 100% !important;
-  flex: auto !important;
-  position: relative !important;
-  display: flex !important;
+/* Tab header layout */
+#tabs-container .tab-strip > span:has(.is-pinned) .is-pinned .tab-wrapper .tab-header {
+	align-items: center !important;
+	width: 100% !important;
+	height: 100% !important;
+	flex: auto !important;
+	position: relative !important;
+	display: flex !important;
 }
 
-/* collapse */
+/* Collapsed state: center tab content */
 @container tabs-container (max-width: 45px) {
-  #tabs-container
-    .tab-strip
-    /* > span:has(.is-pinned)
-    .is-pinned */
-    .tab-wrapper
-    .tab-header {
-    justify-content: space-evenly !important;
-    /* padding-left: 0 !important; */
-  }
+	#tabs-container .tab-strip .tab-wrapper .tab-header {
+		justify-content: space-evenly !important;
+	}
 }
 
-/* Expand */
+/* Expanded state: left-align tab content */
 @container tabs-container (min-width: 45px) {
-  #tabs-container:hover
-    .tab-strip
-    /* > span:has(.is-pinned)
-    .is-pinned */
-    .tab-wrapper
-    .tab-header {
-    justify-content: flex-start !important;
-    padding-left: 6px !important;
-  }
+	#tabs-container:hover .tab-strip .tab-wrapper .tab-header {
+		justify-content: flex-start !important;
+		padding-left: 6px !important;
+	}
 }
 
-/* ===Tab Favicon=== */
+/* Tab favicon sizing */
 #tabs-container .tab-strip > span:has(.is-pinned) .is-pinned .favicon {
-  flex-shrink: 0 !important;
-  flex-grow: 0 !important;
+	flex-shrink: 0 !important;
+	flex-grow: 0 !important;
 }
 
-/* ===Tab Title=== */
-
-/* Collapse */
+/* Tab title visibility control */
 @container style(--fluid-tabs-grid: off) {
-  #tabs-container .tab-strip > span:has(.is-pinned) .is-pinned .title {
-    padding: 0 !important;
-    margin: 0 !important;
-    opacity: 0 !important;
-    max-width: 0 !important;
-    min-width: 0 !important;
-    flex-shrink: 1 !important;
-    flex-grow: 0 !important;
-    flex-basis: 0 !important;
-    overflow: hidden !important;
-    transition: 
-      max-width 0s cubic-bezier(0.4, 0, 0.2, 1),
-      min-width 0s cubic-bezier(0.4, 0, 0.2, 1),
-      opacity 0s cubic-bezier(0.4, 0, 0.2, 1);
-    transition-delay: var(--transition-delay-time-collapse);
-  }
-  
-  /* Expand */
-  @container tabs-container (min-width: 45px){
-    #tabs-container
-      .tab-strip
-      > span:has(.is-pinned)
-      .is-pinned
-      .tab-wrapper
-      .title {
-      padding-left: 4px !important;
-      margin-right: 3px !important;
-      opacity: 1 !important;
-      max-width: 100% !important;
-      min-width: auto !important;
-      flex-shrink: 1 !important;
-      flex-grow: 1 !important;
-      flex-basis: auto !important;
-      transition: 
-        max-width 0s cubic-bezier(0.4, 0, 0.2, 1),
-        min-width 0s cubic-bezier(0.4, 0, 0.2, 1),
-        opacity 0s cubic-bezier(0.4, 0, 0.2, 1);
-      /* transition-delay: var(--transition-delay-time-collapse); */
-    }
-  }
+	/* Collapsed: hide title */
+	#tabs-container .tab-strip > span:has(.is-pinned) .is-pinned .title {
+		padding: 0 !important;
+		margin: 0 !important;
+		opacity: 0 !important;
+		max-width: 0 !important;
+		min-width: 0 !important;
+		flex-shrink: 1 !important;
+		flex-grow: 0 !important;
+		flex-basis: 0 !important;
+		overflow: hidden !important;
+		transition: 
+			max-width 0s cubic-bezier(0.4, 0, 0.2, 1),
+			min-width 0s cubic-bezier(0.4, 0, 0.2, 1),
+			opacity 0s cubic-bezier(0.4, 0, 0.2, 1);
+		transition-delay: var(--transition-delay-time-collapse);
+	}
+	
+	/* Expanded: show title */
+	@container tabs-container (min-width: 45px) {
+		#tabs-container .tab-strip > span:has(.is-pinned) .is-pinned .tab-wrapper .title {
+			padding-left: 4px !important;
+			margin-right: 3px !important;
+			opacity: 1 !important;
+			max-width: 100% !important;
+			min-width: auto !important;
+			flex-shrink: 1 !important;
+			flex-grow: 1 !important;
+			flex-basis: auto !important;
+			transition: 
+				max-width 0s cubic-bezier(0.4, 0, 0.2, 1),
+				min-width 0s cubic-bezier(0.4, 0, 0.2, 1),
+				opacity 0s cubic-bezier(0.4, 0, 0.2, 1);
+		}
+	}
 }
 
-/* ===Stack Counter=== */
+/* Stack counter: hidden by default, shown on hover */
 #tabs-container .tab-strip .tab .stack-counter {
-  padding: 0 !important;
-  margin: 0 !important;
-  max-width: 0 !important;
-  min-width: 0 !important;
-  opacity: 0 !important;
-  transition: all var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1);
+	padding: 0 !important;
+	margin: 0 !important;
+	max-width: 0 !important;
+	min-width: 0 !important;
+	opacity: 0 !important;
+	transition: all var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Show Only When Hover over Stack */
-@container tabs-container (min-width: 100px){
-  #tabs-container .tab-strip
-  .tab:hover
-  .stack-counter {
-    display: flex !important;
-    padding: 1px 4px !important;
-    margin-right: 6px !important;
-    max-width: auto !important;
-    min-width: 1.5em !important;
-    opacity: 1 !important;
-  transition: all var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1);
-  }
+@container tabs-container (min-width: 100px) {
+	#tabs-container .tab-strip .tab:hover .stack-counter {
+		display: flex !important;
+		padding: 1px 4px !important;
+		margin-right: 6px !important;
+		max-width: auto !important;
+		min-width: 1.5em !important;
+		opacity: 1 !important;
+		transition: all var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1);
+	}
 }
 
+/* Tab separator positioning */
 .separator {
-    justify-self: center !important;
-    margin-bottom: -8px;
+	justify-self: center !important;
+	margin-bottom: -8px;
 }
 
-/* ===Toolbar=== */
+/* ============================================ */
+/* Toolbar Visibility & Styling */
+/* ============================================ */
 
-/* ==After Toolbar== */
+/* After toolbar: hide when too narrow */
 @container tabs-container (max-width: 275px) {
-  .toolbar-tabbar-after
-  {
-    min-width: 0 !important;
-    max-width: 0 !important;
-    min-height: 0 !important;
-    max-height: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-    opacity: 0 !important;
-    transition:
-      min-width 0s ease-out calc(var(--transition-delay-time-collapse) + var(--animation-speed)),
-      max-width 0s ease-out calc(var(--transition-delay-time-collapse) + var(--animation-speed)),
-      min-height 0s ease-out calc(var(--transition-delay-time-collapse) + var(--animation-speed)),
-      max-height 0s ease-out calc(var(--transition-delay-time-collapse) + var(--animation-speed)),
-      opacity 0ms ease-out 0s !important;
-    pointer-events: none !important;
-  }
+	.toolbar-tabbar-after {
+		min-width: 0 !important;
+		max-width: 0 !important;
+		min-height: 0 !important;
+		max-height: 0 !important;
+		padding: 0 !important;
+		overflow: hidden !important;
+		opacity: 0 !important;
+		transition:
+			min-width 0s ease-out calc(var(--transition-delay-time-collapse) + var(--animation-speed)),
+			max-width 0s ease-out calc(var(--transition-delay-time-collapse) + var(--animation-speed)),
+			min-height 0s ease-out calc(var(--transition-delay-time-collapse) + var(--animation-speed)),
+			max-height 0s ease-out calc(var(--transition-delay-time-collapse) + var(--animation-speed)),
+			opacity 0ms ease-out 0s !important;
+		pointer-events: none !important;
+	}
 }
 
-/* Avoid Weird Space Under After Toolbar */
+/* After toolbar base styling */
 #tabs-tabbar-container .toolbar-tabbar-after {
-  align-content: flex-end; /* Avoid Bland Under toolbar */
-  min-height: 35px !important;
-  min-width: 100% !important;
-  background-color: var(--tabbar-bg-color-expand, var(--colorBgDark));
+	align-content: flex-end;
+	min-height: 35px !important;
+	min-width: 100% !important;
+	background-color: var(--tabbar-bg-color-expand, var(--colorBgDark));
 }
 
-/* ==Before Toolbar== */
-
-/* Hide By Default */
+/* Before toolbar: collapsed state */
 .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget {
-  margin: 3px !important;
-  min-height: 35px !important;
-  max-height: 35px !important;
-  background-color: var(
-    --tabbar-bg-color-expand,
-    var(--colorBgDarker)
-  ) !important;
-  overflow: hidden !important;
-  transition: all var(--animation-speed) ease-out;
-  
-  /* Keep Url Bar and Workspace Switch Visible */
-  & > *:not(:is(.UrlBar-AddressField, .workspace-popup)) {
-    opacity: 0;
-    min-height: 0px;
-    max-height: 0px;
-    overflow: hidden;
-    transition: all var(--animation-speed) ease-out;
-  }
+	margin: 3px !important;
+	min-height: 35px !important;
+	max-height: 35px !important;
+	background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important;
+	overflow: hidden !important;
+	transition: all var(--animation-speed) ease-out;
+	
+	/* Keep URL bar and workspace switch visible */
+	& > *:not(:is(.UrlBar-AddressField, .workspace-popup)) {
+		opacity: 0;
+		min-height: 0px;
+		max-height: 0px;
+		overflow: hidden;
+		transition: all var(--animation-speed) ease-out;
+	}
 }
 
-/* Hover to Show Toolbar Button */
-body:has(:is(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField, .toolbar-editor,.toolbar-tabbar-before .ToolbarButton-Button.button-pressed)) .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
-.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover{
-  margin: 3px !important;
-  min-height: 35px !important;
-  max-height: 100000px !important;
-  overflow: visible !important;
-  background-color: var(
-    --tabbar-bg-color-expand,
-    var(--colorBgDarker)
-  ) !important;
-  transition: all var(--animation-speed) ease-out;
-  
-  & > *:not(:is(.UrlBar-AddressField, .workspace-popup)) {
-    opacity: 1;
-    min-height: 30px;
-    max-height: 30px;
-    z-index: 200px !important;
-    overflow: visible;
-    transition: all var(--animation-speed) ease-out;
-  }
+/* Before toolbar: expanded state */
+body:has(:is(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField, .toolbar-editor, .toolbar-tabbar-before .ToolbarButton-Button.button-pressed)) 
+.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
+.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover {
+	margin: 3px !important;
+	min-height: 35px !important;
+	max-height: 100000px !important;
+	overflow: visible !important;
+	background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important;
+	transition: all var(--animation-speed) ease-out;
+	
+	& > *:not(:is(.UrlBar-AddressField, .workspace-popup)) {
+		opacity: 1;
+		min-height: 30px;
+		max-height: 30px;
+		z-index: 200px !important;
+		overflow: visible;
+		transition: all var(--animation-speed) ease-out;
+	}
 }
 
-/* ========================================
-   FLOATING TABBAR
-   ======================================== */
+/* ============================================ */
+/* Floating Tab Bar */
+/* ============================================ */
 
 #main > .inner > div:has(#tabs-tabbar-container) {
-  position: absolute;
-  top: 0;
-  z-index: 2;
-  opacity: 1;
-  background-color: transparent !important;
-  background-image: none !important;
-  height: 100% !important;
+	position: absolute;
+	top: 0;
+	z-index: 2;
+	opacity: 1;
+	background-color: transparent !important;
+	background-image: none !important;
+	height: 100% !important;
 }
 
 #main > .inner > div:has(#tabs-tabbar-container.right) {
-  right: 0;
+	right: 0;
 }
 
 #main > .inner > div:has(#tabs-tabbar-container.left) {
-  left: 0;
+	left: 0;
 }
 
-#browser.transparent-tabbar
-  .inner
-  > div:has(#tabs-tabbar-container:is(.left, .right)) {
-  background-color: transparent !important;
-  backdrop-filter: none !important;
+#browser.transparent-tabbar .inner > div:has(#tabs-tabbar-container:is(.left, .right)) {
+	background-color: transparent !important;
+	backdrop-filter: none !important;
 }
 
-/* ========================================
-    WebStack Margin To Avoid Collapse Tab Bar
+/* ============================================ */
+/* Web Page Stack Margins */
+/* Auto-adjust content area based on tab bar position and state */
+/* ============================================ */
 
-    Auto-detect tabbar position and apply appropriate margins
-   ======================================== */
-
-/* ===Default Mode Margins=== */
-
-/* Right tabbar margins */
-#browser:not(.fullscreen):has(#tabs-tabbar-container.right)
-  .inner
-  #webpage-stack {
-  margin-right: var(--tabs-container-collapse-width-default);
-  transition: margin-right var(--animation-speed) ease-out !important;
+/* Right-side tab bar margins */
+#browser:not(.fullscreen):has(#tabs-tabbar-container.right) .inner #webpage-stack {
+	margin-right: var(--tabs-container-collapse-width-default);
+	transition: margin-right var(--animation-speed) ease-out !important;
 }
 
-#browser:not(.fullscreen)
-  :has(#tabs-tabbar-container.right)
-  .inner:has(#tabs-subcontainer:is(.left, .right))
-  #webpage-stack {
-  margin-right: calc(
-    var(--tabs-container-collapse-width-default) +
-      var(--tabs-subcontainer-collapse-width)
-  );
+#browser:not(.fullscreen) :has(#tabs-tabbar-container.right) .inner:has(#tabs-subcontainer:is(.left, .right)) #webpage-stack {
+	margin-right: calc(
+		var(--tabs-container-collapse-width-default) +
+		var(--tabs-subcontainer-collapse-width)
+	);
 }
 
 #browser:not(.fullscreen) #tabs-tabbar-container.right ~ #webpage-stack {
-  margin-right: var(--tabs-container-collapse-width-default);
+	margin-right: var(--tabs-container-collapse-width-default);
 }
 
-#browser:not(.fullscreen)
-  #tabs-tabbar-container.right
-  ~ #webpage-stack:has(#tabs-subcontainer.right) {
-  margin-right: calc(
-    var(--tabs-container-collapse-width-default) +
-      var(--tabs-subcontainer-collapse-width)
-  );
+#browser:not(.fullscreen) #tabs-tabbar-container.right ~ #webpage-stack:has(#tabs-subcontainer.right) {
+	margin-right: calc(
+		var(--tabs-container-collapse-width-default) +
+		var(--tabs-subcontainer-collapse-width)
+	);
 }
 
-/* Left tabbar margins */
-#browser:not(.fullscreen):has(#tabs-tabbar-container.left)
-  .inner
-  #webpage-stack {
-  margin-left: var(--tabs-container-collapse-width-default);
-  transition: margin-left var(--animation-speed) ease-out !important;
+/* Left-side tab bar margins */
+#browser:not(.fullscreen):has(#tabs-tabbar-container.left) .inner #webpage-stack {
+	margin-left: var(--tabs-container-collapse-width-default);
+	transition: margin-left var(--animation-speed) ease-out !important;
 }
 
-#browser:not(.fullscreen)
-  :has(#tabs-tabbar-container.left)
-  .inner:has(#tabs-subcontainer:is(.left, .right))
-  #webpage-stack {
-  margin-left: calc(
-    var(--tabs-container-collapse-width-default) +
-      var(--tabs-subcontainer-collapse-width)
-  );
+#browser:not(.fullscreen) :has(#tabs-tabbar-container.left) .inner:has(#tabs-subcontainer:is(.left, .right)) #webpage-stack {
+	margin-left: calc(
+		var(--tabs-container-collapse-width-default) +
+		var(--tabs-subcontainer-collapse-width)
+	);
 }
 
 #browser:not(.fullscreen) #tabs-tabbar-container.left ~ #webpage-stack {
-  margin-left: var(--tabs-container-collapse-width-default);
+	margin-left: var(--tabs-container-collapse-width-default);
 }
 
-#browser:not(.fullscreen)
-  #tabs-tabbar-container.left
-  ~ #webpage-stack:has(#tabs-subcontainer.left) {
-  margin-left: calc(
-    var(--tabs-container-collapse-width-default) +
-      var(--tabs-subcontainer-collapse-width)
-  );
+#browser:not(.fullscreen) #tabs-tabbar-container.left ~ #webpage-stack:has(#tabs-subcontainer.left) {
+	margin-left: calc(
+		var(--tabs-container-collapse-width-default) +
+		var(--tabs-subcontainer-collapse-width)
+	);
 }
 
-/* ========================================
-   Blur Mask Effect
-   ======================================== */
+/* ============================================ */
+/* Blur Mask Effect */
+/* ============================================ */
 
-@container style(--fluid-mask: on){
-  #browser #webpage-stack {
-    position: relative !important;
-  }
+@container style(--fluid-mask: on) {
+	#browser #webpage-stack {
+		position: relative !important;
+	}
 
-  #browser #webpage-stack::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--colorBgAlpha);
-    z-index: 999999999999 !important;
-    pointer-events: none !important;
-    opacity: 0;
-    transition: opacity var(--animation-speed) ease-out;
-  }
+	#browser #webpage-stack::before {
+		content: "";
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		width: 100%;
+		height: 100%;
+		background-color: var(--colorBgAlpha);
+		z-index: 999999999999 !important;
+		pointer-events: none !important;
+		opacity: 0;
+		transition: opacity var(--animation-speed) ease-out;
+	}
 
-  body:has(#vivaldi-tooltip .tab-group:hover) #webpage-stack::before,
-  body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup)) #webpage-stack::before,
-  body:has(#tabs-container:hover) #webpage-stack::before,
-  body:has(#tabs-subcontainer:hover) #webpage-stack::before {
-    opacity: 1 !important;
-    backdrop-filter: blur(5px);
-    transition: opacity var(--animation-speed) ease-out;
-    transition-delay: var(--transition-delay-time-expand);
-  }
+	body:has(#vivaldi-tooltip .tab-group:hover) #webpage-stack::before,
+	body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup)) #webpage-stack::before,
+	body:has(#tabs-container:hover) #webpage-stack::before,
+	body:has(#tabs-subcontainer:hover) #webpage-stack::before {
+		opacity: 1 !important;
+		backdrop-filter: blur(5px);
+		transition: opacity var(--animation-speed) ease-out;
+		transition-delay: var(--transition-delay-time-expand);
+	}
 }
 
-/* AnimatedBlur */
-
-/* #browser #webpage-stack::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-color: var(--colorBgAlpha);
-  z-index: 999999999999 !important;
-  pointer-events: none !important;
-  opacity: 0;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition:
-    opacity var(--animation-speed) ease-out,
-    transform var(--slow-animation-speed) cubic-bezier(0.3, 0.8, 0.4, 1);
-    transform var(--fast-animation-speed) cubic-bezier(0.25, 0.10, 0.25, 1.00);
-}
-
-#browser:has(#tabs-tabbar-container.left) #webpage-stack::before {
-  transform-origin: left;
-}
-
-#browser:has(#tabs-tabbar-container.right) #webpage-stack::before {
-  transform-origin: right;
-}
-
-body:has(#tabs-container:hover) #webpage-stack::before,
-body:has(#vivaldi-tooltip .tab-group:hover) #webpage-stack::before,
-body:has(:is(.UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup)) #webpage-stack::before,
-body:has(#tabs-subcontainer:hover) #webpage-stack::before {
-  opacity: 1 !important;
-  transform: scaleX(1) !important;
-} */
-
-/* Uncomment following lines to enable tabbar toggle */
-
-/* ========================================
-   ​​Constant Expansion Mode​​ (Toggle By Panel Switch)
-   make it thinner
-   ======================================== */
+/* ============================================ */
+/* Constant Expansion Mode (Panel Switch Toggle) */
+/* ============================================ */
 
 #panel_switch {
-  flex: 0 0 2px !important;
-  background-color: transparent !important;
+	flex: 0 0 2px !important;
+	background-color: transparent !important;
 }
+
 #panel_switch svg {
-  display: none !important;
+	display: none !important;
 }
 
 body:has(#panel_switch) {
-  & #tabs-container {
-    min-width: calc(var(--tabs-container-expand-width) / 1.2) !important;
-    max-width: calc(var(--tabs-container-expand-width) / 1.2) !important;
-    transition-delay: var(--transition-delay-time-expand);
-  }
-  & #tabs-subcontainer {
-    min-width: calc(var(--tabs-container-expand-width) / 1.2) !important;
-    max-width: calc(var(--tabs-container-expand-width) / 1.2) !important;
-    transition-delay: var(--transition-delay-time-expand);
-  }
+	& #tabs-container {
+		min-width: calc(var(--tabs-container-expand-width) / 1.2) !important;
+		max-width: calc(var(--tabs-container-expand-width) / 1.2) !important;
+		transition-delay: var(--transition-delay-time-expand);
+	}
+	& #tabs-subcontainer {
+		min-width: calc(var(--tabs-container-expand-width) / 1.2) !important;
+		max-width: calc(var(--tabs-container-expand-width) / 1.2) !important;
+		transition-delay: var(--transition-delay-time-expand);
+	}
 }
 
-body:has(#panel_switch)
-  #browser:not(.fullscreen):has(#tabs-tabbar-container.right)
-  .inner
-  #webpage-stack {
-  margin-right: calc(var(--tabs-container-expand-width) / 1.2);
-  transition: margin-right var(--animation-speed) ease-out !important;
+/* Panel switch mode: right-side margins */
+body:has(#panel_switch) #browser:not(.fullscreen):has(#tabs-tabbar-container.right) .inner #webpage-stack {
+	margin-right: calc(var(--tabs-container-expand-width) / 1.2);
+	transition: margin-right var(--animation-speed) ease-out !important;
 }
 
-body:has(#panel_switch)
-  #browser:not(.fullscreen)
-  :has(#tabs-tabbar-container.right)
-  .inner:has(#tabs-subcontainer:is(.left, .right))
-  #webpage-stack {
-  margin-right: calc((var(--tabs-container-expand-width) / 1.2) * 2);
-  transition: margin-right var(--animation-speed) ease-out !important;
+body:has(#panel_switch) #browser:not(.fullscreen) :has(#tabs-tabbar-container.right) .inner:has(#tabs-subcontainer:is(.left, .right)) #webpage-stack {
+	margin-right: calc((var(--tabs-container-expand-width) / 1.2) * 2);
+	transition: margin-right var(--animation-speed) ease-out !important;
 }
 
-body:has(#panel_switch)
-  #browser:not(.fullscreen):has(#tabs-tabbar-container.left)
-  .inner
-  #webpage-stack {
-  margin-left: calc(var(--tabs-container-expand-width) / 1.2);
-  transition: margin-left var(--animation-speed) ease-out !important;
+/* Panel switch mode: left-side margins */
+body:has(#panel_switch) #browser:not(.fullscreen):has(#tabs-tabbar-container.left) .inner #webpage-stack {
+	margin-left: calc(var(--tabs-container-expand-width) / 1.2);
+	transition: margin-left var(--animation-speed) ease-out !important;
 }
 
-body:has(#panel_switch)
-  #browser:not(.fullscreen)
-  :has(#tabs-tabbar-container.left)
-  .inner:has(#tabs-subcontainer:is(.left, .right))
-  #webpage-stack {
-  margin-left: calc((var(--tabs-container-expand-width) / 1.2) * 2);
-  transition: margin-left var(--animation-speed) ease-out !important;
-}
-
-
-
-
-
-/* ========================================
-   Overall Delay Toggle
-   ======================================== */
-
-@container style(--fluid-delay: on){
-
-  /* === Only main  === */
-  #tabs-tabbar-container:not(:has(#tabs-subcontainer)) #tabs-container {
-    transition-delay: var(--transition-delay-time-collapse) !important;
-  }
-  #tabs-tabbar-container:not(:has(#tabs-subcontainer)) #tabs-container:hover {
-    transition-delay: 0ms !important; /* 展开无延迟 */
-  }
-
-  /* === main + sub === */
-
-  /* main no delay */
-  #tabs-tabbar-container:has(#tabs-subcontainer) #tabs-container {
-    transition-delay: 0ms !important;
-  }
-
-  /* sub expand & collapse delay */
-  #tabs-tabbar-container:has(#tabs-subcontainer) #tabs-subcontainer {
-    transition-delay: var(--transition-delay-time-collapse) !important;
-  }
-
-  /* when hover main, sub collapse with no delay*/
-  #tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer {
-    transition-delay: 0ms !important;
-  }
-
-  /* no delay switch */
-  #tabs-tabbar-container:has(#tabs-container:hover, #tabs-subcontainer:hover) #tabs-container,
-  #tabs-tabbar-container:has(#tabs-container:hover, #tabs-subcontainer:hover) #tabs-subcontainer {
-    transition-delay: 0ms !important;
-  }
-
-  /* main recover delay = sub collapse delay to avoid bouncing issue */
-  body:not(:has(:is(.WorkspacePopup, #panel_switch, .toolbar-editor, .UrlBar-AddressField:focus-within)))
-  #tabs-tabbar-container:has(#tabs-subcontainer):not(:has(#tabs-subcontainer:hover)):not(:has(#tabs-container:hover)) #tabs-container {
-    transition-delay: var(--transition-delay-time-collapse) !important;
-  }
-}
-
-
-/* ========================================
-   Expand Border Radius Toggle
-   ======================================== */
-@container style(--fluid-border-radius: on){
-  #tabs-tabbar-container:not(:has(#tabs-subcontainer))
-    #tabs-container.left:hover {
-    border-radius: 0px calc(var(--radius) + 5px) calc(var(--radius) + 5px) 0px !important;
-  }
-
-  #tabs-tabbar-container:not(:has(#tabs-subcontainer))
-    #tabs-container.right:hover {
-    border-radius: calc(var(--radius) + 5px) 0px 0px calc(var(--radius) + 5px) !important;
-  }
-
-  #tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer.right {
-    border-radius: calc(var(--radius) + 5px) 0px 0px calc(var(--radius) + 5px) !important;
-  }
-
-  #tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer.left {
-    border-radius: 0px calc(var(--radius) + 5px) calc(var(--radius) + 5px) 0px !important;
-  }
-
-  #tabs-subcontainer.left:hover {
-    border-radius: 0px calc(var(--radius) + 5px) calc(var(--radius) + 5px) 0px !important;
-  }
-
-  #tabs-subcontainer.right:hover {
-    border-radius: calc(var(--radius) + 5px) 0px 0px calc(var(--radius) + 5px) !important;
-  }
-
-  body:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within))
-    #tabs-subcontainer.left {
-    border-radius: 0 calc(var(--radius) + 5px) calc(var(--radius) + 5px) 0 !important;
-  }
-
-  body:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within))
-    #tabs-subcontainer.right {
-    border-radius: calc(var(--radius) + 5px) 0 0 calc(var(--radius) + 5px) !important;
-  }
-
-  body:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within))
-    :not(:has(#tabs-subcontainer))
-    #tabs-container.left {
-    border-radius: 0 calc(var(--radius) + 5px) calc(var(--radius) + 5px) 0 !important;
-  }
-
-  body:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within))
-    :not(:has(#tabs-subcontainer))
-    #tabs-container.right {
-    border-radius: calc(var(--radius) + 5px) 0 0 calc(var(--radius) + 5px) !important;
-  }
-}
-
-/* ========================================
-   Compact Mode
-   ======================================== */
-
-@container style(--fluid-compact-mode: on){
-  body:not(:has(:is(#panel_switch, .WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #vivaldi-tooltip:hover)))
-  #tabs-container {
-    min-width: var(--tabs-container-collapse-width-compact) !important;
-    max-width: var(--tabs-container-collapse-width-compact) !important;
-  }
-}
-
-@container style(--fluid-compact-mode: on){
-  body:not(:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #panel_switch)))
-    #tabs-subcontainer:hover {
-      min-width: calc(var(--tabs-subcontainer-expand-width) + var(--tabs-container-collapse-width-default) - var(--tabs-container-collapse-width-compact)) !important;
-      max-width: calc(var(--tabs-subcontainer-expand-width) + var(--tabs-container-collapse-width-default) - var(--tabs-container-collapse-width-compact)) !important;
-    }
-}
-
-
-@container style(--fluid-compact-mode: on){
-  #tabs-tabbar-container {
-    min-width: var(
-      --tabs-container-collapse-width-compact
-    ) !important;
-  }
-}
-
-/* ===Compact Webstack Margins=== */
-@container style(--fluid-compact-mode: on){
-  #browser:not(.fullscreen):has(#tabs-tabbar-container.right)
-  .inner
-  #webpage-stack {
-    margin-right: var(--tabs-container-collapse-width-compact);
-    transition: margin-right var(--animation-speed) ease-out !important;
-  }
-
-  #browser:not(.fullscreen)
-    :has(#tabs-tabbar-container.right)
-    .inner:has(#tabs-subcontainer:is(.left, .right))
-    #webpage-stack {
-    margin-right: calc(
-      var(--tabs-container-collapse-width-compact) +
-        var(--tabs-subcontainer-collapse-width)
-    );
-  }
-
-  #browser:not(.fullscreen) #tabs-tabbar-container.right ~ #webpage-stack {
-    margin-right: var(--tabs-container-collapse-width-compact);
-  }
-
-  #browser:not(.fullscreen)
-    #tabs-tabbar-container.right
-    ~ #webpage-stack:has(#tabs-subcontainer.right) {
-    margin-right: calc(
-      var(--tabs-container-collapse-width-compact) +
-        var(--tabs-subcontainer-collapse-width)
-    );
-  }
-
-  #browser:not(.fullscreen):has(#tabs-tabbar-container.left)
-  .inner
-  #webpage-stack {
-    margin-left: var(--tabs-container-collapse-width-compact);
-    transition: margin-left var(--animation-speed) ease-out !important;
-  }
-
-  #browser:not(.fullscreen)
-  :has(#tabs-tabbar-container.left)
-  .inner:has(#tabs-subcontainer:is(.left, .right))
-  #webpage-stack {
-  margin-left: calc(
-    var(--tabs-container-collapse-width-compact) +
-      var(--tabs-subcontainer-collapse-width)
-    );
-  }
-
-  #browser:not(.fullscreen) #tabs-tabbar-container.left ~ #webpage-stack {
-    margin-left: var(--tabs-container-collapse-width-compact);
-  }
-
-  #browser:not(.fullscreen)
-    #tabs-tabbar-container.left
-    ~ #webpage-stack:has(#tabs-subcontainer.left) {
-    margin-left: calc(
-      var(--tabs-container-collapse-width-compact) +
-        var(--tabs-subcontainer-collapse-width)
-    );
-  }
-}
-
-/* ========================================
-   Preview Mode
-   ======================================== */
-
-/* Preview main tabbar when overall tabbar is hovered */
-@container style(--fluid-preview-mode: on){
-  body:not(:has(:is(.WorkspacePopup, #panel_switch, .toolbar-editor, .UrlBar-AddressField:focus-within))) #tabs-tabbar-container:hover #tabs-container:not(:hover) {
-    min-width: var(--tabs-container-collapse-width-default) !important;
-    max-width: var(--tabs-container-collapse-width-default) !important;
-    margin-top: var(--tabbar-margin-top) !important;
-    margin-bottom: var(--tabbar-margin-bottom) !important;
-    background-color: var(--tabbar-bg-color-collapse, var(--colorBg)) !important;
-    border-radius: var(--tabbar-border-radius-collapse) !important;
-    border: 1px dotted var(--tabbar-border-color-collapse, var(--colorBgLighter)) !important;
-    transition:
-      border-radius var(--animation-speed) ease-out,
-      border var(--animation-speed) ease-out,
-      background-color var(--animation-speed) ease-out,
-      min-width var(--animation-speed) ease-out,
-      max-width var(--animation-speed) ease-out !important;
-    box-sizing: border-box !important;
-    position: relative !important;
-    overflow: hidden !important;
-
-    & .tab-strip .is-pinned .tab:hover .close{
-      display: flex;
-    }
-  }
+body:has(#panel_switch) #browser:not(.fullscreen) :has(#tabs-tabbar-container.left) .inner:has(#tabs-subcontainer:is(.left, .right)) #webpage-stack {
+	margin-left: calc((var(--tabs-container-expand-width) / 1.2) * 2);
+	transition: margin-left var(--animation-speed) ease-out !important;
 }
 
 /* ============================================ */
-/* Patch */
+/* Transition Delay Toggle */
 /* ============================================ */
 
-/* Tab bar styling */
-.tabbar-workspace-button {
-  width: 100% !important;
+@container style(--fluid-delay: on) {
+	/* Single tab bar: delay collapse, instant expand */
+	#tabs-tabbar-container:not(:has(#tabs-subcontainer)) #tabs-container {
+		transition-delay: var(--transition-delay-time-collapse) !important;
+	}
+	#tabs-tabbar-container:not(:has(#tabs-subcontainer)) #tabs-container:hover {
+		transition-delay: 0ms !important;
+	}
+
+	/* Dual tab bars: main has no delay */
+	#tabs-tabbar-container:has(#tabs-subcontainer) #tabs-container {
+		transition-delay: 0ms !important;
+	}
+
+	/* Sub bar has collapse delay */
+	#tabs-tabbar-container:has(#tabs-subcontainer) #tabs-subcontainer {
+		transition-delay: var(--transition-delay-time-collapse) !important;
+	}
+
+	/* When hovering main, sub collapses instantly */
+	#tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer {
+		transition-delay: 0ms !important;
+	}
+
+	/* No delay when either is hovered */
+	#tabs-tabbar-container:has(#tabs-container:hover, #tabs-subcontainer:hover) #tabs-container,
+	#tabs-tabbar-container:has(#tabs-container:hover, #tabs-subcontainer:hover) #tabs-subcontainer {
+		transition-delay: 0ms !important;
+	}
+
+	/* Main recovers delay when sub is not hovered */
+	body:not(:has(:is(.WorkspacePopup, #panel_switch, .toolbar-editor, .UrlBar-AddressField:focus-within)))
+	#tabs-tabbar-container:has(#tabs-subcontainer):not(:has(#tabs-subcontainer:hover)):not(:has(#tabs-container:hover)) #tabs-container {
+		transition-delay: var(--transition-delay-time-collapse) !important;
+	}
 }
 
-/* Disabled resizing */
-#tabs-tabbar-container .SlideBar {
-  display: none !important;
+/* ============================================ */
+/* Expand Border Radius Toggle */
+/* ============================================ */
+
+@container style(--fluid-border-radius: on) {
+	/* Single tab bar border radius */
+	#tabs-tabbar-container:not(:has(#tabs-subcontainer)) #tabs-container.left:hover {
+		border-radius: 0px calc(var(--radius) + 5px) calc(var(--radius) + 5px) 0px !important;
+	}
+
+	#tabs-tabbar-container:not(:has(#tabs-subcontainer)) #tabs-container.right:hover {
+		border-radius: calc(var(--radius) + 5px) 0px 0px calc(var(--radius) + 5px) !important;
+	}
+
+	/* Sub bar border radius when main is hovered */
+	#tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer.right {
+		border-radius: calc(var(--radius) + 5px) 0px 0px calc(var(--radius) + 5px) !important;
+	}
+
+	#tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer.left {
+		border-radius: 0px calc(var(--radius) + 5px) calc(var(--radius) + 5px) 0px !important;
+	}
+
+	/* Sub bar border radius on direct hover */
+	#tabs-subcontainer.left:hover {
+		border-radius: 0px calc(var(--radius) + 5px) calc(var(--radius) + 5px) 0px !important;
+	}
+
+	#tabs-subcontainer.right:hover {
+		border-radius: calc(var(--radius) + 5px) 0px 0px calc(var(--radius) + 5px) !important;
+	}
+
+	/* Border radius when toolbar is active */
+	body:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within)) #tabs-subcontainer.left {
+		border-radius: 0 calc(var(--radius) + 5px) calc(var(--radius) + 5px) 0 !important;
+	}
+
+	body:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within)) #tabs-subcontainer.right {
+		border-radius: calc(var(--radius) + 5px) 0 0 calc(var(--radius) + 5px) !important;
+	}
+
+	body:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within)) :not(:has(#tabs-subcontainer)) #tabs-container.left {
+		border-radius: 0 calc(var(--radius) + 5px) calc(var(--radius) + 5px) 0 !important;
+	}
+
+	body:has(:is(.toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within)) :not(:has(#tabs-subcontainer)) #tabs-container.right {
+		border-radius: calc(var(--radius) + 5px) 0 0 calc(var(--radius) + 5px) !important;
+	}
 }
 
-/* Prevent black background behind tabs-container at left */
-.tabbar-wrapper:has(#tabs-container.left) {
-  background-color: transparent !important;
+/* ============================================ */
+/* Compact Mode */
+/* ============================================ */
+
+@container style(--fluid-compact-mode: on) {
+	/* Compact width for main tab bar */
+	body:not(:has(:is(#panel_switch, .WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #vivaldi-tooltip:hover)))
+	#tabs-container {
+		min-width: var(--tabs-container-collapse-width-compact) !important;
+		max-width: var(--tabs-container-collapse-width-compact) !important;
+	}
+
+	/* Compact mode sub bar expansion adjustment */
+	body:not(:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #panel_switch)))
+	#tabs-subcontainer:hover {
+		min-width: calc(var(--tabs-subcontainer-expand-width) + var(--tabs-container-collapse-width-default) - var(--tabs-container-collapse-width-compact)) !important;
+		max-width: calc(var(--tabs-subcontainer-expand-width) + var(--tabs-container-collapse-width-default) - var(--tabs-container-collapse-width-compact)) !important;
+	}
+
+	/* Compact container minimum width */
+	#tabs-tabbar-container {
+		min-width: var(--tabs-container-collapse-width-compact) !important;
+	}
+
+	/* Compact mode web stack margins - right side */
+	#browser:not(.fullscreen):has(#tabs-tabbar-container.right) .inner #webpage-stack {
+		margin-right: var(--tabs-container-collapse-width-compact);
+		transition: margin-right var(--animation-speed) ease-out !important;
+	}
+
+	#browser:not(.fullscreen) :has(#tabs-tabbar-container.right) .inner:has(#tabs-subcontainer:is(.left, .right)) #webpage-stack {
+		margin-right: calc(
+			var(--tabs-container-collapse-width-compact) +
+			var(--tabs-subcontainer-collapse-width)
+		);
+	}
+
+	#browser:not(.fullscreen) #tabs-tabbar-container.right ~ #webpage-stack {
+		margin-right: var(--tabs-container-collapse-width-compact);
+	}
+
+	#browser:not(.fullscreen) #tabs-tabbar-container.right ~ #webpage-stack:has(#tabs-subcontainer.right) {
+		margin-right: calc(
+			var(--tabs-container-collapse-width-compact) +
+			var(--tabs-subcontainer-collapse-width)
+		);
+	}
+
+	/* Compact mode web stack margins - left side */
+	#browser:not(.fullscreen):has(#tabs-tabbar-container.left) .inner #webpage-stack {
+		margin-left: var(--tabs-container-collapse-width-compact);
+		transition: margin-left var(--animation-speed) ease-out !important;
+	}
+
+	#browser:not(.fullscreen) :has(#tabs-tabbar-container.left) .inner:has(#tabs-subcontainer:is(.left, .right)) #webpage-stack {
+		margin-left: calc(
+			var(--tabs-container-collapse-width-compact) +
+			var(--tabs-subcontainer-collapse-width)
+		);
+	}
+
+	#browser:not(.fullscreen) #tabs-tabbar-container.left ~ #webpage-stack {
+		margin-left: var(--tabs-container-collapse-width-compact);
+	}
+
+	#browser:not(.fullscreen) #tabs-tabbar-container.left ~ #webpage-stack:has(#tabs-subcontainer.left) {
+		margin-left: calc(
+			var(--tabs-container-collapse-width-compact) +
+			var(--tabs-subcontainer-collapse-width)
+		);
+	}
 }
 
-/* Hide scrollbars for left and right tabbars */
-#browser #tabs-tabbar-container.left ::-webkit-scrollbar,
-#browser #tabs-tabbar-container.right ::-webkit-scrollbar {
-  display: none;
+/* ============================================ */
+/* Preview Mode */
+/* ============================================ */
+
+@container style(--fluid-preview-mode: on) {
+	/* Show preview of main tab bar when hovering overall container */
+	body:not(:has(:is(.WorkspacePopup, #panel_switch, .toolbar-editor, .UrlBar-AddressField:focus-within))) 
+	#tabs-tabbar-container:hover #tabs-container:not(:hover) {
+		min-width: var(--tabs-container-collapse-width-default) !important;
+		max-width: var(--tabs-container-collapse-width-default) !important;
+		margin-top: var(--tabbar-margin-top) !important;
+		margin-bottom: var(--tabbar-margin-bottom) !important;
+		background-color: var(--tabbar-bg-color-collapse, var(--colorBg)) !important;
+		border-radius: var(--tabbar-border-radius-collapse) !important;
+		border: 1px dotted var(--tabbar-border-color-collapse, var(--colorBgLighter)) !important;
+		transition:
+			border-radius var(--animation-speed) ease-out,
+			border var(--animation-speed) ease-out,
+			background-color var(--animation-speed) ease-out,
+			min-width var(--animation-speed) ease-out,
+			max-width var(--animation-speed) ease-out !important;
+		box-sizing: border-box !important;
+		position: relative !important;
+		overflow: hidden !important;
+
+		& .tab-strip .is-pinned .tab:hover .close {
+			display: flex;
+		}
+	}
 }
 
-/* Hide scrollbars for left and right tabbar wrappers */
-.tabs-left .tabbar-wrapper,
-.tabs-right .tabbar-wrapper {
-  background-color: transparent;
-  overflow: visible;
-}
-
-/* Hide Locked and Unlocked Buttons */
-.button-toolbar.tabs-locked,
-.button-toolbar.tabs-unlocked {
-  display: none !important;
-}
-
-/* Center The Tab Favicon in Sub Tab Bar */
-#tabs-subcontainer .tab-header {
-  padding-left: 6px !important;
-}
-#tabs-subcontainer .tab .title {
-  display: flex !important;
-}
-
-/* Center Tab Strip not with margin */
-#tabs-container .tab-strip {
-  /* margin: 0 max(calc(var(--densityGap) * 2), 1px) !important; */
-  margin: unset !important;
-}
-
-/* Center Tabs In Tab Strip */
-.resize {
-  justify-content: center !important;
-  align-items: center !important;
-  max-height: 100% !important;
-}
-#tabs-container .tab-strip {
-  width: 95%;
-}
-#tabs-container.left .tab-strip.overflow,
-#tabs-container.right .tab-strip.overflow {
-  min-width: unset;
-}
-
-#tabs-subcontainer .tab-strip {
-  min-width: auto !important;
-  max-width: auto !important;
-  margin: 0 max(calc(var(--densityGap) * 2), 1px) !important;
-  /* margin: auto !important; */
-}
-#tabs-container.left .tab-strip, #tabs-container.right .tab-strip {
-  overflow-y: visible;
-}
+/* ============================================ */
+/* Blur Hibernated Tabs */
+/* ============================================ */
 
 @container style(--fluid-blur-hibernate-tab: on) {
-  .tab:not(.active)
-  {filter: blur(4px) !important;
-  transition: filter 200ms linear !important
-  }
-  .tab.active
-  {filter: blur(0px) !important;
-  transition: filter 200ms linear !important
-  }
+	.tab:not(.active) {
+		filter: blur(4px) !important;
+		transition: filter 200ms linear !important;
+	}
+	.tab.active {
+		filter: blur(0px) !important;
+		transition: filter 200ms linear !important;
+	}
 }
 
-/* Use Margin to Center the Tab Strip */
-/* #tabs-container .tab-strip.overflow {
-  margin-right: calc(var(--densityGap) * 2) !important;
-  margin-left: calc(var(--densityGap) * 2) !important;
-  transition: margin var(--animation-speed) ease-out !important;
-  transition-delay: 0ms !important;
-} */
-/* body:not(:has(.toolbar-editor)):not(:has(.UrlBar-AddressField:focus-within))
-  #tabs-container
-  .resize {
-  max-height: none !important;
-  height: 100% !important;
-  flex: 1 !important;
-} */
+/* ============================================ */
+/* Fixes & Patches */
+/* ============================================ */
 
-/* I forgot why I add these... */
+/* Workspace button full width */
+.tabbar-workspace-button {
+	width: 100% !important;
+}
+
+/* Disable tab bar resizing */
+#tabs-tabbar-container .SlideBar {
+	display: none !important;
+}
+
+/* Transparent background for left tab bar wrapper */
+.tabbar-wrapper:has(#tabs-container.left) {
+	background-color: transparent !important;
+}
+
+/* Hide scrollbars for vertical tab bars */
+#browser #tabs-tabbar-container.left ::-webkit-scrollbar,
+#browser #tabs-tabbar-container.right ::-webkit-scrollbar {
+	display: none;
+}
+
+/* Transparent background and visible overflow for vertical tab bar wrappers */
+.tabs-left .tabbar-wrapper,
+.tabs-right .tabbar-wrapper {
+	background-color: transparent;
+	overflow: visible;
+}
+
+/* Hide locked/unlocked buttons */
+.button-toolbar.tabs-locked,
+.button-toolbar.tabs-unlocked {
+	display: none !important;
+}
+
+/* Center tab favicon in sub tab bar */
+#tabs-subcontainer .tab-header {
+	padding-left: 6px !important;
+}
+
+#tabs-subcontainer .tab .title {
+	display: flex !important;
+}
+
+/* Remove default margin from main tab strip */
+#tabs-container .tab-strip {
+	margin: unset !important;
+}
+
+/* Center tabs in tab strip */
+.resize {
+	justify-content: center !important;
+	align-items: center !important;
+	max-height: 100% !important;
+}
+
+#tabs-container .tab-strip {
+	width: 95%;
+}
+
+#tabs-container.left .tab-strip.overflow,
+#tabs-container.right .tab-strip.overflow {
+	min-width: unset;
+}
+
+/* Sub tab strip sizing */
+#tabs-subcontainer .tab-strip {
+	min-width: auto !important;
+	max-width: auto !important;
+	margin: 0 max(calc(var(--densityGap) * 2), 1px) !important;
+}
+
+/* Visible overflow for vertical tab strips */
+#tabs-container.left .tab-strip, 
+#tabs-container.right .tab-strip {
+	overflow-y: visible;
+}
+
+/* Toolbar positioning */
 .toolbar.toolbar-tabbar {
-  position: relative;
+	position: relative;
 }
 
+/* Hide accordion arrow for right-side tabs in density mode */
 .tabs-right#browser.density-on .accordion-toggle-arrow:after,
 .tabs-right#browser.density-on .tab-wrapper:after {
-  display: none !important;
+	display: none !important;
 }
-
-/* #tabs-tabbar-container #tabs-container {
-  overflow: hidden !important;
-  box-sizing: border-box !important;
-} */
-
-/* body:has(:is(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, .toolbar-editor, .button-popup))
-  #tabs-container,
-body:has(.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover)
-  #tabs-container {
-  overflow: visible !important;
-} */
-
-/* tab-mini */
-
-/* #tabs-container .tab.tab-small.tab-mini .tab-header,
-#tabs-container .tab.pinned.tab-mini .tab-header {
-  justify-content: center;
-} */

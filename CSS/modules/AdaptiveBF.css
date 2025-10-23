@@ -3,11 +3,13 @@
    ======================================== */
 
 /* Hide disabled forward/back navigation buttons */
-.mainbar .toolbar-mainbar button.ToolbarButton-Button[disabled]:not([name="Divider"])[name="Back"] {
+button[name="Forward"][disabled],
+button[name="Back"][disabled] {
   display: none !important;
 }
 
 /* Show only enabled navigation buttons */
-.mainbar .toolbar-mainbar button.ToolbarButton-Button:not([disabled])[name="Back"] {
+button[name="Forward"]:not([disabled]),
+button[name="Back"]:not([disabled]) {
   display: inline-flex !important;
 }
