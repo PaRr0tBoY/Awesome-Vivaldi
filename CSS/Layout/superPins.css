@@ -34,7 +34,8 @@
     margin: 0 !important;
     padding: 0 !important;
     /* background-color: var(--colorBg, rgba(255, 255, 255, 0.2)) !important; */
-    /* border: 1px solid var(--colorHighlightBgDark) !important; */
+    z-index: 150;
+    border: 1px solid var(--colorHighlightBgDark) !important;
   }
 
   #tabs-container
@@ -423,45 +424,51 @@
       z-index: 200 !important;
     }
 
-    #tabs-container .tab-wrapper{
+    /* #tabs-container .tab-wrapper{
 			position: relative;
-		}
+		} */
 
-    #tabs-container{
-      --tabs-container-width: var(--tabs-container-collapse-width-default);
-    }
 
-    @container style(--fluid-compact-mode: on) {
-      #tabs-container{
-        --tabs-container-width: var(--tabs-container-collapse-width-compact);
-      }
-    }
-
-    #tabs-container:hover{
-      --tabs-container-width: var(--tabs-container-expand-width);
+    #tabs-container
+    .tab-strip
+    > span:nth-child(3n + 1):nth-child(-n + 9)
+    .tab-wrapper {
+      position: relative !important;
+      z-index: 150 !important;
+      isolation: isolate !important;
     }
 
     #tabs-container
     .tab-strip
     > span:nth-child(3n + 1):nth-child(-n + 9)
-    .tab-wrapper::before {
+    .tab-wrapper::after{
 			content: '';
 			position: fixed;
-      min-width: calc(var(--tabs-container-width) - var(--pinned-gap));
+      /* min-width: calc(var(--tabs-container-width) - var(--pinned-gap)); */
+      min-width: calc(var(--tabs-container-expand-width) - var(--pinned-gap));
       left: calc(var(--pinned-gap) / 2);
       right: unset;
 			height: calc((var(--pinned-tab-height) + var(--pinned-gap) * 2));
-			background: var(--colorBgDarker, rgba(255, 255, 255, 0.2));
-			z-index: 0;
+			/* background: var(--immersive-bg-color,--colorBgDarker); */
+			z-index: -1;
 			pointer-events: none;
-      transition: min-width var(--animation-speed) ease;
-      transition-delay: var(--transition-delay-time-collapse);
+      opacity: 0;
+      transition: opacity 0s ease;
 		}
+
+    #tabs-container:hover
+    .tab-strip
+    > span:nth-child(3n + 1):nth-child(-n + 9)
+    .tab-wrapper::after {
+      opacity: 1 !important;
+      transition: opacity var(--animation-speed) ease calc(var(--transition-delay-time-collapse) + var(--animation-speed));
+    }
+
 
     #tabs-container.right
     .tab-strip
     > span:nth-child(3n + 1):nth-child(-n + 9)
-    .tab-wrapper::before {
+    .tab-wrapper::after {
       left: unset;
       right: calc(var(--pinned-gap) / 2);
     }
