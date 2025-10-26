@@ -36,15 +36,15 @@
   
   /* color, transparent, immersive */
   /* immersive requires immersiveAddressbar.js installed */
-  --fluid-theme: transparent;
+  --fluid-theme: color;
   /*on or off*/
   --fluid-compact-mode: off; /* Toggle on to Have a Thinner Main Tabbar */
 
   --fluid-float-tabbar: on; /* Make Tabbar Float Over Webpage When Expanding */
-  --fluid-mask: off; /* When Tabbar Expand Show A Blurry Mask Over Webpage */
+  --fluid-mask: on; /* When Tabbar Expand Show A Blurry Mask Over Webpage */
   --fluid-blur-hibernate-tab: off; /* Blur Hibernated Tabs */
 
-  --fluid-delay: delay; /* Whether to delay the tabbar expand/collapse animation */
+  --fluid-delay: on; /* Whether to delay the tabbar expand/collapse animation */
   --fluid-border-radius: on; /* Whether to round the tabbar border radius when it expand */
 
   --fluid-tabs-grid: on; /* Whether to Show "Favourite Tabs" Grid */
