@@ -1,0 +1,292 @@
+/*
+Accent Mod
+version 2021.9.0
+https://forum.vivaldi.net/topic/61827/accent-mod
+Use theme foreground or background color instead of fixed accent foreground
+color. Depends on the installation of additional JS code (accentmod.js).
+*/
+
+.accentmod .theme-dark.acc-dark.color-behind-tabs-off .toolbar-mainbar,
+.accentmod .theme-light.acc-light.color-behind-tabs-off .toolbar-mainbar {
+  color: var(--colorFg);
+}
+.accentmod
+  #browser.theme-dark.acc-dark.color-behind-tabs-off
+  .tab-position
+  .tab.active,
+.accentmod
+  #browser.theme-light.acc-light.color-behind-tabs-off
+  .tab-position
+  .tab.active {
+  color: var(--colorFgIntense);
+}
+.accentmod .theme-dark.acc-light.color-behind-tabs-off .toolbar-mainbar,
+.accentmod .theme-light.acc-dark.color-behind-tabs-off .toolbar-mainbar {
+  color: var(--colorBg);
+}
+.accentmod
+  #browser.theme-dark.acc-light.color-behind-tabs-off
+  .tab-position
+  .tab.active,
+.accentmod
+  #browser.theme-light.acc-dark.color-behind-tabs-off
+  .tab-position
+  .tab.active {
+  color: var(--colorBgIntenser);
+}
+.accentmod #browser.tabs-top.theme-dark.acc-dark.color-behind-tabs-on #header,
+.accentmod #browser.tabs-top.theme-light.acc-light.color-behind-tabs-on #header,
+.accentmod
+  #browser.tabs-top.theme-dark.acc-dark.color-behind-tabs-on
+  .tab-position
+  .tab:hover:not(.active),
+.accentmod
+  #browser.tabs-top.theme-light.acc-light.color-behind-tabs-on
+  .tab-position
+  .tab:hover:not(.active),
+.accentmod #browser.theme-dark.acc-dark.color-behind-tabs-on,
+.accentmod #browser.theme-light.acc-light.color-behind-tabs-on,
+.accentmod
+  #browser.theme-dark.acc-dark.color-behind-tabs-on
+  .tab-position
+  .tab:hover:not(.active),
+.accentmod
+  #browser.theme-light.acc-light.color-behind-tabs-on
+  .tab-position
+  .tab:hover:not(.active),
+.accentmod
+  .theme-dark.acc-dark.color-behind-tabs-on
+  .toolbar-tabbar
+  > .button-toolbar
+  > button,
+.accentmod
+  .theme-light.acc-light.color-behind-tabs-on
+  .toolbar-tabbar
+  > .button-toolbar
+  > button,
+.accentmod
+  .theme-dark.acc-dark.color-behind-tabs-on
+  .toolbar-tabbar
+  > .toolbar-group
+  > .button-toolbar
+  > button,
+.accentmod
+  .theme-light.acc-light.color-behind-tabs-on
+  .toolbar-tabbar
+  > .toolbar-group
+  > .button-toolbar
+  > button {
+  color: var(--colorFg);
+}
+.accentmod
+  #browser.theme-dark.acc-dark.color-behind-tabs-on
+  .tab-position
+  .tab.active.active,
+.accentmod
+  #browser.theme-light.acc-light.color-behind-tabs-on
+  .tab-position
+  .tab.active.active,
+.accentmod
+  #browser.theme-dark.acc-light.color-behind-tabs-on
+  .tab-position
+  .tab.active.active,
+.accentmod
+  #browser.theme-light.acc-dark.color-behind-tabs-on
+  .tab-position
+  .tab.active.active {
+  color: var(--colorFgIntense);
+}
+.accentmod #browser.tabs-top.theme-dark.acc-light.color-behind-tabs-on #header,
+.accentmod #browser.tabs-top.theme-light.acc-dark.color-behind-tabs-on #header,
+.accentmod
+  #browser.tabs-top.theme-dark.acc-light.color-behind-tabs-on
+  .tab-position
+  .tab:hover:not(.active),
+.accentmod
+  #browser.tabs-top.theme-light.acc-dark.color-behind-tabs-on
+  .tab-position
+  .tab:hover:not(.active),
+.accentmod #browser.theme-dark.acc-light.color-behind-tabs-on,
+.accentmod #browser.theme-light.acc-dark.color-behind-tabs-on,
+.accentmod
+  #browser.theme-dark.acc-light.color-behind-tabs-on
+  .tab-position
+  .tab:hover:not(.active),
+.accentmod
+  #browser.theme-light.acc-dark.color-behind-tabs-on
+  .tab-position
+  .tab:hover:not(.active),
+.accentmod
+  .theme-dark.acc-light.color-behind-tabs-on
+  .toolbar-tabbar
+  > .button-toolbar
+  > button,
+.accentmod
+  .theme-light.acc-dark.color-behind-tabs-on
+  .toolbar-tabbar
+  > .button-toolbar
+  > button,
+.accentmod
+  .theme-dark.acc-light.color-behind-tabs-on
+  .toolbar-tabbar
+  > .toolbar-group
+  > .button-toolbar
+  > button,
+.accentmod
+  .theme-light.acc-dark.color-behind-tabs-on
+  .toolbar-tabbar
+  > .toolbar-group
+  > .button-toolbar
+  > button {
+  color: var(--colorBg);
+}
+.accentmod.accentswitch
+  .theme-dark.acc-dark.color-behind-tabs-off
+  .toolbar-mainbar,
+.accentmod.accentswitch
+  .theme-light.acc-light.color-behind-tabs-off
+  .toolbar-mainbar {
+  color: var(--colorBg);
+}
+.accentmod.accentswitch
+  #browser.theme-dark.acc-dark.color-behind-tabs-off
+  .tab-position
+  .tab.active,
+.accentmod.accentswitch
+  #browser.theme-light.acc-light.color-behind-tabs-off
+  .tab-position
+  .tab.active {
+  color: var(--colorBgIntenser);
+}
+.accentmod.accentswitch
+  .theme-dark.acc-light.color-behind-tabs-off
+  .toolbar-mainbar,
+.accentmod.accentswitch
+  .theme-light.acc-dark.color-behind-tabs-off
+  .toolbar-mainbar {
+  color: var(--colorFg);
+}
+.accentmod.accentswitch
+  #browser.theme-dark.acc-light.color-behind-tabs-off
+  .tab-position
+  .tab.active,
+.accentmod.accentswitch
+  #browser.theme-light.acc-dark.color-behind-tabs-off
+  .tab-position
+  .tab.active {
+  color: var(--colorFgIntense);
+}
+.accentmod.accentswitch
+  #browser.tabs-top.theme-dark.acc-dark.color-behind-tabs-on
+  #header,
+.accentmod.accentswitch
+  #browser.tabs-top.theme-light.acc-light.color-behind-tabs-on
+  #header,
+.accentmod.accentswitch
+  #browser.tabs-top.theme-dark.acc-dark.color-behind-tabs-on
+  .tab-position
+  .tab:hover:not(.active),
+.accentmod.accentswitch
+  #browser.tabs-top.theme-light.acc-light.color-behind-tabs-on
+  .tab-position
+  .tab:hover:not(.active),
+.accentmod.accentswitch #browser.theme-dark.acc-dark.color-behind-tabs-on,
+.accentmod.accentswitch #browser.theme-light.acc-light.color-behind-tabs-on,
+.accentmod.accentswitch
+  #browser.theme-dark.acc-dark.color-behind-tabs-on
+  .tab-position
+  .tab:hover:not(.active),
+.accentmod.accentswitch
+  #browser.theme-light.acc-light.color-behind-tabs-on
+  .tab-position
+  .tab:hover:not(.active),
+.accentmod.accentswitch
+  .theme-dark.acc-dark.color-behind-tabs-on
+  .toolbar-tabbar
+  > .button-toolbar
+  > button,
+.accentmod.accentswitch
+  .theme-light.acc-light.color-behind-tabs-on
+  .toolbar-tabbar
+  > .button-toolbar
+  > button,
+.accentmod.accentswitch
+  .theme-dark.acc-dark.color-behind-tabs-on
+  .toolbar-tabbar
+  > .toolbar-group
+  > .button-toolbar
+  > button,
+.accentmod.accentswitch
+  .theme-light.acc-light.color-behind-tabs-on
+  .toolbar-tabbar
+  > .toolbar-group
+  > .button-toolbar
+  > button {
+  color: var(--colorBg);
+}
+.accentmod.accentswitch
+  #browser.theme-dark.acc-dark.color-behind-tabs-on
+  .tab-position
+  .tab.active.active,
+.accentmod.accentswitch
+  #browser.theme-light.acc-light.color-behind-tabs-on
+  .tab-position
+  .tab.active.active,
+.accentmod.accentswitch
+  #browser.theme-dark.acc-light.color-behind-tabs-on
+  .tab-position
+  .tab.active.active,
+.accentmod.accentswitch
+  #browser.theme-light.acc-dark.color-behind-tabs-on
+  .tab-position
+  .tab.active.active {
+  color: var(--colorFgIntense);
+}
+.accentmod.accentswitch
+  #browser.tabs-top.theme-dark.acc-light.color-behind-tabs-on
+  #header,
+.accentmod.accentswitch
+  #browser.tabs-top.theme-light.acc-dark.color-behind-tabs-on
+  #header,
+.accentmod.accentswitch
+  #browser.tabs-top.theme-dark.acc-light.color-behind-tabs-on
+  .tab-position
+  .tab:hover:not(.active),
+.accentmod.accentswitch
+  #browser.tabs-top.theme-light.acc-dark.color-behind-tabs-on
+  .tab-position
+  .tab:hover:not(.active),
+.accentmod.accentswitch #browser.theme-dark.acc-light.color-behind-tabs-on,
+.accentmod.accentswitch #browser.theme-light.acc-dark.color-behind-tabs-on,
+.accentmod.accentswitch
+  #browser.theme-dark.acc-light.color-behind-tabs-on
+  .tab-position
+  .tab:hover:not(.active),
+.accentmod.accentswitch
+  #browser.theme-light.acc-dark.color-behind-tabs-on
+  .tab-position
+  .tab:hover:not(.active),
+.accentmod.accentswitch
+  .theme-dark.acc-light.color-behind-tabs-on
+  .toolbar-tabbar
+  > .button-toolbar
+  > button,
+.accentmod.accentswitch
+  .theme-light.acc-dark.color-behind-tabs-on
+  .toolbar-tabbar
+  > .button-toolbar
+  > button,
+.accentmod.accentswitch
+  .theme-dark.acc-light.color-behind-tabs-on
+  .toolbar-tabbar
+  > .toolbar-group
+  > .button-toolbar
+  > button,
+.accentmod.accentswitch
+  .theme-light.acc-dark.color-behind-tabs-on
+  .toolbar-tabbar
+  > .toolbar-group
+  > .button-toolbar
+  > button {
+  color: var(--colorFg);
+}

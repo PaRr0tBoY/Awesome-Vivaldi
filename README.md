@@ -31,15 +31,7 @@
 <details>
 <summary>Features</summary>
 
-| Features | Preview |
-|---------|---------|
-| **Adaptive Color**<br>- Adaptive Color according to your browser theme<br>| <img alt="Adaptive Color" width="630px" src="Others/Showcase/autoHide/tabbar/Adaptive.gif" /> |
-| **Auto hide EVERY bars**<br>- Tab bar<br>- Panel bar<br>- Bookmark bar | <img alt="right tabbar" width="630px" src="Others/Showcase/autoHide/tabbar/rightTab.gif" /><img alt="panel" width="230px" src="Others/Showcase/autoHide/panel/autoHidePanel1.gif" /><img alt="bookmark" width="630px" src="Others/Showcase/autoHide/bookmarkbar/autoHideBookmarkBar.gif" /> |
-| **Sleek Audio Icon**<br>- Replace Everywhere<br>- `Playing` : Coloured<br>- `Mute` : Dim | <img alt="tab audio icon" width="315px" src="Others/Showcase/audioIcon/tabAudioIcon.gif" /> |
-| **Vivaldi Peek**<br>- Long Press Right Click On Link<br>- Alt + Left Click On Link | <img alt="peek" width="630px" src="Others/Showcase/Peek/Peek.gif" /> |
-| **Quick File Pane**<br>- Now optimized for latest Vivaldi | <img alt="easy file panel" width="630px" src="Others/Showcase/easy-file-for-latest-vivaldi/easy-file-panel.png" /> |
-| **Better Tab Indicator**<br>- and More… | <img alt="indicator" width="630px" src="Others/Showcase/indicator/indicator.gif" /> |
-| **And More…** |  |
+Original features table is Outdated. See [[Modpack] Community Essentials Mods Collection | Vivaldi Forum](https://forum.vivaldi.net/topic/112064/modpack-community-essentials-mods-collection?_=1761491359483) for outdated introduction to this modpack.
 
 </details>
 
@@ -53,7 +45,7 @@
 1. Open 'Vivaldi://experiments' in Vivaldi and check 'Allow CSS Modification'
 2. Restart Vivaldi
 3. Clone this repo
-4. Under 'CSS/' there's a file called 'AweViv.css' that import all css mods in this modpack,
+4. Under 'CSS/' there's a file called 'Core.css' that import all css mods in this modpack,
    You can also find all configurations of all the css mods in this mod pack;
    Which means you can toggle on/off all your css mods as well as persist your configuration when updating all in one place.
 5. Go to Settings->Appearance and you'll see 'CUSTOM UI MODIFICATIONS'. Select file location as "/path/to/Awesome-Vivaldi/CSS"
@@ -84,25 +76,29 @@
 </head>
 
 <body>
-<script src="color_tabs.js"></script>
-<script src="monochrome-icons.js"></script>
-<script src="import-export-command-chains.js"></script>
-<script src="chroma.min.js"></script>
-<script src="easy-files.js"></script>
-<script src="element-capture.js"></script>
-<script src="global-media-controls.js"></script>
-<script src="AdaptiveWebPanelHeaders.js"></script>
-<script src="autoHidePanel_personal.js"></script>
-<script src="feedIcon.js"></script>
-<script src="mdNotes.js"></script>
-<script src="yb_address_bar.js"></script>
-<script src="ClearTabs.js"></script>
-<script src="TidyTabs.js"></script>
-<script src="dialogTab.js"></script>
-<script src="ImmersiveAddressbar.js"></script>
-<script src="TidyTitles.js"></script>
-<script src="MoonPhase.js"></script>
-
+<script src="tidyTitles.js"></script>\
+<script src="tidyTabs.js"></script>\
+<script src="clearTabs.js"></script>\
+<script src="mainbar.js"></script>\
+<script src="wrapToday.js"></script>\
+<script src="immersiveAddressbar.js"></script>\
+<script src="monochromeIcons.js"></script>\
+<script src="ybAddressBar.js"></script>\
+<script src="mdNotes.js"></script>\
+<script src="elementCapture.js"></script>\
+<script src="globalMediaControls.js"></script>\
+<script src="autoHidePanel.js"></script>\
+<script src="easyFiles.js"></script>\
+<script src="dialogTab.js"></script>\
+<script src="feedIcon.js"></script>\
+<script src="adaptiveWebPanelHeaders.js"></script>\
+<script src="collapseKeyboardSettings.js"></script>\
+<script src="accentMod.js"></script>\
+<script src="moonPhase.js"></script>\
+<script src="backupSearchEngines.js"></script>\
+<script src="importExportCommandChains.js"></script>\
+<script src="tabScroll.js"></script>\
+<script src="activateTabOnHover.js"></script>\
 </body>
 
 </html>

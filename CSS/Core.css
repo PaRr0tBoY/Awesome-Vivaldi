@@ -1,0 +1,219 @@
+/* Import AutoHide folder CSS files */
+@import "AutoHide/adaptiveBF.css";
+@import "AutoHide/fluidTabbar.css";
+@import "AutoHide/nafumofu-bookmarkbar.css";
+@import "AutoHide/supra107-panel.css";
+@import "AutoHide/dude99-statusBar.css";
+
+/* Import Layout folder CSS files */
+@import "Layout/main.css";
+@import "Layout/neatDial.css";
+@import "Layout/superPins.css";
+@import "Layout/addressbar.css";
+/* @import "Layout/themePreviewer.css"; */
+/* @import "Layout/saschadiercks-braveStyleTabs.css"; */
+/* @import "Layout/EdgeCurve.css"; */
+
+/* Import EnhancedUX folder CSS files */
+@import "EnhancedUX/dude99-btnHoverAnime.css";
+@import "EnhancedUX/tabsTrail.css";
+@import "EnhancedUX/quietify.css";
+/* @import "EnhancedUX/LonM-selectableTextEverywhere.css"; */
+
+/* Import NeedToWorkWithJS folder CSS files */
+@import "JSIntegration/clearTabs.css";
+@import "JSIntegration/tidyTabs.css";
+@import "JSIntegration/tileExpand.css";
+@import "JSIntegration/luetage-accentmod.css";
+@import "JSIntegration/biruktes,tam710562,oudstand-dialogTab.css";
+
+/* Import under dev folder CSS files */
+/* @import "Dev/arcFolder.css"; */
+/* @import "Dev/autoHidePanel.css"; */
+
+/* Adjust Configure In :root */
+:root {
+  
+  /* color, transparent, immersive */
+  /* immersive requires immersiveAddressbar.js installed */
+  --fluid-theme: transparent;
+  /*on or off*/
+  --fluid-compact-mode: off; /* Toggle on to Have a Thinner Main Tabbar */
+
+  --fluid-float-tabbar: on; /* Make Tabbar Float Over Webpage When Expanding */
+  --fluid-mask: off; /* When Tabbar Expand Show A Blurry Mask Over Webpage */
+  --fluid-blur-hibernate-tab: off; /* Blur Hibernated Tabs */
+
+  --fluid-delay: delay; /* Whether to delay the tabbar expand/collapse animation */
+  --fluid-border-radius: on; /* Whether to round the tabbar border radius when it expand */
+
+  --fluid-tabs-grid: on; /* Whether to Show "Favourite Tabs" Grid */
+  --fluid-pin-at-top: on; /* Experimental, Whether to Pin the "Favourite Tabs" at Top */
+
+  --pinned-column-count: 3;
+  --pinned-row-count: 3;
+  --pinned-gap: 8px;
+  --pinned-icon-size: 20px;
+  --pinned-tab-height: 50px;
+
+  --tabs-container-collapse-width-default: 44px;
+  --tabs-container-collapse-width-compact: 7px; /* Compact Mode */
+
+  --tabs-container-expand-width: 280px;
+  --tabs-subcontainer-collapse-width: 44px;
+  --tabs-subcontainer-expand-width: calc(
+    var(--tabs-container-expand-width) +
+      var(--tabs-subcontainer-collapse-width) -
+      var(--tabs-container-collapse-width-default)
+  );
+
+  --Button-newtab-main-width: calc(var(--tabs-container-expand-width) / 2);
+  --Button-newtab-sub-width: calc(var(--tabs-subcontainer-expand-width) / 2);
+
+  --tabbar-margin-top: -6px;
+  --tabbar-margin-bottom: 0px;
+  --tabbar-padding: 7px; /* Set to 0 if any tabs position problem */
+
+  /* Expand tab bar border change accordingly to border radius set in browser theme*/
+  --tabbar-border-radius-collapse: 0px; /* Set to zero if you don't want round corner when tabbar collapsed */
+
+  /* Animation speed when tabbars expand or collapse */
+  --slow-animation-speed: 560ms;
+  --animation-speed: 260ms;
+  --fast-animation-speed: 140ms;
+
+  /* Animation Delay Time */
+  --transition-delay-time-expand: 0ms;
+  --transition-delay-time-collapse: 200ms;
+
+  /* Adaptive Skin */
+  /* If you didn't set custom theme color, Tab bar accent from your browser theme color automatically */
+  /* You can still add your own color, checkout example below */
+
+  /* Transparent Color */
+  /* --tabbar-bg-color-collapse: transparent;
+  --tabbar-bg-color-expand: transparent;
+  --tabbar-border-color-collapse: transparent;
+  --tabbar-border-color-expand: transparent; */
+
+  /* Theme Color */
+  --tabbar-bg-color-collapse: unset;
+  --tabbar-bg-color-expand: unset;
+  --tabbar-border-color-collapse: unset;
+  --tabbar-border-color-expand: unset;
+
+  /* Dark Skin */
+  /* --tabbar-bg-color-collapse: rgb(27, 27, 28);
+  --tabbar-bg-color-expand: rgb(53, 58, 63);
+  --tabbar-border-color-collapse: rgba(66, 73, 80, 0.856);
+  --tabbar-border-color-expand: rgb(45, 123, 139); */
+
+  /* ============================================ */
+  /* Config Quietify.css */
+  /* ============================================ */
+
+  --tab-icon-size: 16px;
+  --popup-icon-size: 14px;
+  --panel-icon-size: 10px;
+
+  /* ============================================ */
+  /* Config toviArc legacy */
+  /* ============================================ */
+
+  --window-border: 4px;
+  /*--mac-header: calc(var(--window-border));*/
+  --mac-header: 0px;
+  --win-header: calc(var(--window-border) + 20px);
+  --linux-header: calc(var(--window-border) + 20px);
+  --addressbar-height: 36px;
+  --window-button-scale: 0.8;
+  --window-button-opacity: 0.3;
+  /*--tab-padding: calc(var(--window-border) / 2);*/
+  --tab-padding: 0;
+  --colorTransparent: transparent;
+
+  /* Tab Styling Variables */
+  --mod-whitespace-x: 3px;
+  --mod-whitespace-y: 5px;
+  --mod-whitespace-tabbar-right: 15px;
+  --mod-mainbar-height: 25px;
+}
+
+.tabswitcher.list {grid-template-columns: 0px 1fr; width: 90vw;}
+.tabswitcher.list img.visual-list-preview {visibility: collapse;}
+.tabswitcher.list li.active-page {background-color:#CC99FF !important;}
+
+/* Adds transition to the window accent */
+.color-behind-tabs-on#browser.address-off.tabs-off.bookmark-bar-off #header {
+    transition: background-color 0.7s, border-color 0.7s;
+}
+#browser.color-behind-tabs-on {
+    transition: background-color 0.7s, border-color 0.7s;
+}
+
+
+/* https://forum.vivaldi.net/topic/31743/accent-transitions */
+/* Adds transition to address accent */
+#browser:not(.tabs-top) #header {
+    transition: background-color 0.7s;
+}
+#browser.color-behind-tabs-off:not(.tabs-top) {
+    transition: background-color 0.7s;
+}
+.color-behind-tabs-off .toolbar-mainbar {
+    transition: background-color 0.7s;
+}
+.color-behind-tabs-off.address-top .toolbar-mainbar:after {
+    transition: background-color 0.7s;
+}
+.color-behind-tabs-off.address-bottom .toolbar-mainbar {
+    transition: background-color 0.7s, box-shadow 0.7s;
+}
+.color-behind-tabs-off #tabs-container.top,
+.color-behind-tabs-off #tabs-container.bottom {
+    transition: border-color 0.7s;
+}
+
+/*
+Addressfield Theming
+version 2022.2.2
+https://forum.vivaldi.net/post/356714
+Changes the colors of the hostfragments, the certified siteinfo button, the
+icons for blocked content and the bookmark button in the addressfield.
+*/
+
+.UrlFragment-Wrapper,
+.UrlFragment--Lowlight:first-of-type {
+  color: var(--colorFgFaded);
+}
+.UrlFragment-HostFragment-Basedomain,
+.UrlFragment-HostFragment-TLD {
+  color: var(--colorFgIntense) !important;
+  font-weight: bold;
+}
+.UrlFragment-HostFragment-Subdomain {
+  color: var(--colorHighlightBg) !important;
+  font-weight: bold;
+}
+.SiteInfoButton.certified {
+  fill: var(--colorHighlightBgDark);
+  color: var(--colorHighlightBg);
+}
+.SiteInfoButton.certified:hover,
+.SiteInfoButton.certified:focus:not([tabindex="-1"]),
+.SiteInfoButton.certified:active {
+  fill: var(--colorHighlightBg);
+}
+.SiteInfoButton .siteinfo-text {
+	display: none;
+}
+.bookmark-animated-fill {
+  fill: var(--colorFg) !important;
+}
+.permission-denied circle {
+  fill: var(--colorHighlightBg);
+}
+.permission-denied path {
+  fill: var(--colorHighlightFg);
+}
+

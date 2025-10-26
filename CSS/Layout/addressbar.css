@@ -1,0 +1,122 @@
+.UrlBar-AddressField {
+  position: relative;
+  transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: var(--radius, 8px);
+  overflow: visible;
+  isolation: isolate; /* 创建新的层叠上下文 */
+}
+
+.UrlBar-AddressField::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.12);
+  opacity: 0;
+  transition: opacity 200ms ease;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.UrlBar-AddressField:hover:not(:focus-within)::before {
+  opacity: 1;
+}
+
+.UrlBar-AddressField:focus-within {
+  padding: 3px 15px 30px;
+  margin: -3px -15px -30px;
+  background: dark;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  border-radius: var(--radius, 8px);
+  z-index: 100000000;
+}
+
+.UrlBar-AddressField:focus-within {
+  background-color: var(--colorBgLighter, #2a2a2a) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.UrlBar-AddressField.dark:focus-within {
+  background: var(--colorBgDark, #2a2a2a);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* 输入框容器样式 */
+.UrlBar-UrlFieldWrapper {
+  position: relative;
+  z-index: 1;
+}
+
+/* 工具栏按钮样式调整 */
+.toolbar.toolbar-insideinput {
+  z-index: 3;
+}
+
+/* 动画关键帧 */
+@keyframes expand {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.UrlBar-AddressField:focus-within {
+  animation: expand 280ms ease;
+}
+
+.UrlBar-UrlField {
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: inherit;
+}
+
+.UrlBar-UrlField::placeholder {
+  color: var(--colorTextSecondary, #999);
+}
+
+.UrlBar-AddressField:focus-within {
+  position: relative;
+  z-index: 9999;
+}
+
+
+/* .UrlBar-AddressField {
+	background-color: var(--immersive-bg-color) !important;
+	color: var(--immersive-text-color) !important;
+	transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+	            color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#tabs-container {
+	background-color: var(--immersive-bg-color) !important;
+}
+
+.bookmark-bar {
+	background-color: rgba(
+		var(--immersive-bg-r),
+		var(--immersive-bg-g),
+		var(--immersive-bg-b),
+		0.9
+	) !important;
+	color: var(--immersive-text-color) !important;
+}
+
+#panels-container {
+	background: linear-gradient(
+		to bottom,
+		var(--immersive-bg-color),
+		transparent
+	) !important;
+} */

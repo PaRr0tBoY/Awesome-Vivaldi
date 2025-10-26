@@ -1,0 +1,948 @@
+/* VivalArc Legacy */
+
+/* #browser:not(.fullscreen):not(.address-top-off, .address-bottom-off, .address-bottom) #header {
+  display: none;
+} */
+
+/* #browser:not(.address-top-off, .address-bottom-off, .address-bottom) .mainbar:not(:has(.window-buttongroup.on-mainbar)) {
+  min-height: calc(35px / var(--uiZoomLevel));
+} */
+
+#browser:not(.fullscreen):not(
+    .address-top-off,
+    .address-bottom-off,
+    .address-bottom
+  )
+  .mainbar:not(:has(.window-buttongroup.on-mainbar)) {
+  padding-left: calc(68px / var(--uiZoomLevel));
+}
+
+#browser:not(.address-top-off, .address-bottom-off, .address-bottom)
+  .mainbar
+  > .toolbar-mainbar {
+  min-height: calc(34px / var(--uiZoomLevel));
+}
+
+/* ========================================
+   MAC-SPECIFIC STYLES
+   ======================================== */
+
+/* Top Header Mac */
+#browser.mac:not(.is-settingspage):not(.address-top).tabs-left.tabs-right
+  > #header,
+#browser.mac:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom) #header,
+#browser.mac.color-behind-tabs-off:not(.is-settingspage)
+  #browser.tabs-left.tabs-right
+  #header {
+  background: transparent;
+  min-height: var(--mac-header) !important;
+  height: var(--mac-header) !important;
+}
+
+/* Header hiding with conditional logic */
+#browser:not(.is-settingspage):not(.address-top) > #header,
+#browser:not(.is-settingspage):not(.tabs-top) #header,
+#browser.color-behind-tabs-off:not(.is-settingspage):not(.tabs-top):not(
+    .tabs-bottom
+  )
+  #header {
+  box-shadow: none;
+  overflow: visible;
+}
+
+#browser:not(.is-settingspage).fullscreen > #header,
+#browser:not(.is-settingspage):not(.address-top).tabs-bottom > #header,
+#browser:not(.is-settingspage).tabs-off.address-top > #header,
+.color-behind-tabs-off:not(.is-settingspage).tabs-bottom #header {
+  display: none;
+}
+
+/* Page title styling */
+.mac #titlebar #pagetitle,
+#titlebar #pagetitle .linux.alt {
+  height: var(--mac-header) !important;
+  font-size: 11px;
+  color: var(--colorFg);
+  color: white !important;
+  display: none;
+}
+
+/* Linux Header Styling */
+#browser.linux:not(.is-settingspage):not(.address-top) > #header,
+#browser.linux:not(.is-settingspage):not(.tabs-top) #header,
+#browser.linux.color-behind-tabs-off:not(.is-settingspage):not(.tabs-top):not(
+    .tabs-bottom
+  )
+  #header {
+  min-height: var(--linux-header) !important;
+  height: var(--linux-header) !important;
+  background: var(--colorTabBar);
+}
+
+.linux:not(.alt) #titlebar #pagetitle {
+  height: var(--linux-header);
+  padding: 0 120px;
+}
+
+/* Windows Header Styling */
+#browser.win:not(.is-settingspage):not(.address-top) > #header,
+#browser.win:not(.is-settingspage):not(.tabs-top) #header,
+#browser.win.color-behind-tabs-off:not(.is-settingspage):not(.tabs-top):not(
+    .tabs-bottom
+  )
+  #header {
+  min-height: var(--win-header) !important;
+  height: var(--win-header) !important;
+  background: var(--colorTabBar);
+}
+
+#browser.win #titlebar #pagetitle {
+  height: var(--win-header);
+  padding: 0 140px;
+}
+
+/* Cross-platform titlebar styling */
+.linux:not(.alt) #titlebar #pagetitle,
+#browser.win #titlebar #pagetitle,
+#browser.mac #titlebar #pagetitle {
+  font-size: 11px;
+  color: var(--colorFg);
+  opacity: 0.5;
+}
+
+.win #titlebar #pagetitle > span,
+.linux:not(.alt) #titlebar #pagetitle > span {
+  text-align: center;
+}
+
+/* Window Button Group Mac */
+/* #browser.mac:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+  #header
+  .window-buttongroup
+  button {
+  width: calc(var(--mac-header) * var(--uiZoomLevel));
+  height: calc(var(--mac-header) * var(--uiZoomLevel));
+  padding-right: 4px;
+  margin: 0;
+  margin-bottom: 20px !important;
+  flex: 0 0 calc(var(--window-border) - 4px);
+} */
+
+.window-buttongroup button {
+  height: 30px !important;
+}
+
+/* Window Button Group Windows */
+#browser.win:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+  #header
+  #titlebar
+  .window-buttongroup {
+  opacity: var(--window-button-opacity);
+  color: var(--colorFg);
+  line-height: var(--win-header);
+}
+
+#browser.win:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+  #header
+  #titlebar
+  .window-buttongroup:hover {
+  opacity: 1;
+}
+
+#browser.win:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+  #header
+  #titlebar
+  .window-buttongroup
+  button,
+#browser.win:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+  #header
+  #titlebar
+  .window-buttongroup
+  button.window-close {
+  width: calc(var(--win-header) * 2);
+  height: var(--win-header);
+}
+
+#browser.win:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+  #header
+  #titlebar
+  .window-buttongroup
+  button.window-minimize
+  svg,
+#browser.win:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+  #header
+  #titlebar
+  .window-buttongroup
+  button.window-maximize
+  svg,
+#browser.win:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+  #header
+  #titlebar
+  .window-buttongroup
+  button.window-close
+  svg {
+  scale: var(--window-button-scale);
+}
+
+/* Window Button Group Linux */
+#browser.linux:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+  .window-buttongroup {
+  right: calc(var(--window-border) / var(--uiZoomLevel));
+  top: calc(1px / var(--uiZoomLevel));
+}
+
+#browser.linux:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+  .window-buttongroup
+  button {
+  width: calc((var(--linux-header) - 2px) * 1.32 / var(--uiZoomLevel));
+  height: calc((var(--linux-header) - 2px) / var(--uiZoomLevel));
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#browser.linux:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+  .window-buttongroup
+  button
+  svg {
+  scale: calc(var(--window-button-scale) / var(--uiZoomLevel));
+  opacity: var(--window-button-opacity);
+}
+
+#browser.linux:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+  .window-buttongroup
+  button
+  svg:hover {
+  opacity: 1;
+}
+
+/* ========================================
+   HIDDEN ELEMENTS
+   ======================================== */
+
+.hasfocus .webpageview.tiled.active {
+  /* box-shadow: 0 0 0 2px var(--colorHighlightBgFaded), var(--bgCoverShadow); */
+  box-shadow: none !important;
+}
+
+#browser .tile:has(> .tiled.webpageview) {
+  /* border: var(--mosaicPadding) solid var(--colorBgDarker); */
+  border: 0 3px !important;
+}
+/* .toolbar.toolbar-small.toolbar-insideinput {
+  display: none !important;
+} */
+
+/* URL obfuscation warning */
+/* .UrlBar-UrlObfuscationWarning {
+  display: none !important;
+} */
+
+/* .ToolbarButton-Button{
+  display: none !important;
+} */
+/* Content blocker */
+/* .UrlBar-AddressField .ToolbarButton-Button[title*="Feed"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="Reader"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="Translate"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="订阅"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="阅读"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="翻译"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="页面"] {
+  display: none !important;
+} */
+.UrlBar-AddressField .ToolbarButton-Button[title*="Bookmark"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="书签"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="Block"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="拦截"] {
+  display: none !important;
+}
+
+/* Site info button and badge */
+button.button-addressfield.SiteInfoButton,
+.SiteInfoButton-SecurityBadge {
+  display: none !important;
+}
+
+/* Bookmark button */
+.BookmarkButton {
+  display: none !important;
+}
+
+/* Show input history button */
+button[title="显示输入记录"] {
+  display: none !important;
+}
+
+/* Dashboard widget URL wrapper */
+.dashboard-widget .url-wrapper {
+  display: none;
+}
+
+/* ========================================
+   TOOLBAR & ADDRESS BAR STYLING
+   ======================================== */
+
+/* Address field center alignment */
+/* #urlFieldInput {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px !important;
+} */
+
+/* URL fragment wrapper positioning */
+/* .UrlFragment-Wrapper {
+  position: absolute;
+  left: 45%;
+  transform: translateX(-50%);
+} */
+
+/* Address field styling */
+/* .UrlBar-SearchField,
+.UrlBar-AddressField {
+  border-radius: var(--radius);
+  height: auto;
+  overflow: visible !important;
+}
+
+.UrlBar-SearchField .pageload-indicator,
+.UrlBar-AddressField .pageload-indicator {
+  border-radius: var(--radius);
+  height: 100% !important;
+}
+
+.UrlField {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  max-width: 100%;
+  height: calc(var(--mod-mainbar-height) - (var(--mod-whitespace-y) * 2));
+} */
+
+.UrlBar-AddressField {
+  /* background: var(--colorAccentBgDark) !important; */
+  border-color: transparent !important;
+}
+
+.UrlBar-UrlFieldWrapper {
+  height: auto !important;
+}
+
+[class*="button-popup"] {
+  border-radius: var(--radius) !important;
+}
+
+.density-on .UrlBar-SearchField,
+.density-on .UrlBar-AddressField {
+  height: auto;
+}
+
+.UrlFragment--Highlight {
+  color: var(--ColorFg);
+}
+
+.UrlFragment-Wrapper--ShouldHighlight {
+  --HighlightColor: none;
+  --LowlightColor: none;
+}
+
+.mainbar .toolbar-mainbar button.ToolbarButton-Button {
+  height: unset !important;
+  min-width: unset !important;
+}
+/* ========================================
+   QUICK COMMAND MODAL
+   ======================================== */
+
+.modal-wrapper:has(.quick-command-container) {
+  position: fixed;
+  left: 50%;
+  top: calc(var(--search-top, 50%)); /* 用 CSS 变量调整偏移 */
+  transform: translateX(-50%); /* 只水平居中，垂直用 top 控制 */
+  border-radius: 15px !important;
+  opacity: 0.91 !important;
+  width: 650px;
+  max-height: 80vh;
+  overflow: hidden;
+}
+
+.quick-command-search {
+  --search-top: 50%; /* 或固定高度 + margin 计算，可手动设置 */
+}
+
+.VivaldiList::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+
+/* Quick command width management */
+.ReactVirtualized__Grid.ReactVirtualized__List,
+.ReactVirtualized__Grid__innerScrollContainer,
+.quick-commands,
+.quick-command-container,
+.quick-command-search,
+.quick-command,
+.quick-command-sectionheader {
+  width: 100% !important;
+}
+
+.ReactVirtualized__Grid.ReactVirtualized__List {
+  max-width: 800px !important;
+}
+
+/* ========================================
+   SCROLLBAR CUSTOMIZATION
+   ======================================== */
+
+/* Hide scrollbars for left and right tabbars */
+#browser #tabs-tabbar-container.left ::-webkit-scrollbar,
+#browser #tabs-tabbar-container.right ::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbars for left and right tabbar wrappers */
+.tabs-left .tabbar-wrapper,
+.tabs-right .tabbar-wrapper {
+  background-color: transparent;
+  overflow: visible;
+}
+
+.WorkspacePopup-Items {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ========================================
+   DOWNLOAD PROGRESS STYLING
+   ======================================== */
+
+/* Download editor styling */
+.panel.downloads section.download-editor {
+  flex-basis: fit-content !important;
+}
+
+.panel.downloads section.download-editor > .data.disabled {
+  max-height: 0;
+}
+
+.panel.downloads section.download-editor > .data:not(.disabled) {
+  padding-bottom: 12px;
+}
+
+/* Progress bar base styling */
+.button-toolbar .progress {
+  background-color: black !important;
+}
+
+.button-toolbar .progress .loaded {
+  transition: background-color 300ms ease-out 0s !important;
+}
+
+/* Progress color variations */
+.button-toolbar
+  .progress
+  .loaded:is(
+    [style^="width: 0."],
+    [style^="width: 1."],
+    [style^="width: 2."],
+    [style^="width: 3."],
+    [style^="width: 4."],
+    [style^="width: 5."],
+    [style^="width: 6."],
+    [style^="width: 7."],
+    [style^="width: 8."],
+    [style^="width: 9."]
+  ) {
+  background-color: magenta;
+}
+
+.button-toolbar
+  .progress
+  .loaded[style^="width: 1"]:not([style^="width: 1."]):not(
+    [style^="width: 100%"]
+  ) {
+  background-color: #ff0080;
+}
+
+.button-toolbar .progress .loaded[style^="width: 2"]:not([style^="width: 2."]) {
+  background-color: darkorange;
+}
+
+.button-toolbar .progress .loaded[style^="width: 3"]:not([style^="width: 3."]) {
+  background-color: orange;
+}
+
+.button-toolbar .progress .loaded[style^="width: 4"]:not([style^="width: 4."]) {
+  background-color: gold;
+}
+
+.button-toolbar .progress .loaded[style^="width: 5"]:not([style^="width: 5."]) {
+  background-color: yellow;
+}
+
+.button-toolbar .progress .loaded[style^="width: 6"]:not([style^="width: 6."]) {
+  background-color: greenyellow;
+}
+
+.button-toolbar .progress .loaded[style^="width: 7"]:not([style^="width: 7."]) {
+  background-color: limegreen;
+}
+
+.button-toolbar .progress .loaded[style^="width: 8"]:not([style^="width: 8."]) {
+  background-color: mediumturquoise;
+}
+
+.button-toolbar .progress .loaded[style^="width: 9"]:not([style^="width: 9."]) {
+  background-color: deepskyblue;
+}
+
+.button-toolbar .progress .loaded[style^="width: 100"] {
+  background-color: lightcyan !important;
+}
+
+/* Progress counter styling */
+.button-toolbar .progress .loaded::before,
+.button-toolbar .progress .loaded::after {
+  position: absolute;
+  color: white;
+  -webkit-text-stroke: 0.2px;
+  text-shadow:
+    -0.5px -0.5px 1px cyan,
+    0.5px 0.5px 1px red,
+    -1px 0 1px black,
+    1px 0 1px black,
+    0 -0.5px 1px black,
+    0.5px 1.5px 1px black;
+}
+
+.button-toolbar
+  .progress
+  .loaded:not([style^="width: 100%"]):not([style^="width: 0%"])::before {
+  content: attr(style);
+  left: -3px;
+  bottom: 1px;
+  width: 13px;
+  height: 30px;
+  font-size: 10px;
+  clip-path: inset(13px 0 0 0);
+}
+
+.button-toolbar
+  .progress
+  .loaded:not([style^="width: 100%"]):not([style^="width: 0%"]):not(
+    [style^="width: 0."]
+  ):not([style^="width: 1."]):not([style^="width: 2."]):not(
+    [style^="width: 3."]
+  ):not([style^="width: 4."]):not([style^="width: 5."]):not(
+    [style^="width: 6."]
+  ):not([style^="width: 7."]):not([style^="width: 8."]):not(
+    [style^="width: 9."]
+  )::before {
+  left: -2.5px;
+  width: 11.5px;
+}
+
+.button-toolbar
+  .progress
+  .loaded:not([style^="width: 100%"]):not([style^="width: 0%"])::after {
+  content: "%";
+  left: 11px;
+  bottom: 6.5px;
+  font-size: 8px;
+}
+
+.button-toolbar
+  .progress
+  .loaded:not([style^="width: 100%"]):not([style^="width: 0%"]):not(
+    [style^="width: 0."]
+  ):not([style^="width: 1."]):not([style^="width: 2."]):not(
+    [style^="width: 3."]
+  ):not([style^="width: 4."]):not([style^="width: 5."]):not(
+    [style^="width: 6."]
+  ):not([style^="width: 7."]):not([style^="width: 8."]):not(
+    [style^="width: 9."]
+  )::after {
+  left: 9px;
+}
+
+/* Download icon opacity */
+.button-toolbar > button[title="Downloads"] > span > svg {
+  opacity: 0.4;
+}
+
+/* ========================================
+   TAB STYLING
+   ======================================== */
+
+/* Tab bar container */
+#tabs-tabbar-container.top {
+  margin-bottom: var(--mod-whitespace-y);
+  border-width: 0;
+  box-shadow: none !important;
+  padding-right: var(--mod-whitespace-tabbar-right);
+}
+
+#tabs-tabbar-container.top .tab-strip > span + span .tab:not(.pinned) {
+  margin-left: var(--mod-whitespace-x);
+}
+
+/* ========================================
+   MAINBAR & ADDRESS FIELD STYLING
+   ======================================== */
+
+/* Mainbar styling */
+.mainbar .toolbar-mainbar {
+  align-items: stretch;
+  height: var(--mod-mainbar-height) !important;
+  border: none !important;
+}
+/* padding: var(--mod-whitespace-y) !important; */
+
+.color-behind-tabs-off .mainbar {
+  border: none !important;
+  border-color: transparent !important;
+  &:not(:has(.UrlBar-AddressField:focus-within)){
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  }
+}
+
+/* Omni dropdown positioning */
+.OmniDropdown {
+  top: 100% !important;
+}
+
+/* Profile popup positioning */
+.toolbar-mainbar .profile-popup {
+  margin-right: var(--mod-whitespace-tabbar-right);
+}
+
+/* ========================================
+   EXTENSIONS MENU STYLING
+   ======================================== */
+
+/* .toolbar-extensions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  align-content: flex-start !important;
+  max-width: 300px !important;
+  overflow: visible !important;
+  gap: 3px !important;
+}
+
+
+.toolbar-extensions {
+  margin-left: 10px !important;
+}
+@media (max-width: 1200px) {
+  .toolbar-extensions {
+    max-width: 220px !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .toolbar-extensions {
+    max-width: 180px !important;
+  }
+}
+
+.toolbar-extensions {
+  max-height: 35px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+} */
+
+/* ============================= */
+/* .toolbar-extensions {
+  max-width: 140px !important;
+  overflow-y: hidden !important;
+  overflow-x: auto !important;
+  white-space: nowrap;
+}
+
+
+.toolbar-extensions button,
+.toolbar-extensions div[class*="button"] {
+  white-space: normal;
+  vertical-align: top;
+} */
+
+/*.toolbar-extensions::-webkit-scrollbar {
+  display: none;
+}*/
+
+.toolbar-extensions {
+  /* scrollbar-width: none; */
+  gap: var(--densityGap);
+}
+/*============================================================================*/
+
+.extensionIconPopupMenu {
+  --popupWidth: 280px !important;
+}
+
+.extensionIconPopupMenu > .toolbar {
+  max-height: 50vh;
+  overflow: hidden auto;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+}
+
+.extensionIconPopupMenu .ExtensionDropdownIcon > button {
+  justify-content: flex-start;
+  padding: 10px;
+}
+
+.extensionIconPopupMenu .ExtensionDropdownIcon > button::after {
+  content: attr(title);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.button-toolbar > button > .button-badge {
+  top: auto;
+  right: 10px;
+}
+
+/* ========================================
+   STATUS BAR STYLING
+   ======================================== */
+
+/* Status bar height and color */
+/* .toolbar-statusbar {
+  height: 6px !important;
+  background-color: rgba(29, 37, 33, 1) !important;
+} */
+
+/* ========================================
+   HIDE ADDRESS BAR WHEN TABS ARE HIDDEN
+   ======================================== */
+
+#browser.tabs-off .toolbar-mainbar.toolbar-required,
+#browser.tabs-off .UrlBar-AddressField,
+#browser.tabs-off .toolbar-mainbar[aria-label="Address"] {
+  display: none !important;
+}
+
+#browser:is(.tabs-left, .tabs-right).tabs-off .toolbar-mainbar.toolbar-required,
+#browser:is(.tabs-left, .tabs-right).tabs-off .UrlBar-AddressField {
+  display: none !important;
+}
+
+/* ========================================
+   STATUS INFO STYLING
+   ======================================== */
+
+/* Status Info Content styling */
+.StatusInfo-Content {
+  border-radius: 20px !important;
+  border: 1px solid #40e0d0 !important;
+}
+
+/* High specificity override for StatusInfo in specific layouts */
+:root:has(
+    #browser:is(.tabs-left, .tabs-right):not(.fullscreen, .minimal-ui),
+    #browser.tabs-off:not(.fullscreen, .minimal-ui)
+      #panels-container:not(.switcher)
+  )
+  .toolbar
+  > .StatusInfo
+  > .StatusInfo-Content {
+  border-radius: 20px !important;
+  border: 1px solid rgba(26, 34, 32, 0.5) !important;
+}
+
+/* :root:has(#browser:is(.tabs-left, .tabs-right):not(.fullscreen, .minimal-ui), #browser.tabs-off:not(.fullscreen, .minimal-ui) #panels-container:not(.switcher)) .button-toolbar.toolbar-command:has(> button[title^=vvh-insert-linebreak]) {
+  flex: 1 1 100%;
+}
+:root:has(#browser:is(.tabs-left, .tabs-right):not(.fullscreen, .minimal-ui), #browser.tabs-off:not(.fullscreen, .minimal-ui) #panels-container:not(.switcher)) #browser:not(.toolbar-edit-mode) .button-toolbar.toolbar-command:has(> button[title^=vvh-insert-linebreak]) {
+  height: 0;
+}
+:root:has(#browser:is(.tabs-left, .tabs-right):not(.fullscreen, .minimal-ui), #browser.tabs-off:not(.fullscreen, .minimal-ui) #panels-container:not(.switcher)) #browser:not(.toolbar-edit-mode) .button-toolbar.toolbar-command:has(> button[title^=vvh-insert-linebreak]) > button {
+  display: none;
+}
+:root:not(:has(#browser:is(.tabs-left, .tabs-right):not(.fullscreen, .minimal-ui), #browser.tabs-off:not(.fullscreen, .minimal-ui) #panels-container:not(.switcher))) #browser:not(.toolbar-edit-mode) .button-toolbar.toolbar-command:has(> button[title^=vvh-insert-linebreak]) {
+  display: none;
+}
+:root:has(#browser:is(.tabs-left, .tabs-right):not(.fullscreen, .minimal-ui), #browser.tabs-off:not(.fullscreen, .minimal-ui) #panels-container:not(.switcher)) #browser.toolbar-edit-mode .button-toolbar.toolbar-command:has(> button[title^=vvh-insert-linebreak]) {
+  height: 26px;
+  opacity: 0.5;
+}
+:root:has(#browser:is(.tabs-left, .tabs-right):not(.fullscreen, .minimal-ui), #browser.tabs-off:not(.fullscreen, .minimal-ui) #panels-container:not(.switcher)) #browser.toolbar-edit-mode .button-toolbar.toolbar-command:has(> button[title^=vvh-insert-linebreak]) > button {
+  height: 26px;
+}
+#browser.toolbar-edit-mode .button-toolbar.toolbar-command:has(> button[title^=vvh-insert-linebreak]) {
+  opacity: 0.5;
+}
+#browser.toolbar-edit-mode .button-toolbar.toolbar-command:has(> button[title^=vvh-insert-linebreak]) > button::before {
+  content: " ";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border: 1px dashed;
+  border-radius: var(--radius);
+}
+:root:has(#browser:is(.tabs-left, .tabs-right):not(.fullscreen, .minimal-ui), #browser.tabs-off:not(.fullscreen, .minimal-ui) #panels-container:not(.switcher)) #browser:is(.address-top, .address-bottom) #main .toolbar-mainbar .button-toolbar.toolbar-command:has(> button[title^=vvh-insert-linebreak]) + .SearchField:not(.UrlBar-SearchField):has(+ .button-toolbar.toolbar-command > button[title^=vvh-insert-linebreak]),
+:root:has(#browser:is(.tabs-left, .tabs-right):not(.fullscreen, .minimal-ui), #browser.tabs-off:not(.fullscreen, .minimal-ui) #panels-container:not(.switcher)) footer .toolbar-statusbar .button-toolbar.toolbar-command:has(> button[title^=vvh-insert-linebreak]) + .SearchField:not(.UrlBar-SearchField):has(+ .button-toolbar.toolbar-command > button[title^=vvh-insert-linebreak]) {
+  flex: 1 1 100%;
+} */
+
+:root:has(
+    #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
+    #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
+  )
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"]) {
+  flex: 1 1 100%;
+}
+:root:has(
+    #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
+    #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
+  )
+  #browser:not(.toolbar-edit-mode)
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"]) {
+  height: 0;
+}
+:root:has(
+    #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
+    #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
+  )
+  #browser:not(.toolbar-edit-mode)
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"])
+  > button {
+  display: none;
+}
+:root:not(
+    :has(
+      #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
+      #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
+    )
+  )
+  #browser:not(.toolbar-edit-mode)
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"]) {
+  display: none;
+}
+:root:has(
+    #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
+    #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
+  )
+  #browser.toolbar-edit-mode
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"]) {
+  height: 26px;
+  opacity: 0.5;
+}
+:root:has(
+    #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
+    #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
+  )
+  #browser.toolbar-edit-mode
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"])
+  > button {
+  height: 26px;
+}
+#browser.toolbar-edit-mode
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"]) {
+  opacity: 0.5;
+}
+#browser.toolbar-edit-mode
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"])
+  > button::before {
+  content: " ";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border: 1px dashed;
+  border-radius: var(--radius);
+}
+:root:has(
+    #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
+    #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
+  )
+  #browser:is(.address-top, .address-bottom)
+  #main
+  .toolbar-mainbar
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"])
+  + .SearchField:not(.UrlBar-SearchField):has(
+    + .button-toolbar.toolbar-command > button[title^="vvh-insert-linebreak"]
+  ),
+:root:has(
+    #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
+    #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
+  )
+  footer
+  .toolbar-statusbar
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"])
+  + .SearchField:not(.UrlBar-SearchField):has(
+    + .button-toolbar.toolbar-command > button[title^="vvh-insert-linebreak"]
+  ) {
+  flex: 1 1 100%;
+}
+
+
+/* :root {
+  --address-bar-focus-height: 80px;
+
+  --address-bar-radius: 12px;
+
+  --address-bar-hover-opacity: 0.5;
+
+  --transition-speed: 0.5s;
+}
+
+.toolbar-mainbar[aria-label] {
+  position: relative !important;
+}
+
+.UrlBar-AddressField {
+  transition: all var(--transition-speed) ease !important;
+  overflow: hidden !important;
+}
+
+.UrlBar-AddressField::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #000;
+  mix-blend-mode: exclusion;
+  opacity: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  transition: opacity var(--transition-speed) ease;
+  z-index: 1;
+}
+
+.UrlBar-AddressField:hover::before {
+  opacity: var(--address-bar-hover-opacity);
+}
+
+.UrlBar-AddressField:has(#urlFieldInput:focus) {
+  position: absolute !important;
+  z-index: 100 !important;
+
+  left: fit-content !important;
+  right: fit-content !important;
+  height: var(--address-bar-focus-height) !important;
+  top: 0 !important;
+
+  border-radius: var(--address-bar-radius) !important;
+  background-color: var(--colorBg) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.UrlBar-AddressField:has(#urlFieldInput:focus) .UrlBar-UrlField {
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+}
+
+.toolbar.toolbar-mainbar.toolbar-mailbar.toolbar-hidden.toolbar-large.toolbar-droptarget {
+  display: none;
+} */

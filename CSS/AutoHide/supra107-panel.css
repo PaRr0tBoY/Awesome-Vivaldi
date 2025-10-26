@@ -1,0 +1,39 @@
+/* Autohide panel switch for Vivaldi 6.0
+   Author: @supra107
+   Original Post: https://forum.vivaldi.net/post/672126 */
+
+/* Remove panel padding and background */
+#panels-container.overlay.minimized {
+    position: absolute;
+    background-color: unset;
+}
+/* Set the width of the panels-container element when not hovering over it to adjust the activation zone and not cause it to completely disappear when closing, different widths for different window modes, and keep it fully extended while editing toolbars */
+#browser:not(.toolbar-edit-mode).maximized #panels-container.overlay:not(:hover) {
+    width: 3px !important;
+	transition: .1s .9s, background-color 0s 0s, opacity 0s 1s !important;
+}
+
+#browser:not(.toolbar-edit-mode).fullscreen #panels-container.overlay:not(:hover) {
+    width: 3px !important;
+	transition: .1s .9s, background-color 0s 0s, opacity 0s 1s !important;
+}
+
+#browser:not(.toolbar-edit-mode).normal #panels-container.overlay:not(:hover) {
+    width: 6px !important;
+	transition: .1s .9s, background-color 0s 0s, opacity 0s 1s !important;
+}
+
+/* Expand the switch element by one pixel to remove gap */
+
+#switch {
+    flex: 0 0 35px;
+    max-width: 35px;
+}
+
+/* Set background color for panel switch */
+
+#panels-container.overlay #switch, #panels-container:not(.overlay).icons #switch {
+	background-color: var(--immersive-bg-color);
+	color: var(--immersive-text-color);
+}
+

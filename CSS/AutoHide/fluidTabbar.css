@@ -1104,6 +1104,23 @@ body:has(#panel_switch)
 /* Vivaldi tab bar background color control */
 @container style(--fluid-theme: color) {
 
+  .color-behind-tabs-off .mainbar,
+  .UrlBar-AddressField,
+  /* #tabs-container,
+  #tabs-subcontainer, */
+  /* #tabs-container > *,
+  #tabs-subcontainer > *, */
+  #bookmark-bar,
+  #bookmark-bar > *,
+  #panels-container,
+  #panels,
+  #panels-container > *,
+  #panels > * {
+    background-color: var(--tabbar-bg-color-collapse, var(--colorBg)) !important;
+    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
   #tabs-container,
   #tabs-container .tab-position::after,
   .tidy-tabs-below-button,
@@ -1158,6 +1175,23 @@ body:has(#panel_switch)
 }
 
 @container style(--fluid-theme: immersive) {
+  .color-behind-tabs-off .mainbar,
+  .UrlBar-AddressField,
+  /* #tabs-container,
+  #tabs-subcontainer, */
+  /* #tabs-container > *,
+  #tabs-subcontainer > *, */
+  #bookmark-bar,
+  #bookmark-bar > *,
+  #panels-container,
+  #panels,
+  #panels-container > *,
+  #panels > * {
+    background-color: var(--immersive-bg-color,--colorAccentBg) !important;
+    color: var(--immersive-text-color) !important;
+    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 
   #tabs-container,
   #tabs-container .tab-position::after,
@@ -1217,6 +1251,25 @@ body:has(#panel_switch)
   }
 }
 
+@container style(--fluid-theme: transparent) {
+.color-behind-tabs-off .mainbar,
+.UrlBar-AddressField,
+#tabs-container .tab-position::after,
+/* #tabs-container,
+#tabs-subcontainer, */
+/* #tabs-container > *,
+#tabs-subcontainer > *, */
+#bookmark-bar,
+#bookmark-bar > *,
+#panels-container,
+#panels,
+#panels-container > *,
+#panels > * {
+  background-color: transparent !important;
+  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+}
 @container style(--fluid-theme: transparenttest) {
   /* #webview-container {
     overflow: hidden;
