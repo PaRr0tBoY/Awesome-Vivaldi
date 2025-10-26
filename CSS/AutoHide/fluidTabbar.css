@@ -500,15 +500,14 @@ body:has(
 /* ============================================ */
 /* Floating Tab Bar */
 /* ============================================ */
-
 @container style(--fluid-float-tabbar: on) {
+  @container not style(--fluid-theme: transparent) {
+  
   #main > .inner > div:has(#tabs-tabbar-container) {
     position: absolute;
     top: 0;
     z-index: 2;
     opacity: 1;
-    /* background-color: transparent !important;
-	background-image: none !important; */
     height: 100% !important;
   }
 
@@ -519,14 +518,6 @@ body:has(
   #main > .inner > div:has(#tabs-tabbar-container.left) {
     left: 0;
   }
-
-  #browser.transparent-tabbar
-    .inner
-    > div:has(#tabs-tabbar-container:is(.left, .right)) {
-    /* background-color: transparent !important;
-	backdrop-filter: none !important; */
-  }
-
   /* ============================================ */
   /* Web Page Stack Margins */
   /* Auto-adjust content area based on tab bar position and state */
@@ -593,6 +584,7 @@ body:has(
         var(--tabs-subcontainer-collapse-width)
     );
   }
+}
 }
 
 /* ============================================ */
@@ -1110,54 +1102,264 @@ body:has(#panel_switch)
 
 /* =========================== */
 /* Vivaldi tab bar background color control */
-#tabs-container,
-#tabs-container .tab-wrapper::after,
-.tidy-tabs-below-button,
-.clear-tabs-below-button {
-	background-color: var(--tabbar-bg-color-collapse, var(--colorBgDarker)) !important;
+@container style(--fluid-theme: color) {
+
+  #tabs-container,
+  #tabs-container .tab-position::after,
+  .tidy-tabs-below-button,
+  .clear-tabs-below-button {
+    background-color: var(--tabbar-bg-color-collapse, var(--colorBgDarker)) !important;
+  }
+
+  #tabs-subcontainer {
+    background-color: var(--tabbar-bg-color-collapse, var(--colorBg)) !important;
+  }
+
+  #tabs-tabbar-container {
+    background-color: transparent !important;
+  }
+
+  /* Expanded background states */
+  /* .toolbar-tabbar-after > *{
+    background-color: var(--tabbar-bg-color-expand, var(--colorBgDark));
+  } */
+
+  .toolbar-tabbar-after,
+  .toolbar-tabbar-before,
+  .toolbar-tabbar-after > *,
+  .toolbar-tabbar-before > * {
+    /* background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important; */
+    background-color: transparent !important;
+  }
+
+  /* Hover states for collapsed background */
+  body:not(:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #panel_switch))) 
+    #tabs-container:hover,
+    #tabs-container:hover .tab-position::after,
+    #tabs-container:hover .tidy-tabs-below-button,
+    #tabs-container:hover .clear-tabs-below-button,
+  body:not(:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #panel_switch))) 
+    #tabs-subcontainer:hover {
+    background-color: var(--tabbar-bg-color-expand, var(--colorBgLighter)) !important;
+  }
+
+  /* Force expanded background when specific elements are active */
+  body:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #vivaldi-tooltip:hover, .toolbar-tabbar-before .ToolbarButton-Button.button-pressed, .toolbar-tabbar-after .ToolbarButton-Button.button-pressed)) 
+    #tabs-container {
+    background-color: var(--tabbar-bg-color-expand, var(--colorBgLighter)) !important;
+  }
+
+  /* Toolbar before expanded states */
+  body:has(:is(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField, .toolbar-editor, .toolbar-tabbar-before .ToolbarButton-Button.button-pressed)) 
+    .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
+  .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover {
+    background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important;
+  }
 }
 
-#tabs-subcontainer {
-	background-color: var(--tabbar-bg-color-collapse, var(--colorBg)) !important;
+@container style(--fluid-theme: immersive) {
+
+  #tabs-container,
+  #tabs-container .tab-position::after,
+  .tidy-tabs-below-button,
+  .clear-tabs-below-button {
+    background-color: var(--immersive-bg-color,--colorBgDarker) !important;
+    color: var(--immersive-text-color,--colorFg) !important;
+  }
+
+  #tabs-subcontainer {
+    background-color: var(--immersive-bg-color,--colorBg) !important;
+    color: var(--immersive-text-color,--colorFg) !important;
+  }
+
+  #tabs-tabbar-container {
+    background-color: transparent !important;
+  }
+
+  /* Expanded background states */
+  /* .toolbar-tabbar-after > *{
+    background-color: var(--tabbar-bg-color-expand, var(--colorBgDark));
+  } */
+
+  .toolbar-tabbar-after,
+  .toolbar-tabbar-before,
+  .toolbar-tabbar-after > *,
+  .toolbar-tabbar-before > * {
+    /* background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important; */
+    background-color: transparent !important;
+  }
+
+  /* Hover states for collapsed background */
+  body:not(:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #panel_switch))) 
+    #tabs-container:hover,
+    #tabs-container:hover .tab-position::after,
+    #tabs-container:hover .tidy-tabs-below-button,
+    #tabs-container:hover .clear-tabs-below-button,
+  body:not(:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #panel_switch))) 
+    #tabs-subcontainer:hover {
+    background-color: var(--immersive-bg-color,--colorBgLighter) !important;
+    color: var(--immersive-text-color,--colorFg) !important;
+  }
+
+  /* Force expanded background when specific elements are active */
+  body:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #vivaldi-tooltip:hover, .toolbar-tabbar-before .ToolbarButton-Button.button-pressed, .toolbar-tabbar-after .ToolbarButton-Button.button-pressed)) 
+    #tabs-container {
+    background-color: var(--immersive-bg-color,--colorBgLighter) !important;
+    color: var(--immersive-text-color,--colorFg) !important;
+  }
+
+  /* Toolbar before expanded states */
+  body:has(:is(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField, .toolbar-editor, .toolbar-tabbar-before .ToolbarButton-Button.button-pressed))
+    .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
+  .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover {
+    background-color: var(--immersive-bg-color,--colorBgDarker) !important;
+    color: var(--immersive-text-color,--colorFg) !important;
+  }
 }
 
-#tabs-tabbar-container {
-	background-color: transparent !important;
-}
+@container style(--fluid-theme: transparenttest) {
+  /* #webview-container {
+    overflow: hidden;
+  }
 
-/* Expanded background states */
-/* .toolbar-tabbar-after > *{
-	background-color: var(--tabbar-bg-color-expand, var(--colorBgDark));
-} */
+  .webpage {
+    flex-shrink: 0;
+    min-width: calc(100vw - var(--tabs-container-collapse-width-default));
+  } */
 
-.toolbar-tabbar-after,
-.toolbar-tabbar-before,
-.toolbar-tabbar-after > *,
-.toolbar-tabbar-before > * {
-	/* background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important; */
-	background-color: transparent !important;
-}
+    /* 外层 tabbar-wrapper 使用 display: contents 去除布局影响 */
+    .tabbar-wrapper:has(> .tabbar-wrapper) {
+      display: contents !important;
+    }
+  
+    /* 内层 tabbar-wrapper (实际包含标签栏的) 悬浮定位 */
+    #main > .inner > .tabbar-wrapper:has(#tabs-tabbar-container),
+    #main > .inner > .tabbar-wrapper > .tabbar-wrapper:has(#tabs-tabbar-container) {
+      position: absolute !important;
+      top: 0;
+      bottom: 0;
+      width: var(--tabs-container-collapse-width-default);
+      z-index: 5;
+      background: transparent !important;
+      pointer-events: none;
+      transition: width var(--animation-speed) ease-out;
+    }
+  
+    /* 当有 subcontainer 时增加宽度 */
+    #main > .inner > .tabbar-wrapper:has(#tabs-tabbar-container):has(#tabs-subcontainer),
+    #main > .inner > .tabbar-wrapper > .tabbar-wrapper:has(#tabs-tabbar-container):has(#tabs-subcontainer) {
+      width: calc(
+        var(--tabs-container-collapse-width-default) +
+          var(--tabs-subcontainer-collapse-width)
+      );
+    }
+  
+    /* 右侧标签页定位 */
+    #browser:has(#tabs-tabbar-container.right) .tabbar-wrapper:has(#tabs-tabbar-container) {
+      right: 0;
+    }
+  
+    /* 左侧标签页定位 */
+    #browser:has(#tabs-tabbar-container.left) .tabbar-wrapper:has(#tabs-tabbar-container) {
+      left: 0;
+    }
+  
+    /* 展开时增加宽度 - 单栏 */
+    #browser:has(#tabs-tabbar-container:hover):not(:has(#tabs-subcontainer)) .tabbar-wrapper:has(#tabs-tabbar-container),
+    #browser:has(.toolbar-editor):not(:has(#tabs-subcontainer)) .tabbar-wrapper:has(#tabs-tabbar-container),
+    #browser:has(.UrlBar-AddressField:focus-within):not(:has(#tabs-subcontainer)) .tabbar-wrapper:has(#tabs-tabbar-container) {
+      width: var(--tabs-container-expand-width);
+    }
+  
+    /* 展开时增加宽度 - 双栏 */
+    #browser:has(#tabs-tabbar-container:hover):has(#tabs-subcontainer) .tabbar-wrapper:has(#tabs-tabbar-container),
+    #browser:has(.toolbar-editor):has(#tabs-subcontainer) .tabbar-wrapper:has(#tabs-tabbar-container),
+    #browser:has(.UrlBar-AddressField:focus-within):has(#tabs-subcontainer) .tabbar-wrapper:has(#tabs-tabbar-container) {
+      width: calc(
+        var(--tabs-container-expand-width) +
+          var(--tabs-subcontainer-collapse-width)
+      );
+    }
+  
+    /* 确保标签栏内容可交互 */
+    .tabbar-wrapper:has(#tabs-tabbar-container) > * {
+      pointer-events: auto;
+    }
+  
+    /* webview-container 占满整个空间 */
+    #webview-container {
+      position: relative;
+      flex: 1 1 0 !important;
+      min-width: 0 !important;
+      isolation: isolate;
+    }
+  
+    /* ============================================ */
+    /* Clip-path 裁剪重叠部分 */
+    /* ============================================ */
+    
+    /* 左侧标签栏 - 单栏收起状态 */
+    #browser:has(#tabs-tabbar-container.left):not(:has(#tabs-subcontainer)) #webview-container {
+      clip-path: inset(0 0 0 var(--tabs-container-collapse-width-default));
+      transition: clip-path var(--animation-speed) ease-out;
+    }
+  
+    /* 左侧标签栏 - 双栏收起状态 */
+    #browser:has(#tabs-tabbar-container.left):has(#tabs-subcontainer) #webview-container {
+      clip-path: inset(0 0 0 calc(
+        var(--tabs-container-collapse-width-default) +
+          var(--tabs-subcontainer-collapse-width)
+      ));
+      transition: clip-path var(--animation-speed) ease-out;
+    }
+  
+    /* 右侧标签栏 - 单栏收起状态 */
+    #browser:has(#tabs-tabbar-container.right):not(:has(#tabs-subcontainer)) #webview-container {
+      clip-path: inset(0 var(--tabs-container-collapse-width-default) 0 0);
+      transition: clip-path var(--animation-speed) ease-out;
+    }
+  
+    /* 右侧标签栏 - 双栏收起状态 */
+    #browser:has(#tabs-tabbar-container.right):has(#tabs-subcontainer) #webview-container {
+      clip-path: inset(0 calc(
+        var(--tabs-container-collapse-width-default) +
+          var(--tabs-subcontainer-collapse-width)
+      ) 0 0);
+      transition: clip-path var(--animation-speed) ease-out;
+    }
+  
+    /* 左侧标签栏 - 单栏展开状态 */
+    #browser:has(#tabs-tabbar-container.left:hover):not(:has(#tabs-subcontainer)) #webview-container,
+    #browser:has(#tabs-tabbar-container.left):not(:has(#tabs-subcontainer)):has(.toolbar-editor) #webview-container,
+    #browser:has(#tabs-tabbar-container.left):not(:has(#tabs-subcontainer)):has(.UrlBar-AddressField:focus-within) #webview-container {
+      clip-path: inset(0 0 0 var(--tabs-container-expand-width));
+    }
+  
+    /* 左侧标签栏 - 双栏展开状态 */
+    #browser:has(#tabs-tabbar-container.left:hover):has(#tabs-subcontainer) #webview-container,
+    #browser:has(#tabs-tabbar-container.left):has(#tabs-subcontainer):has(.toolbar-editor) #webview-container,
+    #browser:has(#tabs-tabbar-container.left):has(#tabs-subcontainer):has(.UrlBar-AddressField:focus-within) #webview-container {
+      clip-path: inset(0 0 0 calc(
+        var(--tabs-container-expand-width) +
+          var(--tabs-subcontainer-collapse-width)
+      ));
+    }
+  
+    /* 右侧标签栏 - 单栏展开状态 */
+    #browser:has(#tabs-tabbar-container.right:hover):not(:has(#tabs-subcontainer)) #webview-container,
+    #browser:has(#tabs-tabbar-container.right):not(:has(#tabs-subcontainer)):has(.toolbar-editor) #webview-container,
+    #browser:has(#tabs-tabbar-container.right):not(:has(#tabs-subcontainer)):has(.UrlBar-AddressField:focus-within) #webview-container {
+      clip-path: inset(0 var(--tabs-container-expand-width) 0 0);
+    }
+  
+    /* 右侧标签栏 - 双栏展开状态 */
+    #browser:has(#tabs-tabbar-container.right:hover):has(#tabs-subcontainer) #webview-container,
+    #browser:has(#tabs-tabbar-container.right):has(#tabs-subcontainer):has(.toolbar-editor) #webview-container,
+    #browser:has(#tabs-tabbar-container.right):has(#tabs-subcontainer):has(.UrlBar-AddressField:focus-within) #webview-container {
+      clip-path: inset(0 calc(
+        var(--tabs-container-expand-width) +
+          var(--tabs-subcontainer-collapse-width)
+      ) 0 0);
+    }
 
-/* Hover states for collapsed background */
-body:not(:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #panel_switch))) 
-	#tabs-container:hover,
-  #tabs-container:hover .tab-wrapper::after,
-  #tabs-container:hover .tidy-tabs-below-button,
-  #tabs-container:hover .clear-tabs-below-button,
-body:not(:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #panel_switch))) 
-	#tabs-subcontainer:hover {
-	background-color: var(--tabbar-bg-color-expand, var(--colorBgLighter)) !important;
-}
-
-/* Force expanded background when specific elements are active */
-body:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #vivaldi-tooltip:hover, .toolbar-tabbar-before .ToolbarButton-Button.button-pressed, .toolbar-tabbar-after .ToolbarButton-Button.button-pressed)) 
-	#tabs-container {
-	background-color: var(--tabbar-bg-color-expand, var(--colorBgLighter)) !important;
-}
-
-/* Toolbar before expanded states */
-body:has(:is(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField, .toolbar-editor, .toolbar-tabbar-before .ToolbarButton-Button.button-pressed)) 
-	.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
-.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover {
-	background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important;
 }
