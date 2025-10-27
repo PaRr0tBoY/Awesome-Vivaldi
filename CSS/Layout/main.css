@@ -235,9 +235,9 @@
 } */
 
 /* URL obfuscation warning */
-/* .UrlBar-UrlObfuscationWarning {
+.UrlBar-UrlObfuscationWarning {
   display: none !important;
-} */
+}
 
 /* .ToolbarButton-Button{
   display: none !important;

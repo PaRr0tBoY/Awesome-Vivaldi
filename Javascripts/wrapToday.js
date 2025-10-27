@@ -7,11 +7,9 @@
   // EDIT START
   // Command chain identifier (inspect UI and input your own)
   // This is the ID of the button you want to use to trigger the summary.
-  const command = "COMMAND_b74ad2da-7877-4557-a941-f26392e627a2"; // <--- 请务必修改为你的按钮ID
+  const command = "COMMAND_b74ad2da-7877-4557-a941-f26392e627a2";
   // EDIT END
 
-  // --- 通知管理器类 (NotificationManager) ---
-  // (这部分代码保持不变，为了简洁我将其折叠了)
   class NotificationManager {
     constructor() {
       this.notifications = [];
@@ -341,9 +339,9 @@
   // 这个函数会遍历所有按钮，找到我们指定的那个，并绑定点击事件
   function setupButton(el) {
     const btn = el.getElementsByTagName("BUTTON");
-    console.info(
-      `Found ${btn.length} buttons, checking for command: ${command}`,
-    );
+    // console.info(
+    //   `Found ${btn.length} buttons, checking for command: ${command}`,
+    // );
     for (let i = 0; i < btn.length; i++) {
       // 检查按钮的name属性是否匹配我们设定的command ID
       // 并且确保还没有绑定过事件（通过一个自定义class来标记）

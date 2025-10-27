@@ -120,3 +120,68 @@
 		transparent
 	) !important;
 } */
+
+/*
+Addressfield Theming
+version 2022.2.2
+https://forum.vivaldi.net/post/356714
+Changes the colors of the hostfragments, the certified siteinfo button, the
+icons for blocked content and the bookmark button in the addressfield.
+*/
+
+.UrlFragment-Wrapper,
+.UrlFragment--Lowlight:first-of-type {
+  color: var(--colorFgFaded);
+}
+.UrlFragment-HostFragment-Basedomain,
+.UrlFragment-HostFragment-TLD {
+  color: var(--colorFgIntense) !important;
+  font-weight: bold;
+}
+.UrlFragment-HostFragment-Subdomain {
+  color: var(--colorHighlightBg) !important;
+  font-weight: bold;
+}
+.SiteInfoButton.certified {
+  fill: var(--colorHighlightBgDark);
+  color: var(--colorHighlightBg);
+}
+.SiteInfoButton.certified:hover,
+.SiteInfoButton.certified:focus:not([tabindex="-1"]),
+.SiteInfoButton.certified:active {
+  fill: var(--colorHighlightBg);
+}
+.SiteInfoButton .siteinfo-text {
+	display: none;
+}
+.bookmark-animated-fill {
+  fill: var(--colorFg) !important;
+}
+.permission-denied circle {
+  fill: var(--colorHighlightBg);
+}
+.permission-denied path {
+  fill: var(--colorHighlightFg);
+}
+
+/* https://forum.vivaldi.net/topic/31743/accent-transitions */
+/* Adds transition to address accent */
+#browser:not(.tabs-top) #header {
+    transition: background-color 0.7s;
+}
+#browser.color-behind-tabs-off:not(.tabs-top) {
+    transition: background-color 0.7s;
+}
+.color-behind-tabs-off .toolbar-mainbar {
+    transition: background-color 0.7s;
+}
+.color-behind-tabs-off.address-top .toolbar-mainbar:after {
+    transition: background-color 0.7s;
+}
+.color-behind-tabs-off.address-bottom .toolbar-mainbar {
+    transition: background-color 0.7s, box-shadow 0.7s;
+}
+.color-behind-tabs-off #tabs-container.top,
+.color-behind-tabs-off #tabs-container.bottom {
+    transition: border-color 0.7s;
+}
