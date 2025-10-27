@@ -28,7 +28,7 @@
 }
 
 /* Main tab bar expansion on hover */
-body:not(
+/* body:not(
     :has(
       :is(
         .toolbar-editor,
@@ -36,6 +36,21 @@ body:not(
           .toolbar-tabbar-before
           .UrlBar-AddressField:focus-within,
         #panel_switch
+      )
+    )
+  ) */
+  body:not(
+    :has(
+      :is(
+        #panel_switch,
+        .WorkspacePopup,
+        .toolbar-editor,
+        #tabs-tabbar-container
+          .toolbar-tabbar-before
+          .UrlBar-AddressField:focus-within,
+        #vivaldi-tooltip:hover
+        .toolbar-tabbar-before .ToolbarButton-Button.button-pressed,
+        .toolbar-tabbar-after .ToolbarButton-Button.button-pressed
       )
     )
   )
@@ -56,6 +71,7 @@ body:not(
 /* Keep expanded when specific UI elements are active */
 body:has(
     :is(
+      #panel_switch,
       .WorkspacePopup,
       .toolbar-editor,
       #tabs-tabbar-container
@@ -423,7 +439,7 @@ body:not(:has(.toolbar-editor)) .button-toolbar.newtab {
 
 /* Workspace Button Group, see more at https://vivaldi.com/blog/how-to/pawel-shows-you-how-to-play-with-workspaces-and-custom-icons-in-vivaldi/ */
 
-.toolbar-tabbar-after {
+/* .toolbar-tabbar-after {
   position: relative;
 }
 
@@ -440,7 +456,7 @@ body:not(:has(.toolbar-editor)) .button-toolbar.newtab {
   pointer-events: none;
   z-index: 0;
   background-color: rgba(119, 116, 116, 0.165);
-}
+} */
 
 .toolbar-tabbar-after .button-toolbar:has(.ToolbarButton-Button) {
   position: relative;
@@ -875,7 +891,9 @@ body:has(#panel_switch)
           #tabs-tabbar-container
             .toolbar-tabbar-before
             .UrlBar-AddressField:focus-within,
-          #vivaldi-tooltip:hover
+          #vivaldi-tooltip:hover,
+          .toolbar-tabbar-before .ToolbarButton-Button.button-pressed,
+          .toolbar-tabbar-after .ToolbarButton-Button.button-pressed
         )
       )
     )
@@ -888,12 +906,15 @@ body:has(#panel_switch)
   body:not(
       :has(
         :is(
+          #panel_switch,
           .WorkspacePopup,
           .toolbar-editor,
           #tabs-tabbar-container
             .toolbar-tabbar-before
             .UrlBar-AddressField:focus-within,
-          #panel_switch
+          #vivaldi-tooltip:hover,
+          .toolbar-tabbar-before .ToolbarButton-Button.button-pressed,
+          .toolbar-tabbar-after .ToolbarButton-Button.button-pressed
         )
       )
     )
