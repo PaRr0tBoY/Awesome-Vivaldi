@@ -19,25 +19,25 @@ cp /Users/acid/Desktop/VivaldiModpack/Javascripts/tidyTabs.js "$findPath"/Resour
 cp /Users/acid/Desktop/VivaldiModpack/Javascripts/clearTabs.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/Javascripts/immersiveAddressbar.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/Javascripts/wrapToday.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivaldiModpack/Javascripts/luetage/tabScroll.js "$findPath"/Resources/vivaldi/
 
 # Need to Clarify
-cp /Users/acid/Desktop/VivaldiModpack/Javascripts/luetage/accentMod.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivaldiModpack/Javascripts/luetage/tabScroll.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivaldiModpack/Javascripts/luetage/activateTabOnHover.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivaldiModpack/Javascripts/mainbar.js "$findPath"/Resources/vivaldi/
+# cp /Users/acid/Desktop/VivaldiModpack/Javascripts/luetage/accentMod.js "$findPath"/Resources/vivaldi/
+# cp /Users/acid/Desktop/VivaldiModpack/Javascripts/luetage/activateTabOnHover.js "$findPath"/Resources/vivaldi/
+# cp /Users/acid/Desktop/VivaldiModpack/Javascripts/mainbar.js "$findPath"/Resources/vivaldi/
 
 # Optional
 cp /Users/acid/Desktop/VivaldiModpack/Javascripts/luetage/moonPhase.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/Javascripts/luetage/monochromeIcons.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/Javascripts/Tam710562/globalMediaControls.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivaldiModpack/Javascripts/aminought/chroma.min.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivaldiModpack/Javascripts/aminought/colorTabs.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivaldiModpack/Javascripts/Tam710562/importExportCommandChains.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivaldiModpack/Javascripts/luetage/collapseKeyboardSettings.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivaldiModpack/Javascripts/luetage/backupSearchEngines.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivaldiModpack/Javascripts/Tam710562/adaptiveWebPanelHeaders.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivaldiModpack/Javascripts/Tam710562/feedIcon.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivaldiModpack/Javascripts/Tam710562/mdNotes.js "$findPath"/Resources/vivaldi/
+# cp /Users/acid/Desktop/VivaldiModpack/Javascripts/aminought/chroma.min.js "$findPath"/Resources/vivaldi/
+# cp /Users/acid/Desktop/VivaldiModpack/Javascripts/aminought/colorTabs.js "$findPath"/Resources/vivaldi/
+# cp /Users/acid/Desktop/VivaldiModpack/Javascripts/Tam710562/importExportCommandChains.js "$findPath"/Resources/vivaldi/
+# cp /Users/acid/Desktop/VivaldiModpack/Javascripts/luetage/collapseKeyboardSettings.js "$findPath"/Resources/vivaldi/
+# cp /Users/acid/Desktop/VivaldiModpack/Javascripts/luetage/backupSearchEngines.js "$findPath"/Resources/vivaldi/
+# cp /Users/acid/Desktop/VivaldiModpack/Javascripts/Tam710562/adaptiveWebPanelHeaders.js "$findPath"/Resources/vivaldi/
+# cp /Users/acid/Desktop/VivaldiModpack/Javascripts/Tam710562/feedIcon.js "$findPath"/Resources/vivaldi/
+# cp /Users/acid/Desktop/VivaldiModpack/Javascripts/Tam710562/mdNotes.js "$findPath"/Resources/vivaldi/
 #cp /Users/acid/Desktop/VivaldiModpack/moddings/SuperPins.js "$findPath"/Resources/vivaldi/
 #cp /Users/acid/Desktop/VivaldiModpack/moddings/TidyDownloads.js "$findPath"/Resources/vivaldi/
 #cp /Users/acid/Desktop/VivaldiModpack/moddings/vivaldi-dashboard-camo.js "$findPath"/Resources/vivaldi/
@@ -70,28 +70,28 @@ sed -i '' -e '/<\/body>/i\
 <script src="tidyTitles.js"></script>\
 <script src="tidyTabs.js"></script>\
 <script src="clearTabs.js"></script>\
-<script src="mainbar.js"></script>\
 <script src="wrapToday.js"></script>\
 <script src="immersiveAddressbar.js"></script>\
 <script src="monochromeIcons.js"></script>\
 <script src="ybAddressBar.js"></script>\
-<script src="mdNotes.js"></script>\
 <script src="elementCapture.js"></script>\
 <script src="globalMediaControls.js"></script>\
 <script src="autoHidePanel.js"></script>\
 <script src="easyFiles.js"></script>\
 <script src="dialogTab.js"></script>\
-<script src="feedIcon.js"></script>\
-<script src="adaptiveWebPanelHeaders.js"></script>\
-<script src="collapseKeyboardSettings.js"></script>\
-<script src="accentMod.js"></script>\
 <script src="moonPhase.js"></script>\
-<script src="backupSearchEngines.js"></script>\
-<script src="importExportCommandChains.js"></script>\
 <script src="tabScroll.js"></script>\
-<script src="activateTabOnHover.js"></script>\
 ' "$browserHtml"
 
+# <script src="accentMod.js"></script>\
+# <script src="activateTabOnHover.js"></script>\
+# <script src="backupSearchEngines.js"></script>\
+# <script src="importExportCommandChains.js"></script>\
+# <script src="feedIcon.js"></script>\
+# <script src="adaptiveWebPanelHeaders.js"></script>\
+# <script src="collapseKeyboardSettings.js"></script>\
+# <script src="mainbar.js"></script>\
+# <script src="mdNotes.js"></script>\
 # <script src="chroma.min.js"></script>\
 # <script src="colorTabs.js"></script>\
 #<script src="vivaldi-dashboard-camo.js"></script>\

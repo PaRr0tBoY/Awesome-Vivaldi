@@ -10,7 +10,7 @@
 
   // EDIT START
   // choose scroll behavior, instant or smooth
-  const scb = "instant";
+  const scb = "smooth";
   // EDIT END
 
   function exit(tab) {

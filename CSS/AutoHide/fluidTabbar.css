@@ -1105,7 +1105,7 @@ body:has(#panel_switch)
 /* Hide accordion arrow for right-side tabs in density mode */
 .tabs-right#browser.density-on .accordion-toggle-arrow:after,
 .tabs-right#browser.density-on .tab-wrapper:after {
-  /* display: none !important; */
+  display: none !important;
 }
 
 
@@ -1138,6 +1138,7 @@ body:has(#panel_switch)
   #panels-container > *,
   #panels > * {
     background-color: var(--tabbar-bg-color-collapse, var(--colorBg)) !important;
+    color: red;
     transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
                 color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -1196,8 +1197,31 @@ body:has(#panel_switch)
 }
 
 @container style(--fluid-theme: immersive) {
+
+  #tabs-container
+  .tab-strip
+  > span:has(.is-pinned):nth-child(-n + 9)
+  .is-pinned
+  .tab-wrapper {
+    background-color: var(--colorFgFadedMost) !important;
+    border: 1px solid var(--colorHighlightBgDark) !important;
+  }
+
+  .transparent-tabbar:not(.acc-dark.bg-dark.color-accent-from-page.color-behind-tabs-on) .tab {
+    color: var(--immersive-text-color) !important;
+  }
+  .color-behind-tabs-off .tab {
+    color: var(--immersive-text-color) !important;
+  }
+
+  /* Hide black background */
+  #browser .tabbar-wrapper {
+    background-color: unset !important;
+  }
+
   .color-behind-tabs-off .mainbar,
   .UrlBar-AddressField,
+  .toolbar,
   /* #tabs-container,
   #tabs-subcontainer, */
   /* #tabs-container > *,
@@ -1210,6 +1234,7 @@ body:has(#panel_switch)
   #panels > * {
     background-color: var(--immersive-bg-color,--colorAccentBg) !important;
     color: var(--immersive-text-color) !important;
+    border: none !important;
     transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
                 color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -1219,16 +1244,20 @@ body:has(#panel_switch)
   .tidy-tabs-below-button,
   .clear-tabs-below-button {
     background-color: var(--immersive-bg-color,--colorBgDarker) !important;
-    color: var(--immersive-text-color,--colorFg) !important;
+    color: var(--immersive-text-color) !important;
+    border: none !important;
   }
 
   #tabs-subcontainer {
     background-color: var(--immersive-bg-color,--colorBg) !important;
-    color: var(--immersive-text-color,--colorFg) !important;
+    color: var(--immersive-text-color) !important;
+    border: none !important;
   }
 
   #tabs-tabbar-container {
     background-color: transparent !important;
+    color: var(--immersive-text-color) !important;
+    border: none !important;
   }
 
   /* Expanded background states */
@@ -1242,6 +1271,8 @@ body:has(#panel_switch)
   .toolbar-tabbar-before > * {
     /* background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important; */
     background-color: transparent !important;
+    color: var(--immersive-text-color) !important;
+    border: none !important;
   }
 
   /* Hover states for collapsed background */
@@ -1253,14 +1284,17 @@ body:has(#panel_switch)
   body:not(:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #panel_switch))) 
     #tabs-subcontainer:hover {
     background-color: var(--immersive-bg-color,--colorBgLighter) !important;
-    color: var(--immersive-text-color,--colorFg) !important;
+    color: var(--immersive-text-color) !important;
+    border: none !important;
   }
 
   /* Force expanded background when specific elements are active */
   body:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #vivaldi-tooltip:hover, .toolbar-tabbar-before .ToolbarButton-Button.button-pressed, .toolbar-tabbar-after .ToolbarButton-Button.button-pressed)) 
     #tabs-container {
-    background-color: var(--immersive-bg-color,--colorBgLighter) !important;
-    color: var(--immersive-text-color,--colorFg) !important;
+    /* background-color: var(--immersive-bg-color,--colorBgLighter) !important; */
+    background-color: color-mix(in srgb, var(--immersive-bg-color) 85%, black);
+    color: var(--immersive-text-color) !important;
+    border: none !important;
   }
 
   /* Toolbar before expanded states */
@@ -1268,29 +1302,31 @@ body:has(#panel_switch)
     .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
   .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover {
     background-color: var(--immersive-bg-color,--colorBgDarker) !important;
-    color: var(--immersive-text-color,--colorFg) !important;
+    color: var(--immersive-text-color) !important;
+    border: none !important;
   }
 }
 
 @container style(--fluid-theme: transparent) {
-.color-behind-tabs-off .mainbar,
-.UrlBar-AddressField,
-#tabs-container .tab-position::after,
-/* #tabs-container,
-#tabs-subcontainer, */
-/* #tabs-container > *,
-#tabs-subcontainer > *, */
-#bookmark-bar,
-#bookmark-bar > *,
-#panels-container,
-#panels,
-#panels-container > *,
-#panels > * {
-  background-color: transparent !important;
-  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  .color-behind-tabs-off .mainbar,
+  .UrlBar-AddressField,
+  #tabs-container .tab-position::after,
+  /* #tabs-container,
+  #tabs-subcontainer, */
+  /* #tabs-container > *,
+  #tabs-subcontainer > *, */
+  #bookmark-bar,
+  #bookmark-bar > *,
+  #panels-container,
+  #panels,
+  #panels-container > *,
+  #panels > * {
+    background-color: transparent !important;
+    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 }
-}
+
 @container style(--fluid-theme: transparenttest) {
   /* #webview-container {
     overflow: hidden;

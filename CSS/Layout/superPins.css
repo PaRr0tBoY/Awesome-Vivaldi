@@ -30,11 +30,11 @@
     display: flex !important;
     justify-content: flex-start !important;
     align-items: center !important;
-    background-color: var(--colorBgAlpha) !important;
     margin: 0 !important;
     padding: 0 !important;
     /* background-color: var(--colorBg, rgba(255, 255, 255, 0.2)) !important; */
     z-index: 150;
+    background-color: var(--colorBgAlpha) !important;
     border: 1px solid var(--colorHighlightBgDark) !important;
   }
 
