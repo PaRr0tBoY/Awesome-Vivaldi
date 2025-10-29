@@ -1138,7 +1138,6 @@ body:has(#panel_switch)
   #panels-container > *,
   #panels > * {
     background-color: var(--tabbar-bg-color-collapse, var(--colorBg)) !important;
-    color: red;
     transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
                 color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }

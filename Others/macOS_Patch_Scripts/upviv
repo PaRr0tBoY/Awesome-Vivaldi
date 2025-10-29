@@ -71,6 +71,7 @@ sed -i '' -e '/<\/body>/i\
 <script src="tidyTabs.js"></script>\
 <script src="clearTabs.js"></script>\
 <script src="wrapToday.js"></script>\
+<script src="tabScroll.js"></script>\
 <script src="immersiveAddressbar.js"></script>\
 <script src="monochromeIcons.js"></script>\
 <script src="ybAddressBar.js"></script>\
@@ -80,7 +81,6 @@ sed -i '' -e '/<\/body>/i\
 <script src="easyFiles.js"></script>\
 <script src="dialogTab.js"></script>\
 <script src="moonPhase.js"></script>\
-<script src="tabScroll.js"></script>\
 ' "$browserHtml"
 
 # <script src="accentMod.js"></script>\

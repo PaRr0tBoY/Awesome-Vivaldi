@@ -7,7 +7,7 @@
     
     // === GLM(free) ===
     BASE_URL: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
-    API_TOKEN: 'ebc51472aa5d4c46bc367a769f618248.dv4nrCh5waLpooDS',
+    API_TOKEN: '',
     MODEL: 'glm-4.5-flash',
 
     // === Deepseek ===

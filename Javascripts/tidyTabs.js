@@ -7,7 +7,7 @@
 		// GLM API configuration
 		glm: {
 			url: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
-			key: 'e2105adcbe8d4d6ea49dce2fd94c127f.6dcsB9uMmtNxKXl2',
+			key: '',
 			model: 'glm-4.5-flash',
 			temperature: 0.3,
 			maxTokens: 2048

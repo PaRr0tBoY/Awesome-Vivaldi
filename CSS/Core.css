@@ -4,6 +4,7 @@
 @import "AutoHide/nafumofu-bookmarkbar.css";
 @import "AutoHide/supra107-panel.css";
 @import "AutoHide/dude99-statusBar.css";
+/* @import "AutoHide/tabbar.css"; */
 
 /* Import Layout folder CSS files */
 @import "Layout/main.css";
@@ -24,7 +25,7 @@
 @import "JSIntegration/clearTabs.css";
 @import "JSIntegration/tidyTabs.css";
 @import "JSIntegration/tileExpand.css";
-@import "JSIntegration/luetage-accentmod.css";
+/* @import "JSIntegration/luetage-accentmod.css"; */
 @import "JSIntegration/biruktes,tam710562,oudstand-dialogTab.css";
 
 /* Import under dev folder CSS files */

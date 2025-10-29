@@ -2,34 +2,95 @@
     <img width="200" height="200" src="/Others/Showcase/AV.png">
 </div>
 
-
-
 <div align="center">
     <h1>Awesome Vivaldi</h1>
 <div align="center">
-    
 [![DeepWiki](https://img.shields.io/badge/DeepWiki-Docs-blue)](https://deepwiki.com/PaRr0tBoY/Awesome-Vivaldi/2.3.1-main-ui-styles)
 [![Vivaldi Forum](https://img.shields.io/badge/Vivaldi-Forum-red)](https://forum.vivaldi.net/topic/112064/modpack-community-essentials-mods-collection?_=1761221602450)
 ![GitHub repo size](https://img.shields.io/github/repo-size/PaRr0tBoY/Awesome-Vivaldi) 
 ![GitHub Repo stars](https://img.shields.io/github/stars/PaRr0tBoY/Awesome-Vivaldi) 
 </div>
     <p>A Curated Community Mod Pack</p>
-    
+
 <!-- <img src="" width="32%" alt="home" />
 <img src="" width="32%" alt="home" />
 <img src="" width="32%" alt="home" />
 <br/>
 <img src="" width="96%" alt="home" />
 <br/> -->
-</div>
 
+</div>
 
 <br/>
 
+## Features
 
+### MainShowCase
+
+|  `<img src="./MainShowCase/arcLikeSidebar.png" height="300" />`  | `<img src="./MainShowCase/NeatNewTab.png" height="300" />` | `<img src="./MainShowCase/YouDeserveABiggerWebview.png" height="300" />` |
+| :----------------------------------------------------------------: | :----------------------------------------------------------: | :------------------------------------------------------------------------: |
+| `<img src="./MainShowCase/FollowThemeColor.gif" height="300" />` |  `<img src="./MainShowCase/sidebar.gif" height="300" />`  |                                                                            |
+
+### Let’s Make it Arc
+
+<table>
+<tr>
+<td>Arc Peek</td>
+<td><img src="./Others/Showcase/Arc-like/ArcPeek.gif" height="300" /></td>
+</tr>
+<tr>
+<td>Tidy Tabs with AI Powered</td>
+<td><img src="./Others/Showcase/Arc-like/AI-Feature/tidyTabs.gif" height="300" /></td>
+</tr>
+<tr>
+<td>Tidy Titles With AI Powered</td>
+<td><img src="./Others/Showcase/Arc-like/AI-Feature/tidyTitles.gif" height="300" /></td>
+</tr>
+<tr>
+<td>Clear Tabs</td>
+<td><img src="./Others/Showcase/Arc-like/AI-Feature/ClearTabs.gif" height="300" /></td>
+</tr>
+<tr>
+<td>Peek Favourites Tab Title</td>
+<td><img src="./Others/Showcase/Arc-like/FavouritesTabs/FavouritesPeek.gif" height="300" /></td>
+</tr>
+<tr>
+<td>Pin Favourite Tabs</td>
+<td><img src="./Others/Showcase/Arc-like/FavouritesTabs/Pin-On-Top.gif" height="300" /></td>
+</tr>
+</table>
+
+### Nice to Have Features
+
+<table>
+<tr>
+<td>Sleek Audio Icon</td>
+<td><img src="./Others/Showcase/feature-small/My-Mods/audioIcon.gif" height="300" /></td>
+</tr>
+<tr>
+<td>Global Media Control</td>
+<td><img src="./Others/Showcase/feature-small/Community/audio-panel.png" height="300" /></td>
+</tr>
+<tr>
+<td>Who Needs a Disabled Button?</td>
+<td><img src="./Others/Showcase/feature-small/My-Mods/adaptiveBF.gif" height="300" /></td>
+</tr>
+<tr>
+<td>Select Files From Your History Downloads</td>
+<td><img src="./Others/Showcase/feature-small/Community/easyFile.png" height="300" /></td>
+</tr>
+<tr>
+<td>Adds a Trail to Hovered and Active Tabs, Close Buttons As Well</td>
+<td><img src="./Others/Showcase/feature-small/My-Mods/TabTrails.gif" height="300" /></td>
+</tr>
+<tr>
+<td>BiggerView</td>
+<td><img src="./Others/Showcase/feature-small/Community/biggerView.gif" height="300" /></td>
+</tr>
+</table>
 
 <details>
-<summary>Features</summary>
+<summary>Legacy Features (Outdated)</summary>
 
 Original features table is Outdated. See [[Modpack] Community Essentials Mods Collection | Vivaldi Forum](https://forum.vivaldi.net/topic/112064/modpack-community-essentials-mods-collection?_=1761491359483) for outdated introduction to this modpack.
 
@@ -37,6 +98,17 @@ Original features table is Outdated. See [[Modpack] Community Essentials Mods Co
 
 <details>
 <summary>How to Install:</summary>
+
+# Adjust Vivaldi Settings
+
+![1761752544957](image/README/1761752544957.png)
+
+![1761752550644](image/README/1761752550644.png)
+
+![1761752555886](image/README/1761752555886.png)
+
+
+# Install Mods
 
 ==**BACKUP ALL NECESSARY FILES BEFORE STARTING**==
 
@@ -57,7 +129,7 @@ Original features table is Outdated. See [[Modpack] Community Essentials Mods Co
 2. If you're on linux, see [Vivaldi-Autoinject-Custom-js-ui](https://aur.archlinux.org/vivaldi-autoinject-custom-js-ui.git) for more info
 3. See also [Patching Vivaldi with batch scripts](https://forum.vivaldi.net/topic/10592/patching-vivaldi-with-batch-scripts/21?page=2) for all platform
 4. If you're on macOS use [macOS_Patch_Scripts | upviv](https://github.com/PaRr0tBoY/Vivaldi-Mods/blob/8a1e9f8a63f195f67f27ab2e5b86c4aff0081096/macOS_Patch_Scripts/upviv) as a reference for patchscript
-   
+
 ## To install Javascript moddings(Manually):
 
 1. Duplicate javascripts file under moddings to `<YOURVIVALDIDIRECTORY>`\Application\<VERSI0N>\resources\vivaldi.
@@ -104,20 +176,24 @@ Original features table is Outdated. See [[Modpack] Community Essentials Mods Co
 </html>
 
 ```
+
 3. That's it!
-   
+
 ### Advanced Reading
 
 1. you can patch vivaldi with batch scripts. To learn more check [Patching Vivaldi with batch scripts](https://forum.vivaldi.net/topic/10592/patching-vivaldi-with-batch-scripts/21?page=2)
 2. To learn more about js modification for Vivaldi check [Modding Vivaldi | Vivaldi Forum](https://forum.vivaldi.net/topic/10549/modding-vivaldi?page=1)
 3. To learn more about css modification for Vivaldi by yourself check [Inspecting the Vivaldi UI with DevTools | Vivaldi Forum](https://forum.vivaldi.net/topic/16684/inspecting-the-vivaldi-ui-with-devtools?page=1)
 4. If you're on macOS use [macOS_Patch_Scripts | upviv](https://github.com/PaRr0tBoY/Vivaldi-Mods/blob/8a1e9f8a63f195f67f27ab2e5b86c4aff0081096/macOS_Patch_Scripts/upviv) as a reference for patchscript
+5. Arc like workspace switcher tutorial:[Paweł shows you how to play with Workspaces and Custom Icons in Vivaldi. | Vivaldi Browser](https://vivaldi.com/blog/how-to/pawel-shows-you-how-to-play-with-workspaces-and-custom-icons-in-vivaldi/)
 
 </details>
 
+[![](https://api.star-history.com/svg?repos=PaRr0tBoY/Awesome-Vivaldi&type=Timeline&theme=dark)](https://github.com/PaRr0tBoY/Awesome-Vivaldi)
+
 <details>
 <summary>Community Mods:</summary>
-   
+
 # Community JS Mods And CSS Included In This Modpack
 
 [📸 Element Capture](https://forum.vivaldi.net/topic/103686/element-capture?_=1758777284963)

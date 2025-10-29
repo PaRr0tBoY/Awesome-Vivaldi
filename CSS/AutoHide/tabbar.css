@@ -1,0 +1,61 @@
+:root {
+  --tabbar-width: 300px;
+}
+
+#main > .inner > div:has(#tabs-tabbar-container) {
+  position: absolute;
+  top: 0;
+  z-index: 2;
+  opacity: 1;
+  height: 100% !important;
+}
+
+#main > .inner > div:has(#tabs-tabbar-container.right) {
+  right: 0;
+}
+
+#main > .inner > div:has(#tabs-tabbar-container.left) {
+  left: 0;
+}
+
+#browser:not(:has(.toolbar-editor)) #tabs-tabbar-container::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -10px;
+  width: 10px;
+  z-index: -1;
+}
+
+#browser:not(:has(.toolbar-editor)) #tabs-tabbar-container {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  max-width: var(--tabbar-width);
+  min-width: var(--tabbar-width);
+  height: fit-content;
+  background-color: var(--colorBgDarker);
+  border-radius: var(--radius);
+  transition: left var(--animation-speed) ease-out;
+  pointer-events: none;
+}
+
+#browser:not(:has(.toolbar-editor)) #tabs-tabbar-container:is(:hover, :focus-within, :has(.button-pressed)) {
+  left: calc(var(--tabbar-width) * -1);
+  transition: left var(--animation-speed) ease-out;
+  pointer-events: auto;
+}
+
+#browser:not(:has(.toolbar-editor)) #tabs-tabbar-container::before {
+  pointer-events: auto;
+}
+
+#tabs-tabbar-container .SlideBar {
+  display: none !important;
+}
+
+.tabbar-wrapper:has(#tabs-container.left) {
+  background-color: transparent !important;
+}
