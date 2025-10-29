@@ -5,8 +5,9 @@
 <div align="center">
     <h1>Awesome Vivaldi</h1>
 <div align="center">
+
 [![DeepWiki](https://img.shields.io/badge/DeepWiki-Docs-blue)](https://deepwiki.com/PaRr0tBoY/Awesome-Vivaldi/2.3.1-main-ui-styles)
-[![Vivaldi Forum](https://img.shields.io/badge/Vivaldi-Forum-red)](https://forum.vivaldi.net/topic/112064/modpack-community-essentials-mods-collection?_=1761221602450)
+[![Vivaldi Forum](https://img.shields.io/badge/Vivaldi-Forum-red)](https://forum.vivaldi.net/topic/112064/modpack-community-essentials-mods-collection?_=1761221602450) 
 ![GitHub repo size](https://img.shields.io/github/repo-size/PaRr0tBoY/Awesome-Vivaldi) 
 ![GitHub Repo stars](https://img.shields.io/github/stars/PaRr0tBoY/Awesome-Vivaldi) 
 </div>
@@ -26,10 +27,14 @@
 ## Features
 
 ### MainShowCase
+| Features | Preview |
+| :--- | :--- |
+| **Arc-Style Sidebar**<br>• Modern sidebar design<br>• Quick access to frequently used features | <img alt="Arc-style sidebar interface with sleek design" height="300" src="./Others/Showcase/MainShowCase/arcLikeSidebar.png" /> |
+| **Clean New Tab Page**<br>• Minimalist interface layout<br>• Fast access to favorite websites | <img alt="Clean and uncluttered new tab page" height="300" src="./Others/Showcase/MainShowCase/NeatNewTab.png" /> |
+| **Expanded Webview**<br>• Optimized page display area<br>• Enhanced browsing experience | <img alt="Maximized webview for better content viewing" height="300" src="./Others/Showcase/MainShowCase/YouDeserveABiggerWebview.png" /> |
+| **Dynamic Theme Colors**<br>• Automatic system theme adaptation<br>• Smooth color transition effects | <img alt="Dynamic theme color changing demonstration" height="300" src="./Others/Showcase/MainShowCase/FollowThemeColor.gif" /> |
+| **Smart Sidebar Animations**<br>• Smooth expand/collapse transitions<br>• Intelligent show/hide functionality | <img alt="Smooth sidebar animation effects" height="300" src="./Others/Showcase/MainShowCase/sidebar.gif" /> |
 
-|  `<img src="./MainShowCase/arcLikeSidebar.png" height="300" />`  | `<img src="./MainShowCase/NeatNewTab.png" height="300" />` | `<img src="./MainShowCase/YouDeserveABiggerWebview.png" height="300" />` |
-| :----------------------------------------------------------------: | :----------------------------------------------------------: | :------------------------------------------------------------------------: |
-| `<img src="./MainShowCase/FollowThemeColor.gif" height="300" />` |  `<img src="./MainShowCase/sidebar.gif" height="300" />`  |                                                                            |
 
 ### Let’s Make it Arc
 
@@ -106,7 +111,6 @@ Original features table is Outdated. See [[Modpack] Community Essentials Mods Co
 ![1761752550644](image/README/1761752550644.png)
 
 ![1761752555886](image/README/1761752555886.png)
-
 
 # Install Mods
 
