@@ -1,36 +1,49 @@
+/*
+Config Center
+version 2025.10.31
+Author PaRr0tBoY
+https://github.com/PaRr0tBoY/Awesome-Vivaldi
+You may manage and config all your css mods and config them as well all in this file
+*/
+
 /* Import AutoHide folder CSS files */
-@import "AutoHide/adaptiveBF.css";
-@import "AutoHide/fluidTabbar.css";
-@import "AutoHide/nafumofu-bookmarkbar.css";
-@import "AutoHide/supra107-panel.css";
-@import "AutoHide/dude99-statusBar.css";
-/* @import "AutoHide/tabbar.css"; */
+@import "AutoHide/AdaptiveBF.css";
+@import "AutoHide/Tabbar.css";
+@import "AutoHide/Bookmarkbar.css";
+@import "AutoHide/Panel.css";
+@import "AutoHide/StatusBar.css";
 
 /* Import Layout folder CSS files */
 @import "Layout/main.css";
-@import "Layout/neatDial.css";
-@import "Layout/superPins.css";
-@import "Layout/addressbar.css";
+@import "Layout/NeatDial.css";
+@import "Layout/FavouriteTabs.css";
+@import "Layout/Addressbar.css";
+@import "Layout/FindInPage.css";
+@import "Layout/QuickCommand.css";
+@import "Layout/DownloadPanel.css";
+@import "Layout/ExtensionsPanel.css";
 /* @import "Layout/themePreviewer.css"; */
-/* @import "Layout/saschadiercks-braveStyleTabs.css"; */
-/* @import "Layout/EdgeCurve.css"; */
 
 /* Import EnhancedUX folder CSS files */
-@import "EnhancedUX/dude99-btnHoverAnime.css";
-@import "EnhancedUX/tabsTrail.css";
-@import "EnhancedUX/quietify.css";
+@import "EnhancedUX/BtnHoverAnime.css";
+@import "EnhancedUX/TabsTrail.css";
+@import "EnhancedUX/Quietify.css";
 /* @import "EnhancedUX/LonM-selectableTextEverywhere.css"; */
 
-/* Import NeedToWorkWithJS folder CSS files */
-@import "JSIntegration/clearTabs.css";
-@import "JSIntegration/tidyTabs.css";
-@import "JSIntegration/tileExpand.css";
-/* @import "JSIntegration/luetage-accentmod.css"; */
-@import "JSIntegration/biruktes,tam710562,oudstand-dialogTab.css";
+/* Import JSIntegretion folder CSS files */
+@import "JSIntegration/ClearTabs.css";
+@import "JSIntegration/TidyTabs.css";
+@import "JSIntegration/ArcPeek.css";
+/* @import "JSIntegration/Accentmod.css"; */
 
 /* Import under dev folder CSS files */
-/* @import "Dev/arcFolder.css"; */
+/* @import "Dev/TabStack.css"; */
 /* @import "Dev/autoHidePanel.css"; */
+/* @import "Dev/Tabbar.css"; */
+/* @import "Dev/LineBreak.css"; */
+/* @import "Dev/TileExpand.css"; */
+/* @import "Layout/BraveStyleTabs.css"; */
+/* @import "Layout/EdgeCurve.css"; */
 
 /* Adjust Configure In :root */
 :root {

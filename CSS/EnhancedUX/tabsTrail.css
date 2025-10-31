@@ -1,3 +1,14 @@
+/*
+TabsTrail
+version 2025.10.31
+Author PaRr0tBoY
+https://github.com/PaRr0tBoY/Awesome-Vivaldi
+Show trail on tab to highlight mouse hover action and active tabs
+- When hover on close button on tab -> red trail
+- When hover on tab except close button -> green trail
+- Active tabs -> green trail
+*/
+
 /* ========================================
    TAB TRAIL EFFECTS - GREEN FOR TAB, RED FOR CLOSE BUTTON
    ======================================== */

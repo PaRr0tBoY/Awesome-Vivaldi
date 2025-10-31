@@ -1,12 +1,22 @@
+/*
+Addressbar Styling
+version 2025.10.31
+Author PaRr0tBoY
+https://github.com/PaRr0tBoY/Awesome-Vivaldi
+Thinner addressbar
+Urlbar expand when focus within
+Separated dropdown menu
+*/
+
 .UrlBar-AddressField {
   position: relative;
   transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: var(--radius, 8px);
   overflow: visible;
-  isolation: isolate; /* 创建新的层叠上下文 */
+  isolation: isolate;
 }
 
-.UrlBar-AddressField::before {
+/* .UrlBar-AddressField::before {
   content: "";
   position: absolute;
   top: 0;
@@ -23,39 +33,45 @@
 
 .UrlBar-AddressField:hover:not(:focus-within)::before {
   opacity: 1;
-}
+} */
+
+/* #browser:has(.UrlBar-AddressField:focus-within) .ToolbarButton-Button{
+  display: none !important;
+} */
 
 .UrlBar-AddressField:focus-within {
-  padding: 3px 15px 30px;
-  margin: -3px -15px -30px;
+  padding: 3px 15px 10px;
+  margin: -3px -15px -10px;
   background: dark;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
   border-radius: var(--radius, 8px);
   z-index: 100000000;
-}
-
-.UrlBar-AddressField:focus-within {
   background-color: var(--colorBgLighter, #2a2a2a) !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
-.UrlBar-AddressField.dark:focus-within {
+.UrlBar-AddressField:focus-within .OmniDropdown{
+  /* padding: 0px auto auto;
+  margin: 0px auto auto; */
+  margin-top: 20px;
+  background-color: var(--colorBgLighter, #2a2a2a) !important;
+  border: unset;
+  /* box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); */
+}
+/* .UrlBar-AddressField.dark:focus-within {
   background: var(--colorBgDark, #2a2a2a);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-}
+} */
 
-/* 输入框容器样式 */
 .UrlBar-UrlFieldWrapper {
   position: relative;
   z-index: 1;
 }
 
-/* 工具栏按钮样式调整 */
 .toolbar.toolbar-insideinput {
   z-index: 3;
 }
 
-/* 动画关键帧 */
 @keyframes expand {
   0% {
     transform: scale(1);
@@ -68,7 +84,8 @@
   }
 }
 
-.UrlBar-AddressField:focus-within {
+.UrlBar-AddressField:focus-within,
+.OmniDropdown {
   animation: expand 280ms ease;
 }
 
@@ -184,4 +201,155 @@ icons for blocked content and the bookmark button in the addressfield.
 .color-behind-tabs-off #tabs-container.top,
 .color-behind-tabs-off #tabs-container.bottom {
     transition: border-color 0.7s;
+}
+
+/* Port From Main.css */
+
+/* .toolbar.toolbar-small.toolbar-insideinput {
+  display: none !important;
+} */
+
+/* URL obfuscation warning */
+.UrlBar-UrlObfuscationWarning {
+  display: none !important;
+}
+
+/* .ToolbarButton-Button{
+  display: none !important;
+} */
+/* Content blocker */
+/* .UrlBar-AddressField .ToolbarButton-Button[title*="Feed"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="Reader"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="Translate"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="订阅"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="阅读"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="翻译"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="页面"] {
+  display: none !important;
+} */
+.UrlBar-AddressField .ToolbarButton-Button[title*="Bookmark"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="书签"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="Block"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="拦截"] {
+  display: none !important;
+}
+
+/* Site info button and badge */
+button.button-addressfield.SiteInfoButton,
+.SiteInfoButton-SecurityBadge {
+  display: none !important;
+}
+
+/* Bookmark button */
+.BookmarkButton {
+  display: none !important;
+}
+
+/* Show input history button */
+button[title="显示输入记录"] {
+  display: none !important;
+}
+
+/* ========================================
+   TOOLBAR & ADDRESS BAR STYLING
+   ======================================== */
+
+/* Address field center alignment */
+/* #urlFieldInput {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px !important;
+} */
+
+/* URL fragment wrapper positioning */
+/* .UrlFragment-Wrapper {
+  position: absolute;
+  left: 45%;
+  transform: translateX(-50%);
+} */
+
+/* Address field styling */
+/* .UrlBar-SearchField,
+.UrlBar-AddressField {
+  border-radius: var(--radius);
+  height: auto;
+  overflow: visible !important;
+}
+
+.UrlBar-SearchField .pageload-indicator,
+.UrlBar-AddressField .pageload-indicator {
+  border-radius: var(--radius);
+  height: 100% !important;
+}
+
+.UrlField {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  max-width: 100%;
+  height: calc(var(--mod-mainbar-height) - (var(--mod-whitespace-y) * 2));
+} */
+
+.UrlBar-AddressField {
+  /* background: var(--colorAccentBgDark) !important; */
+  border-color: transparent !important;
+}
+
+.UrlBar-UrlFieldWrapper {
+  height: auto !important;
+}
+
+[class*="button-popup"] {
+  border-radius: var(--radius) !important;
+}
+
+.density-on .UrlBar-SearchField,
+.density-on .UrlBar-AddressField {
+  height: auto;
+}
+
+.UrlFragment--Highlight {
+  color: var(--ColorFg);
+}
+
+.UrlFragment-Wrapper--ShouldHighlight {
+  --HighlightColor: none;
+  --LowlightColor: none;
+}
+
+.mainbar .toolbar-mainbar button.ToolbarButton-Button {
+  height: unset !important;
+  min-width: unset !important;
+}
+
+/* ========================================
+   MAINBAR & ADDRESS FIELD STYLING
+   ======================================== */
+
+/* Mainbar styling */
+.mainbar .toolbar-mainbar {
+  align-items: stretch;
+  height: var(--mod-mainbar-height) !important;
+  border: none !important;
+}
+/* padding: var(--mod-whitespace-y) !important; */
+
+.color-behind-tabs-off .mainbar {
+  border: none !important;
+  border-color: transparent !important;
+  &:not(:has(.UrlBar-AddressField:focus-within)){
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  }
+}
+
+/* Omni dropdown positioning */
+.OmniDropdown {
+  top: 100% !important;
+}
+
+/* Profile popup positioning */
+.toolbar-mainbar .profile-popup {
+  margin-right: var(--mod-whitespace-tabbar-right);
 }

@@ -1,6 +1,10 @@
-/* Autohide panel switch for Vivaldi 6.0
-   Author: @supra107
-   Original Post: https://forum.vivaldi.net/post/672126 */
+/*
+Auto Hide Panel
+version 2023.06.04
+Author supra107
+https://forum.vivaldi.net/topic/33105/automate-status-bar-with-css-mod
+Hide Panel and expand only when mouse move to window edge
+*/
 
 /* Remove panel padding and background */
 #panels-container.overlay.minimized {

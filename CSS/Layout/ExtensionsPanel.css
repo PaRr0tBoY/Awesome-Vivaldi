@@ -1,0 +1,64 @@
+/*
+AutoHideExtensions
+version 2025.10.31
+Author PaRr0tBoY
+https://github.com/PaRr0tBoY/Awesome-Vivaldi
+Auto Hide Extension Icons until hover on extension button
+*/
+
+.toolbar-extensions:not(:hover) {
+  gap: unset !important;
+}
+
+.toolbar-extensions .ExtensionIcon{
+  padding: unset !important;
+  max-width: 0 !important;
+  min-width: 0 !important;
+  opacity: 0 !important;
+  transition: max-width 0.3s ease-in-out, min-width 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.toolbar-extensions:hover .ExtensionIcon{
+  max-width: 16px !important;
+  min-width: 16px !important;
+  opacity: 1 !important;
+  transition: max-width 0.3s ease-in-out, min-width 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+/* ========================================
+   EXTENSIONS MENU STYLING
+   ======================================== */
+
+.toolbar-extensions {
+  /* scrollbar-width: none; */
+  gap: var(--densityGap);
+}
+/*============================================================================*/
+
+.extensionIconPopupMenu {
+  --popupWidth: 280px !important;
+}
+
+.extensionIconPopupMenu > .toolbar {
+  max-height: 50vh;
+  overflow: hidden auto;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+}
+
+.extensionIconPopupMenu .ExtensionDropdownIcon > button {
+  justify-content: flex-start;
+  padding: 10px;
+}
+
+.extensionIconPopupMenu .ExtensionDropdownIcon > button::after {
+  content: attr(title);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.button-toolbar > button > .button-badge {
+  top: auto;
+  right: 10px;
+}

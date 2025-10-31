@@ -1,3 +1,13 @@
+/*
+Auto Hide Status Bar
+version 2022.11.6
+Author dude99
+https://forum.vivaldi.net/topic/33105/automate-status-bar-with-css-mod
+Set status bar to Always show status bar.
+Mouseover link will show URL on bottom left corner of window (or above bottom position tabbar).
+Move pointer to bottom-center of window (or above bottom position tabbar) to access statusbar buttons.
+*/
+
 #browser:not(:has(.toolbar-editor)) footer > .toolbar-statusbar::before {
 	content: '';
 	position: absolute;
@@ -81,3 +91,24 @@
 #footer > div > div.button-textonly > div > div {
 	display: none !important;
 }
+
+/* ========================================
+   STATUS INFO STYLING
+   ======================================== */
+
+/* .StatusInfo-Content {
+  border-radius: 20px !important;
+  border: 1px solid #40e0d0 !important;
+}
+
+:root:has(
+    #browser:is(.tabs-left, .tabs-right):not(.fullscreen, .minimal-ui),
+    #browser.tabs-off:not(.fullscreen, .minimal-ui)
+      #panels-container:not(.switcher)
+  )
+  .toolbar
+  > .StatusInfo
+  > .StatusInfo-Content {
+  border-radius: 20px !important;
+  border: 1px solid rgba(26, 34, 32, 0.5) !important;
+} */

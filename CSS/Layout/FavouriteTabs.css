@@ -1,3 +1,24 @@
+/*
+Arc Like Favourite Tabs
+version 2025.10.31
+Author PaRr0tBoY
+https://github.com/PaRr0tBoY/Awesome-Vivaldi
+Arc Like Favourite Tabs, or call it Zen Essentials.
+Currently only support 3x3 tabs grid.
+*/
+
+/* === Uncomment :root to use and config this mod independently === */
+/* :root {
+  --fluid-tabs-grid: on;
+  --fluid-pin-at-top: off;
+
+  --pinned-column-count: 3;
+  --pinned-row-count: 3;
+  --pinned-gap: 8px;
+  --pinned-icon-size: 20px;
+  --pinned-tab-height: 50px;
+} */
+
 /* Fluid tabs grid layout for pinned tabs */
 @container style(--fluid-tabs-grid: on) {
   /* Container adjustments */
