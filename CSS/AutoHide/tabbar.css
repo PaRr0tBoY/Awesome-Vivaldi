@@ -138,7 +138,7 @@ Auto Hide Tabbar, expand when hover.
 /* Keep expanded when specific UI elements are active */
 body:has(
     :is(
-      #panel_switch,
+      /* #panel_switch, */
       .WorkspacePopup,
       .toolbar-editor,
       #tabs-tabbar-container
@@ -252,7 +252,7 @@ body:not(
   width: auto !important;
   min-width: var(--tabs-container-collapse-width-default) !important;
   max-width: calc(
-    var(--tabs-container-expand-width) + var(--tabs-subcontainer-collapse-width)
+    var(--tabs-container-expand-width) + var(--tabs-subcontainer-expand-width)
   ) !important;
   background-image: none !important;
   border: none !important;
