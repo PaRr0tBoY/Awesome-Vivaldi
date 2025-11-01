@@ -12,6 +12,12 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/PaRr0tBoY/Awesome-Vivaldi) 
 </div>
     <p>A Curated Community Mod Pack for Vivaldi Browser</p>
+    
+<div align="center">
+
+**English** | [简体中文](./Others/README-zh.md)
+
+</div>
 
 <!-- <img src="" width="32%" alt="home" />
 <img src="" width="32%" alt="home" />
@@ -309,9 +315,5 @@
 </details>
 
 ---
-
-## Language Versions
-
-**[🇺🇸 English](README.md)** | **[🇨🇳 中文版](Others/README-zh.md)**
 
 [![](https://api.star-history.com/svg?repos=PaRr0tBoY/Awesome-Vivaldi&type=Timeline&theme=dark)](https://github.com/PaRr0tBoY/Awesome-Vivaldi)
