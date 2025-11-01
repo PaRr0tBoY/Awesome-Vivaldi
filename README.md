@@ -11,7 +11,7 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/PaRr0tBoY/Awesome-Vivaldi) 
 ![GitHub Repo stars](https://img.shields.io/github/stars/PaRr0tBoY/Awesome-Vivaldi) 
 </div>
-    <p>A Curated Community Mod Pack</p>
+    <p>A Curated Community Mod Pack for Vivaldi Browser</p>
 
 <!-- <img src="" width="32%" alt="home" />
 <img src="" width="32%" alt="home" />
@@ -24,7 +24,7 @@
 
 <br/>
 
-## Features
+# **Features**
 
 ## ScreenShots
 | Features | Preview |
@@ -34,8 +34,9 @@
 | **Clean New Tab Page**<br>• Minimalist interface layout<br>• Fast access to favorite websites | <img alt="Clean and uncluttered new tab page" height="300" src="./Others/Showcase/MainShowCase/NeatNewTab.png" /> |
 | **Expanded Webview**<br>• Optimized page display area<br>• Enhanced browsing experience | <img alt="Maximized webview for better content viewing" height="300" src="./Others/Showcase/MainShowCase/YouDeserveABiggerWebview.png" /> |
 
+## **More ScreenShots, Click to Expand**
 <details>
-<summary><h2> Let's Make it Arc (not just look) </h2></summary>
+<summary><h3> Let's Make it Arc (not just look) </h3></summary>
 
 <table>
 <tr>
@@ -67,7 +68,7 @@
 </details>
 
 <details>
-<summary><h2> Nice-to-Have Tweaks </h2></summary>
+<summary><h3> Nice-to-Have Tweaks </h3></summary>
     
 <table>
 <tr>
@@ -100,7 +101,7 @@
 
 > And More...
 
-# How To Install
+# **How To Install**
 > Before we begin, it is necessary to make some declarations. My operating system is `macOS 15.7`, and my browser version is `Vivaldi 7.6.3797.58 (Stable channel) (arm64)`. Therefore, all mods are optimized for this environment. They may behave abnormally on other platforms such as Windows and Linux, but most mods are still usable. You can fork this repository and adapt it accordingly, or you can select specific modules from this repository for use.
 
 ### I. Adjust Vivaldi Settings
@@ -209,9 +210,11 @@
 
 ```
 
-3. That's it!
+3. That's it! You are all set. If any other issues please report it at [Issues · PaRr0tBoY/Awesome-Vivaldi](https://github.com/PaRr0tBoY/Awesome-Vivaldi/issues?q=sort%3Aupdated-desc+is%3Aissue+is%3Aopen) and I'll ~~probably~~ fix it at weekend.
 
-### Advanced Reading
+> Optionally, get an glm api key here for AI features [here](https://open.bigmodel.cn/usercenter/proj-mgmt/apikeys). FYI, It's experimental and not stable though. You can use other AI providers' api as well as long as it's compatible with OpenAI api.
+
+### III. Advanced Reading
 
 1. you can patch vivaldi with batch scripts. To learn more check [Patching Vivaldi with batch scripts](https://forum.vivaldi.net/topic/10592/patching-vivaldi-with-batch-scripts/21?page=2)
 2. To learn more about `js modddings` for Vivaldi check [Modding Vivaldi | Vivaldi Forum](https://forum.vivaldi.net/topic/10549/modding-vivaldi?page=1)
@@ -220,8 +223,6 @@
 5. Arc like workspace switcher tutorial:[Paweł shows you how to play with Workspaces and Custom Icons in Vivaldi. | Vivaldi Browser](https://vivaldi.com/blog/how-to/pawel-shows-you-how-to-play-with-workspaces-and-custom-icons-in-vivaldi/)
 
 </details>
-
-[![](https://api.star-history.com/svg?repos=PaRr0tBoY/Awesome-Vivaldi&type=Timeline&theme=dark)](https://github.com/PaRr0tBoY/Awesome-Vivaldi)
 
 <details>
 <summary>Community Mods:</summary>
@@ -306,3 +307,5 @@
 > Part of codes in this repo is used.
 
 </details>
+
+[![](https://api.star-history.com/svg?repos=PaRr0tBoY/Awesome-Vivaldi&type=Timeline&theme=dark)](https://github.com/PaRr0tBoY/Awesome-Vivaldi)
