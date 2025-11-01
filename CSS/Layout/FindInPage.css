@@ -16,6 +16,13 @@ Floating find in page panel, as it should be.
   z-index: 1;
 }
 
+.button-toolbar.button-narrow {
+  order: 1;
+}
+
+span.fip-input-label {
+  display: none;
+}
 /* .find-in-page-wrapper:not(:has(input[type=search]:focus-within)) {
   display: none;
 } */

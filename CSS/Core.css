@@ -40,7 +40,7 @@ You may manage and config all your css mods and config them as well all in this 
 /* @import "Dev/TabStack.css"; */
 /* @import "Dev/autoHidePanel.css"; */
 /* @import "Dev/Tabbar.css"; */
-/* @import "Dev/LineBreak.css"; */
+@import "Dev/LineBreak.css";
 /* @import "Dev/TileExpand.css"; */
 /* @import "Layout/BraveStyleTabs.css"; */
 /* @import "Layout/EdgeCurve.css"; */

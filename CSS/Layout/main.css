@@ -282,3 +282,7 @@ I used to only have this one file to store all css mods from community, until th
 #browser:is(.tabs-left, .tabs-right).tabs-off .UrlBar-AddressField {
   display: none !important;
 }
+
+#browser:not(.tabs-top):not(.tabs-bottom):not(.fullscreen) #webpage-stack {
+  border-radius: 15px 15px 15px 15px;
+}

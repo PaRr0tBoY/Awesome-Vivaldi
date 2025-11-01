@@ -82,10 +82,9 @@ Auto Hide Tabbar, expand when hover.
   margin-top: var(--tabbar-margin-top) !important;
   margin-bottom: var(--tabbar-margin-bottom) !important;
   border-radius: var(--tabbar-border-radius-collapse) !important;
-  border: 1px dotted var(--tabbar-border-color-collapse, var(--colorBgLighter)) !important;
   transition:
     border-radius var(--animation-speed) ease-out,
-    border var(--animation-speed) ease-out,
+    /* border var(--animation-speed) ease-out, */
     background-color var(--animation-speed) ease-out,
     min-width var(--animation-speed) ease-out,
     max-width var(--animation-speed) ease-out !important;
@@ -126,7 +125,7 @@ Auto Hide Tabbar, expand when hover.
   max-width: var(--tabs-container-expand-width) !important;
   transition:
     border-radius var(--animation-speed) ease-out,
-    border var(--animation-speed) ease-out,
+    /* border var(--animation-speed) ease-out, */
     background-color var(--animation-speed) ease-out,
     min-width var(--animation-speed) ease-out,
     max-width var(--animation-speed) ease-out !important;
@@ -154,7 +153,7 @@ body:has(
   max-width: var(--tabs-container-expand-width) !important;
   transition:
     border-radius var(--animation-speed) ease-out,
-    border var(--animation-speed) ease-out,
+    /* border var(--animation-speed) ease-out, */
     background-color var(--animation-speed) ease-out,
     min-width var(--animation-speed) ease-out,
     max-width var(--animation-speed) ease-out !important;
@@ -171,13 +170,12 @@ body:has(
   margin-bottom: var(--tabbar-margin-bottom) !important;
   padding-top: var(--tabbar-padding) !important;
   border-radius: var(--tabbar-border-radius-collapse) !important;
-  border: 1px dotted var(--tabbar-border-color-collapse, var(--colorBgLighter)) !important;
   transition:
     min-width var(--animation-speed) ease-out,
     max-width var(--animation-speed) ease-out,
     background-color var(--animation-speed) ease-out,
     border-radius var(--animation-speed) ease-out,
-    border var(--animation-speed) ease-out,
+    /* border var(--animation-speed) ease-out, */
     transform var(--animation-speed) ease-out !important;
   box-sizing: border-box !important;
   position: relative !important;
@@ -202,7 +200,7 @@ body:not(
   max-width: var(--tabs-subcontainer-expand-width) !important;
   transition:
     border-radius var(--animation-speed) ease-out,
-    border var(--animation-speed) ease-out,
+    /* border var(--animation-speed) ease-out, */
     min-width var(--animation-speed) ease-out,
     max-width var(--animation-speed) ease-out,
     background-color var(--animation-speed) ease-out,
@@ -270,17 +268,27 @@ body:not(
 }
 
 /* ============================================ */
-/* Border Styling */
+/* Border Color Styling */
 /* ============================================ */
 
-#tabs-tabbar-container #tabs-container:hover {
-  border: 1px solid
-    var(--tabbar-border-color-expand, var(--colorAccentBgFadedMost)) !important;
-}
+body:not(:has(#panel_switch)) {
+  #tabs-tabbar-container #tabs-container:hover {
+    border: 1px solid
+      var(--tabbar-border-color-expand, var(--colorAccentBgFadedMost)) !important;
+  }
 
-#tabs-tabbar-container #tabs-subcontainer:hover {
-  border: 1px solid
-    var(--tabbar-border-color-expand, var(--colorAccentBgFadedMost)) !important;
+  #tabs-tabbar-container #tabs-subcontainer:hover {
+    border: 1px solid
+      var(--tabbar-border-color-expand, var(--colorAccentBgFadedMost)) !important;
+  }
+
+  #tabs-tabbar-container:has(#tabs-subcontainer:hover) #tabs-container{
+    border: 1px dotted var(--tabbar-border-color-collapse, var(--colorBgLighter)) !important;
+  }
+
+  #tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer{
+  border: 1px dotted var(--tabbar-border-color-collapse, var(--colorBgLighter)) !important;
+  }
 }
 
 /* ============================================ */
@@ -833,84 +841,86 @@ body:has(#panel_switch)
 /* ============================================ */
 
 @container style(--fluid-border-radius: on) {
-  /* Single tab bar border radius */
-  #tabs-tabbar-container:not(:has(#tabs-subcontainer))
-    #tabs-container.left:hover {
-    border-radius: 0px calc(var(--radius) + 5px) calc(var(--radius) + 5px) 0px !important;
-  }
+  #browser:not(:has(#panel_switch)) {
+    /* Single tab bar border radius */
+    #tabs-tabbar-container:not(:has(#tabs-subcontainer))
+      #tabs-container.left:hover {
+      border-radius: 0px calc(var(--radius) + 5px) calc(var(--radius) + 5px) 0px !important;
+    }
 
-  #tabs-tabbar-container:not(:has(#tabs-subcontainer))
-    #tabs-container.right:hover {
-    border-radius: calc(var(--radius) + 5px) 0px 0px calc(var(--radius) + 5px) !important;
-  }
+    #tabs-tabbar-container:not(:has(#tabs-subcontainer))
+      #tabs-container.right:hover {
+      border-radius: calc(var(--radius) + 5px) 0px 0px calc(var(--radius) + 5px) !important;
+    }
 
-  /* Sub bar border radius when main is hovered */
-  #tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer.right {
-    border-radius: calc(var(--radius) + 5px) 0px 0px calc(var(--radius) + 5px) !important;
-  }
+    /* Sub bar border radius when main is hovered */
+    #tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer.right {
+      border-radius: calc(var(--radius) + 5px) 0px 0px calc(var(--radius) + 5px) !important;
+    }
 
-  #tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer.left {
-    border-radius: 0px calc(var(--radius) + 5px) calc(var(--radius) + 5px) 0px !important;
-  }
+    #tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer.left {
+      border-radius: 0px calc(var(--radius) + 5px) calc(var(--radius) + 5px) 0px !important;
+    }
 
-  /* Sub bar border radius on direct hover */
-  #tabs-subcontainer.left:hover {
-    border-radius: 0px calc(var(--radius) + 5px) calc(var(--radius) + 5px) 0px !important;
-  }
+    /* Sub bar border radius on direct hover */
+    #tabs-subcontainer.left:hover {
+      border-radius: 0px calc(var(--radius) + 5px) calc(var(--radius) + 5px) 0px !important;
+    }
 
-  #tabs-subcontainer.right:hover {
-    border-radius: calc(var(--radius) + 5px) 0px 0px calc(var(--radius) + 5px) !important;
-  }
+    #tabs-subcontainer.right:hover {
+      border-radius: calc(var(--radius) + 5px) 0px 0px calc(var(--radius) + 5px) !important;
+    }
 
-  /* Border radius when toolbar is active */
-  body:has(
-      :is(
-        .toolbar-editor,
-        #tabs-tabbar-container
-          .toolbar-tabbar-before
-          .UrlBar-AddressField:focus-within
+    /* Border radius when toolbar is active */
+    body:has(
+        :is(
+          .toolbar-editor,
+          #tabs-tabbar-container
+            .toolbar-tabbar-before
+            .UrlBar-AddressField:focus-within
+        )
       )
-    )
-    #tabs-subcontainer.left {
-    border-radius: 0 calc(var(--radius) + 5px) calc(var(--radius) + 5px) 0 !important;
-  }
+      #tabs-subcontainer.left {
+      border-radius: 0 calc(var(--radius) + 5px) calc(var(--radius) + 5px) 0 !important;
+    }
 
-  body:has(
-      :is(
-        .toolbar-editor,
-        #tabs-tabbar-container
-          .toolbar-tabbar-before
-          .UrlBar-AddressField:focus-within
+    body:has(
+        :is(
+          .toolbar-editor,
+          #tabs-tabbar-container
+            .toolbar-tabbar-before
+            .UrlBar-AddressField:focus-within
+        )
       )
-    )
-    #tabs-subcontainer.right {
-    border-radius: calc(var(--radius) + 5px) 0 0 calc(var(--radius) + 5px) !important;
-  }
+      #tabs-subcontainer.right {
+      border-radius: calc(var(--radius) + 5px) 0 0 calc(var(--radius) + 5px) !important;
+    }
 
-  body:has(
-      :is(
-        .toolbar-editor,
-        #tabs-tabbar-container
-          .toolbar-tabbar-before
-          .UrlBar-AddressField:focus-within
+    body:has(
+        :is(
+          .toolbar-editor,
+          #tabs-tabbar-container
+            .toolbar-tabbar-before
+            .UrlBar-AddressField:focus-within
+        )
       )
-    )
-    :not(:has(#tabs-subcontainer))
-    #tabs-container.left {
-    border-radius: 0 calc(var(--radius) + 5px) calc(var(--radius) + 5px) 0 !important;
-  }
+      :not(:has(#tabs-subcontainer))
+      #tabs-container.left {
+      border-radius: 0 calc(var(--radius) + 5px) calc(var(--radius) + 5px) 0 !important;
+    }
 
-  body:has(
-      :is(
-        .toolbar-editor,
-        #tabs-tabbar-container
-          .toolbar-tabbar-before
-          .UrlBar-AddressField:focus-within
+    body:has(
+        :is(
+          .toolbar-editor,
+          #tabs-tabbar-container
+            .toolbar-tabbar-before
+            .UrlBar-AddressField:focus-within
+        )
       )
-    )
-    :not(:has(#tabs-subcontainer))
-    #tabs-container.right {
-    border-radius: calc(var(--radius) + 5px) 0 0 calc(var(--radius) + 5px) !important;
+      :not(:has(#tabs-subcontainer))
+      #tabs-container.right {
+      border-radius: calc(var(--radius) + 5px) 0 0 calc(var(--radius) + 5px) !important;
+    }
   }
 }
 
