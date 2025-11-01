@@ -308,4 +308,10 @@
 
 </details>
 
+---
+
+## Language Versions
+
+**[🇺🇸 English](README.md)** | **[🇨🇳 中文版](Others/README-zh.md)**
+
 [![](https://api.star-history.com/svg?repos=PaRr0tBoY/Awesome-Vivaldi&type=Timeline&theme=dark)](https://github.com/PaRr0tBoY/Awesome-Vivaldi)
