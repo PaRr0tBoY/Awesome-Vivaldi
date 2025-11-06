@@ -227,7 +227,7 @@
 </details>
 
 <details>
-<summary>社区修改：</summary>
+<summary><h1>社区修改</h1></summary>
 
 # 此修改包中包含的社区 JS 修改和 CSS
 
