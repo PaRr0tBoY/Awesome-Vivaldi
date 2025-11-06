@@ -317,3 +317,4 @@
 ---
 
 [![](https://api.star-history.com/svg?repos=PaRr0tBoY/Awesome-Vivaldi&type=Timeline&theme=dark)](https://github.com/PaRr0tBoY/Awesome-Vivaldi)
+![Alt](https://repobeats.axiom.co/api/embed/4a30f8a4b398404c3c773f672d36c2b52f7865c3.svg "Repobeats analytics image")
