@@ -1,5 +1,5 @@
 <div align="center">
-    <img width="200" height="200" src="../Others/Showcase/AV.png">
+    <img width="200" height="200" src="../Others/Showcase/IMG_5682.png">
 </div>
 
 <div align="center">
@@ -12,6 +12,8 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/PaRr0tBoY/Awesome-Vivaldi)
 </div>
     <p>Vivaldi 浏览器精选社区修改包</p>
+
+[English](../README.md) | **简体中文**
 
 <!-- <img src="" width="32%" alt="home" />
 <img src="" width="32%" alt="home" />
@@ -113,10 +115,10 @@
 <img width="600" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/e5a20258-4f03-410b-902a-166f4689975b" />
 
 > 在 `主题 > 编辑器 > 颜色` 下
-<img width="400" alt="Cleanshot at20251101-05PM" src=image/README/1761752550644.png />
+<img width="400" alt="Cleanshot at20251101-05PM" src=../image/README/1761752550644.png />
 
 > 在 `主题 > 编辑器 > 设置` 下
-<img width="400" alt="Cleanshot at20251101-05PM" src=image/README/1761752555886.png />
+<img width="400" alt="Cleanshot at20251101-05PM" src=../image/README/1761752555886.png />
 
 > 在 `起始页 > 快速拨号` 小图标
 <img width="300" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/2216c3be-7e55-4574-ae95-32ea715512df" />
@@ -310,8 +312,5 @@
 
 ---
 
-## 语言版本
-
-**[🇨🇳 中文版](README-zh.md)** | **[🇺🇸 English Version](../README.md)**
-
 [![](https://api.star-history.com/svg?repos=PaRr0tBoY/Awesome-Vivaldi&type=Timeline&theme=dark)](https://github.com/PaRr0tBoY/Awesome-Vivaldi)
+![Alt](https://repobeats.axiom.co/api/embed/4a30f8a4b398404c3c773f672d36c2b52f7865c3.svg "Repobeats analytics image")
