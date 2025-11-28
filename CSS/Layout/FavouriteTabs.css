@@ -17,6 +17,7 @@ Currently only support 3x3 tabs grid.
   --pinned-gap: 8px;
   --pinned-icon-size: 20px;
   --pinned-tab-height: 50px;
+  --animation-speed: 280ms;
 } */
 
 /* Fluid tabs grid layout for pinned tabs */
