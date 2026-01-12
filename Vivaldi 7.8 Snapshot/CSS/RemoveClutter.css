@@ -1,0 +1,34 @@
+/* ========================================
+   SCROLLBAR CUSTOMIZATION
+   ======================================== */
+
+/* Hide scrollbars for left and right tabbars */
+#browser #tabs-tabbar-container.left ::-webkit-scrollbar,
+#browser #tabs-tabbar-container.right ::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbars for left and right tabbar wrappers */
+.tabs-left .tabbar-wrapper,
+.tabs-right .tabbar-wrapper {
+  background-color: transparent;
+  overflow: visible;
+}
+
+.WorkspacePopup-Items {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Other Clutters */
+.toolbar.toolbar-mainbar.toolbar-required.update{
+  display: none !important;
+}
+
+.button-toolbar.tabs-locked,
+.button-toolbar.tabs-unlocked {
+  display: none !important;
+}

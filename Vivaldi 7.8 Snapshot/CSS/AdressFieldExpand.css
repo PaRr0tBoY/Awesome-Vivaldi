@@ -1,0 +1,106 @@
+.UrlBar-AddressField {
+    position: relative;
+    outline: none !important;
+    transition: all 100ms cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center center;
+    overflow: visible;
+    isolation: isolate;
+}
+
+.color-behind-tabs-off .UrlBar-AddressField:focus-within {
+    /* padding: 15px 20px 50px !important;
+    margin: -3px -20px -25px !important; */
+    padding: 23px 10px !important;
+    margin: 6px -75px !important;
+    z-index: 99999999 !important;
+}
+
+/* Block Button */
+
+/* URL obfuscation warning */
+.UrlBar-UrlObfuscationWarning {
+    display: none !important;
+}
+.UrlBar-AddressField .ToolbarButton-Button[title*="Bookmark"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="书签"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="Block"],
+.UrlBar-AddressField .ToolbarButton-Button[title*="拦截"] {
+  display: none !important;
+}
+
+/* Site info button and badge */
+button.button-addressfield.SiteInfoButton,
+.SiteInfoButton-SecurityBadge {
+  display: none !important;
+}
+
+/* Bookmark button */
+.BookmarkButton {
+  display: none !important;
+}
+
+/* Show input history button */
+button[title="显示输入记录"] {
+  display: none !important;
+}
+
+/* ===================================================== */
+/* Fix link Disappear */
+#app .UrlBar-UrlField{
+    min-height: 100px !important;
+}
+
+/* Copied */
+.UrlBar-AddressField:focus-within .OmniDropdown{
+    margin-top: 55px;
+    background-color: var(--colorBgLighter, #2a2a2a) !important;
+    border: unset;
+}
+
+/* .OmniDropdown{
+    transform: scale(1);
+    transition: transform 300ms cubic-bezier(.25,.8,.25,1.03) !important;
+} */
+/* .UrlBar-UrlFieldWrapper {
+    position: relative;
+    z-index: 1;
+} */
+
+.toolbar.toolbar-insideinput {
+    z-index: 3;
+}
+
+@keyframes expand {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.02);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.OmniDropdown {
+    animation: expand 280ms ease;
+}
+
+.UrlBar-UrlField {
+    background: transparent;
+    border: none;
+    outline: none;
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: inherit;
+}
+
+.UrlBar-UrlField::placeholder {
+    color: var(--colorTextSecondary, #999);
+}
+
+.UrlBar-AddressField:focus-within {
+    position: relative;
+    z-index: 9999;
+}

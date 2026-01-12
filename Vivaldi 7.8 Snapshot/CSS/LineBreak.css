@@ -1,0 +1,89 @@
+:root:has(
+    #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
+    #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
+  )
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"]) {
+  flex: 1 1 100%;
+}
+:root:has(
+    #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
+    #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
+  )
+  #browser:not(.toolbar-edit-mode)
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"]) {
+  height: 0;
+}
+:root:has(
+    #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
+    #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
+  )
+  #browser:not(.toolbar-edit-mode)
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"])
+  > button {
+  display: none;
+}
+:root:not(
+    :has(
+      #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
+      #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
+    )
+  )
+  #browser:not(.toolbar-edit-mode)
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"]) {
+  display: none;
+}
+:root:has(
+    #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
+    #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
+  )
+  #browser.toolbar-edit-mode
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"]) {
+  height: 26px;
+  opacity: 0.5;
+}
+:root:has(
+    #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
+    #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
+  )
+  #browser.toolbar-edit-mode
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"])
+  > button {
+  height: 26px;
+}
+#browser.toolbar-edit-mode
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"]) {
+  opacity: 0.5;
+}
+#browser.toolbar-edit-mode
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"])
+  > button::before {
+  content: " ";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border: 1px dashed;
+  border-radius: var(--radius);
+}
+:root:has(
+    #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
+    #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
+  )
+  #browser:is(.address-top, .address-bottom)
+  #main
+  .toolbar-mainbar
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"])
+  + .SearchField:not(.UrlBar-SearchField):has(
+    + .button-toolbar.toolbar-command > button[title^="vvh-insert-linebreak"]
+  ),
+:root:has(
+    #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
+    #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
+  )
+  footer
+  .toolbar-statusbar
+  .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"])
+  + .SearchField:not(.UrlBar-SearchField):has(
+    + .button-toolbar.toolbar-command > button[title^="vvh-insert-linebreak"]
+  ) {
+  flex: 1 1 100%;
+}

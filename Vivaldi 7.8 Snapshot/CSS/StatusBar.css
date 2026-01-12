@@ -1,0 +1,114 @@
+/*
+Auto Hide Status Bar
+version 2022.11.6
+Author dude99
+https://forum.vivaldi.net/topic/33105/automate-status-bar-with-css-mod
+Set status bar to Always show status bar.
+Mouseover link will show URL on bottom left corner of window (or above bottom position tabbar).
+Move pointer to bottom-center of window (or above bottom position tabbar) to access statusbar buttons.
+*/
+
+#browser:not(:has(.toolbar-editor)) footer > .toolbar-statusbar::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 10px;
+	height: 30px;
+	z-index: -1;
+}
+
+#browser:not(:has(.toolbar-editor)) footer > .toolbar-statusbar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+	width: fit-content;
+	height: fit-content;
+	background-color: var(--colorBg);
+	border-radius: var(--radius);
+	border: none;
+	box-shadow: none;
+	transition: top .25s ease-out .5s, box-shadow 0s .75s !important;
+}
+
+#browser:not(:has(.toolbar-editor)) footer > .toolbar-statusbar:is(:hover, :focus-within, :has(.button-pressed)) {
+	top: -40px;
+	box-shadow: 0 0 0 1px var(--colorBorder), 0 2px 6px hsl(0deg 0% 0% / 25%);
+	transition: top .15s ease-out .08s, box-shadow 0s .08s !important;
+}
+
+#browser:not(:has(.toolbar-editor)) footer > .toolbar-statusbar > div {
+	max-height: 30px;
+	transition: max-height .15s ease-out .08s !important;
+}
+
+#browser:not(:has(.toolbar-editor)) footer > .toolbar-statusbar:not(:hover):not(:focus-within):not(:has(.button-pressed)) > div {
+	overflow: hidden;
+	max-height: 0px;
+	transition: max-height .25s ease-out .5s !important;
+}
+
+#browser:not(:has(.toolbar-editor)) footer > .toolbar-statusbar .StatusInfo {
+	position: fixed;
+	left: 2px;
+	bottom: 2px;
+	min-height: 20px;
+	padding: 1px 3px;
+	background: var(--colorBgDark);
+	border-radius: var(--radiusHalf);
+	pointer-events: none;
+	z-index: 3;
+}
+
+/* statusbar with tabbar on bottom */
+#browser.tabs-bottom:not(:has(.toolbar-editor)) footer {
+	overflow: visible;
+	display: flex;
+	flex-flow: column;
+}
+
+#browser.tabs-bottom:not(:has(.toolbar-editor)) footer > .toolbar-statusbar .StatusInfo {
+	bottom: unset;
+	margin-top: 4.5px;
+}
+
+#browser.tabs-bottom:not(:has(.toolbar-editor)) footer > .toolbar-statusbar:not(:hover):not(:focus-within):not(:has(.button-pressed)) .StatusInfo {
+	margin-top: -26.5px;
+	transition: margin-top .27s ease-out .48s !important;
+}
+
+
+/* popup page zoom control */
+#browser > footer .page-zoom-controls input[type=range] {position: absolute; background-image: linear-gradient(90deg, #0000 0 calc(22% - 2px), var(--colorBg) 0 22%, #0000 0 calc(40% - 2px), var(--colorBg) 0 40%, #0000 0 calc(58% - 2px), var(--colorBg) 0 58%, #0000 0 calc(77% - 2px), var(--colorBg) 0 77%, #0000 0 100%); box-shadow: 0 0 0 7px var(--colorBg), 0 0 0 8px var(--colorBorder), 0 2px 12px hsl(0deg 0% 0% / 25%); visibility: hidden; opacity:0; transform: translate(-25px, -20px); transition: visibility .6s, opacity .2s ease-out .4s, transform .25s ease-in .35s !important;}
+#browser > footer .page-zoom-controls:is(:hover, :focus-within) > input[type=range] {visibility: visible; opacity: 1; transform: translate(-25px, -25px); transition: opacity .1s ease-out .12s, transform .1s ease .1s !important;}
+#browser > footer .page-zoom-controls input[type=range]::before {content: ''; position: absolute; pointer-events: none; border: 6px solid hsl(0deg 0% 0% / 0%); z-index: inherit; filter: drop-shadow(0 1px var(--colorBorder)); bottom: -19px; left: 50%; margin-left: -6px; border-top-color: var(--colorBgLight);}
+#browser > footer .page-zoom-controls:has(input[type=range]) .zoom-percent {order:-1;} /* move % to left */
+#browser > footer .page-zoom-controls .button-toolbar > button .button-title {min-width: 1ch; max-width: 1ch;} /* reduced Reset to R button */
+
+#footer > div > div.button-textonly > div > div > button > span,
+#footer > div > div.button-textonly > div > div {
+	display: none !important;
+}
+
+/* ========================================
+   STATUS INFO STYLING
+   ======================================== */
+
+/* .StatusInfo-Content {
+  border-radius: 20px !important;
+  border: 1px solid #40e0d0 !important;
+}
+
+:root:has(
+    #browser:is(.tabs-left, .tabs-right):not(.fullscreen, .minimal-ui),
+    #browser.tabs-off:not(.fullscreen, .minimal-ui)
+      #panels-container:not(.switcher)
+  )
+  .toolbar
+  > .StatusInfo
+  > .StatusInfo-Content {
+  border-radius: 20px !important;
+  border: 1px solid rgba(26, 34, 32, 0.5) !important;
+} */

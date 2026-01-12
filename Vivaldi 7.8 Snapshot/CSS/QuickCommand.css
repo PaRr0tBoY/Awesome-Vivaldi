@@ -1,0 +1,44 @@
+/*
+An Arc Like Quick Command Styling
+version 2025.10.31
+Author PaRr0tBoY
+https://github.com/PaRr0tBoY/Awesome-Vivaldi
+An Arc Like Quick Command Styling
+*/
+/* ========================================
+   QUICK COMMAND MODAL
+   ======================================== */
+
+.modal-wrapper:has(.quick-command-container) {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%); /* 只水平居中，垂直用 top 控制 */
+  border-radius: 15px !important;
+  opacity: 0.91 !important;
+  width: 650px;
+  max-height: 80vh;
+  overflow: hidden;
+}
+
+.quick-command-search {
+  --search-top: 50%; /* 或固定高度 + margin 计算，可手动设置 */
+}
+
+.VivaldiList::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+
+/* Quick command width management */
+.ReactVirtualized__Grid.ReactVirtualized__List,
+.ReactVirtualized__Grid__innerScrollContainer,
+.quick-commands,
+.quick-command-container,
+.quick-command-search,
+.quick-command,
+.quick-command-sectionheader {
+  width: 100% !important;
+}
+
+.ReactVirtualized__Grid.ReactVirtualized__List {
+  max-width: 800px !important;
+}

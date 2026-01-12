@@ -1,0 +1,46 @@
+body:has(#tabs-subcontainer) #tabs-container{
+  max-width:18%;
+  min-width:18%;
+  transition: min-width 200ms ease-in, max-width 200ms ease-in;
+}
+
+body:has(#tabs-container) #tabs-subcontainer{
+  max-width:82%;
+  min-width:82%;
+  transition: min-width 200ms ease-out, max-width 200ms ease-out;
+}
+
+body:has(#tabs-subcontainer) #tabs-container:hover
+{
+  max-width:82% !important;
+  min-width:82% !important;
+  transition: min-width 200ms ease-out 300ms, max-width 200ms ease-out 300ms;
+}
+
+body:has(#tabs-container:hover) #tabs-subcontainer{
+  max-width:18% !important;
+  min-width:18% !important;
+  transition: min-width 200ms ease-out 300ms, max-width 200ms ease-out 300ms;
+  /* transition: min-width 100ms ease, max-width 100ms ease; */
+}
+
+#tabs-tabbar-container{
+  overflow: hidden !important;
+}
+
+/* Hide scrollbars for vertical tab bars */
+#browser #tabs-tabbar-container.left ::-webkit-scrollbar,
+#browser #tabs-tabbar-container.right ::-webkit-scrollbar {
+  display: none;
+}
+
+/* Disable tab bar resizing */
+#tabs-tabbar-container .SlideBar {
+  display: none !important;
+}
+
+/* Hide accordion arrow for right-side tabs in density mode */
+.tabs-right#browser.density-on .accordion-toggle-arrow:after,
+.tabs-right#browser.density-on .tab-wrapper:after {
+  display: none !important;
+}

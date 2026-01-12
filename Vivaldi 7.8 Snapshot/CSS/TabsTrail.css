@@ -1,0 +1,122 @@
+/*
+TabsTrail
+version 2025.10.31
+Author PaRr0tBoY
+https://github.com/PaRr0tBoY/Awesome-Vivaldi
+Show trail on tab to highlight mouse hover action and active tabs
+- When hover on close button on tab -> red trail
+- When hover on tab except close button -> green trail
+- Active tabs -> green trail
+*/
+
+/* ========================================
+   TAB TRAIL EFFECTS - GREEN FOR TAB, RED FOR CLOSE BUTTON
+   ======================================== */
+
+/* Ensure tab-header is positioned relative for the absolute positioned trail */
+.tab-position .tab .tab-header {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Green trail element */
+.tab-position .tab .tab-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to left,
+    rgba(0, 128, 0, 0.7) 0%,
+    rgba(0, 128, 0, 0.5) 30%,
+    rgba(0, 128, 0, 0.2) 60%,
+    rgba(0, 128, 0, 0) 100%
+  );
+  transform: translateX(100%);
+  opacity: 0;
+  transition:
+    transform 300ms ease-out,
+    opacity 300ms ease-out;
+  pointer-events: none;
+  z-index: 1;
+  /* border-radius: 12px !important; */
+}
+
+/* Red trail element */
+.tab-position .tab .tab-header::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to left,
+    rgba(180, 0, 0, 0.7) 0%,
+    rgba(180, 0, 0, 0.5) 30%,
+    rgba(180, 0, 0, 0.2) 60%,
+    rgba(180, 0, 0, 0) 100%
+  );
+  transform: translateX(100%);
+  opacity: 0;
+  transition:
+    transform 300ms ease-out,
+    opacity 300ms ease-out;
+  pointer-events: none;
+  z-index: 2;
+  /* border-radius: 12px !important; */
+}
+
+/* Green trail show when tab is hovered (but not close button) */
+
+.tab-position .tab:hover:not(:has(.close:hover)) .tab-header::before {
+  /* border-radius: 12px !important; */
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* Green trail show for active tab */
+.tab-position .tab.active:not(:has(.close:hover)) .tab-header::before,
+.tab-position .tab.active:hover:not(:has(.close:hover)) .tab-header::before {
+  /* border-radius: 12px !important; */
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* Red trail show when close button is hovered */
+.tab-position .tab:hover .close:hover ~ .tab-header::after,
+.tab-position .tab:hover .close:hover + .tab-header::after,
+.tab-position .tab:has(.close:hover) .tab-header::after,
+.tab-position .tab.active:has(.close:hover) .tab-header::after {
+  /* border-radius: 12px !important; */
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* Hide green trail when red trail is active - slide out to left */
+.tab-position .tab:has(.close:hover) .tab-header::before {
+  /* border-radius: 12px !important; */
+  transform: translateX(100%);
+  opacity: 0;
+  transition:
+    transform 150ms ease-out,
+    opacity 150ms ease-out;
+}
+
+/* Red trail return to base state when green trail is active */
+.tab-position .tab:hover:not(:has(.close:hover)) .tab-header::after {
+  /* border-radius: 12px !important; */
+  transform: translateX(100%);
+  opacity: 0;
+  transition:
+    transform 150ms ease-out,
+    opacity 150ms ease-out;
+}
+
+#tabs-subcontainer .tab.tab-small.tab-mini .tab-header, #tabs-subcontainer .tab.pinned.tab-mini .tab-header,
+#tabs-container .tab.tab-small.tab-mini .tab-header, #tabs-container .tab.pinned.tab-mini .tab-header {
+  border-left: none;
+  border-right: none;
+}

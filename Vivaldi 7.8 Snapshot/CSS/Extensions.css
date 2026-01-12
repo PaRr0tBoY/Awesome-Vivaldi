@@ -1,0 +1,37 @@
+/* ========================================
+   EXTENSIONS MENU STYLING
+   ======================================== */
+
+.toolbar-extensions {
+  /* scrollbar-width: none; */
+  gap: var(--densityGap);
+}
+/*============================================================================*/
+
+.extensionIconPopupMenu {
+  --popupWidth: 280px !important;
+}
+
+.extensionIconPopupMenu > .toolbar {
+  max-height: 50vh;
+  overflow: hidden auto;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+}
+
+.extensionIconPopupMenu .ExtensionDropdownIcon > button {
+  justify-content: flex-start;
+  padding: 10px;
+}
+
+.extensionIconPopupMenu .ExtensionDropdownIcon > button::after {
+  content: attr(title);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.button-toolbar > button > .button-badge {
+  top: auto;
+  right: 10px;
+}

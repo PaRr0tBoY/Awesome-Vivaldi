@@ -1,0 +1,174 @@
+/* My Mods */
+@import "CSS/BetterAutoHide.css"; 
+@import "CSS/AdaptiveBF.css"; 
+@import "CSS/BtnHoverAnime.css"; 
+@import "CSS/FindInPage.css"; 
+@import "CSS/QuickCommand.css"; 
+@import "CSS/TabsTrail.css"; 
+@import "CSS/AdressFieldExpand.css"; 
+@import "CSS/RemoveClutter.css"; 
+@import "CSS/NeatDial.css";
+@import "CSS/Quietify.css";
+/* @import "CSS/ArcFolder.css"; */
+@import "CSS/FavouriteTabs.css"; 
+@import "CSS/TabExpand.css"; 
+
+/* Community Mods */
+@import "CSS/DownloadPanel.css"; 
+@import "CSS/Extensions.css"; 
+/* @import "CSS/StatusBar.css";  */
+/* @import "CSS/FavouriteTabs.css"; 
+@import "CSS/Bookmarkbar.css"; 
+@import "CSS/LineBreak.css"; 
+@import "CSS/Panel.css"; 
+@import "CSS/Quietify.css"; 
+@import "CSS/Addressbar.css"; */
+
+/* @import "CSS/BraveStyleTabs.css";  */
+/* @import "CSS/NeatDial.css"; */
+/* @import "CSS/fuckClutter.css" */
+
+
+/* ------------------------------------------- */
+/* Test Area */
+/* ------------------------------------------- */
+
+/* #browser:not(.address-top-off, .address-bottom-off, .address-bottom)
+  .mainbar
+  > .toolbar-mainbar {
+  min-height: calc(20px / var(--uiZoomLevel));
+} */
+
+/* .mainbar .toolbar-mainbar {
+  height: 25px !important;
+} */
+
+/* .mainbar .toolbar-mainbar {
+    align-items: center;
+    min-height: 30px !important;
+    max-height: 30px !important;
+    border: none !important;
+}
+
+.color-behind-tabs-off .mainbar {
+  &:not(:has(.UrlBar-AddressField:focus-within)) {
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none;
+  }
+}
+
+.color-behind-tabs-off .mainbar {
+  border: none !important;
+  border-color: transparent !important;
+  height: 30px !important;
+}
+
+.density-on .UrlBar-SearchField, .density-on .UrlBar-AddressField {
+  height: 25px;
+  margin-bottom: 3px;
+  border-radius: var(--radius);
+}
+
+.color-behind-tabs-off .mainbar {
+  color: var(--colorFg) !important;
+  background: var(--colorBg) !important;
+  --badgeBorder: var(--colorAccentBg);
+  border-color: var(--colorAccentBgDark);
+} */
+
+/* .tab.unread {
+  border: 2px solid var(--colorHighlightBgFaded);
+  border-radius: var(--radius, 0);
+  background-image: unset !important;
+  background-position: unset !important;
+  background-repeat: unset !important;
+} */
+
+
+/* ====================================================== */
+/* Import */
+/* ========================================
+   HIDDEN ELEMENTS
+   ======================================== */
+
+/* .hasfocus .webpageview.tiled.active {
+  box-shadow: none !important;
+}
+
+#browser .tile:has(> .tiled.webpageview) {
+  border: 0 3px !important;
+} */
+
+
+/* ========================================
+   TAB STYLING
+   ======================================== */
+
+/* Tab bar container */
+/* #tabs-tabbar-container.top {
+  margin-bottom: var(--mod-whitespace-y);
+  border-width: 0;
+  box-shadow: none !important;
+  padding-right: var(--mod-whitespace-tabbar-right);
+}
+
+#tabs-tabbar-container.top .tab-strip > span + span .tab:not(.pinned) {
+  margin-left: var(--mod-whitespace-x);
+} */
+
+/* ========================================
+   HIDE ADDRESS BAR WHEN TABS ARE HIDDEN
+   ======================================== */
+
+#browser.tabs-off .toolbar-mainbar.toolbar-required,
+#browser.tabs-off .UrlBar-AddressField,
+#browser.tabs-off .toolbar-mainbar[aria-label="Address"] {
+  display: none !important;
+}
+
+#browser:is(.tabs-left, .tabs-right).tabs-off .toolbar-mainbar.toolbar-required,
+#browser:is(.tabs-left, .tabs-right).tabs-off .UrlBar-AddressField {
+  display: none !important;
+}
+
+#browser:not(.tabs-top):not(.tabs-bottom):not(.fullscreen) #webpage-stack {
+  border-radius: 15px 15px 15px 15px;
+}
+
+/* .dropzone{
+  display: none !important;
+} */
+
+/* .tab-dropzone, .dropzone{
+  color: red !important;
+}
+
+.dropzone{
+  background-color: red !important;
+} */
+
+/* body:has(.tab-dropzone) #webpage-stack{
+  width: 50%;
+  transition: width 280ms ease-out;
+}
+
+.tab-position .tab-yield-space {
+
+}
+
+.tab-position.accordion-toggle-arrow{
+  opacity: 0 !important;
+}
+
+svg.svg-tab-stack{
+  z-index: 99999 !important;
+}
+
+.tab-position:has(.tab-wrapper.accordion) svg.svg-tab-stack {
+    height: var(--Height) !important;
+}
+
+.tab-wrapper.extended.in-accordion{
+  
+} */

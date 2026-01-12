@@ -1,0 +1,549 @@
+/*
+Arc Like Favourite Tabs
+version 2025.10.31
+Author PaRr0tBoY
+https://github.com/PaRr0tBoY/Awesome-Vivaldi
+Arc Like Favourite Tabs, or call it Zen Essentials.
+Currently only support 3x3 tabs grid.
+*/
+
+/* === Uncomment :root to use and config this mod independently === */
+:root {
+  --fluid-tabs-grid: on;
+  --fluid-pin-at-top: off;
+
+  --pinned-column-count: 3;
+  --pinned-row-count: 3;
+  --pinned-gap: 8px;
+  --pinned-icon-size: 20px;
+  --pinned-tab-height: 50px;
+  --animation-speed: 280ms;
+}
+
+/* Fluid tabs grid layout for pinned tabs */
+@container style(--fluid-tabs-grid: on) {
+  
+  /* Container adjustments */
+  .resize {
+    max-height: fit-content !important;
+    overflow: hidden !important;
+  }
+
+  /* Grid layout for tab strip */
+  #tabs-container .tab-strip {
+    display: grid !important;
+    grid-template-columns: repeat(var(--pinned-column-count), minmax(0, 1fr));
+    grid-auto-rows: min-content;
+    gap: var(--pinned-gap);
+    justify-content: center !important;
+  }
+
+  #tabs-container .tab-position:not(.accordion-toggle-arrow):not(.tab-yield-space).is-pinned {
+    display: contents !important;
+  }
+
+  /* Square button style for first 9 pinned tabs */
+  #tabs-container
+    .tab-strip
+    > span:has(.is-pinned):nth-child(-n + 9)
+    .is-pinned
+    .tab-wrapper {
+    max-height: var(--pinned-tab-height) !important;
+    min-height: var(--pinned-tab-height) !important;
+    display: flex !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    /* background-color: var(--colorBg, rgba(255, 255, 255, 0.2)) !important; */
+    z-index: 150;
+    background-color: var(--colorBgAlpha) !important;
+    border: 1px solid var(--colorHighlightBgDark) !important;
+  }
+
+  #tabs-container
+    .tab-strip
+    > span:has(.is-pinned):nth-child(n + 7):nth-child(-n + 9)
+    .is-pinned
+    .tab-wrapper {
+    margin-bottom: var(--pinned-gap) !important;
+  }
+
+  #tabs-container
+    .tab-strip
+    > span:has(.is-pinned)
+    .is-pinned
+    .tab-wrapper
+    .tab {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: unset !important;
+  }
+
+  /* Icon styling for first 9 pinned tabs */
+  #tabs-container
+    .tab-strip
+    > span:has(.is-pinned)
+    .is-pinned
+    .tab-wrapper
+    svg.svg-tab-stack {
+    height: 100% !important;
+    max-height: unset !important;
+  }
+
+  #tabs-container
+    .tab-strip
+    > span:has(.is-pinned):nth-child(-n + 9)
+    .is-pinned
+    .favicon {
+    width: var(--pinned-icon-size) !important;
+    height: var(--pinned-icon-size) !important;
+    margin: auto !important;
+    justify-self: flex-start;
+    transition: margin var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  #tabs-container
+    .tab-strip
+    > span:has(.is-pinned):nth-child(-n + 9)
+    .is-pinned
+    .tab-wrapper:hover
+    .favicon {
+    margin: auto !important;
+    transform: translateX(calc(-50% + 8px)) !important;
+  }
+
+  /* Hover expansion for first 9 pinned tabs */
+  #tabs-container .tab-strip > span:has(.is-pinned) .is-pinned .tab-wrapper {
+    overflow: hidden;
+    isolation: isolate;
+    z-index: 5;
+    transition: all var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  #tabs-container
+    .tab-strip
+    > span:has(.is-pinned):nth-child(-n + 9)
+    .is-pinned
+    .tab-wrapper:not(.active):hover {
+    background-color: var(--colorAccentBg, rgba(255, 255, 255, 0.2)) !important;
+    overflow: hidden;
+    position: relative;
+    z-index: 100000000;
+    width: calc(
+      var(--pinned-column-count) * 100% + (var(--pinned-column-count) - 1) *
+        var(--pinned-gap)
+    ) !important;
+    min-height: calc(var(--pinned-tab-height) + var(--pinned-gap)) !important;
+    transition: all var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1) 0.8s;
+  }
+
+  /* Column-specific hover positioning */
+  #tabs-container
+    .tab-strip
+    > span:nth-child(3n + 1):nth-child(-n + 9):has(.is-pinned)
+    .is-pinned
+    .tab-wrapper:not(.active):hover {
+    margin-left: 0 !important;
+  }
+
+  #tabs-container
+    .tab-strip
+    > span:nth-child(3n + 2):nth-child(-n + 9):has(.is-pinned)
+    .is-pinned
+    .tab-wrapper:not(.active):hover {
+    margin-left: calc(-100% - var(--pinned-gap)) !important;
+  }
+
+  #tabs-container
+    .tab-strip
+    > span:nth-child(3n):nth-child(-n + 9):has(.is-pinned)
+    .is-pinned
+    .tab-wrapper:not(.active):hover {
+    margin-left: calc(-200% - 2 * var(--pinned-gap)) !important;
+  }
+
+  #tabs-container
+    .tab-strip:has(> span:has(.is-pinned:nth-child(-n + 9) .tab-wrapper:hover))
+    > span:has(.is-pinned:nth-child(-n + 9):not(:has(.tab-wrapper:hover))) {
+    pointer-events: none;
+  }
+
+  /* Title visibility for first 9 pinned tabs */
+  #tabs-container
+    .tab-strip
+    > span:has(.is-pinned):nth-child(-n + 9)
+    .is-pinned
+    .title {
+    opacity: 0 !important;
+    max-width: 0 !important;
+    transition:
+      opacity var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1),
+      max-width var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  #tabs-container
+    .tab-strip
+    > span:has(.is-pinned)
+    .is-pinned
+    .tab-wrapper:hover
+    .title:nth-child(-n + 9) {
+    opacity: 1 !important;
+    max-width: 100% !important;
+  }
+
+  /* Stack counter auto-hide for first 9 pinned tabs */
+  #tabs-container
+    .tab-strip
+    > span:has(.is-pinned):nth-child(-n + 9)
+    .is-pinned
+    .stack-counter {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 0 !important;
+    min-width: 0 !important;
+    opacity: 0 !important;
+    transition: all var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  #tabs-container
+    .tab-strip
+    > span:has(.is-pinned):nth-child(-n + 9)
+    .is-pinned
+    .tab-wrapper:hover
+    .stack-counter {
+    display: flex !important;
+    padding: 1px 4px !important;
+    margin-right: 6px !important;
+    max-width: auto !important;
+    min-width: 1.5em !important;
+    opacity: 1 !important;
+  }
+
+  /* Close button disabled for first 9 pinned tabs */
+  #tabs-container
+    .tab-strip
+    > span:has(.is-pinned):nth-child(-n + 9)
+    .is-pinned
+    .close {
+    display: none !important;
+  }
+
+  /* Active tab outline */
+  #tabs-container
+    .tab-strip
+    > span:has(.is-pinned)
+    .is-pinned.active
+    .tab-wrapper {
+    outline: 2px solid var(--colorAccentBg, #4a90e2);
+  }
+
+  /* Regular style for pinned tabs after 9th */
+  #tabs-container
+    .tab-strip
+    > span:has(.is-pinned):nth-child(n + 10)
+    .is-pinned {
+    grid-column: 1 / span var(--pinned-column-count) !important;
+  }
+
+  #tabs-container
+    .tab-strip
+    > span:has(.is-pinned):nth-child(n + 10)
+    .is-pinned
+    .tab-wrapper {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-height: unset !important;
+    min-height: unset !important;
+    height: var(--Height) !important;
+    /* background-color: transparent !important; */
+  }
+
+  #tabs-container
+    .tab-strip
+    > span:has(.is-pinned):nth-child(n + 10)
+    .is-pinned
+    .tab-wrapper:hover {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  /* Title collapse/expand for pinned tabs after 9th */
+  /* #tabs-container .tab-strip > span:has(.is-pinned):nth-child(n + 10) .is-pinned .title {
+		padding: 0 !important;
+		margin: 0 !important;
+		opacity: 0 !important;
+		max-width: 0 !important;
+		min-width: 0 !important;
+		flex-shrink: 1 !important;
+		flex-grow: 0 !important;
+		flex-basis: 0 !important;
+		overflow: hidden !important;
+		transition: max-width 0s cubic-bezier(0.4, 0, 0.2, 1), min-width 0s cubic-bezier(0.4, 0, 0.2, 1), opacity 0s cubic-bezier(0.4, 0, 0.2, 1);
+		transition-delay: var(--transition-delay-time-collapse);
+	}
+
+	@container tabs-container (min-width: 45px) {
+		#tabs-container .tab-strip > span:has(.is-pinned):nth-child(n + 10) .is-pinned .tab-wrapper .title {
+			padding-left: 4px !important;
+			margin-right: 3px !important;
+			opacity: 1 !important;
+			max-width: 100% !important;
+			min-width: auto !important;
+			flex-shrink: 1 !important;
+			flex-grow: 1 !important;
+			flex-basis: auto !important;
+			transition: max-width 0s cubic-bezier(0.4, 0, 0.2, 1), min-width 0s cubic-bezier(0.4, 0, 0.2, 1), opacity 0s cubic-bezier(0.4, 0, 0.2, 1);
+		}
+	} */
+  /* #tabs-container .tab-strip > span:nth-child(n + 10) .title {
+    padding: 0 !important;
+    margin: 0 !important;
+    opacity: 0 !important;
+    max-width: 0 !important;
+    min-width: 0 !important;
+    flex-shrink: 1 !important;
+    flex-grow: 0 !important;
+    flex-basis: 0 !important;
+    overflow: hidden !important;
+    transition:
+      max-width 0s cubic-bezier(0.4, 0, 0.2, 1),
+      min-width 0s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0s cubic-bezier(0.4, 0, 0.2, 1);
+    transition-delay: var(--transition-delay-time-collapse);
+  }
+
+  @container tabs-container (min-width: 45px) {
+    #tabs-container .tab-strip > span:nth-child(n + 10) .tab-wrapper .title {
+      padding-left: 4px !important;
+      margin-right: 3px !important;
+      opacity: 1 !important;
+      max-width: 100% !important;
+      min-width: auto !important;
+      flex-shrink: 1 !important;
+      flex-grow: 1 !important;
+      flex-basis: auto !important;
+      transition:
+        max-width 0s cubic-bezier(0.4, 0, 0.2, 1),
+        min-width 0s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  } */
+
+  #tabs-container
+    .tab-strip
+    > span:has(.is-pinned):nth-child(n + 10)
+    .is-pinned
+    .tab:hover
+    .close {
+    display: flex !important;
+  }
+
+  #tabs-container
+    .tab-strip
+    > span:has(.is-pinned):nth-child(n + 10)
+    .is-pinned
+    .favicon {
+    width: 16px !important;
+    height: 16px !important;
+    transform: none !important;
+  }
+
+  /* Separator and new tab full width */
+  #tabs-container .tab-strip .newtab {
+    grid-column: 1 / -1 !important;
+  }
+
+  /* Separator - 居中样式 */
+  #tabs-container .tab-strip .separator {
+    grid-column: 1 / -1 !important;
+    position: relative !important;
+    width: calc(100% - 12px) !important;
+    margin: 0 6px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    transform: none !important;
+    /* margin-bottom: -6px !important; */
+  }
+
+  #tabs-container .tab-strip .separator hr {
+    width: 100% !important;
+    margin: 0 !important;
+    height: 1.2px !important;
+    border: none !important;
+    background-color: var(--colorFg) !important;
+  }
+
+  .tab-wrapper {
+    position: relative;
+    transform: none;
+  }
+
+  .tab-header {
+    min-height: 100%;
+  }
+
+  .svg-tab-selection {
+    min-height: 100%;
+  }
+
+  /* Non-pinned tabs layout */
+  #tabs-container .tab-position:not(.is-pinned):not(.accordion-toggle-arrow):not(.tab-yield-space),
+	/* #tabs-container .tab-position:not(.is-pinned) .separator, */
+	#tabs-container .tab-position:not(.is-pinned):not(.accordion-toggle-arrow):not(.tab-yield-space) .newtab {
+    grid-column: 1 / span var(--pinned-column-count);
+    position: relative;
+    transform: none;
+  }
+
+  #tabs-container .tab-position:not(.is-pinned):not(.accordion-toggle-arrow):not(.tab-yield-space) .tab-wrapper {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  #tabs-container .tab-position:not(.is-pinned):not(.accordion-toggle-arrow):not(.tab-yield-space) {
+    display: contents;
+  }
+
+
+  /* Hover state for first 9 pinned tabs */
+  /* body:not(:has(:is(.WorkspacePopup, #panel_switch, .toolbar-editor, .UrlBar-AddressField:focus-within))) #tabs-tabbar-container:hover #tabs-container:not(:hover) .tab-strip > span:has(.is-pinned):nth-child(-n + 9) .is-pinned .tab-wrapper {
+		background-color: var(--colorBg, rgba(255, 255, 255, 0.2)) !important;
+		border: 1px solid var(--colorHighlightBgDark) !important;
+	} */
+
+  /* Pin-At-Top */
+
+  @container style(--fluid-pin-at-top: on) {
+    #tabs-container
+      .tab-strip
+      > span:has(.is-pinned):nth-child(-n + 3)
+      .is-pinned
+      .tab-wrapper:hover {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 200 !important;
+    }
+
+    #tabs-container
+      .tab-strip
+      > span:has(.is-pinned):nth-child(n + 4):nth-child(-n + 6)
+      .is-pinned
+      .tab-wrapper:hover {
+      position: sticky !important;
+      top: calc(var(--pinned-tab-height) + var(--pinned-gap)) !important;
+      z-index: 200 !important;
+    }
+
+    #tabs-container
+      .tab-strip
+      > span:has(.is-pinned):nth-child(n + 7):nth-child(-n + 9)
+      .is-pinned
+      .tab-wrapper:hover {
+      position: sticky !important;
+      top: calc((var(--pinned-tab-height) + var(--pinned-gap)) * 2) !important;
+      z-index: 200 !important;
+    }
+
+#tabs-container .tab-position:not(.accordion-toggle-arrow):not(.tab-yield-space){
+  position: relative;
+}
+
+/* 只在第一个固定标签页上创建背景 */
+#tabs-container
+.tab-strip
+> span:nth-child(1)
+.tab-position::after{
+  content: '';
+  position: fixed;
+  top: 70px;
+  left: calc(var(--pinned-gap) / 2);
+  min-width: calc(var(--tabs-container-expand-width) - var(--pinned-gap));
+  height: calc(var(--pinned-tab-height) * 3 + var(--pinned-gap) * 3);
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0s ease;
+}
+
+#tabs-container:hover
+.tab-strip
+> span:nth-child(1)
+.tab-position::after {
+  opacity: 1 !important;
+  transition: opacity var(--animation-speed) ease calc(var(--transition-delay-time-collapse) + var(--animation-speed));
+}
+
+#tabs-container.right
+.tab-strip
+> span:nth-child(1)
+.tab-position::after {
+  left: unset;
+  right: calc(var(--pinned-gap) / 2);
+}
+
+    #tabs-container
+      .tab-strip
+      > span:has(.is-pinned):nth-child(-n + 3)
+      .is-pinned
+      .tab-wrapper:not(:hover) {
+      position: sticky !important;
+      top: 0 !important;
+      /* background: transparent !important; */
+      z-index: 150 !important;
+    }
+
+    #tabs-container
+      .tab-strip
+      > span:has(.is-pinned):nth-child(n + 4):nth-child(-n + 6)
+      .is-pinned
+      .tab-wrapper:not(:hover) {
+      position: sticky !important;
+      top: calc(var(--pinned-tab-height) + var(--pinned-gap)) !important;
+      /* background: transparent !important; */
+      z-index: 150 !important;
+    }
+
+    #tabs-container
+      .tab-strip
+      > span:has(.is-pinned):nth-child(n + 7):nth-child(-n + 9)
+      .is-pinned
+      .tab-wrapper:not(:hover) {
+      position: sticky !important;
+      top: calc((var(--pinned-tab-height) + var(--pinned-gap)) * 2) !important;
+      /* background: transparent !important; */
+      z-index: 150 !important;
+    }
+
+    #tabs-container .tab-strip > span:has(.is-pinned):nth-child(-n + 3) {
+      grid-row: 1 !important;
+      position: relative !important;
+      z-index: 1 !important;
+    }
+
+    #tabs-container
+      .tab-strip
+      > span:has(.is-pinned):nth-child(n + 4):nth-child(-n + 6) {
+      grid-row: 2 !important;
+      position: relative !important;
+      z-index: 1 !important;
+    }
+
+    #tabs-container
+      .tab-strip
+      > span:has(.is-pinned):nth-child(n + 7):nth-child(-n + 9) {
+      grid-row: 3 !important;
+      position: relative !important;
+      z-index: 1 !important;
+    }
+
+    #tabs-container .tab-strip > span:has(.is-pinned):nth-child(n + 10),
+    #tabs-container .tab-strip > span:not(:has(.is-pinned)) {
+      grid-row: auto !important;
+      /* margin-top: calc((var(--pinned-tab-height) + var(--pinned-gap)) * 3 + 1px) !important; */
+    }
+  }
+}

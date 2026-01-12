@@ -1,0 +1,176 @@
+/*
+A Neat SpeedDial
+version 2025.10.31
+Author PaRr0tBoY
+https://github.com/PaRr0tBoY/Awesome-Vivaldi
+A Neat SpeedDial that left only settings button and search bar.
+Toggle speeddial visibility by toggle 'add speeddial button'.
+*/
+
+/* ============================================
+   Core SpeedDial Visibility Control
+   ============================================ */
+
+/* Hide speed dials by default */
+.SpeedDials {
+	display: none !important;
+}
+
+/* Show speed dials when add button is present */
+.startpage:has(.SpeedDial-Add-Button) .SpeedDials {
+	display: block !important;
+}
+
+/* ============================================
+   Navigation & Layout
+   ============================================ */
+
+/* Auto-hide navigation bar - shows on hover */
+.startpage-navigation {
+	max-height: 0 !important;
+	min-height: 0 !important;
+	transition: all var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.startpage-navigation:hover {
+	max-height: 43px !important;
+	min-height: 43px !important;
+}
+
+/* Center the speed dial view */
+.sdwrapper.has-SpeedDial .SpeedDialView {
+	grid-template-rows: 1fr;
+	place-items: center;
+	margin: 0 50px;
+}
+
+/* ============================================
+   Search Field Styling
+   ============================================ */
+
+/* Search field container with expand on focus */
+.SpeedDialView-Head:not(:has(.ToolbarButton-Button[aria-expanded="true"])) {
+	position: relative;
+	min-height: 46px;
+	max-width: 850px !important;
+	transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.SpeedDialView-Head:not(:has(.ToolbarButton-Button[aria-expanded="true"])):focus-within {
+	min-height: 80px;
+	max-width: 1000px !important;
+	background-color: #2d2d2d;
+	border-radius: calc(var(--radius) * 2);
+	transition: all var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.SpeedDialView-Head:not(:has(.ToolbarButton-Button[aria-expanded="true"])) .iconmenu-container.SearchField {
+	border: 1px groove grey !important;
+}
+
+/* Transparent search field background */
+.sdwrapper .iconmenu-container.SearchField {
+	position: relative;
+	height: 100%;
+	background-color: transparent;
+}
+
+/* Remove default focus outline */
+.color-behind-tabs-off .SearchField:focus-within,
+.color-behind-tabs-off .MailSearchField-Inner:focus-within,
+.color-behind-tabs-off .UrlBar-AddressField:focus-within {
+	outline: unset !important;
+	outline-offset: unset !important;
+}
+
+/* ============================================
+   Search Engine Icon as Logo
+   ============================================ */
+
+/* Position search engine icon above search field */
+.SpeedDialView-Head .SearchEngineSelect-Icon {
+	position: absolute;
+	top: -60px;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 10;
+}
+
+.SpeedDialView-Head .SearchEngineSelect-Icon .button-toolbar {
+	width: 50px;
+	height: 50px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#select-engine_button .ToolbarButton-Button {
+	flex: unset !important;
+	background-color: unset !important;
+	border: unset !important;
+}
+
+.SpeedDialView-Head .SearchEngineSelect-Icon .button-icon {
+	width: 40px;
+	height: 40px;
+}
+
+/* ============================================
+   Startpage Transparent Theme
+   ============================================ */
+
+/* Make browser chrome transparent on startpage */
+#browser:has(.startpage) :is(.mainbar, #tabs-container, #tabs-subcontainer, #switch) {
+	background-color: transparent !important;
+	border: none !important;
+}
+
+#browser:has(.startpage) :is(.mainbar, #tabs-container, #tabs-subcontainer, #switch) UrlBar-AddressField {
+	background-color: transparent !important;
+}
+
+/* Remove tab background colors on startpage */
+#browser:has(.startpage) .tab-position.colored.accordion-toggle-arrow,
+#browser:has(.startpage) .tab-position.colored .tab:not(.active) {
+	background-color: unset !important;
+}
+
+/* Remove tab outline strokes */
+#browser:has(.startpage) .svg-tab-stack .stack-frame,
+.svg-tab-selection .stack-frame {
+	stroke: unset !important;
+}
+
+/* Remove pinned tab backgrounds */
+#browser:has(.startpage) #tabs-container .tab-strip > span:has(.is-pinned):nth-child(-n + 9) .is-pinned .tab-wrapper {
+	background-color: unset !important;
+}
+
+/* Enable fluid compact mode on startpage */
+#browser:has(.startpage) {
+	--fluid-compact-mode: on;
+}
+
+/* Transparent bookmark bar */
+#browser:has(.startpage) .bookmark-bar .observer,
+.color-behind-tabs-off .bookmark-bar button,
+#browser:has(.startpage) .bookmark-bar.default {
+	background-color: transparent !important;
+	border: unset !important;
+}
+
+/* Transparent search and URL bars */
+#browser:has(.startpage) .SearchField,
+#browser:has(.startpage) .MailSearchField-Inner,
+#browser:has(.startpage) .UrlBar-AddressField {
+	background-color: transparent !important;
+}
+
+/* ============================================
+   Dashboard Widgets
+   ============================================ */
+
+/* Hide URL wrapper in dashboard widgets */
+.dashboard-widget .url-wrapper {
+	display: none;
+}

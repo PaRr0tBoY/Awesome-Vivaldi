@@ -5,14 +5,13 @@
 <div align="center">
     <h1>Awesome Vivaldi</h1>
 <div align="center">
-
 [![DeepWiki](https://img.shields.io/badge/DeepWiki-Docs-blue)](https://deepwiki.com/PaRr0tBoY/Awesome-Vivaldi/2.3.1-main-ui-styles)
 [![Vivaldi Forum](https://img.shields.io/badge/Vivaldi-Forum-red)](https://forum.vivaldi.net/topic/112064/modpack-community-essentials-mods-collection?_=1761221602450) 
 ![GitHub repo size](https://img.shields.io/github/repo-size/PaRr0tBoY/Awesome-Vivaldi) 
 ![GitHub Repo stars](https://img.shields.io/github/stars/PaRr0tBoY/Awesome-Vivaldi) 
 </div>
     <p>A Curated Community Mod Pack for Vivaldi Browser</p>
-    
+
 <div align="center">
 
 **English** | [简体中文](./Others/README-zh.md)
@@ -75,7 +74,7 @@
 
 <details>
 <summary><h3> Nice-to-Have Tweaks </h3></summary>
-    
+
 <table>
 <tr>
 <td>Sleek Audio Icon</td>

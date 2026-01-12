@@ -34,7 +34,7 @@ You may manage and config all your css mods and config them as well all in this 
 @import "JSIntegration/ClearTabs.css";
 @import "JSIntegration/TidyTabs.css";
 @import "JSIntegration/ArcPeek.css";
-/* @import "JSIntegration/Accentmod.css"; */
+@import "JSIntegration/Accentmod.css";
 
 /* Import under dev folder CSS files */
 /* @import "Dev/TabStack.css"; */

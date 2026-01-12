@@ -1,0 +1,114 @@
+/*
+Brave Style Tab
+version ???
+Author saschadiercks-
+https://???
+Brave Style Tab
+*/
+
+:root {
+	--mod-border-radius: 4px;
+	--mod-whitespace-x: 3px;
+	--mod-whitespace-y: 5px;
+	--mod-whitespace-tabbar-right: 15px;
+	--mod-highlight-color: #c00;
+	--mod-drop-shadow: 3px 3px 5px -1px rgba(0,0,0,.3);
+	--mod-animation-speed: .3s;
+	--mod-mainbar-height: 45px;
+}
+
+/* -- Tabs -- */
+#tabs-tabbar-container.top {
+	margin-bottom: var(--mod-whitespace-y);
+	border-width: 0;
+	box-shadow: none !important;
+
+	padding-right: var(--mod-whitespace-tabbar-right);
+
+	.tab-strip > span + span .tab:not(.pinned) {
+		margin-left: var(--mod-whitespace-x);
+	}
+}
+
+.tab-position {
+	.tab {
+		transition: all var(--mod-animation-speed) ease;
+		border-radius: var(--mod-border-radius) !important;
+		* {
+			cursor: pointer;
+		}
+
+		/* overwrite potential chrome mods */
+		&::after,
+		&::before {
+			display: none;
+		}
+
+		.close {
+			background-color: transparent;
+			border-radius: 99rem;
+		}
+
+		&.active,
+		&:hover {
+			box-shadow: var(--mod-drop-shadow);
+		}
+	}
+}
+
+/* -- tabs horizontal scrolling enabled --*/
+.horizontal-scrolling {
+	&.tab-strip {
+		padding-top: unset !important;
+		margin-top: unset !important;
+	}
+}
+
+/* -- highlight tab with background audio -- */
+.tab.audio-on:not(.active) {
+	transition: all var(--mod-animation-speed) ease;
+	color: var(--colorHighlightBg, --mod-highlight-color);
+	box-shadow: var(--mod-drop-shadow);
+	.tab-header {
+		background-color: var(--colorBg);
+	}
+}
+
+/* -- Main Bar -- */
+.mainbar {
+	& > .toolbar-mainbar {
+		align-items: stretch;
+		height: var(--mod-mainbar-height);
+		padding: var(--mod-whitespace-y);
+	}
+}
+
+/* .UrlBar-SearchField,
+.UrlBar-AddressField {
+	border-radius: var(--mod-border-radius);
+	height: auto;
+
+	.pageload-indicator {
+		border-radius: var(--mod-border-radius);
+		height: 100% !important;
+	}
+}
+
+.UrlField {
+	height: calc(var(--mod-mainbar-height) - (var(--mod-whitespace-y) * 2)) ;
+} */
+
+.OmniDropdown {
+	top: 100% !important;
+}
+
+.toolbar-mainbar .profile-popup {
+	margin-right: var(--mod-whitespace-tabbar-right);
+}
+
+/* -- Speed dial -- */
+.dials {
+	.dial *:hover {
+		cursor: pointer;
+	}
+}

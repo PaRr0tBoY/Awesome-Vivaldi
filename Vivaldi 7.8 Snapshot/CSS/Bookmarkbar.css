@@ -1,0 +1,67 @@
+/*
+Auto Hide Bookmarkbar
+version 2024.2.28
+Author nafumofu
+https://forum.vivaldi.net/topic/95511/overlay-bookmark-bar?_=1761926076478
+Hide bookmarkbar by default until you hover your mouse on the addressbar, set the --bookmark-bar-show-ctrlkey to true so bookmarkbar will only show when hover on addressbar as well as pressing cmd(mac) or ctrl(win)
+*/
+
+#browser {
+  --bookmark-bar-hide-delay: 400ms;
+  --bookmark-bar-show-ctrlkey: true;
+}
+
+.bookmark-bar-top:is(.address-top, .tabs-top) {
+  #main:has(.bookmark-bar:hover) #webview-container {
+      pointer-events: none !important;
+  }
+  &.tabs-top #tabs-subcontainer {
+      -webkit-app-region: no-drag !important;
+  }
+  
+  .bookmark-bar {
+      height: 0 !important;
+      border: none !important;
+  }
+  
+  /* 在起始页下始终显示书签栏 */
+  &:has(.startpage) .bookmark-bar {
+      height: auto !important;
+      /* border-bottom: solid 1px var(--colorBorder) !important; */
+  }
+  
+  .bookmark-bar .observer {
+      position: absolute !important;
+      z-index: 4 !important;
+      width: 100% !important;
+      /* border-bottom: solid 1px var(--colorBorder) !important; */
+      clip-path: inset(0 0 100% 0) !important;
+      transition-delay: var(--bookmark-bar-hide-delay) !important;
+  }
+  
+  /* 在起始页下始终显示书签栏 */
+  &:has(.startpage) .bookmark-bar .observer {
+      clip-path: inset(0 0 -1px 0) !important;
+      transition: none !important;
+  }
+  
+  &:has(.button-disabled-preview):has(.tabbar-wrapper:hover).tabs-top .bookmark-bar .observer,
+  &:has(.button-disabled-preview).address-top .bookmark-bar:is(.mainbar:not(:has(.OmniDropdown, nav.menu)):hover ~ *) .observer,
+  .bookmark-bar:is(:focus-within, :hover) .observer {
+      clip-path: inset(0 0 -1px 0) !important;
+      transition: clip-path 150ms cubic-bezier(0, 1, 0, 0.9) 50ms !important;
+  }
+  
+  @container not style(--bookmark-bar-show-ctrlkey: true) {
+      &:has(.tabbar-wrapper:hover).tabs-top .bookmark-bar .observer,
+      &.address-top .bookmark-bar:is(.mainbar:not(:has(.OmniDropdown, nav.menu)):hover ~ *) .observer,
+      .bookmark-bar:is(:focus-within, :hover) .observer {
+          clip-path: inset(0 0 -1px 0) !important;
+          transition: clip-path 150ms cubic-bezier(0, 1, 0, 0.9) 50ms !important;
+      }
+  }
+  
+  &.animation-off .bookmark-bar .observer {
+      transition-duration: 0ms !important;
+  }
+}
