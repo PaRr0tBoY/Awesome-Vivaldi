@@ -17,6 +17,7 @@ Currently only support 3x3 tabs grid.
   --pinned-gap: 8px;
   --pinned-icon-size: 20px;
   --pinned-tab-height: 50px;
+  --animation-speed: 280ms;
 } */
 
 /* Fluid tabs grid layout for pinned tabs */
@@ -295,7 +296,7 @@ Currently only support 3x3 tabs grid.
 			transition: max-width 0s cubic-bezier(0.4, 0, 0.2, 1), min-width 0s cubic-bezier(0.4, 0, 0.2, 1), opacity 0s cubic-bezier(0.4, 0, 0.2, 1);
 		}
 	} */
-  #tabs-container .tab-strip > span:nth-child(n + 10) .title {
+  /* #tabs-container .tab-strip > span:nth-child(n + 10) .title {
     padding: 0 !important;
     margin: 0 !important;
     opacity: 0 !important;
@@ -327,7 +328,7 @@ Currently only support 3x3 tabs grid.
         min-width 0s cubic-bezier(0.4, 0, 0.2, 1),
         opacity 0s cubic-bezier(0.4, 0, 0.2, 1);
     }
-  }
+  } */
 
   #tabs-container
     .tab-strip
