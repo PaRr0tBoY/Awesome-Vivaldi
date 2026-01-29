@@ -84,7 +84,7 @@
 <td><img src="./Others/Showcase/feature-small/Community/audio-panel.png" height="300" /></td>
 </tr>
 <tr>
-<td>Who Needs a Disabled Button?</td>
+<td>Who Needs a Disabled Button</td>
 <td><img src="./Others/Showcase/feature-small/My-Mods/adaptiveBF.gif" height="300" /></td>
 </tr>
 <tr>
