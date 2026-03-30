@@ -45,212 +45,231 @@
   `;
 
   class YBAddressBar {
-      urlFieldMutationObserver = null;
-      titleMutationObserver = null;
+    urlFieldMutationObserver = null;
+    titleMutationObserver = null;
 
-      constructor() {
-          this.#addStyle();
-          this.#placeYBDomainButton();
-          this.#placeYBTitle();
-          this.urlFieldMutationObserver = this.#createUrlFieldMutationObserver();
-          this.titleMutationObserver = this.#createTitleMutationObserver();
+    constructor() {
+      this.#addStyle();
+      this.#placeYBDomainButton();
+      this.#placeYBTitle();
+      this.urlFieldMutationObserver = this.#createUrlFieldMutationObserver();
+      this.titleMutationObserver = this.#createTitleMutationObserver();
+    }
+
+    // listeners
+
+    #createUrlFieldMutationObserver() {
+      const urlFieldMutationObserver = new MutationObserver(() => {
+        this.#placeYBDomainButton();
+      });
+      urlFieldMutationObserver.observe(this.#urlFieldInput, {
+        attributes: true,
+        attributeFilter: ["value"],
+      });
+      return urlFieldMutationObserver;
+    }
+
+    #createTitleMutationObserver() {
+      const titleMutationObserver = new MutationObserver(() => {
+        this.#placeYBTitle();
+      });
+      titleMutationObserver.observe(this.#title, {
+        childList: true,
+        subtree: true,
+      });
+      return titleMutationObserver;
+    }
+
+    #addDomainButtonListener(domainInfo) {
+      this.#ybDomainButton.addEventListener(
+        "click",
+        (event) => {
+          event.stopPropagation();
+          const prefix = this.#calculateDomainPrefix(domainInfo.type);
+          const url = prefix + domainInfo.domain;
+          this.#activeWebview.setAttribute("src", url);
+        },
+        true,
+      );
+    }
+
+    // builders
+
+    #createStyle() {
+      const style = document.createElement("style");
+      style.innerHTML = STYLE;
+      return style;
+    }
+
+    #createYBDomainButton() {
+      const domainInfo = this.#parseUrlDomain(
+        this.#urlFragmentLink
+          ? this.#urlFragmentLink.innerText
+          : this.#urlFragmentHighlight.innerText,
+      );
+      if (!domainInfo.domain) {
+        return null;
       }
 
-      // listeners
+      const ybDomainButton = document.createElement("button");
+      ybDomainButton.className = "YBDomainButton";
 
-      #createUrlFieldMutationObserver() {
-          const urlFieldMutationObserver = new MutationObserver(() => {
-              this.#placeYBDomainButton();
-          });
-          urlFieldMutationObserver.observe(this.#urlFieldInput, {
-              attributes: true,
-              attributeFilter: ['value']
-          });
-          return urlFieldMutationObserver;
+      const ybDomain = this.#createYBDomain(domainInfo.domain);
+      ybDomainButton.appendChild(ybDomain);
+      this.#urlBarAddressField.insertBefore(
+        ybDomainButton,
+        this.#urlBarUrlFieldWrapper,
+      );
+      if (domainInfo.clickable) {
+        this.#addDomainButtonListener(domainInfo);
+      }
+      return ybDomainButton;
+    }
+
+    #createYBDomain(domain) {
+      const ybDomain = document.createElement("div");
+      ybDomain.className = "UrlFragment--Lowlight YBDomain";
+      ybDomain.innerText = domain;
+      return ybDomain;
+    }
+
+    #createYbTitle() {
+      var title = this.#title.innerText;
+      if (title === "Vivaldi") {
+        title = this.#parseTitleFromUrl(
+          this.#activeWebview.getAttribute("src"),
+        );
       }
 
-      #createTitleMutationObserver() {
-          const titleMutationObserver = new MutationObserver(() => {
-              this.#placeYBTitle();
-          });
-          titleMutationObserver.observe(this.#title, {
-              childList: true,
-              subtree: true
-          });
-          return titleMutationObserver;
+      const ybTitle = document.createElement("div");
+      ybTitle.className = "UrlFragment--Highlight YBTitle";
+      ybTitle.innerText = title;
+      return ybTitle;
+    }
+
+    // actions
+
+    #addStyle() {
+      this.#head.appendChild(this.#createStyle());
+    }
+
+    #placeYBDomainButton() {
+      if (!this.#urlBarAddressField) return;
+      if (this.#ybDomainButton) {
+        this.#urlBarAddressField.removeChild(this.#ybDomainButton);
       }
-
-      #addDomainButtonListener(domainInfo) {
-          this.#ybDomainButton.addEventListener('click', (event) => {
-              event.stopPropagation();
-              const prefix = this.#calculateDomainPrefix(domainInfo.type);
-              const url = prefix + domainInfo.domain;
-              this.#activeWebview.setAttribute('src', url);
-          }, true);
+      if (this.#urlFragmentLink || this.#urlFragmentHighlight) {
+        this.#createYBDomainButton();
       }
+    }
 
-      // builders
-
-      #createStyle() {
-          const style = document.createElement('style');
-          style.innerHTML = STYLE;
-          return style;
+    #placeYBTitle() {
+      if (!this.#urlFragmentWrapper) return;
+      if (this.#ybTitle) {
+        this.#urlFragmentWrapper.removeChild(this.#ybTitle);
       }
+      if (!this.#title) return;
 
-      #createYBDomainButton() {
-          const domainInfo = this.#parseUrlDomain(this.#urlFragmentLink ? this.#urlFragmentLink.innerText : this.#urlFragmentHighlight.innerText);
-          if (!domainInfo.domain) {
-              return null;
-          }
+      const ybTitle = this.#createYbTitle();
+      this.#urlFragmentWrapper.appendChild(ybTitle);
+    }
 
-          const ybDomainButton = document.createElement('button');
-          ybDomainButton.className = 'YBDomainButton';
+    // helpers
 
-          const ybDomain = this.#createYBDomain(domainInfo.domain);
-          ybDomainButton.appendChild(ybDomain);
-          this.#urlBarAddressField.insertBefore(ybDomainButton, this.#urlBarUrlFieldWrapper);
-          if (domainInfo.clickable) {
-              this.#addDomainButtonListener(domainInfo);
-          }
-          return ybDomainButton;
+    #calculateDomainPrefix(type) {
+      if (type === "url") {
+        return "https://";
+      } else if (type === "vivaldi") {
+        return "vivaldi://";
+      } else if (type === "about") {
+        return "";
+      } else {
+        return null;
       }
+    }
 
-      #createYBDomain(domain) {
-          const ybDomain = document.createElement('div');
-          ybDomain.className = 'UrlFragment--Lowlight YBDomain';
-          ybDomain.innerText = domain;
-          return ybDomain;
+    #parseVivaldiDomain(url) {
+      const regexp = /vivaldi:\/\/([^\/]*)/;
+      return url.match(regexp)[1];
+    }
+
+    #parseUrlDomain(url) {
+      if (url.startsWith("vivaldi://")) {
+        const domain = this.#parseVivaldiDomain(url);
+        return { type: "vivaldi", domain: domain, clickable: true };
+      } else if (url.startsWith("file://")) {
+        return { type: "file", domain: "file", clickable: false };
+      } else if (url.startsWith("about:")) {
+        return { type: "about", domain: url, clickable: true };
+      } else if (url.startsWith("chrome-extension://")) {
+        return { type: "extension", domain: "extension", clickable: false };
+      } else {
+        return { type: "url", domain: url, clickable: true };
       }
+    }
 
-      #createYbTitle() {
-          var title = this.#title.innerText;
-          if (title === 'Vivaldi') {
-              title = this.#parseTitleFromUrl(this.#activeWebview.getAttribute('src'));
-          }
+    #parseTitleFromUrl(title) {
+      const regexp = /\/([^\/]*)$/;
+      return title.match(regexp)[1];
+    }
 
-          const ybTitle = document.createElement('div');
-          ybTitle.className = 'UrlFragment--Highlight YBTitle';
-          ybTitle.innerText = title;
-          return ybTitle;
-      }
+    // getters
 
-      // actions
+    get #head() {
+      return document.querySelector("head");
+    }
 
-      #addStyle() {
-          this.#head.appendChild(this.#createStyle());
-      }
+    get #title() {
+      return document.querySelector("title");
+    }
 
-      #placeYBDomainButton() {
-          if (!this.#urlBarAddressField) return;
-          if (this.#ybDomainButton) {
-              this.#urlBarAddressField.removeChild(this.#ybDomainButton);
-          }
-          if (this.#urlFragmentLink || this.#urlFragmentHighlight) {
-              this.#createYBDomainButton();
-          }
-      }
+    get #urlFieldInput() {
+      return document.querySelector("#urlFieldInput");
+    }
 
-      #placeYBTitle() {
-          if (!this.#urlFragmentWrapper) return;
-          if (this.#ybTitle) {
-              this.#urlFragmentWrapper.removeChild(this.#ybTitle);
-          }
-          if (!this.#title) return;
+    get #activeWebview() {
+      return document.querySelector(".webpageview.active.visible webview");
+    }
 
-          const ybTitle = this.#createYbTitle();
-          this.#urlFragmentWrapper.appendChild(ybTitle);
-      }
+    get #urlBarAddressField() {
+      return document.querySelector(".UrlBar-AddressField");
+    }
 
-      // helpers
+    get #urlBarUrlFieldWrapper() {
+      return document.querySelector(
+        ".UrlBar-AddressField .UrlBar-UrlFieldWrapper",
+      );
+    }
 
-      #calculateDomainPrefix(type) {
-          if (type === 'url') {
-              return 'https://';
-          } else if (type === 'vivaldi') {
-              return 'vivaldi://';
-          } else if (type === 'about') {
-              return '';
-          } else {
-              return null;
-          }
-      }
+    get #urlFragmentWrapper() {
+      return document.querySelector(
+        ".UrlBar-AddressField .UrlFragment-Wrapper",
+      );
+    }
 
-      #parseVivaldiDomain(url) {
-          const regexp = /vivaldi:\/\/([^\/]*)/;
-          return url.match(regexp)[1];
-      }
+    get #urlFragmentLink() {
+      return document.querySelector(".UrlBar-AddressField .UrlFragment-Link");
+    }
 
-      #parseUrlDomain(url) {
-          if (url.startsWith('vivaldi://')) {
-              const domain = this.#parseVivaldiDomain(url);
-              return {type: 'vivaldi', domain: domain, clickable: true};
-          } else if (url.startsWith('file://')) {
-              return {type: 'file', domain: 'file', clickable: false};
-          } else if (url.startsWith('about:')) {
-              return {type: 'about', domain: url, clickable: true};
-          } else if (url.startsWith('chrome-extension://')) {
-              return {type: 'extension', domain: 'extension', clickable: false};
-          } else {
-              return {type: 'url', domain: url, clickable: true};
-          }
-      }
+    get #urlFragmentHighlight() {
+      return document.querySelector(
+        ".UrlBar-AddressField span.UrlFragment--Highlight",
+      );
+    }
 
-      #parseTitleFromUrl(title) {
-          const regexp = /\/([^\/]*)$/;
-          return title.match(regexp)[1];
-      }
+    get #ybDomainButton() {
+      return document.querySelector(".YBDomainButton");
+    }
 
-      // getters
-
-      get #head() {
-          return document.querySelector('head');
-      }
-
-      get #title() {
-          return document.querySelector('title');
-      }
-
-      get #urlFieldInput() {
-          return document.querySelector('#urlFieldInput');
-      }
-
-      get #activeWebview() {
-          return document.querySelector('.webpageview.active.visible webview');
-      }
-
-      get #urlBarAddressField() {
-          return document.querySelector('.UrlBar-AddressField');
-      }
-
-      get #urlBarUrlFieldWrapper() {
-          return document.querySelector('.UrlBar-AddressField .UrlBar-UrlFieldWrapper');
-      }
-
-      get #urlFragmentWrapper() {
-          return document.querySelector('.UrlBar-AddressField .UrlFragment-Wrapper');
-      }
-
-      get #urlFragmentLink() {
-          return document.querySelector('.UrlBar-AddressField .UrlFragment-Link');
-      }
-
-      get #urlFragmentHighlight() {
-          return document.querySelector('.UrlBar-AddressField span.UrlFragment--Highlight');
-      }
-
-      get #ybDomainButton() {
-          return document.querySelector('.YBDomainButton');
-      }
-
-      get #ybTitle() {
-          return document.querySelector('.YBTitle');
-      }
-  };
+    get #ybTitle() {
+      return document.querySelector(".YBTitle");
+    }
+  }
 
   var interval = setInterval(() => {
-      if (document.querySelector('#browser')) {
-          window.ybAddressBar = new YBAddressBar();
-          clearInterval(interval);
-      }
+    if (document.querySelector("#browser")) {
+      window.ybAddressBar = new YBAddressBar();
+      clearInterval(interval);
+    }
   }, 100);
 })();

@@ -1,0 +1,18 @@
+{
+  "extName": {
+    "message": "HamHome - 智能书签助手",
+    "description": "扩展名称"
+  },
+  "extDescription": {
+    "message": "让收藏不再积灰，AI 驱动的智能书签管理工具",
+    "description": "扩展描述"
+  },
+  "commandSaveBookmark": {
+    "message": "快速收藏当前页面",
+    "description": "保存书签命令描述"
+  },
+  "commandTogglePanel": {
+    "message": "切换书签面板",
+    "description": "切换面板命令描述"
+  }
+}

@@ -9,7 +9,8 @@ Floating find in page panel, as it should be.
 .find-in-page-wrapper {
   position: absolute;
   top: 10px;
-  justify-self: anchor-center;
+  left: 50%;
+  transform: translateX(-50%);
   margin: 0 auto !important;
   padding: 0.1rem 0.3rem;
   border-radius: var(--radius);

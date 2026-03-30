@@ -74,11 +74,14 @@
               } else if (index === 3) {
                 ds = vivaldi.searchEngines.DefaultType.DEFAULT_SEARCH_FIELD;
               } else if (index === 4) {
-                ds = vivaldi.searchEngines.DefaultType.DEFAULT_SEARCH_FIELD_PRIVATE;
+                ds =
+                  vivaldi.searchEngines.DefaultType
+                    .DEFAULT_SEARCH_FIELD_PRIVATE;
               } else if (index === 5) {
                 ds = vivaldi.searchEngines.DefaultType.DEFAULT_SPEEDDIALS;
               } else {
-                ds = vivaldi.searchEngines.DefaultType.DEFAULT_SPEEDDIALS_PRIVATE;
+                ds =
+                  vivaldi.searchEngines.DefaultType.DEFAULT_SPEEDDIALS_PRIVATE;
               }
               const tunnel = [collect.keyword, ds];
               defaultsArray.push(tunnel);
@@ -131,7 +134,7 @@
     const check = document.getElementById("vm-bse-backup");
     if (!check) {
       const place = document.querySelector(
-        ".setting-section > div > .setting-group.unlimited > .setting-single"
+        ".setting-section > div > .setting-group.unlimited > .setting-single",
       );
       const btn = document.createElement("input");
       btn.setAttribute("type", "button");

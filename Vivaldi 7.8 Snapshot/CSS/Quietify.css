@@ -1,7 +1,6 @@
 /* This mod only works when the Vivaldi UI language is set to English/Chinese.
    Add your own language support by editing the selectors below. */
 
-
 /* Icon Position */
 .tab-audio,
 .panel-audio {
@@ -29,26 +28,27 @@
 }
 
 /* Position the parent containers so the pseudo-elements can be placed correctly */
-.tab-audio,
+
+/* tab-audio must be absolute so it doesn't disrupt the tab-header flex layout */
+.tab-audio {
+  position: absolute !important;
+}
+
+/* All other audio containers use relative so ::after overlays correctly within their layout */
 .tooltip-audio-button,
 .panel-audio,
 .audio-container,
 .button-icon.audio {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--tab-icon-size);
-  height: var(--tab-icon-size);
+  position: relative !important;
 }
 
 /* --- Generic Pseudo-element Style --- */
-/* Apply the icon to the container, not the canvas itself */
-.tab-audio::before,
-.panel-audio::before,
-.tooltip-audio-button::before,
-.audio-container::before,
-.button-icon.audio::before {
+/* Apply the icon to the container using ::after (overlays the absolutely-positioned canvas) */
+.tab-audio::after,
+.panel-audio::after,
+.tooltip-audio-button::after,
+.audio-container::after,
+.button-icon.audio::after {
   content: "";
   display: inline-block;
   position: absolute;
@@ -61,29 +61,33 @@
   mask-size: contain;
   transition: transform 0.15s ease-out;
   pointer-events: none;
+  /* Ensure pseudo-element has explicit dimensions */
+  width: 16px;
+  height: 16px;
+  /* Place above canvas (z-index: auto = 0, so z-index: 1 puts ::after on top) */
+  z-index: 1;
 }
 
 /* --- Size Variations --- */
 
 /* Audio icon in tab */
-.tab-audio::before,
-.tooltip-audio-button::before {
-  width: var(--tab-icon-size);
-  height: var(--tab-icon-size);
+.tab-audio::after,
+.tooltip-audio-button::after {
+  width: 16px;
+  height: 16px;
 }
 
 /* Audio icon in workspace popup */
-.audio-container::before,
-.button-icon.audio::before {
-  width: var(--popup-icon-size);
-  height: var(--popup-icon-size);
+.audio-container::after,
+.button-icon.audio::after {
+  width: 16px;
+  height: 16px;
 }
 
 /* Audio icon in panel */
-.panel-audio::before {
-  /*z-index: 999 !important;*/
-  width: var(--panel-icon-size);
-  height: var(--panel-icon-size);
+.panel-audio::after {
+  width: 16px;
+  height: 16px;
 }
 
 /* --- State Detection --- */
@@ -100,7 +104,7 @@
 .panel-audio:has(.audioicon[title*="Mute"]),
 .panel-audio:has(.audioicon[title="面板静音"]) {
   /* Apply the animated icon */
-  &::before {
+  &::after {
     mask-image: url("data:image/svg+xml,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%20135%20140%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22%22%3E%3Crect%20y%3D%2210%22%20width%3D%2215%22%20height%3D%22120%22%20rx%3D%226%22%3E%3Canimate%20attributeName%3D%22height%22%20begin%3D%220.5s%22%20dur%3D%221s%22%20values%3D%22120%3B110%3B100%3B90%3B80%3B70%3B60%3B50%3B40%3B140%3B120%22%20calcMode%3D%22linear%22%20repeatCount%3D%22indefinite%22%2F%3E%3Canimate%20attributeName%3D%22y%22%20begin%3D%220.5s%22%20dur%3D%221s%22%20values%3D%2210%3B15%3B20%3B25%3B30%3B35%3B40%3B45%3B50%3B0%3B10%22%20calcMode%3D%22linear%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Frect%3E%3Crect%20x%3D%2230%22%20y%3D%2210%22%20width%3D%2215%22%20height%3D%22120%22%20rx%3D%226%22%3E%3Canimate%20attributeName%3D%22height%22%20begin%3D%220.25s%22%20dur%3D%221s%22%20values%3D%22120%3B110%3B100%3B90%3B80%3B70%3B60%3B50%3B40%3B140%3B120%22%20calcMode%3D%22linear%22%20repeatCount%3D%22indefinite%22%2F%3E%3Canimate%20attributeName%3D%22y%22%20begin%3D%220.25s%22%20dur%3D%221s%22%20values%3D%2210%3B15%3B20%3B25%3B30%3B35%3B40%3B45%3B50%3B0%3B10%22%20calcMode%3D%22linear%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Frect%3E%3Crect%20x%3D%2260%22%20width%3D%2215%22%20height%3D%22140%22%20rx%3D%226%22%3E%3Canimate%20attributeName%3D%22height%22%20begin%3D%220s%22%20dur%3D%221s%22%20values%3D%22120%3B110%3B100%3B90%3B80%3B70%3B60%3B50%3B40%3B140%3B120%22%20calcMode%3D%22linear%22%20repeatCount%3D%22indefinite%22%2F%3E%3Canimate%20attributeName%3D%22y%22%20begin%3D%220s%22%20dur%3D%221s%22%20values%3D%2210%3B15%3B20%3B25%3B30%3B35%3B40%3B45%3B50%3B0%3B10%22%20calcMode%3D%22linear%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Frect%3E%3Crect%20x%3D%2290%22%20y%3D%2210%22%20width%3D%2215%22%20height%3D%22120%22%20rx%3D%226%22%3E%3Canimate%20attributeName%3D%22height%22%20begin%3D%220.25s%22%20dur%3D%221s%22%20values%3D%22120%3B110%3B100%3B90%3B80%3B70%3B60%3B50%3B40%3B140%3B120%22%20calcMode%3D%22linear%22%20repeatCount%3D%22indefinite%22%2F%3E%3Canimate%20attributeName%3D%22y%22%20begin%3D%220.25s%22%20dur%3D%221s%22%20values%3D%2210%3B15%3B20%3B25%3B30%3B35%3B40%3B45%3B50%3B0%3B10%22%20calcMode%3D%22linear%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Frect%3E%3Crect%20x%3D%22120%22%20y%3D%2210%22%20width%3D%2215%22%20height%3D%22120%22%20rx%3D%226%22%3E%3Canimate%20attributeName%3D%22height%22%20begin%3D%220.5s%22%20dur%3D%221s%22%20values%3D%22120%3B110%3B100%3B90%3B80%3B70%3B60%3B50%3B40%3B140%3B120%22%20calcMode%3D%22linear%22%20repeatCount%3D%22indefinite%22%2F%3E%3Canimate%20attributeName%3D%22y%22%20begin%3D%220.5s%22%20dur%3D%221s%22%20values%3D%2210%3B15%3B20%3B25%3B30%3B35%3B40%3B45%3B50%3B0%3B10%22%20calcMode%3D%22linear%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Frect%3E%3C%2Fsvg%3E") !important;
   }
 }
@@ -117,41 +121,54 @@
 .panel-audio:has(.audioicon[title*="Unmute"]),
 .panel-audio:has(.audioicon[title*="取消面板静音"]) {
   /* Apply the static icon */
-  &::before {
+  &::after {
     mask-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxMzYgMTQwIiBmaWxsPSIjZmZmIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHg9IjQiIHk9IjcwIiB3aWR0aD0iMTUiIGhlaWdodD0iMTUiIHJ4PSI2Ii8+PHJlY3QgeD0iMzQiIHk9IjcwIiB3aWR0aD0iMTUiIGhlaWdodD0iMTUiIHJ4PSI2Ii8+PHJlY3QgeD0iNjQiIHk9IjcwIiB3aWR0aD0iMTUiIGhlaWdodD0iMTUiIHJ4PSI2Ii8+PHJlY3QgeD0iOTQiIHk9IjcwIiB3aWR0aD0iMTUiIGhlaWdodD0iMTUiIHJ4PSI2Ii8+PHJlY3QgeD0iMTI0IiB5PSI3MCIgd2lkdGg9IjE1IiBoZWlnaHQ9IjE1IiByeD0iNiIvPjwvc3ZnPg==") !important;
   }
 }
 
 /* --- Hover Effect --- */
-/*.tooltip-audio-button:hover::before,*/
-.tab-audio:hover::before,
-.panel-audio:hover::before,
-.audio-container:hover::before,
-.button-icon.audio:hover::before {
+/*.tooltip-audio-button:hover::after,*/
+.tab-audio:hover::after,
+.panel-audio:hover::after,
+.audio-container:hover::after,
+.button-icon.audio:hover::after {
   transform: translate(-50%, -50%) scale(1.15);
 }
 
-
-#browser:not(.alt-tabs) #tabs-subcontainer .tab.audio-on .favicon, #browser:not(.alt-tabs) #tabs-subcontainer .tab.audio-muted .favicon, #browser:not(.alt-tabs) #tabs-subcontainer .tab.tab-captured .favicon,
-#browser:not(.alt-tabs) #tabs-container .tab.audio-on .favicon, #browser:not(.alt-tabs) #tabs-container .tab.audio-muted .favicon, #browser:not(.alt-tabs) #tabs-container .tab.tab-captured .favicon {
-    transition-delay: 0ms;
-    transform: scale(0) !important;
+#browser:not(.alt-tabs) #tabs-subcontainer .tab.audio-on .favicon,
+#browser:not(.alt-tabs) #tabs-subcontainer .tab.audio-muted .favicon,
+#browser:not(.alt-tabs) #tabs-subcontainer .tab.tab-captured .favicon,
+#browser:not(.alt-tabs) #tabs-container .tab.audio-on .favicon,
+#browser:not(.alt-tabs) #tabs-container .tab.audio-muted .favicon,
+#browser:not(.alt-tabs) #tabs-container .tab.tab-captured .favicon {
+  transition-delay: 0ms;
+  transform: scale(0) !important;
 }
 
-#tabs-container .tab.tab-small.audio-on .tab-audio, #tabs-container .tab.pinned.audio-on .tab-audio, #tabs-container .tab.tab-small.audio-muted .tab-audio, #tabs-container .tab.pinned.audio-muted .tab-audio, #tabs-container .tab.tab-small.tab-captured .tab-audio, #tabs-container .tab.pinned.tab-captured .tab-audio {
-    left: 7px !important;
-    top: 5px !important;
-    /* height: unset;
+#tabs-container .tab.tab-small.audio-on .tab-audio,
+#tabs-container .tab.pinned.audio-on .tab-audio,
+#tabs-container .tab.tab-small.audio-muted .tab-audio,
+#tabs-container .tab.pinned.audio-muted .tab-audio,
+#tabs-container .tab.tab-small.tab-captured .tab-audio,
+#tabs-container .tab.pinned.tab-captured .tab-audio {
+  left: 7px !important;
+  top: 5px !important;
+  /* height: unset;
     width: unset; */
-    transform: scale(1) !important;
-    background-color: unset !important;
+  transform: scale(1) !important;
+  background-color: unset !important;
 }
 
-#tabs-subcontainer .tab.tab-small.audio-on .tab-audio, #tabs-subcontainer .tab.pinned.audio-on .tab-audio, #tabs-subcontainer .tab.tab-small.audio-muted .tab-audio, #tabs-subcontainer .tab.pinned.audio-muted .tab-audio, #tabs-subcontainer .tab.tab-small.tab-captured .tab-audio, #tabs-subcontainer .tab.pinned.tab-captured .tab-audio {
-    left: 7px !important;
-    top: 5px !important;
-    /* height: unset;
+#tabs-subcontainer .tab.tab-small.audio-on .tab-audio,
+#tabs-subcontainer .tab.pinned.audio-on .tab-audio,
+#tabs-subcontainer .tab.tab-small.audio-muted .tab-audio,
+#tabs-subcontainer .tab.pinned.audio-muted .tab-audio,
+#tabs-subcontainer .tab.tab-small.tab-captured .tab-audio,
+#tabs-subcontainer .tab.pinned.tab-captured .tab-audio {
+  left: 7px !important;
+  top: 5px !important;
+  /* height: unset;
     width: unset; */
-    transform: scale(1) !important;
-    background-color: unset !important;
+  transform: scale(1) !important;
+  background-color: unset !important;
 }

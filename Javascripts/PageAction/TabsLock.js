@@ -9,4 +9,3 @@
   });
   window.addEventListener("popstate", () => console.log("block navigation"));
 })();
-

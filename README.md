@@ -33,14 +33,16 @@
 # **Features**
 
 ## ScreenShots
-| Features | Preview |
-| :--- | :--- |
-| **Smart Sidebar Animations**<br>• Smooth expand/collapse transitions<br>• Intelligent show/hide functionality | <img alt="Smooth sidebar animation effects" height="300" src="./Others/Showcase/MainShowCase/sidebar.gif" /> |
-| **Dynamic Theme Colors**<br>• Automatic system theme adaptation<br>• Smooth color transition effects | <img alt="Dynamic theme color changing demonstration" height="300" src="./Others/Showcase/MainShowCase/FollowThemeColor.gif" /> | 
-| **Clean New Tab Page**<br>• Minimalist interface layout<br>• Fast access to favorite websites | <img alt="Clean and uncluttered new tab page" height="300" src="./Others/Showcase/MainShowCase/NeatNewTab.png" /> |
-| **Expanded Webview**<br>• Optimized page display area<br>• Enhanced browsing experience | <img alt="Maximized webview for better content viewing" height="300" src="./Others/Showcase/MainShowCase/YouDeserveABiggerWebview.png" /> |
+
+| Features                                                                                                      | Preview                                                                                                                                   |
+| :------------------------------------------------------------------------------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| **Smart Sidebar Animations**<br>• Smooth expand/collapse transitions<br>• Intelligent show/hide functionality | <img alt="Smooth sidebar animation effects" height="300" src="./Others/Showcase/MainShowCase/sidebar.gif" />                              |
+| **Dynamic Theme Colors**<br>• Automatic system theme adaptation<br>• Smooth color transition effects          | <img alt="Dynamic theme color changing demonstration" height="300" src="./Others/Showcase/MainShowCase/FollowThemeColor.gif" />           |     |
+| **Clean New Tab Page**<br>• Minimalist interface layout<br>• Fast access to favorite websites                 | <img alt="Clean and uncluttered new tab page" height="300" src="./Others/Showcase/MainShowCase/NeatNewTab.png" />                         |
+| **Expanded Webview**<br>• Optimized page display area<br>• Enhanced browsing experience                       | <img alt="Maximized webview for better content viewing" height="300" src="./Others/Showcase/MainShowCase/YouDeserveABiggerWebview.png" /> |
 
 ## **More ScreenShots, Click to Expand**
+
 <details>
 <summary><h3> Let's Make it Arc (not just look) </h3></summary>
 
@@ -108,40 +110,44 @@
 > And More...
 
 # **How To Install**
+
 > Before we begin, it is necessary to make some declarations. My operating system is `macOS 15.7`, and my browser version is `Vivaldi 7.6.3797.58 (Stable channel) (arm64)`. Therefore, all mods are optimized for this environment. They may behave abnormally on other platforms such as Windows and Linux, but most mods are still usable. You can fork this repository and adapt it accordingly, or you can select specific modules from this repository for use.
 
 ### I. Adjust Vivaldi Settings
 
 > Under `Appearance > WINDOW APPEARANCE`
-<img width="1000" alt="Cleanshot at20251101-05PM" src="https://github.com/user-attachments/assets/e33b7a29-85d6-471b-b480-af66287b52a5" />
+> <img width="1000" alt="Cleanshot at20251101-05PM" src="https://github.com/user-attachments/assets/e33b7a29-85d6-471b-b480-af66287b52a5" />
 
 > Under `Tabs > TAB FEATURES`
-<img width="600" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/e5a20258-4f03-410b-902a-166f4689975b" />
+> <img width="600" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/e5a20258-4f03-410b-902a-166f4689975b" />
 
 > Under `Themes > Editor > Colors`
-<img width="400" alt="Cleanshot at20251101-05PM" src=image/README/1761752550644.png />
+> <img width="400" alt="Cleanshot at20251101-05PM" src=image/README/1761752550644.png />
 
 > Under `Themes > Editor > Settings`
-<img width="400" alt="Cleanshot at20251101-05PM" src=image/README/1761752555886.png />
+> <img width="400" alt="Cleanshot at20251101-05PM" src=image/README/1761752555886.png />
 
 > Under `Start Page > SPEED DIAL` small
-<img width="300" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/2216c3be-7e55-4574-ae95-32ea715512df" />
+> <img width="300" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/2216c3be-7e55-4574-ae95-32ea715512df" />
 
 > Under `Panels > Panel Options` Small
-<img width="300" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/d7914fb0-914c-447d-b59a-5cb74d55119f" />
+> <img width="300" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/d7914fb0-914c-447d-b59a-5cb74d55119f" />
 
 > Under `Address Bar > ADDRESS BAR`
-  - Check `Show Address Bar`
+
+- Check `Show Address Bar`
 
 > Under `Bookmarks > BOOKMARK BAR`
-  - Check `Show Bookmark Bar`
-  - Check `Bookmark Bar Position > Top`
+
+- Check `Show Bookmark Bar`
+- Check `Bookmark Bar Position > Top`
 
 > Under `Search > Seach Options`
-  - Check `Show Seach Field on Speed Dial`
+
+- Check `Show Seach Field on Speed Dial`
 
 > Edit Toolbar Buttons
-<img width="2672" height="1526" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/35baac9b-e56a-4b5d-8f7b-67015031f6bd" />
+> <img width="2672" height="1526" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/35baac9b-e56a-4b5d-8f7b-67015031f6bd" />
 
 > For more information about Arc-Like Workspaces Switch Buttons, see [Paweł shows you how to play with Workspaces and Custom Icons in Vivaldi.](https://vivaldi.com/blog/how-to/pawel-shows-you-how-to-play-with-workspaces-and-custom-icons-in-vivaldi/)
 
@@ -172,48 +178,69 @@
 #### Install Manually
 
 1. Duplicate javascripts file under moddings to `<YOURVIVALDIDIRECTORY>`\Application\<VERSI0N>\resources\vivaldi.
-2. Under the same folder, there's a window.html  and you should fill in your js file name one by one in `<body>`, after that
+2. Under the same folder, there's a window.html and you should fill in your js file name one by one in `<body>`, after that
    your window.html should look something like this.
 
 ```html
 <!-- Vivaldi window document -->
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="UTF-8" />
-  <title>Vivaldi</title>
-  <link rel="stylesheet" href="style/common.css" />
-  <link rel="stylesheet" href="chrome://vivaldi-data/css-mods/css" />
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Vivaldi</title>
+    <link rel="stylesheet" href="style/common.css" />
+    <link rel="stylesheet" href="chrome://vivaldi-data/css-mods/css" />
+  </head>
 
-<body>
-<script src="tidyTitles.js"></script>\
-<script src="tidyTabs.js"></script>\
-<script src="clearTabs.js"></script>\
-<script src="mainbar.js"></script>\
-<script src="wrapToday.js"></script>\
-<script src="immersiveAddressbar.js"></script>\
-<script src="monochromeIcons.js"></script>\
-<script src="ybAddressBar.js"></script>\
-<script src="mdNotes.js"></script>\
-<script src="elementCapture.js"></script>\
-<script src="globalMediaControls.js"></script>\
-<script src="autoHidePanel.js"></script>\
-<script src="easyFiles.js"></script>\
-<script src="dialogTab.js"></script>\
-<script src="feedIcon.js"></script>\
-<script src="adaptiveWebPanelHeaders.js"></script>\
-<script src="collapseKeyboardSettings.js"></script>\
-<script src="accentMod.js"></script>\
-<script src="moonPhase.js"></script>\
-<script src="backupSearchEngines.js"></script>\
-<script src="importExportCommandChains.js"></script>\
-<script src="tabScroll.js"></script>\
-<script src="activateTabOnHover.js"></script>\
-</body>
-
+  <body>
+    <script src="tidyTitles.js"></script>
+    \
+    <script src="tidyTabs.js"></script>
+    \
+    <script src="clearTabs.js"></script>
+    \
+    <script src="mainbar.js"></script>
+    \
+    <script src="wrapToday.js"></script>
+    \
+    <script src="immersiveAddressbar.js"></script>
+    \
+    <script src="monochromeIcons.js"></script>
+    \
+    <script src="ybAddressBar.js"></script>
+    \
+    <script src="mdNotes.js"></script>
+    \
+    <script src="elementCapture.js"></script>
+    \
+    <script src="globalMediaControls.js"></script>
+    \
+    <script src="autoHidePanel.js"></script>
+    \
+    <script src="easyFiles.js"></script>
+    \
+    <script src="dialogTab.js"></script>
+    \
+    <script src="feedIcon.js"></script>
+    \
+    <script src="adaptiveWebPanelHeaders.js"></script>
+    \
+    <script src="collapseKeyboardSettings.js"></script>
+    \
+    <script src="accentMod.js"></script>
+    \
+    <script src="moonPhase.js"></script>
+    \
+    <script src="backupSearchEngines.js"></script>
+    \
+    <script src="importExportCommandChains.js"></script>
+    \
+    <script src="tabScroll.js"></script>
+    \
+    <script src="activateTabOnHover.js"></script>
+    \
+  </body>
 </html>
-
 ```
 
 3. That's it! You are all set. If any other issues please report it at [Issues · PaRr0tBoY/Awesome-Vivaldi](https://github.com/PaRr0tBoY/Awesome-Vivaldi/issues?q=sort%3Aupdated-desc+is%3Aissue+is%3Aopen) and I'll ~~probably~~ fix it at weekend.

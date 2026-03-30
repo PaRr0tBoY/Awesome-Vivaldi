@@ -24,7 +24,11 @@ Clear Unpinned Tabs with one button, must install with ClearTabs.js
   color: #808080;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.2s ease, visibility 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease,
+    color 0.2s ease,
+    background-color 0.2s ease;
   right: 15px;
   top: 50%;
   transform: translateY(-50%);

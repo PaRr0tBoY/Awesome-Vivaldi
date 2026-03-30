@@ -10,6 +10,7 @@
 [![Vivaldi Forum](https://img.shields.io/badge/Vivaldi-论坛-red)](https://forum.vivaldi.net/topic/112064/modpack-community-essentials-mods-collection?_=1761221602450)
 ![GitHub repo size](https://img.shields.io/github/repo-size/PaRr0tBoY/Awesome-Vivaldi)
 ![GitHub Repo stars](https://img.shields.io/github/stars/PaRr0tBoY/Awesome-Vivaldi)
+
 </div>
     <p>Vivaldi 浏览器精选社区修改包</p>
 
@@ -29,14 +30,16 @@
 # **功能特性**
 
 ## 屏幕截图
-| 功能 | 预览 |
-| :--- | :--- |
-| **智能侧边栏动画**<br>• 流畅的展开/折叠过渡<br>• 智能显示/隐藏功能 | <img alt="流畅的侧边栏动画效果" height="300" src="../Others/Showcase/MainShowCase/sidebar.gif" /> |
-| **动态主题颜色**<br>• 自动适应系统主题<br>• 平滑的颜色过渡效果 | <img alt="动态主题颜色变化演示" height="300" src="../Others/Showcase/MainShowCase/FollowThemeColor.gif" /> |
-| **简洁新标签页**<br>• 极简界面布局<br>• 快速访问收藏网站 | <img alt="整洁不杂乱的新标签页" height="300" src="../Others/Showcase/MainShowCase/NeatNewTab.png" /> |
-| **扩展网页视图**<br>• 优化的页面显示区域<br>• 增强的浏览体验 | <img alt="最大化网页视图以获得更好的内容查看体验" height="300" src="../Others/Showcase/MainShowCase/YouDeserveABiggerWebview.png" /> |
+
+| 功能                                                               | 预览                                                                                                                                 |
+| :----------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------- |
+| **智能侧边栏动画**<br>• 流畅的展开/折叠过渡<br>• 智能显示/隐藏功能 | <img alt="流畅的侧边栏动画效果" height="300" src="../Others/Showcase/MainShowCase/sidebar.gif" />                                    |
+| **动态主题颜色**<br>• 自动适应系统主题<br>• 平滑的颜色过渡效果     | <img alt="动态主题颜色变化演示" height="300" src="../Others/Showcase/MainShowCase/FollowThemeColor.gif" />                           |
+| **简洁新标签页**<br>• 极简界面布局<br>• 快速访问收藏网站           | <img alt="整洁不杂乱的新标签页" height="300" src="../Others/Showcase/MainShowCase/NeatNewTab.png" />                                 |
+| **扩展网页视图**<br>• 优化的页面显示区域<br>• 增强的浏览体验       | <img alt="最大化网页视图以获得更好的内容查看体验" height="300" src="../Others/Showcase/MainShowCase/YouDeserveABiggerWebview.png" /> |
 
 ## **更多屏幕截图，点击展开**
+
 <details>
 <summary><h3> 让我们把它变成 Arc（不仅仅是外观） </h3></summary>
 
@@ -104,40 +107,44 @@
 > 以及更多...
 
 # **如何安装**
+
 > 在开始之前，有必要做一些声明。我的操作系统是 `macOS 15.7`，浏览器版本是 `Vivaldi 7.6.3797.58 (Stable channel) (arm64)`。因此，所有修改都针对此环境进行了优化。它们在 Windows 和 Linux 等其他平台上可能会有异常行为，但大多数修改仍然可以使用。你可以 fork 这个仓库并相应地进行适配，或者从这个仓库中选择特定模块使用。
 
 ### I. 调整 Vivaldi 设置
 
 > 在 `外观 > 窗口外观` 下
-<img width="1000" alt="Cleanshot at20251101-05PM" src="https://github.com/user-attachments/assets/e33b7a29-85d6-471b-b480-af66287b52a5" />
+> <img width="1000" alt="Cleanshot at20251101-05PM" src="https://github.com/user-attachments/assets/e33b7a29-85d6-471b-b480-af66287b52a5" />
 
 > 在 `标签页 > 标签页功能` 下
-<img width="600" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/e5a20258-4f03-410b-902a-166f4689975b" />
+> <img width="600" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/e5a20258-4f03-410b-902a-166f4689975b" />
 
 > 在 `主题 > 编辑器 > 颜色` 下
-<img width="400" alt="Cleanshot at20251101-05PM" src=../image/README/1761752550644.png />
+> <img width="400" alt="Cleanshot at20251101-05PM" src=../image/README/1761752550644.png />
 
 > 在 `主题 > 编辑器 > 设置` 下
-<img width="400" alt="Cleanshot at20251101-05PM" src=../image/README/1761752555886.png />
+> <img width="400" alt="Cleanshot at20251101-05PM" src=../image/README/1761752555886.png />
 
 > 在 `起始页 > 快速拨号` 小图标
-<img width="300" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/2216c3be-7e55-4574-ae95-32ea715512df" />
+> <img width="300" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/2216c3be-7e55-4574-ae95-32ea715512df" />
 
 > 在 `面板 > 面板选项` 小图标
-<img width="300" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/d7914fb0-914c-447d-b59a-5cb74d55119f" />
+> <img width="300" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/d7914fb0-914c-447d-b59a-5cb74d55119f" />
 
 > 在 `地址栏 > 地址栏` 下
-  - 勾选 `显示地址栏`
+
+- 勾选 `显示地址栏`
 
 > 在 `书签 > 书签栏` 下
-  - 勾选 `显示书签栏`
-  - 勾选 `书签栏位置 > 顶部`
+
+- 勾选 `显示书签栏`
+- 勾选 `书签栏位置 > 顶部`
 
 > 在 `搜索 > 搜索选项` 下
-  - 勾选 `在快速拨号上显示搜索字段`
+
+- 勾选 `在快速拨号上显示搜索字段`
 
 > 编辑工具栏按钮
-<img width="2672" height="1526" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/35baac9b-e56a-4b5d-8f7b-67015031f6bd" />
+> <img width="2672" height="1526" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/35baac9b-e56a-4b5d-8f7b-67015031f6bd" />
 
 > 有关类似 Arc 的工作区切换按钮的更多信息，请参阅 [Paweł 向您展示如何在 Vivaldi 中使用工作区和自定义图标。](https://vivaldi.com/blog/how-to/pawel-shows-you-how-to-play-with-workspaces-and-custom-icons-in-vivaldi/)
 
@@ -175,41 +182,62 @@
 <!-- Vivaldi window document -->
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="UTF-8" />
-  <title>Vivaldi</title>
-  <link rel="stylesheet" href="style/common.css" />
-  <link rel="stylesheet" href="chrome://vivaldi-data/css-mods/css" />
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Vivaldi</title>
+    <link rel="stylesheet" href="style/common.css" />
+    <link rel="stylesheet" href="chrome://vivaldi-data/css-mods/css" />
+  </head>
 
-<body>
-<script src="tidyTitles.js"></script>\
-<script src="tidyTabs.js"></script>\
-<script src="clearTabs.js"></script>\
-<script src="mainbar.js"></script>\
-<script src="wrapToday.js"></script>\
-<script src="immersiveAddressbar.js"></script>\
-<script src="monochromeIcons.js"></script>\
-<script src="ybAddressBar.js"></script>\
-<script src="mdNotes.js"></script>\
-<script src="elementCapture.js"></script>\
-<script src="globalMediaControls.js"></script>\
-<script src="autoHidePanel.js"></script>\
-<script src="easyFiles.js"></script>\
-<script src="dialogTab.js"></script>\
-<script src="feedIcon.js"></script>\
-<script src="adaptiveWebPanelHeaders.js"></script>\
-<script src="collapseKeyboardSettings.js"></script>\
-<script src="accentMod.js"></script>\
-<script src="moonPhase.js"></script>\
-<script src="backupSearchEngines.js"></script>\
-<script src="importExportCommandChains.js"></script>\
-<script src="tabScroll.js"></script>\
-<script src="activateTabOnHover.js"></script>\
-</body>
-
+  <body>
+    <script src="tidyTitles.js"></script>
+    \
+    <script src="tidyTabs.js"></script>
+    \
+    <script src="clearTabs.js"></script>
+    \
+    <script src="mainbar.js"></script>
+    \
+    <script src="wrapToday.js"></script>
+    \
+    <script src="immersiveAddressbar.js"></script>
+    \
+    <script src="monochromeIcons.js"></script>
+    \
+    <script src="ybAddressBar.js"></script>
+    \
+    <script src="mdNotes.js"></script>
+    \
+    <script src="elementCapture.js"></script>
+    \
+    <script src="globalMediaControls.js"></script>
+    \
+    <script src="autoHidePanel.js"></script>
+    \
+    <script src="easyFiles.js"></script>
+    \
+    <script src="dialogTab.js"></script>
+    \
+    <script src="feedIcon.js"></script>
+    \
+    <script src="adaptiveWebPanelHeaders.js"></script>
+    \
+    <script src="collapseKeyboardSettings.js"></script>
+    \
+    <script src="accentMod.js"></script>
+    \
+    <script src="moonPhase.js"></script>
+    \
+    <script src="backupSearchEngines.js"></script>
+    \
+    <script src="importExportCommandChains.js"></script>
+    \
+    <script src="tabScroll.js"></script>
+    \
+    <script src="activateTabOnHover.js"></script>
+    \
+  </body>
 </html>
-
 ```
 
 3. 就这样！你都设置好了。如果有任何其他问题，请在 [Issues · PaRr0tBoY/Awesome-Vivaldi](https://github.com/PaRr0tBoY/Awesome-Vivaldi/issues?q=sort%3Aupdated-desc+is%3Aissue+is%3Aopen) 报告，我会在周末~~可能~~修复它。

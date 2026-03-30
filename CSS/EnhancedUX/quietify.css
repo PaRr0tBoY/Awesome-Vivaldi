@@ -1,7 +1,6 @@
 /* This mod only works when the Vivaldi UI language is set to English/Chinese.
    Add your own language support by editing the selectors below. */
 
-
 /* Icon Position */
 .tab-audio,
 .panel-audio {
@@ -131,27 +130,40 @@
   transform: translate(-50%, -50%) scale(1.15);
 }
 
-
-#browser:not(.alt-tabs) #tabs-subcontainer .tab.audio-on .favicon, #browser:not(.alt-tabs) #tabs-subcontainer .tab.audio-muted .favicon, #browser:not(.alt-tabs) #tabs-subcontainer .tab.tab-captured .favicon,
-#browser:not(.alt-tabs) #tabs-container .tab.audio-on .favicon, #browser:not(.alt-tabs) #tabs-container .tab.audio-muted .favicon, #browser:not(.alt-tabs) #tabs-container .tab.tab-captured .favicon {
-    transition-delay: 0ms;
-    transform: scale(0) !important;
+#browser:not(.alt-tabs) #tabs-subcontainer .tab.audio-on .favicon,
+#browser:not(.alt-tabs) #tabs-subcontainer .tab.audio-muted .favicon,
+#browser:not(.alt-tabs) #tabs-subcontainer .tab.tab-captured .favicon,
+#browser:not(.alt-tabs) #tabs-container .tab.audio-on .favicon,
+#browser:not(.alt-tabs) #tabs-container .tab.audio-muted .favicon,
+#browser:not(.alt-tabs) #tabs-container .tab.tab-captured .favicon {
+  transition-delay: 0ms;
+  transform: scale(0) !important;
 }
 
-#tabs-container .tab.tab-small.audio-on .tab-audio, #tabs-container .tab.pinned.audio-on .tab-audio, #tabs-container .tab.tab-small.audio-muted .tab-audio, #tabs-container .tab.pinned.audio-muted .tab-audio, #tabs-container .tab.tab-small.tab-captured .tab-audio, #tabs-container .tab.pinned.tab-captured .tab-audio {
-    left: 7px !important;
-    top: 5px !important;
-    /* height: unset;
+#tabs-container .tab.tab-small.audio-on .tab-audio,
+#tabs-container .tab.pinned.audio-on .tab-audio,
+#tabs-container .tab.tab-small.audio-muted .tab-audio,
+#tabs-container .tab.pinned.audio-muted .tab-audio,
+#tabs-container .tab.tab-small.tab-captured .tab-audio,
+#tabs-container .tab.pinned.tab-captured .tab-audio {
+  left: 7px !important;
+  top: 5px !important;
+  /* height: unset;
     width: unset; */
-    transform: scale(1) !important;
-    background-color: unset !important;
+  transform: scale(1) !important;
+  background-color: unset !important;
 }
 
-#tabs-subcontainer .tab.tab-small.audio-on .tab-audio, #tabs-subcontainer .tab.pinned.audio-on .tab-audio, #tabs-subcontainer .tab.tab-small.audio-muted .tab-audio, #tabs-subcontainer .tab.pinned.audio-muted .tab-audio, #tabs-subcontainer .tab.tab-small.tab-captured .tab-audio, #tabs-subcontainer .tab.pinned.tab-captured .tab-audio {
-    left: 7px !important;
-    top: 5px !important;
-    /* height: unset;
+#tabs-subcontainer .tab.tab-small.audio-on .tab-audio,
+#tabs-subcontainer .tab.pinned.audio-on .tab-audio,
+#tabs-subcontainer .tab.tab-small.audio-muted .tab-audio,
+#tabs-subcontainer .tab.pinned.audio-muted .tab-audio,
+#tabs-subcontainer .tab.tab-small.tab-captured .tab-audio,
+#tabs-subcontainer .tab.pinned.tab-captured .tab-audio {
+  left: 7px !important;
+  top: 5px !important;
+  /* height: unset;
     width: unset; */
-    transform: scale(1) !important;
-    background-color: unset !important;
+  transform: scale(1) !important;
+  background-color: unset !important;
 }

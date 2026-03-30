@@ -1,73 +1,71 @@
-// Vivaldi AI Title 
-(function() {
-    'use strict';
+// Vivaldi AI Title
+(function () {
+  "use strict";
 
   // ========== CONFIG ==========
-    const CONFIG = {
-    
+  const CONFIG = {
     // === GLM(free) ===
-    BASE_URL: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
-    API_TOKEN: '',
-    MODEL: 'glm-4.5-flash',
+    BASE_URL: "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+    API_TOKEN: "",
+    MODEL: "glm-4.5-flash",
 
     // === Deepseek ===
     // BASE_URL: 'https://api.deepseek.com/v1/chat/completions',
     // API_TOKEN: '<token>',
     // MODEL: 'deepseek-chat',
-    };
+  };
 
   // 存储已处理过的标签页 ID（避免重复处理）
-    const processedTabs = new Set();
+  const processedTabs = new Set();
 
   // ========== 工具函数 ==========
 
-
-    // 获取浏览器界面语言
-    const getBrowserLanguage = () => {
-        return chrome.i18n.getUILanguage() || navigator.language || 'zh-CN';
-    };
+  // 获取浏览器界面语言
+  const getBrowserLanguage = () => {
+    return chrome.i18n.getUILanguage() || navigator.language || "zh-CN";
+  };
   // 将语言代码转换为自然语言名称
-    const getLanguageName = (langCode) => {
-        const langMap = {
-            'zh': '中文',
-            'zh-CN': '简体中文',
-            'zh-TW': '繁体中文',
-            'en': 'English',
-            'en-US': 'English',
-            'en-GB': 'English',
-            'ja': '日本語',
-            'ja-JP': '日本語',
-            'ko': '한국어',
-            'ko-KR': '한국어',
-            'es': 'Español',
-            'fr': 'Français',
-            'de': 'Deutsch',
-            'ru': 'Русский',
-            'pt': 'Português',
-            'it': 'Italiano',
-            'ar': 'العربية',
-            'hi': 'हिन्दी'
-        };
-
-      // 尝试完整匹配
-        if (langMap[langCode]) {
-            return langMap[langCode];
-        }
-        
-        // 尝试主语言代码匹配
-        const mainLang = langCode.split('-')[0];
-        return langMap[mainLang] || 'English';
+  const getLanguageName = (langCode) => {
+    const langMap = {
+      zh: "中文",
+      "zh-CN": "简体中文",
+      "zh-TW": "繁体中文",
+      en: "English",
+      "en-US": "English",
+      "en-GB": "English",
+      ja: "日本語",
+      "ja-JP": "日本語",
+      ko: "한국어",
+      "ko-KR": "한국어",
+      es: "Español",
+      fr: "Français",
+      de: "Deutsch",
+      ru: "Русский",
+      pt: "Português",
+      it: "Italiano",
+      ar: "العربية",
+      hi: "हिन्दी",
     };
 
-    /**
+    // 尝试完整匹配
+    if (langMap[langCode]) {
+      return langMap[langCode];
+    }
+
+    // 尝试主语言代码匹配
+    const mainLang = langCode.split("-")[0];
+    return langMap[mainLang] || "English";
+  };
+
+  /**
    * 调用 GLM API 生成优化后的标题
    */
-    async function generateOptimizedTitle(originalTitle, url, content) {
+  async function generateOptimizedTitle(originalTitle, url, content) {
     // const languageName = getBrowserLanguage();
-        // 获取浏览器界面语言
+    // 获取浏览器界面语言
     const browserLang = getBrowserLanguage();
     const languageName = getLanguageName(browserLang);
-    
+
     const prompt = `
 你是一个专业的标签页标题优化助手。请根据提供的信息，生成一个简洁、统一、美观且高可读性的标签页标题。
 
@@ -182,22 +180,22 @@
       model: CONFIG.MODEL,
       messages: [
         { role: "system", content: "你是一个专业的标签页标题优化助手。" },
-        { role: "user", content: prompt }
+        { role: "user", content: prompt },
       ],
       temperature: 0.7,
       max_tokens: 100,
       stream: false,
-      thinking: { "type": "disabled" }
+      thinking: { type: "disabled" },
     };
 
     try {
       const response = await fetch(CONFIG.BASE_URL, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${CONFIG.API_TOKEN}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${CONFIG.API_TOKEN}`,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
@@ -206,15 +204,15 @@
 
       const data = await response.json();
       const optimizedTitle = data.choices?.[0]?.message?.content?.trim();
-      
+
       if (optimizedTitle) {
         return optimizedTitle;
       } else {
-        console.warn('AI 返回空标题，保持原标题');
+        console.warn("AI 返回空标题，保持原标题");
         return originalTitle;
       }
     } catch (error) {
-      console.error('GLM API 调用失败:', error);
+      console.error("GLM API 调用失败:", error);
       return originalTitle; // 失败时返回原标题
     }
   }
@@ -225,24 +223,28 @@
   async function getPageContent(tabId) {
     return new Promise((resolve) => {
       try {
-        chrome.scripting.executeScript(tabId, {
-          code: `
+        chrome.scripting.executeScript(
+          tabId,
+          {
+            code: `
             (function() {
               const bodyText = document.body?.innerText || '';
               return bodyText.substring(0, 400);
             })();
-          `
-        }, (results) => {
-          if (chrome.runtime.lastError) {
-            console.warn('无法获取页面内容:', chrome.runtime.lastError);
-            resolve('');
-          } else {
-            resolve(results?.[0] || '');
-          }
-        });
+          `,
+          },
+          (results) => {
+            if (chrome.runtime.lastError) {
+              console.warn("无法获取页面内容:", chrome.runtime.lastError);
+              resolve("");
+            } else {
+              resolve(results?.[0] || "");
+            }
+          },
+        );
       } catch (error) {
-        console.error('获取页面内容时出错:', error);
-        resolve('');
+        console.error("获取页面内容时出错:", error);
+        resolve("");
       }
     });
   }
@@ -253,7 +255,7 @@
   function updateTabTitle(tabId, newTitle) {
     chrome.tabs.get(tabId, (tab) => {
       if (chrome.runtime.lastError) {
-        console.error('获取标签页失败:', chrome.runtime.lastError);
+        console.error("获取标签页失败:", chrome.runtime.lastError);
         return;
       }
 
@@ -261,22 +263,26 @@
       try {
         vivExtData = tab.vivExtData ? JSON.parse(tab.vivExtData) : {};
       } catch (e) {
-        console.error('JSON 解析错误:', e);
+        console.error("JSON 解析错误:", e);
       }
 
       // 设置 fixedTitle
       vivExtData.fixedTitle = newTitle;
 
-      chrome.tabs.update(tabId, {
-        vivExtData: JSON.stringify(vivExtData)
-      }, () => {
-        if (chrome.runtime.lastError) {
-          console.error('更新标签页失败:', chrome.runtime.lastError);
-        } else {
-          console.log(`✓ 标签页 ${tabId} 标题已优化为: ${newTitle}`);
-          processedTabs.add(tabId);
-        }
-      });
+      chrome.tabs.update(
+        tabId,
+        {
+          vivExtData: JSON.stringify(vivExtData),
+        },
+        () => {
+          if (chrome.runtime.lastError) {
+            console.error("更新标签页失败:", chrome.runtime.lastError);
+          } else {
+            console.log(`✓ 标签页 ${tabId} 标题已优化为: ${newTitle}`);
+            processedTabs.add(tabId);
+          }
+        },
+      );
     });
   }
 
@@ -284,14 +290,14 @@
    * 处理单个标签页
    */
   async function processSingleTab(tabElement) {
-    const tabIdStr = tabElement.getAttribute('data-id');
+    const tabIdStr = tabElement.getAttribute("data-id");
     if (!tabIdStr) {
-      console.warn('标签页元素缺少 data-id 属性，跳过');
+      console.warn("标签页元素缺少 data-id 属性，跳过");
       return;
     }
 
-    const tabId = parseInt(tabIdStr.replace('tab-', ''));
-    
+    const tabId = parseInt(tabIdStr.replace("tab-", ""));
+
     // 跳过已处理的标签页
     if (processedTabs.has(tabId)) {
       return;
@@ -303,7 +309,7 @@
       // 获取标签页信息
       chrome.tabs.get(tabId, async (tab) => {
         if (chrome.runtime.lastError) {
-          console.error('获取标签页失败:', chrome.runtime.lastError);
+          console.error("获取标签页失败:", chrome.runtime.lastError);
           return;
         }
 
@@ -312,7 +318,7 @@
         try {
           vivExtData = tab.vivExtData ? JSON.parse(tab.vivExtData) : {};
         } catch (e) {
-          console.error('JSON 解析错误:', e);
+          console.error("JSON 解析错误:", e);
         }
 
         // 如果已有 fixedTitle，跳过
@@ -324,13 +330,13 @@
 
         // 获取页面内容
         const content = await getPageContent(tabId);
-        
+
         // 调用 AI 生成优化标题
         console.log(`正在为标签页 ${tabId} 生成优化标题...`);
         const optimizedTitle = await generateOptimizedTitle(
-          tab.title || '',
-          tab.url || '',
-          content
+          tab.title || "",
+          tab.url || "",
+          content,
         );
 
         // 更新标签页标题
@@ -346,10 +352,12 @@
    */
   async function checkPinnedTabs() {
     // 排除标签栈：只选择固定标签页，但不包含 .is-substack 类
-    const pinnedTabElements = document.querySelectorAll('.tab-position.is-pinned:not(.is-substack) .tab-wrapper');
-    
+    const pinnedTabElements = document.querySelectorAll(
+      ".tab-position.is-pinned:not(.is-substack) .tab-wrapper",
+    );
+
     console.log(`初始化：检测到 ${pinnedTabElements.length} 个固定标签页`);
-    
+
     for (const tabElement of pinnedTabElements) {
       await processSingleTab(tabElement);
     }
@@ -359,9 +367,9 @@
    * 监听标签页被固定事件
    */
   function observePinnedTabs() {
-    const tabStrip = document.querySelector('.tab-strip');
+    const tabStrip = document.querySelector(".tab-strip");
     if (!tabStrip) {
-      console.warn('未找到 .tab-strip 元素，稍后重试');
+      console.warn("未找到 .tab-strip 元素，稍后重试");
       setTimeout(observePinnedTabs, 1000);
       return;
     }
@@ -370,27 +378,31 @@
     const observer = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
         // 只处理 class 属性变化
-        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+        if (
+          mutation.type === "attributes" &&
+          mutation.attributeName === "class"
+        ) {
           const target = mutation.target;
-          
+
           // 检查是否是 .tab-position 元素
-          if (!target.classList?.contains('tab-position')) {
+          if (!target.classList?.contains("tab-position")) {
             continue;
           }
-          
+
           // 检查是否是标签栈（排除）
-          if (target.classList.contains('is-substack')) {
+          if (target.classList.contains("is-substack")) {
             continue;
           }
-          
+
           // 检查是否刚刚获得 is-pinned 类
-          const isPinnedNow = target.classList.contains('is-pinned');
-          const wasPinnedBefore = mutation.oldValue?.includes('is-pinned') || false;
-          
+          const isPinnedNow = target.classList.contains("is-pinned");
+          const wasPinnedBefore =
+            mutation.oldValue?.includes("is-pinned") || false;
+
           // 只在从未固定变为固定时触发
           if (isPinnedNow && !wasPinnedBefore) {
-            console.log('🔖 检测到标签页被固定');
-            const tabWrapper = target.querySelector('.tab-wrapper');
+            console.log("🔖 检测到标签页被固定");
+            const tabWrapper = target.querySelector(".tab-wrapper");
             if (tabWrapper) {
               processSingleTab(tabWrapper);
             }
@@ -403,23 +415,22 @@
     observer.observe(tabStrip, {
       subtree: true,
       attributes: true,
-      attributeFilter: ['class'],
-      attributeOldValue: true  // 关键：记录旧的 class 值
+      attributeFilter: ["class"],
+      attributeOldValue: true, // 关键：记录旧的 class 值
     });
 
-    console.log('✓ AI 标签页标题优化模组已启动');
-    
+    console.log("✓ AI 标签页标题优化模组已启动");
+
     // 初始检查已固定的标签页
     checkPinnedTabs();
   }
 
   // ========== 启动模组 ==========
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', observePinnedTabs);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", observePinnedTabs);
   } else {
     observePinnedTabs();
   }
-
 })();
 
 // ✓ AI 标签页标题优化模组已启动

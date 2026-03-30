@@ -10,19 +10,25 @@ Auto Hide Extension Icons until hover on extension button
   gap: unset !important;
 }
 
-.toolbar-extensions .ExtensionIcon{
+.toolbar-extensions .ExtensionIcon {
   padding: unset !important;
   max-width: 0 !important;
   min-width: 0 !important;
   opacity: 0 !important;
-  transition: max-width 0.3s ease-in-out, min-width 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  transition:
+    max-width 0.3s ease-in-out,
+    min-width 0.3s ease-in-out,
+    opacity 0.3s ease-in-out;
 }
 
-.toolbar-extensions:hover .ExtensionIcon{
+.toolbar-extensions:hover .ExtensionIcon {
   max-width: 16px !important;
   min-width: 16px !important;
   opacity: 1 !important;
-  transition: max-width 0.3s ease-in-out, min-width 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  transition:
+    max-width 0.3s ease-in-out,
+    min-width 0.3s ease-in-out,
+    opacity 0.3s ease-in-out;
 }
 
 /* ========================================

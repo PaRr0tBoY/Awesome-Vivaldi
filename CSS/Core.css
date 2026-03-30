@@ -47,7 +47,6 @@ You may manage and config all your css mods and config them as well all in this 
 
 /* Adjust Configure In :root */
 :root {
-  
   /* color, transparent, immersive */
   /* immersive requires immersiveAddressbar.js installed */
   --fluid-theme: color;

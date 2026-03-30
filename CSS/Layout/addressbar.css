@@ -50,7 +50,7 @@ Separated dropdown menu
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
-.UrlBar-AddressField:focus-within .OmniDropdown{
+.UrlBar-AddressField:focus-within .OmniDropdown {
   /* padding: 0px auto auto;
   margin: 0px auto auto; */
   margin-top: 20px;
@@ -107,7 +107,6 @@ Separated dropdown menu
   position: relative;
   z-index: 9999;
 }
-
 
 /* .UrlBar-AddressField {
 	background-color: var(--immersive-bg-color) !important;
@@ -169,7 +168,7 @@ icons for blocked content and the bookmark button in the addressfield.
   fill: var(--colorHighlightBg);
 }
 .SiteInfoButton .siteinfo-text {
-	display: none;
+  display: none;
 }
 .bookmark-animated-fill {
   fill: var(--colorFg) !important;
@@ -184,23 +183,25 @@ icons for blocked content and the bookmark button in the addressfield.
 /* https://forum.vivaldi.net/topic/31743/accent-transitions */
 /* Adds transition to address accent */
 #browser:not(.tabs-top) #header {
-    transition: background-color 0.7s;
+  transition: background-color 0.7s;
 }
 #browser.color-behind-tabs-off:not(.tabs-top) {
-    transition: background-color 0.7s;
+  transition: background-color 0.7s;
 }
 .color-behind-tabs-off .toolbar-mainbar {
-    transition: background-color 0.7s;
+  transition: background-color 0.7s;
 }
 .color-behind-tabs-off.address-top .toolbar-mainbar:after {
-    transition: background-color 0.7s;
+  transition: background-color 0.7s;
 }
 .color-behind-tabs-off.address-bottom .toolbar-mainbar {
-    transition: background-color 0.7s, box-shadow 0.7s;
+  transition:
+    background-color 0.7s,
+    box-shadow 0.7s;
 }
 .color-behind-tabs-off #tabs-container.top,
 .color-behind-tabs-off #tabs-container.bottom {
-    transition: border-color 0.7s;
+  transition: border-color 0.7s;
 }
 
 /* Port From Main.css */
@@ -337,10 +338,10 @@ button[title="显示输入记录"] {
 .color-behind-tabs-off .mainbar {
   border: none !important;
   border-color: transparent !important;
-  &:not(:has(.UrlBar-AddressField:focus-within)){
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: none;
+  &:not(:has(.UrlBar-AddressField:focus-within)) {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
   }
 }
 

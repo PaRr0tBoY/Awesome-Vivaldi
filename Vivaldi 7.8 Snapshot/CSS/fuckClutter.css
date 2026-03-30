@@ -1,3 +1,6 @@
-.top, .bottom, .left, .right {
+.top,
+.bottom,
+.left,
+.right {
   display: none !important;
 }

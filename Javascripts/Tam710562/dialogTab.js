@@ -83,7 +83,7 @@
     checkDialogCSSSupport() {
       try {
         // 检查是否存在dialog-open相关的CSS规则
-        const style = document.createElement('style');
+        const style = document.createElement("style");
         style.textContent = `
           body.dialog-open #browser #webpage-stack {
             transform: scale(0.985) !important;
@@ -92,20 +92,23 @@
         document.head.appendChild(style);
 
         // 检查样式是否被应用
-        const webpageStack = document.querySelector('#browser #webpage-stack');
-        const originalTransform = webpageStack ? webpageStack.style.transform : '';
+        const webpageStack = document.querySelector("#browser #webpage-stack");
+        const originalTransform = webpageStack
+          ? webpageStack.style.transform
+          : "";
 
         // 触发重绘
         if (webpageStack) {
-          webpageStack.style.transform = 'scale(0.98)';
+          webpageStack.style.transform = "scale(0.98)";
           webpageStack.offsetHeight; // 强制重绘
         }
 
-        document.body.classList.add('dialog-open');
-        const hasCSS = webpageStack && webpageStack.style.transform === 'scale(0.985)';
+        document.body.classList.add("dialog-open");
+        const hasCSS =
+          webpageStack && webpageStack.style.transform === "scale(0.985)";
 
         // 清理
-        document.body.classList.remove('dialog-open');
+        document.body.classList.remove("dialog-open");
         document.head.removeChild(style);
         if (webpageStack) {
           webpageStack.style.transform = originalTransform;
@@ -113,7 +116,7 @@
 
         return hasCSS;
       } catch (e) {
-        console.warn('dialogTab CSS support check failed:', e);
+        console.warn("dialogTab CSS support check failed:", e);
         return false;
       }
     }
@@ -227,7 +230,7 @@
 
         // 背景网页恢复 - 仅在有对应的CSS时才操作body类
         if (this.hasDialogCSS) {
-            document.body.classList.remove("dialog-open");
+          document.body.classList.remove("dialog-open");
         }
 
         // 监听动画结束（只等子元素 dialog-tab 动画结束即可）
@@ -245,7 +248,7 @@
               this.webviews.delete(webviewId);
             }
             // 通知 link interaction handler 关闭完成
-            chrome.runtime.sendMessage({ type: 'dialog-closed' });
+            chrome.runtime.sendMessage({ type: "dialog-closed" });
           },
           { once: true },
         );
@@ -443,7 +446,7 @@
 
       // 仅在有对应的CSS时才操作body类，避免在没有CSS时影响网页布局
       if (this.hasDialogCSS) {
-          document.body.classList.add("dialog-open");
+        document.body.classList.add("dialog-open");
       }
     }
 
@@ -697,7 +700,7 @@
 
       // 监听 dialog 关闭消息，重置状态
       chrome.runtime.onMessage.addListener((message) => {
-        if (message.type === 'dialog-closed') {
+        if (message.type === "dialog-closed") {
           this.dialogTriggered = false;
           this.isLongPress = false;
         }
@@ -1019,11 +1022,15 @@
      */
     preventAllClicks() {
       // 只阻止下一次点击事件（仅一次）
-      document.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-      }, { capture: true, once: true });
+      document.addEventListener(
+        "click",
+        (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+        },
+        { capture: true, once: true },
+      );
     }
 
     #createIconStyle() {

@@ -65,7 +65,7 @@
         function () {
           const ts = (event) => react(event, arguments[0]);
           arguments[0].addEventListener("mousedown", ts);
-        }.bind(this, arguments[0])
+        }.bind(this, arguments[0]),
       );
     }
     return appendChild.apply(this, arguments);

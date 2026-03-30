@@ -4,7 +4,7 @@
 
 ---
 
- 根据上述信息, 编写一个适用于Vivaldi的js模组, 需求如下:
+根据上述信息, 编写一个适用于Vivaldi的js模组, 需求如下:
 
 1. 当标签页被固定, 获取标签页信息, 和提示词一起传给glm以利用AI修改标签页标题, 提示词在上文中已经提供了
 2. 获取浏览器用户界面语言, 并传入提示词, 重命名标题应该取决于浏览器语言
@@ -31,19 +31,16 @@
 
 ---
 
-/*
-* Site Security Box Favicons (a mod for Vivaldi)
-* https://forum.vivaldi.net/topic/23813/site-security-box-favicons-mod
-* Written by LonM, kichrot
-* No Copyright Reserved
-* This mod takes the favicon from a tab and places it into the address bar site info box
-* Assumes presence of both the tab bar and the address bar
-*/
+/\*
+
+- Site Security Box Favicons (a mod for Vivaldi)
+- https://forum.vivaldi.net/topic/23813/site-security-box-favicons-mod
+- Written by LonM, kichrot
+- No Copyright Reserved
+- This mod takes the favicon from a tab and places it into the address bar site info box
+- Assumes presence of both the tab bar and the address bar
+  \*/
 
 # Test
-
-
-
-
 
 适用于文档和提示词的模板

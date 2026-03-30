@@ -22,7 +22,45 @@ Currently only support 3x3 tabs grid.
 
 /* Fluid tabs grid layout for pinned tabs */
 @container style(--fluid-tabs-grid: on) {
-  
+  .UrlBar-AddressField:focus-within .OmniDropdown {
+    background-color: var(--colorBgLighter, #2a2a2a) !important;
+    border: unset;
+    z-index: 201 !important;
+    /* position: fixed !important; */
+  }
+
+  /* === Z-Index 层级体系 ===
+     1: 底层 (tabs-container)
+     5: 隔离层 (isolation)
+     10: 装饰背景
+     100: 普通标签
+     150: 固定/收藏标签、sticky 默认
+     200: 悬停展开
+     201: 交互层 (AddressField、OmniDropdown)
+     300: 弹出层 (WorkspacePopup)
+     1000: 极端覆盖
+  */
+
+  #browser:has(.UrlBar-AddressField:focus-within) .UrlBar-AddressField {
+    position: relative;
+    z-index: 201 !important;
+  }
+
+  /* WorkspacePopup 必须高于 #tabs-tabbar-container (300) */
+  .WorkspacePopup,
+  .ToolbarButtonPopup-DefaultStyles[role="dialog"] {
+    z-index: 400 !important;
+  }
+
+  /* UrlField 需要高于 WorkspacePopup (400) */
+  .UrlField.UrlField--HasEditText.urlfield-clickoutside-ignore {
+    z-index: 1000 !important;
+  }
+
+  #browser:has(.UrlBar-AddressField:focus-within) #tabs-tabbar-container {
+    position: relative;
+    z-index: 1 !important;
+  }
   /* Container adjustments */
   .resize {
     max-height: fit-content !important;
@@ -38,7 +76,8 @@ Currently only support 3x3 tabs grid.
     justify-content: center !important;
   }
 
-  #tabs-container .tab-position:not(.accordion-toggle-arrow):not(.tab-yield-space).is-pinned {
+  #tabs-container
+    .tab-position:not(.accordion-toggle-arrow):not(.tab-yield-space).is-pinned {
     display: contents !important;
   }
 
@@ -59,6 +98,7 @@ Currently only support 3x3 tabs grid.
     z-index: 150;
     background-color: var(--colorBgAlpha) !important;
     border: 1px solid var(--colorHighlightBgDark) !important;
+    z-index: 150;
   }
 
   #tabs-container
@@ -129,7 +169,7 @@ Currently only support 3x3 tabs grid.
     background-color: var(--colorAccentBg, rgba(255, 255, 255, 0.2)) !important;
     overflow: hidden;
     position: relative;
-    z-index: 100000000;
+    z-index: 200;
     width: calc(
       var(--pinned-column-count) * 100% + (var(--pinned-column-count) - 1) *
         var(--pinned-gap)
@@ -398,16 +438,22 @@ Currently only support 3x3 tabs grid.
     transform: none;
   }
 
-  #tabs-container .tab-position:not(.is-pinned):not(.accordion-toggle-arrow):not(.tab-yield-space) .tab-wrapper {
+  #tabs-container
+    .tab-position:not(.is-pinned):not(.accordion-toggle-arrow):not(
+      .tab-yield-space
+    )
+    .tab-wrapper {
     grid-column: 1 / -1 !important;
     width: 100% !important;
     min-width: 0 !important;
   }
 
-  #tabs-container .tab-position:not(.is-pinned):not(.accordion-toggle-arrow):not(.tab-yield-space) {
+  #tabs-container
+    .tab-position:not(.is-pinned):not(.accordion-toggle-arrow):not(
+      .tab-yield-space
+    ) {
     display: contents;
   }
-
 
   /* Hover state for first 9 pinned tabs */
   /* body:not(:has(:is(.WorkspacePopup, #panel_switch, .toolbar-editor, .UrlBar-AddressField:focus-within))) #tabs-tabbar-container:hover #tabs-container:not(:hover) .tab-strip > span:has(.is-pinned):nth-child(-n + 9) .is-pinned .tab-wrapper {
@@ -448,42 +494,35 @@ Currently only support 3x3 tabs grid.
       z-index: 200 !important;
     }
 
-#tabs-container .tab-position:not(.accordion-toggle-arrow):not(.tab-yield-space){
-  position: relative;
-}
+    #tabs-container
+      .tab-position:not(.accordion-toggle-arrow):not(.tab-yield-space) {
+      position: relative;
+    }
 
-/* 只在第一个固定标签页上创建背景 */
-#tabs-container
-.tab-strip
-> span:nth-child(1)
-.tab-position::after{
-  content: '';
-  position: fixed;
-  top: 70px;
-  left: calc(var(--pinned-gap) / 2);
-  min-width: calc(var(--tabs-container-expand-width) - var(--pinned-gap));
-  height: calc(var(--pinned-tab-height) * 3 + var(--pinned-gap) * 3);
-  z-index: 10;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0s ease;
-}
+    /* 只在第一个固定标签页上创建背景 */
+    #tabs-container .tab-strip > span:nth-child(1) .tab-position::after {
+      content: "";
+      position: fixed;
+      top: 70px;
+      left: calc(var(--pinned-gap) / 2);
+      min-width: calc(var(--tabs-container-expand-width) - var(--pinned-gap));
+      height: calc(var(--pinned-tab-height) * 3 + var(--pinned-gap) * 3);
+      z-index: 10; /* 装饰背景层 */
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0s ease;
+    }
 
-#tabs-container:hover
-.tab-strip
-> span:nth-child(1)
-.tab-position::after {
-  opacity: 1 !important;
-  transition: opacity var(--animation-speed) ease calc(var(--transition-delay-time-collapse) + var(--animation-speed));
-}
+    #tabs-container:hover .tab-strip > span:nth-child(1) .tab-position::after {
+      opacity: 1 !important;
+      transition: opacity var(--animation-speed) ease
+        calc(var(--transition-delay-time-collapse) + var(--animation-speed));
+    }
 
-#tabs-container.right
-.tab-strip
-> span:nth-child(1)
-.tab-position::after {
-  left: unset;
-  right: calc(var(--pinned-gap) / 2);
-}
+    #tabs-container.right .tab-strip > span:nth-child(1) .tab-position::after {
+      left: unset;
+      right: calc(var(--pinned-gap) / 2);
+    }
 
     #tabs-container
       .tab-strip
@@ -493,7 +532,7 @@ Currently only support 3x3 tabs grid.
       position: sticky !important;
       top: 0 !important;
       /* background: transparent !important; */
-      z-index: 150 !important;
+      z-index: 150 !important; /* 固定标签层级 */
     }
 
     #tabs-container
@@ -504,7 +543,7 @@ Currently only support 3x3 tabs grid.
       position: sticky !important;
       top: calc(var(--pinned-tab-height) + var(--pinned-gap)) !important;
       /* background: transparent !important; */
-      z-index: 150 !important;
+      z-index: 150 !important; /* 固定标签层级 */
     }
 
     #tabs-container
@@ -515,7 +554,7 @@ Currently only support 3x3 tabs grid.
       position: sticky !important;
       top: calc((var(--pinned-tab-height) + var(--pinned-gap)) * 2) !important;
       /* background: transparent !important; */
-      z-index: 150 !important;
+      z-index: 150 !important; /* 固定标签层级 */
     }
 
     #tabs-container .tab-strip > span:has(.is-pinned):nth-child(-n + 3) {

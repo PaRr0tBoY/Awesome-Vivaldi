@@ -6,7 +6,6 @@ https://github.com/PaRr0tBoY/Awesome-Vivaldi
 Auto Hide Tabbar, expand when hover.
 */
 
-
 /* === Uncomment this section to use and config this mod indepedently === */
 
 /* @import "Layout/FavouriteTabs.css";
@@ -64,7 +63,6 @@ Auto Hide Tabbar, expand when hover.
 
 /* === Uncomment Ends Here === */
 
-
 /* ============================================ */
 /* Vivaldi Fluid Tabbar - Collapsible Tab Bar */
 /* ============================================ */
@@ -84,8 +82,8 @@ Auto Hide Tabbar, expand when hover.
   border-radius: var(--tabbar-border-radius-collapse) !important;
   transition:
     border-radius var(--animation-speed) ease-out,
-    /* border var(--animation-speed) ease-out, */
-    background-color var(--animation-speed) ease-out,
+    /* border var(--animation-speed) ease-out, */ background-color
+      var(--animation-speed) ease-out,
     min-width var(--animation-speed) ease-out,
     max-width var(--animation-speed) ease-out !important;
   box-sizing: border-box !important;
@@ -105,7 +103,7 @@ Auto Hide Tabbar, expand when hover.
       )
     )
   ) */
-  body:not(
+body:not(
     :has(
       :is(
         #panel_switch,
@@ -115,7 +113,8 @@ Auto Hide Tabbar, expand when hover.
           .toolbar-tabbar-before
           .UrlBar-AddressField:focus-within,
         #vivaldi-tooltip:hover
-        .toolbar-tabbar-before .ToolbarButton-Button.button-pressed,
+          .toolbar-tabbar-before
+          .ToolbarButton-Button.button-pressed,
         .toolbar-tabbar-after .ToolbarButton-Button.button-pressed
       )
     )
@@ -125,8 +124,8 @@ Auto Hide Tabbar, expand when hover.
   max-width: var(--tabs-container-expand-width) !important;
   transition:
     border-radius var(--animation-speed) ease-out,
-    /* border var(--animation-speed) ease-out, */
-    background-color var(--animation-speed) ease-out,
+    /* border var(--animation-speed) ease-out, */ background-color
+      var(--animation-speed) ease-out,
     min-width var(--animation-speed) ease-out,
     max-width var(--animation-speed) ease-out !important;
   margin-top: var(--tabbar-margin-top) !important;
@@ -153,8 +152,8 @@ body:has(
   max-width: var(--tabs-container-expand-width) !important;
   transition:
     border-radius var(--animation-speed) ease-out,
-    /* border var(--animation-speed) ease-out, */
-    background-color var(--animation-speed) ease-out,
+    /* border var(--animation-speed) ease-out, */ background-color
+      var(--animation-speed) ease-out,
     min-width var(--animation-speed) ease-out,
     max-width var(--animation-speed) ease-out !important;
   margin-top: var(--tabbar-margin-top) !important;
@@ -175,8 +174,8 @@ body:has(
     max-width var(--animation-speed) ease-out,
     background-color var(--animation-speed) ease-out,
     border-radius var(--animation-speed) ease-out,
-    /* border var(--animation-speed) ease-out, */
-    transform var(--animation-speed) ease-out !important;
+    /* border var(--animation-speed) ease-out, */ transform
+      var(--animation-speed) ease-out !important;
   box-sizing: border-box !important;
   position: relative !important;
   will-change: transform !important;
@@ -200,8 +199,8 @@ body:not(
   max-width: var(--tabs-subcontainer-expand-width) !important;
   transition:
     border-radius var(--animation-speed) ease-out,
-    /* border var(--animation-speed) ease-out, */
-    min-width var(--animation-speed) ease-out,
+    /* border var(--animation-speed) ease-out, */ min-width
+      var(--animation-speed) ease-out,
     max-width var(--animation-speed) ease-out,
     background-color var(--animation-speed) ease-out,
     transform var(--animation-speed) ease-out !important;
@@ -282,12 +281,14 @@ body:not(:has(#panel_switch)) {
       var(--tabbar-border-color-expand, var(--colorAccentBgFadedMost)) !important;
   }
 
-  #tabs-tabbar-container:has(#tabs-subcontainer:hover) #tabs-container{
-    border: 1px dotted var(--tabbar-border-color-collapse, var(--colorBgLighter)) !important;
+  #tabs-tabbar-container:has(#tabs-subcontainer:hover) #tabs-container {
+    border: 1px dotted
+      var(--tabbar-border-color-collapse, var(--colorBgLighter)) !important;
   }
 
-  #tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer{
-  border: 1px dotted var(--tabbar-border-color-collapse, var(--colorBgLighter)) !important;
+  #tabs-tabbar-container:has(#tabs-container:hover) #tabs-subcontainer {
+    border: 1px dotted
+      var(--tabbar-border-color-collapse, var(--colorBgLighter)) !important;
   }
 }
 
@@ -595,89 +596,88 @@ body:has(
 /* ============================================ */
 @container style(--fluid-float-tabbar: on) {
   @container not style(--fluid-theme: transparent) {
-  
-  #main > .inner > div:has(#tabs-tabbar-container) {
-    position: absolute;
-    top: 0;
-    z-index: 2;
-    opacity: 1;
-    height: 100% !important;
-  }
+    #main > .inner > div:has(#tabs-tabbar-container) {
+      position: absolute;
+      top: 0;
+      z-index: 2;
+      opacity: 1;
+      height: 100% !important;
+    }
 
-  #main > .inner > div:has(#tabs-tabbar-container.right) {
-    right: 0;
-  }
+    #main > .inner > div:has(#tabs-tabbar-container.right) {
+      right: 0;
+    }
 
-  #main > .inner > div:has(#tabs-tabbar-container.left) {
-    left: 0;
-  }
-  /* ============================================ */
-  /* Web Page Stack Margins */
-  /* Auto-adjust content area based on tab bar position and state */
-  /* ============================================ */
+    #main > .inner > div:has(#tabs-tabbar-container.left) {
+      left: 0;
+    }
+    /* ============================================ */
+    /* Web Page Stack Margins */
+    /* Auto-adjust content area based on tab bar position and state */
+    /* ============================================ */
 
-  /* Right-side tab bar margins */
-  #browser:not(.fullscreen):has(#tabs-tabbar-container.right)
-    .inner
-    #webpage-stack {
-    margin-right: var(--tabs-container-collapse-width-default);
-    transition: margin-right var(--animation-speed) ease-out !important;
-  }
+    /* Right-side tab bar margins */
+    #browser:not(.fullscreen):has(#tabs-tabbar-container.right)
+      .inner
+      #webpage-stack {
+      margin-right: var(--tabs-container-collapse-width-default);
+      transition: margin-right var(--animation-speed) ease-out !important;
+    }
 
-  #browser:not(.fullscreen)
-    :has(#tabs-tabbar-container.right)
-    .inner:has(#tabs-subcontainer:is(.left, .right))
-    #webpage-stack {
-    margin-right: calc(
-      var(--tabs-container-collapse-width-default) +
-        var(--tabs-subcontainer-collapse-width)
-    );
-  }
+    #browser:not(.fullscreen)
+      :has(#tabs-tabbar-container.right)
+      .inner:has(#tabs-subcontainer:is(.left, .right))
+      #webpage-stack {
+      margin-right: calc(
+        var(--tabs-container-collapse-width-default) +
+          var(--tabs-subcontainer-collapse-width)
+      );
+    }
 
-  #browser:not(.fullscreen) #tabs-tabbar-container.right ~ #webpage-stack {
-    margin-right: var(--tabs-container-collapse-width-default);
-  }
+    #browser:not(.fullscreen) #tabs-tabbar-container.right ~ #webpage-stack {
+      margin-right: var(--tabs-container-collapse-width-default);
+    }
 
-  #browser:not(.fullscreen)
-    #tabs-tabbar-container.right
-    ~ #webpage-stack:has(#tabs-subcontainer.right) {
-    margin-right: calc(
-      var(--tabs-container-collapse-width-default) +
-        var(--tabs-subcontainer-collapse-width)
-    );
-  }
+    #browser:not(.fullscreen)
+      #tabs-tabbar-container.right
+      ~ #webpage-stack:has(#tabs-subcontainer.right) {
+      margin-right: calc(
+        var(--tabs-container-collapse-width-default) +
+          var(--tabs-subcontainer-collapse-width)
+      );
+    }
 
-  /* Left-side tab bar margins */
-  #browser:not(.fullscreen):has(#tabs-tabbar-container.left)
-    .inner
-    #webpage-stack {
-    margin-left: var(--tabs-container-collapse-width-default);
-    transition: margin-left var(--animation-speed) ease-out !important;
-  }
+    /* Left-side tab bar margins */
+    #browser:not(.fullscreen):has(#tabs-tabbar-container.left)
+      .inner
+      #webpage-stack {
+      margin-left: var(--tabs-container-collapse-width-default);
+      transition: margin-left var(--animation-speed) ease-out !important;
+    }
 
-  #browser:not(.fullscreen)
-    :has(#tabs-tabbar-container.left)
-    .inner:has(#tabs-subcontainer:is(.left, .right))
-    #webpage-stack {
-    margin-left: calc(
-      var(--tabs-container-collapse-width-default) +
-        var(--tabs-subcontainer-collapse-width)
-    );
-  }
+    #browser:not(.fullscreen)
+      :has(#tabs-tabbar-container.left)
+      .inner:has(#tabs-subcontainer:is(.left, .right))
+      #webpage-stack {
+      margin-left: calc(
+        var(--tabs-container-collapse-width-default) +
+          var(--tabs-subcontainer-collapse-width)
+      );
+    }
 
-  #browser:not(.fullscreen) #tabs-tabbar-container.left ~ #webpage-stack {
-    margin-left: var(--tabs-container-collapse-width-default);
-  }
+    #browser:not(.fullscreen) #tabs-tabbar-container.left ~ #webpage-stack {
+      margin-left: var(--tabs-container-collapse-width-default);
+    }
 
-  #browser:not(.fullscreen)
-    #tabs-tabbar-container.left
-    ~ #webpage-stack:has(#tabs-subcontainer.left) {
-    margin-left: calc(
-      var(--tabs-container-collapse-width-default) +
-        var(--tabs-subcontainer-collapse-width)
-    );
+    #browser:not(.fullscreen)
+      #tabs-tabbar-container.left
+      ~ #webpage-stack:has(#tabs-subcontainer.left) {
+      margin-left: calc(
+        var(--tabs-container-collapse-width-default) +
+          var(--tabs-subcontainer-collapse-width)
+      );
+    }
   }
-}
 }
 
 /* ============================================ */
@@ -1187,12 +1187,12 @@ body:has(#panel_switch)
   display: none !important;
 }
 
-
-.tabs-right#browser.density-on .accordion-toggle-arrow:after, .tabs-right#browser.density-on .tab-wrapper:after {
-    /* width: ;
+.tabs-right#browser.density-on .accordion-toggle-arrow:after,
+.tabs-right#browser.density-on .tab-wrapper:after {
+  /* width: ;
     height: 100%; */
-    top: unset !important;
-    /* left: unset !important; */
+  top: unset !important;
+  /* left: unset !important; */
 }
 /* #browser.density-on .accordion-toggle-arrow:after, #browser.density-on .tab-wrapper:after {
     content: '';
@@ -1203,7 +1203,6 @@ body:has(#panel_switch)
 /* =========================== */
 /* Vivaldi tab bar background color control */
 @container style(--fluid-theme: color) {
-
   .color-behind-tabs-off .mainbar,
   .UrlBar-AddressField,
   /* #tabs-container,
@@ -1216,20 +1215,30 @@ body:has(#panel_switch)
   #panels,
   #panels-container > *,
   #panels > * {
-    background-color: var(--tabbar-bg-color-collapse, var(--colorBg)) !important;
-    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background-color: var(
+      --tabbar-bg-color-collapse,
+      var(--colorBg)
+    ) !important;
+    transition:
+      background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   #tabs-container,
   #tabs-container .tab-position::after,
   .tidy-tabs-below-button,
   .clear-tabs-below-button {
-    background-color: var(--tabbar-bg-color-collapse, var(--colorBgDarker)) !important;
+    background-color: var(
+      --tabbar-bg-color-collapse,
+      var(--colorBgDarker)
+    ) !important;
   }
 
   #tabs-subcontainer {
-    background-color: var(--tabbar-bg-color-collapse, var(--colorBg)) !important;
+    background-color: var(
+      --tabbar-bg-color-collapse,
+      var(--colorBg)
+    ) !important;
   }
 
   #tabs-tabbar-container {
@@ -1250,42 +1259,92 @@ body:has(#panel_switch)
   }
 
   /* Hover states for collapsed background */
-  body:not(:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #panel_switch))) 
+  body:not(
+      :has(
+        :is(
+          .WorkspacePopup,
+          .toolbar-editor,
+          #tabs-tabbar-container
+            .toolbar-tabbar-before
+            .UrlBar-AddressField:focus-within,
+          #panel_switch
+        )
+      )
+    )
     #tabs-container:hover,
-    #tabs-container:hover .tab-position::after,
-    #tabs-container:hover .tidy-tabs-below-button,
-    #tabs-container:hover .clear-tabs-below-button,
-  body:not(:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #panel_switch))) 
+  #tabs-container:hover .tab-position::after,
+  #tabs-container:hover .tidy-tabs-below-button,
+  #tabs-container:hover .clear-tabs-below-button,
+  body:not(
+      :has(
+        :is(
+          .WorkspacePopup,
+          .toolbar-editor,
+          #tabs-tabbar-container
+            .toolbar-tabbar-before
+            .UrlBar-AddressField:focus-within,
+          #panel_switch
+        )
+      )
+    )
     #tabs-subcontainer:hover {
-    background-color: var(--tabbar-bg-color-expand, var(--colorBgLighter)) !important;
+    background-color: var(
+      --tabbar-bg-color-expand,
+      var(--colorBgLighter)
+    ) !important;
   }
 
   /* Force expanded background when specific elements are active */
-  body:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #vivaldi-tooltip:hover, .toolbar-tabbar-before .ToolbarButton-Button.button-pressed, .toolbar-tabbar-after .ToolbarButton-Button.button-pressed)) 
+  body:has(
+      :is(
+        .WorkspacePopup,
+        .toolbar-editor,
+        #tabs-tabbar-container
+          .toolbar-tabbar-before
+          .UrlBar-AddressField:focus-within,
+        #vivaldi-tooltip:hover,
+        .toolbar-tabbar-before .ToolbarButton-Button.button-pressed,
+        .toolbar-tabbar-after .ToolbarButton-Button.button-pressed
+      )
+    )
     #tabs-container {
-    background-color: var(--tabbar-bg-color-expand, var(--colorBgLighter)) !important;
+    background-color: var(
+      --tabbar-bg-color-expand,
+      var(--colorBgLighter)
+    ) !important;
   }
 
   /* Toolbar before expanded states */
-  body:has(:is(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField, .toolbar-editor, .toolbar-tabbar-before .ToolbarButton-Button.button-pressed)) 
+  body:has(
+      :is(
+        #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField,
+        .toolbar-editor,
+        .toolbar-tabbar-before .ToolbarButton-Button.button-pressed
+      )
+    )
     .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
   .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover {
-    background-color: var(--tabbar-bg-color-expand, var(--colorBgDarker)) !important;
+    background-color: var(
+      --tabbar-bg-color-expand,
+      var(--colorBgDarker)
+    ) !important;
   }
 }
 
 @container style(--fluid-theme: immersive) {
-
   #tabs-container
-  .tab-strip
-  > span:has(.is-pinned):nth-child(-n + 9)
-  .is-pinned
-  .tab-wrapper {
+    .tab-strip
+    > span:has(.is-pinned):nth-child(-n + 9)
+    .is-pinned
+    .tab-wrapper {
     background-color: var(--colorFgFadedMost) !important;
     border: 1px solid var(--colorHighlightBgDark) !important;
   }
 
-  .transparent-tabbar:not(.acc-dark.bg-dark.color-accent-from-page.color-behind-tabs-on) .tab {
+  .transparent-tabbar:not(
+      .acc-dark.bg-dark.color-accent-from-page.color-behind-tabs-on
+    )
+    .tab {
     color: var(--immersive-text-color) !important;
   }
   .color-behind-tabs-off .tab {
@@ -1310,24 +1369,25 @@ body:has(#panel_switch)
   #panels,
   #panels-container > *,
   #panels > * {
-    background-color: var(--immersive-bg-color,--colorAccentBg) !important;
+    background-color: var(--immersive-bg-color, --colorAccentBg) !important;
     color: var(--immersive-text-color) !important;
     border: none !important;
-    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition:
+      background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   #tabs-container,
   #tabs-container .tab-position::after,
   .tidy-tabs-below-button,
   .clear-tabs-below-button {
-    background-color: var(--immersive-bg-color,--colorBgDarker) !important;
+    background-color: var(--immersive-bg-color, --colorBgDarker) !important;
     color: var(--immersive-text-color) !important;
     border: none !important;
   }
 
   #tabs-subcontainer {
-    background-color: var(--immersive-bg-color,--colorBg) !important;
+    background-color: var(--immersive-bg-color, --colorBg) !important;
     color: var(--immersive-text-color) !important;
     border: none !important;
   }
@@ -1354,20 +1414,53 @@ body:has(#panel_switch)
   }
 
   /* Hover states for collapsed background */
-  body:not(:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #panel_switch))) 
+  body:not(
+      :has(
+        :is(
+          .WorkspacePopup,
+          .toolbar-editor,
+          #tabs-tabbar-container
+            .toolbar-tabbar-before
+            .UrlBar-AddressField:focus-within,
+          #panel_switch
+        )
+      )
+    )
     #tabs-container:hover,
-    #tabs-container:hover .tab-position::after,
-    #tabs-container:hover .tidy-tabs-below-button,
-    #tabs-container:hover .clear-tabs-below-button,
-  body:not(:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #panel_switch))) 
+  #tabs-container:hover .tab-position::after,
+  #tabs-container:hover .tidy-tabs-below-button,
+  #tabs-container:hover .clear-tabs-below-button,
+  body:not(
+      :has(
+        :is(
+          .WorkspacePopup,
+          .toolbar-editor,
+          #tabs-tabbar-container
+            .toolbar-tabbar-before
+            .UrlBar-AddressField:focus-within,
+          #panel_switch
+        )
+      )
+    )
     #tabs-subcontainer:hover {
-    background-color: var(--immersive-bg-color,--colorBgLighter) !important;
+    background-color: var(--immersive-bg-color, --colorBgLighter) !important;
     color: var(--immersive-text-color) !important;
     border: none !important;
   }
 
   /* Force expanded background when specific elements are active */
-  body:has(:is(.WorkspacePopup, .toolbar-editor, #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField:focus-within, #vivaldi-tooltip:hover, .toolbar-tabbar-before .ToolbarButton-Button.button-pressed, .toolbar-tabbar-after .ToolbarButton-Button.button-pressed)) 
+  body:has(
+      :is(
+        .WorkspacePopup,
+        .toolbar-editor,
+        #tabs-tabbar-container
+          .toolbar-tabbar-before
+          .UrlBar-AddressField:focus-within,
+        #vivaldi-tooltip:hover,
+        .toolbar-tabbar-before .ToolbarButton-Button.button-pressed,
+        .toolbar-tabbar-after .ToolbarButton-Button.button-pressed
+      )
+    )
     #tabs-container {
     /* background-color: var(--immersive-bg-color,--colorBgLighter) !important; */
     background-color: color-mix(in srgb, var(--immersive-bg-color) 85%, black);
@@ -1376,10 +1469,16 @@ body:has(#panel_switch)
   }
 
   /* Toolbar before expanded states */
-  body:has(:is(#tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField, .toolbar-editor, .toolbar-tabbar-before .ToolbarButton-Button.button-pressed))
+  body:has(
+      :is(
+        #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField,
+        .toolbar-editor,
+        .toolbar-tabbar-before .ToolbarButton-Button.button-pressed
+      )
+    )
     .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
   .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover {
-    background-color: var(--immersive-bg-color,--colorBgDarker) !important;
+    background-color: var(--immersive-bg-color, --colorBgDarker) !important;
     color: var(--immersive-text-color) !important;
     border: none !important;
   }
@@ -1400,8 +1499,9 @@ body:has(#panel_switch)
   #panels-container > *,
   #panels > * {
     background-color: transparent !important;
-    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition:
+      background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
@@ -1415,139 +1515,200 @@ body:has(#panel_switch)
     min-width: calc(100vw - var(--tabs-container-collapse-width-default));
   } */
 
-    /* 外层 tabbar-wrapper 使用 display: contents 去除布局影响 */
-    .tabbar-wrapper:has(> .tabbar-wrapper) {
-      display: contents !important;
-    }
-  
-    /* 内层 tabbar-wrapper (实际包含标签栏的) 悬浮定位 */
-    #main > .inner > .tabbar-wrapper:has(#tabs-tabbar-container),
-    #main > .inner > .tabbar-wrapper > .tabbar-wrapper:has(#tabs-tabbar-container) {
-      position: absolute !important;
-      top: 0;
-      bottom: 0;
-      width: var(--tabs-container-collapse-width-default);
-      z-index: 5;
-      background: transparent !important;
-      pointer-events: none;
-      transition: width var(--animation-speed) ease-out;
-    }
-  
-    /* 当有 subcontainer 时增加宽度 */
-    #main > .inner > .tabbar-wrapper:has(#tabs-tabbar-container):has(#tabs-subcontainer),
-    #main > .inner > .tabbar-wrapper > .tabbar-wrapper:has(#tabs-tabbar-container):has(#tabs-subcontainer) {
-      width: calc(
-        var(--tabs-container-collapse-width-default) +
-          var(--tabs-subcontainer-collapse-width)
-      );
-    }
-  
-    /* 右侧标签页定位 */
-    #browser:has(#tabs-tabbar-container.right) .tabbar-wrapper:has(#tabs-tabbar-container) {
-      right: 0;
-    }
-  
-    /* 左侧标签页定位 */
-    #browser:has(#tabs-tabbar-container.left) .tabbar-wrapper:has(#tabs-tabbar-container) {
-      left: 0;
-    }
-  
-    /* 展开时增加宽度 - 单栏 */
-    #browser:has(#tabs-tabbar-container:hover):not(:has(#tabs-subcontainer)) .tabbar-wrapper:has(#tabs-tabbar-container),
-    #browser:has(.toolbar-editor):not(:has(#tabs-subcontainer)) .tabbar-wrapper:has(#tabs-tabbar-container),
-    #browser:has(.UrlBar-AddressField:focus-within):not(:has(#tabs-subcontainer)) .tabbar-wrapper:has(#tabs-tabbar-container) {
-      width: var(--tabs-container-expand-width);
-    }
-  
-    /* 展开时增加宽度 - 双栏 */
-    #browser:has(#tabs-tabbar-container:hover):has(#tabs-subcontainer) .tabbar-wrapper:has(#tabs-tabbar-container),
-    #browser:has(.toolbar-editor):has(#tabs-subcontainer) .tabbar-wrapper:has(#tabs-tabbar-container),
-    #browser:has(.UrlBar-AddressField:focus-within):has(#tabs-subcontainer) .tabbar-wrapper:has(#tabs-tabbar-container) {
-      width: calc(
-        var(--tabs-container-expand-width) +
-          var(--tabs-subcontainer-collapse-width)
-      );
-    }
-  
-    /* 确保标签栏内容可交互 */
-    .tabbar-wrapper:has(#tabs-tabbar-container) > * {
-      pointer-events: auto;
-    }
-  
-    /* webview-container 占满整个空间 */
-    #webview-container {
-      position: relative;
-      flex: 1 1 0 !important;
-      min-width: 0 !important;
-      isolation: isolate;
-    }
-  
-    /* ============================================ */
-    /* Clip-path 裁剪重叠部分 */
-    /* ============================================ */
-    
-    /* 左侧标签栏 - 单栏收起状态 */
-    #browser:has(#tabs-tabbar-container.left):not(:has(#tabs-subcontainer)) #webview-container {
-      clip-path: inset(0 0 0 var(--tabs-container-collapse-width-default));
-      transition: clip-path var(--animation-speed) ease-out;
-    }
-  
-    /* 左侧标签栏 - 双栏收起状态 */
-    #browser:has(#tabs-tabbar-container.left):has(#tabs-subcontainer) #webview-container {
-      clip-path: inset(0 0 0 calc(
-        var(--tabs-container-collapse-width-default) +
-          var(--tabs-subcontainer-collapse-width)
-      ));
-      transition: clip-path var(--animation-speed) ease-out;
-    }
-  
-    /* 右侧标签栏 - 单栏收起状态 */
-    #browser:has(#tabs-tabbar-container.right):not(:has(#tabs-subcontainer)) #webview-container {
-      clip-path: inset(0 var(--tabs-container-collapse-width-default) 0 0);
-      transition: clip-path var(--animation-speed) ease-out;
-    }
-  
-    /* 右侧标签栏 - 双栏收起状态 */
-    #browser:has(#tabs-tabbar-container.right):has(#tabs-subcontainer) #webview-container {
-      clip-path: inset(0 calc(
-        var(--tabs-container-collapse-width-default) +
-          var(--tabs-subcontainer-collapse-width)
-      ) 0 0);
-      transition: clip-path var(--animation-speed) ease-out;
-    }
-  
-    /* 左侧标签栏 - 单栏展开状态 */
-    #browser:has(#tabs-tabbar-container.left:hover):not(:has(#tabs-subcontainer)) #webview-container,
-    #browser:has(#tabs-tabbar-container.left):not(:has(#tabs-subcontainer)):has(.toolbar-editor) #webview-container,
-    #browser:has(#tabs-tabbar-container.left):not(:has(#tabs-subcontainer)):has(.UrlBar-AddressField:focus-within) #webview-container {
-      clip-path: inset(0 0 0 var(--tabs-container-expand-width));
-    }
-  
-    /* 左侧标签栏 - 双栏展开状态 */
-    #browser:has(#tabs-tabbar-container.left:hover):has(#tabs-subcontainer) #webview-container,
-    #browser:has(#tabs-tabbar-container.left):has(#tabs-subcontainer):has(.toolbar-editor) #webview-container,
-    #browser:has(#tabs-tabbar-container.left):has(#tabs-subcontainer):has(.UrlBar-AddressField:focus-within) #webview-container {
-      clip-path: inset(0 0 0 calc(
-        var(--tabs-container-expand-width) +
-          var(--tabs-subcontainer-collapse-width)
-      ));
-    }
-  
-    /* 右侧标签栏 - 单栏展开状态 */
-    #browser:has(#tabs-tabbar-container.right:hover):not(:has(#tabs-subcontainer)) #webview-container,
-    #browser:has(#tabs-tabbar-container.right):not(:has(#tabs-subcontainer)):has(.toolbar-editor) #webview-container,
-    #browser:has(#tabs-tabbar-container.right):not(:has(#tabs-subcontainer)):has(.UrlBar-AddressField:focus-within) #webview-container {
-      clip-path: inset(0 var(--tabs-container-expand-width) 0 0);
-    }
-  
-    /* 右侧标签栏 - 双栏展开状态 */
-    #browser:has(#tabs-tabbar-container.right:hover):has(#tabs-subcontainer) #webview-container,
-    #browser:has(#tabs-tabbar-container.right):has(#tabs-subcontainer):has(.toolbar-editor) #webview-container,
-    #browser:has(#tabs-tabbar-container.right):has(#tabs-subcontainer):has(.UrlBar-AddressField:focus-within) #webview-container {
-      clip-path: inset(0 calc(
-        var(--tabs-container-expand-width) +
-          var(--tabs-subcontainer-collapse-width)
-      ) 0 0);
-    }
+  /* 外层 tabbar-wrapper 使用 display: contents 去除布局影响 */
+  .tabbar-wrapper:has(> .tabbar-wrapper) {
+    display: contents !important;
+  }
 
+  /* 内层 tabbar-wrapper (实际包含标签栏的) 悬浮定位 */
+  #main > .inner > .tabbar-wrapper:has(#tabs-tabbar-container),
+  #main
+    > .inner
+    > .tabbar-wrapper
+    > .tabbar-wrapper:has(#tabs-tabbar-container) {
+    position: absolute !important;
+    top: 0;
+    bottom: 0;
+    width: var(--tabs-container-collapse-width-default);
+    z-index: 5;
+    background: transparent !important;
+    pointer-events: none;
+    transition: width var(--animation-speed) ease-out;
+  }
+
+  /* 当有 subcontainer 时增加宽度 */
+  #main
+    > .inner
+    > .tabbar-wrapper:has(#tabs-tabbar-container):has(#tabs-subcontainer),
+  #main
+    > .inner
+    > .tabbar-wrapper
+    > .tabbar-wrapper:has(#tabs-tabbar-container):has(#tabs-subcontainer) {
+    width: calc(
+      var(--tabs-container-collapse-width-default) +
+        var(--tabs-subcontainer-collapse-width)
+    );
+  }
+
+  /* 右侧标签页定位 */
+  #browser:has(#tabs-tabbar-container.right)
+    .tabbar-wrapper:has(#tabs-tabbar-container) {
+    right: 0;
+  }
+
+  /* 左侧标签页定位 */
+  #browser:has(#tabs-tabbar-container.left)
+    .tabbar-wrapper:has(#tabs-tabbar-container) {
+    left: 0;
+  }
+
+  /* 展开时增加宽度 - 单栏 */
+  #browser:has(#tabs-tabbar-container:hover):not(:has(#tabs-subcontainer))
+    .tabbar-wrapper:has(#tabs-tabbar-container),
+  #browser:has(.toolbar-editor):not(:has(#tabs-subcontainer))
+    .tabbar-wrapper:has(#tabs-tabbar-container),
+  #browser:has(.UrlBar-AddressField:focus-within):not(:has(#tabs-subcontainer))
+    .tabbar-wrapper:has(#tabs-tabbar-container) {
+    width: var(--tabs-container-expand-width);
+  }
+
+  /* 展开时增加宽度 - 双栏 */
+  #browser:has(#tabs-tabbar-container:hover):has(#tabs-subcontainer)
+    .tabbar-wrapper:has(#tabs-tabbar-container),
+  #browser:has(.toolbar-editor):has(#tabs-subcontainer)
+    .tabbar-wrapper:has(#tabs-tabbar-container),
+  #browser:has(.UrlBar-AddressField:focus-within):has(#tabs-subcontainer)
+    .tabbar-wrapper:has(#tabs-tabbar-container) {
+    width: calc(
+      var(--tabs-container-expand-width) +
+        var(--tabs-subcontainer-collapse-width)
+    );
+  }
+
+  /* 确保标签栏内容可交互 */
+  .tabbar-wrapper:has(#tabs-tabbar-container) > * {
+    pointer-events: auto;
+  }
+
+  /* webview-container 占满整个空间 */
+  #webview-container {
+    position: relative;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    isolation: isolate;
+  }
+
+  /* ============================================ */
+  /* Clip-path 裁剪重叠部分 */
+  /* ============================================ */
+
+  /* 左侧标签栏 - 单栏收起状态 */
+  #browser:has(#tabs-tabbar-container.left):not(:has(#tabs-subcontainer))
+    #webview-container {
+    clip-path: inset(0 0 0 var(--tabs-container-collapse-width-default));
+    transition: clip-path var(--animation-speed) ease-out;
+  }
+
+  /* 左侧标签栏 - 双栏收起状态 */
+  #browser:has(#tabs-tabbar-container.left):has(#tabs-subcontainer)
+    #webview-container {
+    clip-path: inset(
+      0 0 0
+        calc(
+          var(--tabs-container-collapse-width-default) +
+            var(--tabs-subcontainer-collapse-width)
+        )
+    );
+    transition: clip-path var(--animation-speed) ease-out;
+  }
+
+  /* 右侧标签栏 - 单栏收起状态 */
+  #browser:has(#tabs-tabbar-container.right):not(:has(#tabs-subcontainer))
+    #webview-container {
+    clip-path: inset(0 var(--tabs-container-collapse-width-default) 0 0);
+    transition: clip-path var(--animation-speed) ease-out;
+  }
+
+  /* 右侧标签栏 - 双栏收起状态 */
+  #browser:has(#tabs-tabbar-container.right):has(#tabs-subcontainer)
+    #webview-container {
+    clip-path: inset(
+      0
+        calc(
+          var(--tabs-container-collapse-width-default) +
+            var(--tabs-subcontainer-collapse-width)
+        )
+        0 0
+    );
+    transition: clip-path var(--animation-speed) ease-out;
+  }
+
+  /* 左侧标签栏 - 单栏展开状态 */
+  #browser:has(#tabs-tabbar-container.left:hover):not(:has(#tabs-subcontainer))
+    #webview-container,
+  #browser:has(#tabs-tabbar-container.left):not(:has(#tabs-subcontainer)):has(
+      .toolbar-editor
+    )
+    #webview-container,
+  #browser:has(#tabs-tabbar-container.left):not(:has(#tabs-subcontainer)):has(
+      .UrlBar-AddressField:focus-within
+    )
+    #webview-container {
+    clip-path: inset(0 0 0 var(--tabs-container-expand-width));
+  }
+
+  /* 左侧标签栏 - 双栏展开状态 */
+  #browser:has(#tabs-tabbar-container.left:hover):has(#tabs-subcontainer)
+    #webview-container,
+  #browser:has(#tabs-tabbar-container.left):has(#tabs-subcontainer):has(
+      .toolbar-editor
+    )
+    #webview-container,
+  #browser:has(#tabs-tabbar-container.left):has(#tabs-subcontainer):has(
+      .UrlBar-AddressField:focus-within
+    )
+    #webview-container {
+    clip-path: inset(
+      0 0 0
+        calc(
+          var(--tabs-container-expand-width) +
+            var(--tabs-subcontainer-collapse-width)
+        )
+    );
+  }
+
+  /* 右侧标签栏 - 单栏展开状态 */
+  #browser:has(#tabs-tabbar-container.right:hover):not(:has(#tabs-subcontainer))
+    #webview-container,
+  #browser:has(#tabs-tabbar-container.right):not(:has(#tabs-subcontainer)):has(
+      .toolbar-editor
+    )
+    #webview-container,
+  #browser:has(#tabs-tabbar-container.right):not(:has(#tabs-subcontainer)):has(
+      .UrlBar-AddressField:focus-within
+    )
+    #webview-container {
+    clip-path: inset(0 var(--tabs-container-expand-width) 0 0);
+  }
+
+  /* 右侧标签栏 - 双栏展开状态 */
+  #browser:has(#tabs-tabbar-container.right:hover):has(#tabs-subcontainer)
+    #webview-container,
+  #browser:has(#tabs-tabbar-container.right):has(#tabs-subcontainer):has(
+      .toolbar-editor
+    )
+    #webview-container,
+  #browser:has(#tabs-tabbar-container.right):has(#tabs-subcontainer):has(
+      .UrlBar-AddressField:focus-within
+    )
+    #webview-container {
+    clip-path: inset(
+      0
+        calc(
+          var(--tabs-container-expand-width) +
+            var(--tabs-subcontainer-collapse-width)
+        )
+        0 0
+    );
+  }
 }

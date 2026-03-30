@@ -1,20 +1,20 @@
 .auto-hide-wrapper.left.show {
-  transition: transform 300ms cubic-bezier(.25,.8,.25,1.03) !important;
+  transition: transform 300ms cubic-bezier(0.25, 0.8, 0.25, 1.08) !important;
 }
 
-.auto-hide-wrapper.right.show{
-  transition: transform 300ms cubic-bezier(.25,.8,.25,1.03) !important;
+.auto-hide-wrapper.right.show {
+  transition: transform 300ms cubic-bezier(0.25, 0.8, 0.25, 1.08) !important;
 }
 
-.auto-hide-wrapper.top.show{
-  transition: transform 300ms cubic-bezier(.25,.8,.25,1.02) !important;
+.auto-hide-wrapper.top.show {
+  transition: transform 300ms cubic-bezier(0.25, 0.8, 0.25, 1.02) !important;
 }
 
-.auto-hide-wrapper.bottom.show{
-  transition: transform 300ms cubic-bezier(.25,.8,.25,1.02) !important;
+.auto-hide-wrapper.bottom.show {
+  transition: transform 300ms cubic-bezier(0.25, 0.8, 0.25, 1.02) !important;
 }
 
-.auto-hide-wrapper.top{
+/* .auto-hide-wrapper.top{
   transition: transform 300ms cubic-bezier(.4,0,.6,1) !important;
 }
 .auto-hide-wrapper.bottom{
@@ -25,4 +25,4 @@
 }
 .auto-hide-wrapper.right {
   transition: transform 300ms cubic-bezier(.4,0,.6,1) !important;
-}
+} */

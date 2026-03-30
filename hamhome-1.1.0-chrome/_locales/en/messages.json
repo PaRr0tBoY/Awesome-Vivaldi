@@ -1,0 +1,18 @@
+{
+  "extName": {
+    "message": "HamHome - Smart Bookmark Assistant",
+    "description": "Extension name"
+  },
+  "extDescription": {
+    "message": "Keep your bookmarks alive! AI-powered smart bookmark management tool",
+    "description": "Extension description"
+  },
+  "commandSaveBookmark": {
+    "message": "Quick save current page",
+    "description": "Command description for save bookmark"
+  },
+  "commandTogglePanel": {
+    "message": "Toggle bookmark panel",
+    "description": "Command description for toggle panel"
+  }
+}
