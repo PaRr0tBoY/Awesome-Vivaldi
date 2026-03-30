@@ -1,36 +1,43 @@
-body:has(#tabs-subcontainer) #tabs-container{
-  max-width:18%;
-  min-width:18%;
-  transition: min-width 200ms ease-in, max-width 200ms ease-in;
+body:has(#tabs-subcontainer) #tabs-container {
+  max-width: 18%;
+  min-width: 18%;
+  transition:
+    min-width 200ms ease-in,
+    max-width 200ms ease-in;
 }
 
-body:has(#tabs-container) #tabs-subcontainer{
-  max-width:82%;
-  min-width:82%;
-  transition: min-width 200ms ease-in, max-width 200ms ease-in;
+body:has(#tabs-container) #tabs-subcontainer {
+  max-width: 82%;
+  min-width: 82%;
+  transition:
+    min-width 200ms ease-in,
+    max-width 200ms ease-in;
   transform-origin: left center !important;
 }
 
-body:has(#tabs-subcontainer) #tabs-container:hover
-{
-  max-width:82% !important;
-  min-width:82% !important;
-  transition: min-width 200ms ease-out 300ms, max-width 200ms ease-out 300ms;
+body:has(#tabs-subcontainer) #tabs-container:hover {
+  max-width: 82% !important;
+  min-width: 82% !important;
+  transition:
+    min-width 200ms ease-out 300ms,
+    max-width 200ms ease-out 300ms;
 }
 
-body:has(#tabs-container:hover) #tabs-subcontainer{
-  max-width:18% !important;
-  min-width:18% !important;
-  transition: min-width 200ms ease-out 300ms, max-width 200ms ease-out 300ms;
+body:has(#tabs-container:hover) #tabs-subcontainer {
+  max-width: 18% !important;
+  min-width: 18% !important;
+  transition:
+    min-width 200ms ease-out 300ms,
+    max-width 200ms ease-out 300ms;
 }
 
-#tabs-container{
+#tabs-container {
   container-type: inline-size;
   container-name: tabs-container;
 }
 
 @container tabs-container (max-width: 100px) {
-  .toolbar-large .ToolbarButton-Button{
+  .toolbar-large .ToolbarButton-Button {
     display: none !important;
   }
 }
@@ -52,6 +59,6 @@ body:has(.auto-hide-wrapper) #tabs-tabbar-container .SlideBar {
   display: none !important;
 }
 
-#tabs-tabbar-container{
+#tabs-tabbar-container {
   /* overflow: hidden !important; */
 }
