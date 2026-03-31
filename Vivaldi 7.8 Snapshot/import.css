@@ -2,21 +2,22 @@
 @import "CSS/BetterAutoHide.css";
 @import "CSS/AdaptiveBF.css";
 /* @import "CSS/BtnHoverAnime.css";  */
-@import "CSS/FindInPage.css"; /*待修复*/
+@import "CSS/FindInPage.css";
 @import "CSS/QuickCommand.css";
 @import "CSS/TabsTrail.css";
 /*@import "CSS/AdressFieldExpand.css"; */
 @import "CSS/RemoveClutter.css";
 /*@import "CSS/NeatDial.css";*/
-@import "CSS/Quietify.css"; /*待修复*/
+/* @import "CSS/Quietify.css"; */
+@import "CSS/Quietify.css";
 @import "CSS/ArcFolder.css";
-@import "CSS/FavouriteTabs.css"; /*待修复*/
+/*@import "CSS/FavouriteTabs.css"; /*待修复*/
 @import "CSS/Bettert2LevelTabStack.css"; /*待修复*/
 
 /* Community Mods */
 @import "CSS/DownloadPanel.css";
 @import "CSS/Extensions.css";
-@import "CSS/VivalArc.css";
+/*@import "CSS/VivalArc.css";*/
 
 /* @import "CSS/StatusBar.css";  */
 /* @import "CSS/FavouriteTabs.css"; 

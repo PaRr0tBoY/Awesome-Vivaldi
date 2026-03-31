@@ -1,17 +1,20 @@
+:root {
+  --animation-test-speed: 200ms;
+}
 body:has(#tabs-subcontainer) #tabs-container {
   max-width: 18%;
   min-width: 18%;
   transition:
-    min-width 200ms ease-in,
-    max-width 200ms ease-in;
+    min-width var(--animation-test-speed) ease-in,
+    max-width var(--animation-test-speed) ease-in;
 }
 
 body:has(#tabs-container) #tabs-subcontainer {
   max-width: 82%;
   min-width: 82%;
   transition:
-    min-width 200ms ease-in,
-    max-width 200ms ease-in;
+    min-width var(--animation-test-speed) ease-in,
+    max-width var(--animation-test-speed) ease-in;
   transform-origin: left center !important;
 }
 
@@ -19,16 +22,16 @@ body:has(#tabs-subcontainer) #tabs-container:hover {
   max-width: 82% !important;
   min-width: 82% !important;
   transition:
-    min-width 200ms ease-out 300ms,
-    max-width 200ms ease-out 300ms;
+    min-width var(--animation-test-speed) ease-out 300ms,
+    max-width var(--animation-test-speed) ease-out 300ms;
 }
 
 body:has(#tabs-container:hover) #tabs-subcontainer {
   max-width: 18% !important;
   min-width: 18% !important;
   transition:
-    min-width 200ms ease-out 300ms,
-    max-width 200ms ease-out 300ms;
+    min-width var(--animation-test-speed) ease-out 300ms,
+    max-width var(--animation-test-speed) ease-out 300ms;
 }
 
 #tabs-container {
@@ -36,7 +39,7 @@ body:has(#tabs-container:hover) #tabs-subcontainer {
   container-name: tabs-container;
 }
 
-@container tabs-container (max-width: 100px) {
+@container tabs-container (max-width: 120px) {
   .toolbar-large .ToolbarButton-Button {
     display: none !important;
   }

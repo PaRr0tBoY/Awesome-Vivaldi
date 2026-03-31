@@ -2,12 +2,18 @@
    Add your own language support by editing the selectors below. */
 
 /* Icon Position */
-.tab-audio,
-.panel-audio {
+.tab-audio {
   margin-top: 1px;
   margin-left: 1px !important;
   overflow: visible !important;
   position: relative;
+}
+
+.panel-audio {
+  margin-top: 1px;
+  margin-left: 1px !important;
+  overflow: visible !important;
+  /* position: relative — intentionally omitted; panel-audio uses absolute per below */
 }
 
 #vivaldi-tooltip .tooltip .tooltip-item .tooltip-audio-button .audioicon {
@@ -31,14 +37,14 @@
 
 /* Position the parent containers so the pseudo-elements can be placed correctly */
 
-/* tab-audio must be absolute so it doesn't disrupt the tab-header flex layout */
-.tab-audio {
+/* tab-audio and panel-audio must be absolute so they don't disrupt their parent flex layouts */
+.tab-audio,
+.panel-audio {
   position: absolute !important;
 }
 
 /* All other audio containers use relative so ::after overlays correctly within their layout */
 .tooltip-audio-button,
-.panel-audio,
 .audio-container,
 .button-icon.audio {
   position: relative !important;
@@ -49,7 +55,6 @@
 /* NOTE: background-color is NOT set here to avoid white box on PiP buttons.
    It is set inside each state-specific ::after block below. */
 .tab-audio::after,
-.panel-audio::after,
 .tooltip-audio-button::after,
 .audio-container::after,
 .button-icon.audio::after {
@@ -72,6 +77,22 @@
   z-index: 1;
 }
 
+.panel-audio::after {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transform: none;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  pointer-events: none;
+  width: 12px;
+  height: 12px;
+  z-index: 1;
+}
+
 /* --- Size Variations --- */
 
 /* Audio icon in tab */
@@ -82,7 +103,16 @@
 }
 
 /* Audio icon in workspace popup */
-.audio-container::after,
+.audio-container::after {
+  /* Override centering from generic block: Vivaldi's flex already positions
+     canvas to the right, so ::after must not be left: 50% */
+  left: auto;
+  right: 0;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+}
+
 .button-icon.audio::after {
   width: 16px;
   height: 16px;
@@ -90,8 +120,8 @@
 
 /* Audio icon in panel */
 .panel-audio::after {
-  width: 16px;
-  height: 16px;
+  width: 12px;
+  height: 12px;
 }
 
 /* --- State Detection --- */
@@ -177,10 +207,14 @@
 /* --- Hover Effect --- */
 /*.tooltip-audio-button:hover::after,*/
 .tab-audio:hover::after,
-.panel-audio:hover::after,
 .audio-container:hover::after,
 .button-icon.audio:hover::after {
   transform: translate(-50%, -50%) scale(1.15);
+}
+
+.panel-audio:hover::after {
+  /* No position shift on hover — icon is right-aligned, translate(0,0) keeps it in place */
+  transform: scale(1.15);
 }
 
 #browser:not(.alt-tabs) #tabs-subcontainer .tab.audio-on .favicon,
@@ -219,4 +253,8 @@
     width: unset; */
   transform: scale(1) !important;
   background-color: unset !important;
+}
+
+.button-toolbar > button > span.panel-audio {
+    right: -1px !important;
 }
