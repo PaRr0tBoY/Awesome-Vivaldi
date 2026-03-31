@@ -1497,21 +1497,19 @@ function Uh({
             C.jsx("div", {
               className:
                 "absolute z-10 w-full mt-1 bg-popover border rounded-md shadow-md max-h-32 overflow-auto",
-              children: g
-                .slice(0, 5)
-                .map((_) =>
-                  C.jsx(
-                    "button",
-                    {
-                      type: "button",
-                      onClick: () => c(_),
-                      className:
-                        "w-full px-3 py-1.5 text-left text-sm hover:bg-accent transition-colors",
-                      children: _,
-                    },
-                    _,
-                  ),
+              children: g.slice(0, 5).map((_) =>
+                C.jsx(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: () => c(_),
+                    className:
+                      "w-full px-3 py-1.5 text-left text-sm hover:bg-accent transition-colors",
+                    children: _,
+                  },
+                  _,
                 ),
+              ),
             }),
         ],
       }),
@@ -16363,14 +16361,12 @@ class Df {
     if (n.length === 0) {
       const a = $f(t, 0.2);
       n.push(
-        ...a
-          .slice(0, 3)
-          .map((s) => ({
-            categoryId: s.category.id,
-            categoryName: s.category.name,
-            confidence: s.confidence,
-            reason: "基于内容关键词匹配",
-          })),
+        ...a.slice(0, 3).map((s) => ({
+          categoryId: s.category.id,
+          categoryName: s.category.name,
+          confidence: s.confidence,
+          reason: "基于内容关键词匹配",
+        })),
       );
     }
     return n;
@@ -17452,14 +17448,12 @@ class uh {
       k >= a && g.push({ bookmarkId: p.bookmarkId, score: k });
     }
     g.sort((p, f) => f.score - p.score);
-    const h = g
-      .slice(0, n)
-      .map((p) => ({
-        bookmarkId: p.bookmarkId,
-        score: p.score,
-        semanticScore: p.score,
-        matchReason: `语义相似度: ${(p.score * 100).toFixed(1)}%`,
-      }));
+    const h = g.slice(0, n).map((p) => ({
+      bookmarkId: p.bookmarkId,
+      score: p.score,
+      semanticScore: p.score,
+      matchReason: `语义相似度: ${(p.score * 100).toFixed(1)}%`,
+    }));
     return (
       Ye.debug("Semantic search completed", {
         query: t.slice(0, 50),
@@ -17492,14 +17486,12 @@ class uh {
     return (
       d.sort((h, v) => v.score - h.score),
       {
-        items: d
-          .slice(0, n)
-          .map((h) => ({
-            bookmarkId: h.bookmarkId,
-            score: h.score,
-            semanticScore: h.score,
-            matchReason: `相似度: ${(h.score * 100).toFixed(1)}%`,
-          })),
+        items: d.slice(0, n).map((h) => ({
+          bookmarkId: h.bookmarkId,
+          score: h.score,
+          semanticScore: h.score,
+          matchReason: `相似度: ${(h.score * 100).toFixed(1)}%`,
+        })),
         queryDimensions: o.dim,
         searchedCount: u.length,
       }

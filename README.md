@@ -35,9 +35,9 @@
 ## ScreenShots
 
 | Features                                                                                                      | Preview                                                                                                                                   |
-| :------------------------------------------------------------------------------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| :------------------------------------------------------------------------------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------- |
 | **Smart Sidebar Animations**<br>• Smooth expand/collapse transitions<br>• Intelligent show/hide functionality | <img alt="Smooth sidebar animation effects" height="300" src="./Others/Showcase/MainShowCase/sidebar.gif" />                              |
-| **Dynamic Theme Colors**<br>• Automatic system theme adaptation<br>• Smooth color transition effects          | <img alt="Dynamic theme color changing demonstration" height="300" src="./Others/Showcase/MainShowCase/FollowThemeColor.gif" />           |     |
+| **Dynamic Theme Colors**<br>• Automatic system theme adaptation<br>• Smooth color transition effects          | <img alt="Dynamic theme color changing demonstration" height="300" src="./Others/Showcase/MainShowCase/FollowThemeColor.gif" />           |
 | **Clean New Tab Page**<br>• Minimalist interface layout<br>• Fast access to favorite websites                 | <img alt="Clean and uncluttered new tab page" height="300" src="./Others/Showcase/MainShowCase/NeatNewTab.png" />                         |
 | **Expanded Webview**<br>• Optimized page display area<br>• Enhanced browsing experience                       | <img alt="Maximized webview for better content viewing" height="300" src="./Others/Showcase/MainShowCase/YouDeserveABiggerWebview.png" /> |
 

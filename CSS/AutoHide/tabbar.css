@@ -548,7 +548,9 @@ body:not(:has(.toolbar-editor)) .button-toolbar.newtab {
 }
 
 /* Before toolbar: collapsed state */
-.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:has(> .tabbar-workspace-button) {
+.toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:has(
+    > .tabbar-workspace-button
+  ) {
   margin: 3px !important;
   min-height: 35px !important;
   max-height: 35px !important;

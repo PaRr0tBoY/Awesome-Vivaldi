@@ -44251,14 +44251,12 @@ ${i}
         h >= a && f.push({ bookmarkId: y.bookmarkId, score: h });
       }
       f.sort((y, m) => m.score - y.score);
-      const x = f
-        .slice(0, r)
-        .map((y) => ({
-          bookmarkId: y.bookmarkId,
-          score: y.score,
-          semanticScore: y.score,
-          matchReason: `语义相似度: ${(y.score * 100).toFixed(1)}%`,
-        }));
+      const x = f.slice(0, r).map((y) => ({
+        bookmarkId: y.bookmarkId,
+        score: y.score,
+        semanticScore: y.score,
+        matchReason: `语义相似度: ${(y.score * 100).toFixed(1)}%`,
+      }));
       return (
         Zr.debug("Semantic search completed", {
           query: t.slice(0, 50),
@@ -44291,14 +44289,12 @@ ${i}
       return (
         d.sort((x, g) => g.score - x.score),
         {
-          items: d
-            .slice(0, r)
-            .map((x) => ({
-              bookmarkId: x.bookmarkId,
-              score: x.score,
-              semanticScore: x.score,
-              matchReason: `相似度: ${(x.score * 100).toFixed(1)}%`,
-            })),
+          items: d.slice(0, r).map((x) => ({
+            bookmarkId: x.bookmarkId,
+            score: x.score,
+            semanticScore: x.score,
+            matchReason: `相似度: ${(x.score * 100).toFixed(1)}%`,
+          })),
           queryDimensions: o.dim,
           searchedCount: u.length,
         }
@@ -44749,46 +44745,44 @@ ${i}
             b.jsxs("div", {
               className: "flex flex-wrap gap-1.5",
               children: [
-                e
-                  .slice(0, 5)
-                  .map((r) =>
-                    b.jsxs(
-                      "button",
-                      {
-                        onClick: () => t(r),
-                        className: re(
-                          "flex items-center gap-1 px-2 py-1",
-                          "text-xs bg-muted/50 hover:bg-muted",
-                          "rounded-md transition-colors",
-                          "max-w-[280px]",
-                        ),
-                        title: r.url,
-                        children: [
-                          b.jsx(GD, {
-                            variant: "secondary",
-                            className: "h-4 min-w-4 px-1 text-[10px]",
-                            children: r.index,
-                          }),
+                e.slice(0, 5).map((r) =>
+                  b.jsxs(
+                    "button",
+                    {
+                      onClick: () => t(r),
+                      className: re(
+                        "flex items-center gap-1 px-2 py-1",
+                        "text-xs bg-muted/50 hover:bg-muted",
+                        "rounded-md transition-colors",
+                        "max-w-[280px]",
+                      ),
+                      title: r.url,
+                      children: [
+                        b.jsx(GD, {
+                          variant: "secondary",
+                          className: "h-4 min-w-4 px-1 text-[10px]",
+                          children: r.index,
+                        }),
+                        b.jsx("span", {
+                          className: "truncate flex-1",
+                          children: r.title,
+                        }),
+                        r.score !== void 0 &&
                           b.jsx("span", {
-                            className: "truncate flex-1",
-                            children: r.title,
+                            className: re(
+                              "text-[10px] font-medium shrink-0",
+                              HH(r.score),
+                            ),
+                            children: $H(r.score),
                           }),
-                          r.score !== void 0 &&
-                            b.jsx("span", {
-                              className: re(
-                                "text-[10px] font-medium shrink-0",
-                                HH(r.score),
-                              ),
-                              children: $H(r.score),
-                            }),
-                          b.jsx(nS, {
-                            className: "h-3 w-3 shrink-0 text-muted-foreground",
-                          }),
-                        ],
-                      },
-                      r.bookmarkId,
-                    ),
+                        b.jsx(nS, {
+                          className: "h-3 w-3 shrink-0 text-muted-foreground",
+                        }),
+                      ],
+                    },
+                    r.bookmarkId,
                   ),
+                ),
                 e.length > 5 &&
                   b.jsxs("span", {
                     className: "text-xs text-muted-foreground self-center",

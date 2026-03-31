@@ -13034,14 +13034,12 @@ ${r}:`,
       return (
         f.sort((S, m) => m.score - S.score),
         {
-          items: f
-            .slice(0, n)
-            .map((S) => ({
-              bookmarkId: S.bookmarkId,
-              score: S.score,
-              semanticScore: S.score,
-              matchReason: `相似度: ${(S.score * 100).toFixed(1)}%`,
-            })),
+          items: f.slice(0, n).map((S) => ({
+            bookmarkId: S.bookmarkId,
+            score: S.score,
+            semanticScore: S.score,
+            matchReason: `相似度: ${(S.score * 100).toFixed(1)}%`,
+          })),
           queryDimensions: i.dim,
           searchedCount: u.length,
         }

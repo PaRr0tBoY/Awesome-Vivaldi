@@ -2613,46 +2613,44 @@ function Zs({ sources: t, onSourceClick: n }) {
           e.jsxs("div", {
             className: "flex flex-wrap gap-1.5",
             children: [
-              t
-                .slice(0, 5)
-                .map((a) =>
-                  e.jsxs(
-                    "button",
-                    {
-                      onClick: () => n(a),
-                      className: J(
-                        "flex items-center gap-1 px-2 py-1",
-                        "text-xs bg-muted/50 hover:bg-muted",
-                        "rounded-md transition-colors",
-                        "max-w-[280px]",
-                      ),
-                      title: a.url,
-                      children: [
-                        e.jsx(tt, {
-                          variant: "secondary",
-                          className: "h-4 min-w-4 px-1 text-[10px]",
-                          children: a.index,
-                        }),
+              t.slice(0, 5).map((a) =>
+                e.jsxs(
+                  "button",
+                  {
+                    onClick: () => n(a),
+                    className: J(
+                      "flex items-center gap-1 px-2 py-1",
+                      "text-xs bg-muted/50 hover:bg-muted",
+                      "rounded-md transition-colors",
+                      "max-w-[280px]",
+                    ),
+                    title: a.url,
+                    children: [
+                      e.jsx(tt, {
+                        variant: "secondary",
+                        className: "h-4 min-w-4 px-1 text-[10px]",
+                        children: a.index,
+                      }),
+                      e.jsx("span", {
+                        className: "truncate flex-1",
+                        children: a.title,
+                      }),
+                      a.score !== void 0 &&
                         e.jsx("span", {
-                          className: "truncate flex-1",
-                          children: a.title,
+                          className: J(
+                            "text-[10px] font-medium shrink-0",
+                            hi(a.score),
+                          ),
+                          children: ui(a.score),
                         }),
-                        a.score !== void 0 &&
-                          e.jsx("span", {
-                            className: J(
-                              "text-[10px] font-medium shrink-0",
-                              hi(a.score),
-                            ),
-                            children: ui(a.score),
-                          }),
-                        e.jsx(Qt, {
-                          className: "h-3 w-3 shrink-0 text-muted-foreground",
-                        }),
-                      ],
-                    },
-                    a.bookmarkId,
-                  ),
+                      e.jsx(Qt, {
+                        className: "h-3 w-3 shrink-0 text-muted-foreground",
+                      }),
+                    ],
+                  },
+                  a.bookmarkId,
                 ),
+              ),
               t.length > 5 &&
                 e.jsxs("span", {
                   className: "text-xs text-muted-foreground self-center",
