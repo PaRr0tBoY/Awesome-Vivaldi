@@ -6,7 +6,7 @@
 /* ================================================ */
 
 :root {
-  --animation-test-speed: 200ms;
+  --animation-test-speed: 120ms;
 }
 body:has(#tabs-subcontainer) #tabs-container {
   max-width: 18%;
