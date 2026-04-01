@@ -76,26 +76,26 @@ body:has(.auto-hide-wrapper) #tabs-tabbar-container .SlideBar {
 /* Disabled drag area, allow hover */
 #tabs-tabbar-container,
 #tabs-tabbar-container * {
-    -webkit-app-region: no-drag !important;
+  -webkit-app-region: no-drag !important;
 }
 
 #tabs-tabbar-container .toolbar-spacer,
 #tabs-tabbar-container .toolbar-spacer-flexible,
 #tabs-tabbar-container .toolbar-spacer-panel,
 #tabs-tabbar-container .toolbar-divider {
-    -webkit-app-region: no-drag !important;
+  -webkit-app-region: no-drag !important;
 }
 
 #tabs-tabbar-container .button-ntp,
 #tabs-tabbar-container .tab-header {
-    -webkit-app-region: no-drag !important;
+  -webkit-app-region: no-drag !important;
 }
-
 
 /* Keep mainbar expand while popout exists */
 body:has(#tabs-subcontainer):has(
-  #tabs-tabbar-container .ToolbarButton-Button.button-pressed
-) #tabs-container {
+    #tabs-tabbar-container .ToolbarButton-Button.button-pressed
+  )
+  #tabs-container {
   max-width: 82% !important;
   min-width: 82% !important;
   transition:
@@ -104,11 +104,18 @@ body:has(#tabs-subcontainer):has(
 }
 
 body:has(#tabs-subcontainer):has(
-  #tabs-tabbar-container .ToolbarButton-Button.button-pressed
-) #tabs-subcontainer {
+    #tabs-tabbar-container .ToolbarButton-Button.button-pressed
+  )
+  #tabs-subcontainer {
   max-width: 18% !important;
   min-width: 18% !important;
   transition:
     min-width 200ms ease-out 300ms,
     max-width 200ms ease-out 300ms;
+}
+
+/* Tooltip hover triggers panel slide-in */
+body:has(#vivaldi-tooltip:hover) .auto-hide-wrapper.has-tabbar {
+  transition: transform 300ms cubic-bezier(0.25, 0.8, 0.25, 1.08) !important;
+  transform: translateX(0) !important;
 }
