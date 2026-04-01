@@ -1,3 +1,10 @@
+/* ================================================ */
+/* Notice */
+/* This mod disabled tabbar resizing and window dragging behavior on tabbar */
+/* You can still resize tabbar after disabling auto-hide for tabbar */
+/* You can still drag removing window on address bar */
+/* ================================================ */
+
 :root {
   --animation-test-speed: 200ms;
 }
@@ -51,7 +58,7 @@ body:has(#tabs-container:hover) #tabs-subcontainer {
   display: none;
 }
 
-/* Disable tab bar resizing */
+/* Disable tab bar resizing while auto-hide enabled */
 body:has(.auto-hide-wrapper) #tabs-tabbar-container .SlideBar {
   display: none !important;
 }
@@ -66,14 +73,12 @@ body:has(.auto-hide-wrapper) #tabs-tabbar-container .SlideBar {
   /* overflow: hidden !important; */
 }
 
-/* 1. 强制禁用标签栏容器及其所有子元素的拖动行为 */
+/* Disabled drag area, allow hover */
 #tabs-tabbar-container,
 #tabs-tabbar-container * {
     -webkit-app-region: no-drag !important;
 }
 
-/* 2. 针对你之前代码中提到的特定间距器进行精准屏蔽 */
-/* 即使这些间距器位于标签栏内，也会被禁止拖动 */
 #tabs-tabbar-container .toolbar-spacer,
 #tabs-tabbar-container .toolbar-spacer-flexible,
 #tabs-tabbar-container .toolbar-spacer-panel,
@@ -81,15 +86,13 @@ body:has(.auto-hide-wrapper) #tabs-tabbar-container .SlideBar {
     -webkit-app-region: no-drag !important;
 }
 
-/* 3. 确保新建标签页按钮等交互元素也不会触发拖动 */
 #tabs-tabbar-container .button-ntp,
 #tabs-tabbar-container .tab-header {
     -webkit-app-region: no-drag !important;
 }
 
-/* 当且仅当弹窗是从标签栏内部的按钮（前置或后置工具栏）打开时，修改宽度 */
 
-/* 1. 修改主标签栏宽度 */
+/* Keep mainbar expand while popout exists */
 body:has(#tabs-subcontainer):has(
   #tabs-tabbar-container .ToolbarButton-Button.button-pressed
 ) #tabs-container {
@@ -100,7 +103,6 @@ body:has(#tabs-subcontainer):has(
     max-width 200ms ease-out 300ms;
 }
 
-/* 2. 修改二级标签栈宽度 */
 body:has(#tabs-subcontainer):has(
   #tabs-tabbar-container .ToolbarButton-Button.button-pressed
 ) #tabs-subcontainer {
