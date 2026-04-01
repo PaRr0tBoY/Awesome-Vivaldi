@@ -5,16 +5,16 @@ body:has(#tabs-subcontainer) #tabs-container {
   max-width: 18%;
   min-width: 18%;
   transition:
-    min-width var(--animation-test-speed) ease-in,
-    max-width var(--animation-test-speed) ease-in;
+    min-width var(--animation-test-speed) ease-in 300ms,
+    max-width var(--animation-test-speed) ease-in 300ms;
 }
 
 body:has(#tabs-container) #tabs-subcontainer {
   max-width: 82%;
   min-width: 82%;
   transition:
-    min-width var(--animation-test-speed) ease-in,
-    max-width var(--animation-test-speed) ease-in;
+    min-width var(--animation-test-speed) ease-in 300ms,
+    max-width var(--animation-test-speed) ease-in 300ms;
   transform-origin: left center !important;
 }
 
@@ -64,4 +64,34 @@ body:has(.auto-hide-wrapper) #tabs-tabbar-container .SlideBar {
 
 #tabs-tabbar-container {
   /* overflow: hidden !important; */
+}
+
+.auto-hide #browser .auto-hide-wrapper.show {
+    -webkit-app-region: no-drag !important;
+}
+
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) .auto-hide-wrapper.show .toolbar .toolbar-spacer, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).address-top .toolbar-mainbar .toolbar-spacer, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-mainbar .toolbar-spacer, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-statusbar .toolbar-spacer, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.top .toolbar:not(.expecting-drop) .toolbar-spacer, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.bottom .toolbar:not(.expecting-drop) .toolbar-spacer, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) .auto-hide-wrapper.show .toolbar .toolbar-spacer-flexible, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).address-top .toolbar-mainbar .toolbar-spacer-flexible, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-mainbar .toolbar-spacer-flexible, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-statusbar .toolbar-spacer-flexible, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.top .toolbar:not(.expecting-drop) .toolbar-spacer-flexible, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.bottom .toolbar:not(.expecting-drop) .toolbar-spacer-flexible, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) .auto-hide-wrapper.show .toolbar .toolbar-spacer-panel, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).address-top .toolbar-mainbar .toolbar-spacer-panel, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-mainbar .toolbar-spacer-panel, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-statusbar .toolbar-spacer-panel, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.top .toolbar:not(.expecting-drop) .toolbar-spacer-panel, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.bottom .toolbar:not(.expecting-drop) .toolbar-spacer-panel, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) .auto-hide-wrapper.show .toolbar .toolbar-divider, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).address-top .toolbar-mainbar .toolbar-divider, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-mainbar .toolbar-divider, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-statusbar .toolbar-divider, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.top .toolbar:not(.expecting-drop) .toolbar-divider, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.bottom .toolbar:not(.expecting-drop) .toolbar-divider, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) .auto-hide-wrapper.show .toolbar .toolbar-spacer button, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).address-top .toolbar-mainbar .toolbar-spacer button, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-mainbar .toolbar-spacer button, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-statusbar .toolbar-spacer button, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.top .toolbar:not(.expecting-drop) .toolbar-spacer button, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.bottom .toolbar:not(.expecting-drop) .toolbar-spacer button, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) .auto-hide-wrapper.show .toolbar .toolbar-spacer-flexible button, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).address-top .toolbar-mainbar .toolbar-spacer-flexible button, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-mainbar .toolbar-spacer-flexible button, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-statusbar .toolbar-spacer-flexible button, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.top .toolbar:not(.expecting-drop) .toolbar-spacer-flexible button, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.bottom .toolbar:not(.expecting-drop) .toolbar-spacer-flexible button, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) .auto-hide-wrapper.show .toolbar .toolbar-spacer-panel button, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).address-top .toolbar-mainbar .toolbar-spacer-panel button, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-mainbar .toolbar-spacer-panel button, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-statusbar .toolbar-spacer-panel button, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.top .toolbar:not(.expecting-drop) .toolbar-spacer-panel button, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.bottom .toolbar:not(.expecting-drop) .toolbar-spacer-panel button, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) .auto-hide-wrapper.show .toolbar .toolbar-divider button, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).address-top .toolbar-mainbar .toolbar-divider button, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-mainbar .toolbar-divider button, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-statusbar .toolbar-divider button, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.top .toolbar:not(.expecting-drop) .toolbar-divider button, #app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.bottom .toolbar:not(.expecting-drop) .toolbar-divider button {
+    -webkit-app-region: no-drag !important;
+}
+
+/* 弹窗存在时，tabs-container 保持展开 */
+body:has(
+  #browser > div.ToolbarButtonPopup-DefaultStyles.button-popup.button-popup-enter-done
+) #tabs-container {
+  max-width: 82% !important;
+  min-width: 82% !important;
+  transition:
+    min-width 200ms ease-out 300ms,
+    max-width 200ms ease-out 300ms;
+}
+
+/* 对称：subcontainer 同步收缩 */
+body:has(
+  #browser > div.ToolbarButtonPopup-DefaultStyles.button-popup.button-popup-enter-done
+) #tabs-subcontainer {
+  max-width: 18% !important;
+  min-width: 18% !important;
+  transition:
+    min-width 200ms ease-out 300ms,
+    max-width 200ms ease-out 300ms;
 }
