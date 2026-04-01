@@ -74,9 +74,11 @@ body:has(.auto-hide-wrapper) #tabs-tabbar-container .SlideBar {
     -webkit-app-region: no-drag !important;
 }
 
-/* 弹窗存在时，tabs-container 保持展开 */
-body:has(
-  #browser > div.ToolbarButtonPopup-DefaultStyles.button-popup.button-popup-enter-done
+/* 当且仅当弹窗是从标签栏内部的按钮（前置或后置工具栏）打开时，修改宽度 */
+
+/* 1. 修改主标签栏宽度 */
+body:has(#tabs-subcontainer):has(
+  #tabs-tabbar-container .ToolbarButton-Button.button-pressed
 ) #tabs-container {
   max-width: 82% !important;
   min-width: 82% !important;
@@ -85,9 +87,9 @@ body:has(
     max-width 200ms ease-out 300ms;
 }
 
-/* 对称：subcontainer 同步收缩 */
-body:has(
-  #browser > div.ToolbarButtonPopup-DefaultStyles.button-popup.button-popup-enter-done
+/* 2. 修改二级标签栈宽度 */
+body:has(#tabs-subcontainer):has(
+  #tabs-tabbar-container .ToolbarButton-Button.button-pressed
 ) #tabs-subcontainer {
   max-width: 18% !important;
   min-width: 18% !important;
