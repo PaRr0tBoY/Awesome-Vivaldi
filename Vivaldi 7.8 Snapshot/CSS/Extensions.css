@@ -3,8 +3,21 @@
    ======================================== */
 
 .toolbar-extensions {
-  /* scrollbar-width: none; */
+  display: flex;
+  flex-wrap: nowrap; /* 保持单行 */
+  overflow-x: auto; /* 溢出时水平滚动 */
+  overflow-y: hidden;
+  scrollbar-width: none; /* Firefox 隐藏滚动条 */
   gap: var(--densityGap);
+  max-width: 100%;
+}
+
+.toolbar-extensions::-webkit-scrollbar {
+  display: none; /* Webkit (Vivaldi) 隐藏滚动条 */
+}
+
+.toolbar-extensions .button-toolbar {
+  flex-shrink: 0; /* 防止图标被挤压变形 */
 }
 /*============================================================================*/
 
