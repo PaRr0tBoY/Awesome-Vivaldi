@@ -4,20 +4,21 @@
 
 .toolbar-extensions {
   display: flex;
-  flex-wrap: nowrap; /* 保持单行 */
-  overflow-x: auto; /* 溢出时水平滚动 */
+  flex-wrap: nowrap;
+  overflow-x: auto;
   overflow-y: hidden;
-  scrollbar-width: none; /* Firefox 隐藏滚动条 */
+  scrollbar-width: none;
   gap: var(--densityGap);
   max-width: 100%;
+  overscroll-behavior-x: contain;
 }
 
 .toolbar-extensions::-webkit-scrollbar {
-  display: none; /* Webkit (Vivaldi) 隐藏滚动条 */
+  display: none;
 }
 
 .toolbar-extensions .button-toolbar {
-  flex-shrink: 0; /* 防止图标被挤压变形 */
+  flex-shrink: 0;
 }
 /*============================================================================*/
 
