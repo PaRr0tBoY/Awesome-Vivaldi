@@ -1,0 +1,127 @@
+/*
+Tidy & Clear Tabs — Unified Styles
+version 2025.04.03
+Author PaRr0tBoY
+https://github.com/PaRr0tBoY/Awesome-Vivaldi
+
+Requires: TidyTabs.js + ClearTabs.js
+*/
+
+/* ============================================ */
+/* Separator Base                               */
+/* ============================================ */
+
+.tab-strip .separator {
+  position: relative;
+  overflow: visible !important;
+  margin-bottom: -14px !important;
+  box-sizing: content-box !important;
+}
+
+/* <hr> Truncation: do not draw line in the right button area */
+.tab-strip .separator hr {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0px,
+    black 8px,
+    black calc(100% - 80px),
+    transparent calc(100% - 80px)
+  );
+}
+
+/* ============================================ */
+/* Shared Button Styles                         */
+/* ============================================ */
+
+.tab-strip .separator .tidy-tabs-below-button,
+.tab-strip .separator .clear-tabs-below-button {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 4px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 10px;
+  color: var(--colorFgFadedMost, #808080);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease,
+    color 0.15s ease,
+    background-color 0.15s ease;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  background-color: transparent;
+  white-space: nowrap;
+  pointer-events: none;
+  border: none;
+  outline: none;
+}
+
+.tab-strip .separator .tidy-tabs-below-button {
+  right: 46px;
+}
+
+.tab-strip .separator .clear-tabs-below-button {
+  right: 14px;
+}
+
+#tabs-container:hover .tidy-tabs-below-button,
+#tabs-container:hover .clear-tabs-below-button {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.tidy-tabs-below-button:hover,
+.clear-tabs-below-button:hover {
+  color: var(--colorFg, white) !important;
+  background-color: var(--colorFgAlpha, rgba(255, 255, 255, 0.1)) !important;
+}
+
+/* ============================================ */
+/* Wave Loading Animation                       */
+/* ============================================ */
+
+/*
+  Loading state: hr becomes 8px high (±4px amplitude),
+  background: currentColor inherits tab bar text color,
+  mask cuts out SVG wave line shape, horizontal scrolling creates wave effect.
+
+  Wave SVG path (period 40px, amplitude 0→8):
+  M0,4 Q10,0 20,4 Q30,8 40,4
+*/
+
+.tab-strip .separator.tidy-loading hr {
+  border-color: transparent !important;
+  height: 8px !important;
+  background: currentColor !important;
+  opacity: 0.6;
+
+  /* Wave line mask: white stroke = visible area */
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='8'%3E%3Cpath d='M0,4 Q10,0 20,4 Q30,8 40,4' stroke='white' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") !important;
+  -webkit-mask-repeat: repeat-x !important;
+  -webkit-mask-size: 40px 8px !important;
+
+  animation: tidyWaveScroll 0.8s linear infinite !important;
+}
+
+@keyframes tidyWaveScroll {
+  from {
+    -webkit-mask-position-x: 0;
+  }
+  to {
+    -webkit-mask-position-x: 40px;
+  }
+}
+
+/* Hide buttons during loading */
+.tab-strip .separator.tidy-loading .tidy-tabs-below-button,
+.tab-strip .separator.tidy-loading .clear-tabs-below-button {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}

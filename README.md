@@ -1,5 +1,5 @@
 <div align="center">
-    <img width="200" height="200" src="/Others/Showcase/IMG_5682.png">
+    <img width="200" height="200" src="/Others/Showcase/IMG5682.png">
 </div>
 
 <div align="center">
@@ -15,7 +15,7 @@
 
 <div align="center">
 
-**English** | [简体中文](./Others/README-zh.md)
+**English** | [简体中文](./Others/READMEZh.md)
 
 </div>
 
@@ -36,7 +36,7 @@
 
 | Features                                                                                                      | Preview                                                                                                                                   |
 | :------------------------------------------------------------------------------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------- |
-| **Smart Sidebar Animations**<br>• Smooth expand/collapse transitions<br>• Intelligent show/hide functionality | <img alt="Smooth sidebar animation effects" height="300" src="./Others/Showcase/MainShowCase/sidebar.gif" />                              |
+| **Smart Sidebar Animations**<br>• Smooth expand/collapse transitions<br>• Intelligent show/hide functionality | <img alt="Smooth sidebar animation effects" height="300" src="./Others/Showcase/MainShowCase/Sidebar.gif" />                              |
 | **Dynamic Theme Colors**<br>• Automatic system theme adaptation<br>• Smooth color transition effects          | <img alt="Dynamic theme color changing demonstration" height="300" src="./Others/Showcase/MainShowCase/FollowThemeColor.gif" />           |
 | **Clean New Tab Page**<br>• Minimalist interface layout<br>• Fast access to favorite websites                 | <img alt="Clean and uncluttered new tab page" height="300" src="./Others/Showcase/MainShowCase/NeatNewTab.png" />                         |
 | **Expanded Webview**<br>• Optimized page display area<br>• Enhanced browsing experience                       | <img alt="Maximized webview for better content viewing" height="300" src="./Others/Showcase/MainShowCase/YouDeserveABiggerWebview.png" /> |
@@ -49,27 +49,27 @@
 <table>
 <tr>
 <td>Arc Peek</td>
-<td><img src="./Others/Showcase/Arc-like/ArcPeek.gif" height="300" /></td>
+<td><img src="./Others/Showcase/ArcLike/ArcPeek.gif" height="300" /></td>
 </tr>
 <tr>
 <td>Tidy Tabs with AI Powered</td>
-<td><img src="./Others/Showcase/Arc-like/AI-Feature/tidyTabs.gif" height="300" /></td>
+<td><img src="./Others/Showcase/ArcLike/AIFeature/TidyTabs.gif" height="300" /></td>
 </tr>
 <tr>
 <td>Tidy Titles With AI Powered</td>
-<td><img src="./Others/Showcase/Arc-like/AI-Feature/tidyTitles.gif" height="300" /></td>
+<td><img src="./Others/Showcase/ArcLike/AIFeature/TidyTitles.gif" height="300" /></td>
 </tr>
 <tr>
 <td>Clear Tabs</td>
-<td><img src="./Others/Showcase/Arc-like/AI-Feature/ClearTabs.gif" height="300" /></td>
+<td><img src="./Others/Showcase/ArcLike/AIFeature/ClearTabs.gif" height="300" /></td>
 </tr>
 <tr>
 <td>Peek Favourites Tab Title</td>
-<td><img src="./Others/Showcase/Arc-like/FavouritesTabs/FavouritesPeek.gif" height="300" /></td>
+<td><img src="./Others/Showcase/ArcLike/FavouritesTabs/FavouritesPeek.gif" height="300" /></td>
 </tr>
 <tr>
 <td>Pin Favourite Tabs</td>
-<td><img src="./Others/Showcase/Arc-like/FavouritesTabs/Pin-On-Top.gif" height="300" /></td>
+<td><img src="./Others/Showcase/ArcLike/FavouritesTabs/PinOnTop.gif" height="300" /></td>
 </tr>
 </table>
 
@@ -81,27 +81,27 @@
 <table>
 <tr>
 <td>Sleek Audio Icon</td>
-<td><img src="./Others/Showcase/feature-small/My-Mods/audioIcon.gif" height="300" /></td>
+<td><img src="./Others/Showcase/FeatureSmall/MyMods/AudioIcon.gif" height="300" /></td>
 </tr>
 <tr>
 <td>Global Media Control</td>
-<td><img src="./Others/Showcase/feature-small/Community/audio-panel.png" height="300" /></td>
+<td><img src="./Others/Showcase/FeatureSmall/Community/AudioPanel.png" height="300" /></td>
 </tr>
 <tr>
 <td>Who Needs a Disabled Button</td>
-<td><img src="./Others/Showcase/feature-small/My-Mods/adaptiveBF.gif" height="300" /></td>
+<td><img src="./Others/Showcase/FeatureSmall/MyMods/AdaptiveBF.gif" height="300" /></td>
 </tr>
 <tr>
 <td>Select Files From Your History Downloads From [@tam710562](https://forum.vivaldi.net/user/tam710562)</td>
-<td><img src="./Others/Showcase/feature-small/Community/easyFile.png" height="300" /></td>
+<td><img src="./Others/Showcase/FeatureSmall/Community/EasyFile.png" height="300" /></td>
 </tr>
 <tr>
 <td>Adds a Trail to Hovered and Active Tabs, Close Buttons As Well</td>
-<td><img src="./Others/Showcase/feature-small/My-Mods/TabTrails.gif" height="300" /></td>
+<td><img src="./Others/Showcase/FeatureSmall/MyMods/TabTrails.gif" height="300" /></td>
 </tr>
 <tr>
 <td>BiggerView</td>
-<td><img src="./Others/Showcase/feature-small/Community/biggerView.gif" height="300" /></td>
+<td><img src="./Others/Showcase/FeatureSmall/Community/BiggerView.gif" height="300" /></td>
 </tr>
 </table>
 
@@ -173,7 +173,7 @@
 1. If you're on windows, use [Vivaldi Mod Manager](https://github.com/eximido/vivaldimodmanager)
 2. If you're on linux, see [Vivaldi-Autoinject-Custom-js-ui](https://aur.archlinux.org/vivaldi-autoinject-custom-js-ui.git) for more info
 3. See also [Patching Vivaldi with batch scripts](https://forum.vivaldi.net/topic/10592/patching-vivaldi-with-batch-scripts/21?page=2) for all platform
-4. If you're on macOS use [macOS_Patch_Scripts | upviv](https://github.com/PaRr0tBoY/Vivaldi-Mods/blob/8a1e9f8a63f195f67f27ab2e5b86c4aff0081096/macOS_Patch_Scripts/upviv) as a reference for patchscript
+4. If you're on macOS use [macOS_Patch_Scripts | upviv](https://github.com/PaRr0tBoY/Vivaldi-Mods/blob/8a1e9f8a63f195f67f27ab2e5b86c4aff0081096/MacOSPatchScripts/upviv) as a reference for patchscript
 
 #### Install Manually
 
@@ -193,51 +193,51 @@
   </head>
 
   <body>
-    <script src="tidyTitles.js"></script>
+    <script src="TidyTitles.js"></script>
     \
-    <script src="tidyTabs.js"></script>
+    <script src="TidyTabs.js"></script>
     \
-    <script src="clearTabs.js"></script>
+    <script src="ClearTabs.js"></script>
     \
-    <script src="mainbar.js"></script>
+    <script src="Mainbar.js"></script>
     \
-    <script src="wrapToday.js"></script>
+    <script src="WrapToday.js"></script>
     \
-    <script src="immersiveAddressbar.js"></script>
+    <script src="ImmersiveAddressbar.js"></script>
     \
-    <script src="monochromeIcons.js"></script>
+    <script src="MonochromeIcons.js"></script>
     \
-    <script src="ybAddressBar.js"></script>
+    <script src="YbAddressBar.js"></script>
     \
-    <script src="mdNotes.js"></script>
+    <script src="MdNotes.js"></script>
     \
-    <script src="elementCapture.js"></script>
+    <script src="ElementCapture.js"></script>
     \
-    <script src="globalMediaControls.js"></script>
+    <script src="GlobalMediaControls.js"></script>
     \
-    <script src="autoHidePanel.js"></script>
+    <script src="AutoHidePanel.js"></script>
     \
-    <script src="easyFiles.js"></script>
+    <script src="EasyFiles.js"></script>
     \
-    <script src="dialogTab.js"></script>
+    <script src="DialogTab.js"></script>
     \
-    <script src="feedIcon.js"></script>
+    <script src="FeedIcon.js"></script>
     \
-    <script src="adaptiveWebPanelHeaders.js"></script>
+    <script src="AdaptiveWebPanelHeaders.js"></script>
     \
-    <script src="collapseKeyboardSettings.js"></script>
+    <script src="CollapseKeyboardSettings.js"></script>
     \
-    <script src="accentMod.js"></script>
+    <script src="AccentMod.js"></script>
     \
-    <script src="moonPhase.js"></script>
+    <script src="MoonPhase.js"></script>
     \
-    <script src="backupSearchEngines.js"></script>
+    <script src="BackupSearchEngines.js"></script>
     \
-    <script src="importExportCommandChains.js"></script>
+    <script src="ImportExportCommandChains.js"></script>
     \
-    <script src="tabScroll.js"></script>
+    <script src="TabScroll.js"></script>
     \
-    <script src="activateTabOnHover.js"></script>
+    <script src="ActivateTabOnHover.js"></script>
     \
   </body>
 </html>
@@ -252,7 +252,7 @@
 1. you can patch vivaldi with batch scripts. To learn more check [Patching Vivaldi with batch scripts](https://forum.vivaldi.net/topic/10592/patching-vivaldi-with-batch-scripts/21?page=2)
 2. To learn more about `js modddings` for Vivaldi check [Modding Vivaldi | Vivaldi Forum](https://forum.vivaldi.net/topic/10549/modding-vivaldi?page=1)
 3. To learn more about `css moddings` for Vivaldi by yourself check [Inspecting the Vivaldi UI with DevTools | Vivaldi Forum](https://forum.vivaldi.net/topic/16684/inspecting-the-vivaldi-ui-with-devtools?page=1)
-4. If you're on macOS use [macOS_Patch_Scripts | upviv](https://github.com/PaRr0tBoY/Vivaldi-Mods/blob/8a1e9f8a63f195f67f27ab2e5b86c4aff0081096/macOS_Patch_Scripts/upviv) as a reference for patchscript
+4. If you're on macOS use [macOS_Patch_Scripts | upviv](https://github.com/PaRr0tBoY/Vivaldi-Mods/blob/8a1e9f8a63f195f67f27ab2e5b86c4aff0081096/MacOSPatchScripts/upviv) as a reference for patchscript
 5. Arc like workspace switcher tutorial:[Paweł shows you how to play with Workspaces and Custom Icons in Vivaldi. | Vivaldi Browser](https://vivaldi.com/blog/how-to/pawel-shows-you-how-to-play-with-workspaces-and-custom-icons-in-vivaldi/)
 
 </details>

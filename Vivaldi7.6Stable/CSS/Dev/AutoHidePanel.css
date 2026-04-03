@@ -1,0 +1,101 @@
+/* ========================================
+   AUTO-HIDE PANELS
+   ======================================== */
+
+/* Base panel container style */
+#panels-container.left,
+#panels-container.right {
+  position: fixed !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  margin-top: calc(var(--mod-mainbar-height) + 6px);
+  z-index: 999 !important;
+  pointer-events: auto !important;
+  transition:
+    opacity 280ms ease-out,
+    width 280ms ease-out,
+    background-color 280ms ease-out !important;
+}
+
+#panels-container.left {
+  left: 0 !important;
+}
+
+#panels-container.right {
+  right: 0 !important;
+}
+
+/* Apply auto-hide effect only when .icons class is present */
+#panels-container.icons.left,
+#panels-container.icons.right {
+  width: 10px !important;
+  opacity: 0 !important;
+  background: transparent !important;
+}
+
+/* Show full panel on hover */
+#panels-container.icons:hover {
+  opacity: 1 !important;
+  background: var(--colorBg, #ffffff) !important;
+  width: 40px !important;
+}
+
+/* Keep visible when editor toolbar is open */
+body:has(:is(.toolbar-editor, .addwebpanel-wrapper))
+  #panels-container.icons:not(:hover),
+body:has(:is(.toolbar-editor, .addwebpanel-wrapper))
+  #panels-container.icons:not(:hover)
+  #panels {
+  width: 40px !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  background: var(--colorBg, #ffffff) !important;
+}
+
+/* Hide panel content only when .icons class is present */
+#panels-container.icons:not(:hover) #panels {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transition:
+    opacity 280ms ease-out,
+    visibility 280ms ease-out;
+}
+
+/* Show panel content on hover */
+#panels-container.icons:hover #panels {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transition:
+    opacity 280ms ease-out,
+    visibility 280ms ease-out;
+}
+
+/* Default styles without .icons class */
+#panels-container:not(.icons) {
+  width: auto !important;
+  opacity: 1 !important;
+  background: var(--colorBg, #ffffff) !important;
+}
+
+#panels-container:not(.icons) #panels {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* .panel-group {
+  margin-top: calc(var(--mod-mainbar-height) + 6px);
+} */
+
+/* Debug styles (commented out) */
+/*
+#panels-container.icons {
+  width: 40px !important;
+}
+
+#panels-container.icons #panels {
+  width: 40px !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transition: opacity 280ms ease-out, visibility 280ms ease-out;
+}
+*/
