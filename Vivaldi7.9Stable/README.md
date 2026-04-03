@@ -1,6 +1,6 @@
 ### Feature
 
-This folder is a collection of my css mods specifically for Vivaldi 7.8 snapshot, which introduced auto-hide and drop-tile features.
+This folder is a collection of my css mods specifically for Vivaldi 7.9 Stable.
 The modification is listed as follow:
 
 - Replace auto-hide animation with a smoother overscroll animation like Arc/Zen.
@@ -12,6 +12,7 @@ The modification is listed as follow:
 - Floating find bar
 - Better extensions panel and download panel mod from the community
 - Toolbar button hover animation mod from the community
+- and more,see it for yourself.
 
 ### How to install
 
