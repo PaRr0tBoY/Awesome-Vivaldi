@@ -6,7 +6,7 @@
     <h1>Awesome Vivaldi</h1>
 <div align="center">
 
-[![DeepWiki](https://img.shields.io/badge/DeepWiki-Docs-blue)](https://deepwiki.com/PaRr0tBoY/Awesome-Vivaldi/2.3.1-main-ui-styles)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/PaRr0tBoY/Awesome-Vivaldi)
 [![Vivaldi Forum](https://img.shields.io/badge/Vivaldi-Forum-red)](https://forum.vivaldi.net/topic/112064/modpack-community-essentials-mods-collection?_=1761221602450)
 ![GitHub Repo stars](https://img.shields.io/github/stars/PaRr0tBoY/Awesome-Vivaldi)
 
@@ -42,7 +42,9 @@
 
 # Introduction
 
-This modpack support 2 version of Vivaldi. - [Vivaldi 7.9 latest](./Vivaldi7.9Stable) Currently Under Development - [Vivaldi 7.6.\*](./Vivaldi7.6Stable) Deprecated
+This modpack support 2 version of Vivaldi. 
+- [Vivaldi 7.9 latest](./Vivaldi7.9Stable) Currently Under Development 
+- [Vivaldi 7.6.\*](./Vivaldi7.6Stable) Deprecated
 
 Please choose the modpack that matches your Vivaldi Version. Which version of Vivaldi browser are you using? If you're not sure, check it out at `vivaldi:about`.
 
