@@ -11,8 +11,8 @@ findPath="$(find /Applications/Vivaldi.app -name Vivaldi\ Framework.framework)"
 # Essential
 cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/YbAddressBar.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/EasyFiles.js "$findPath"/Resources/vivaldi/
-#cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/TidyTabs.js "$findPath"/Resources/vivaldi/
-#cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/TidyTitles.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/TidyTabs.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/TidyTitles.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/ClearTabs.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/ArcPeek.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/ElementCapture.js "$findPath"/Resources/vivaldi/
