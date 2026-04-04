@@ -225,19 +225,19 @@
 
       if (webviewData) {
         const dialogContainer = webviewData.divContainer;
+        const tabEl = dialogContainer.querySelector(".dialog-tab");
+
         dialogContainer.classList.remove("open");
         dialogContainer.classList.add("closing");
 
-        // Restore background webpage - modify body class only if corresponding CSS is supported
-        if (this.hasDialogCSS) {
-          document.body.classList.remove("dialog-open");
-        }
-
         // Wait for animation to end (only need to wait for .dialog-tab child animation)
-        const tabEl = dialogContainer.querySelector(".dialog-tab");
         tabEl.addEventListener(
           "animationend",
           () => {
+            // Restore background webpage - modify body class only if corresponding CSS is supported
+            if (this.hasDialogCSS) {
+              document.body.classList.remove("dialog-open");
+            }
             // Remove the entire container
             dialogContainer.remove();
             // Clean up from webviews collection
@@ -259,14 +259,15 @@
      * Checks if the current window is the correct window to show the dialog and then opens the dialog
      * @param {string} linkUrl the url to load
      * @param {boolean} fromPanel indicates whether the dialog is opened from a panel
+     * @param {Object} rect the bounding rect of the link
      */
-    dialogTab(linkUrl, fromPanel = undefined) {
+    dialogTab(linkUrl, fromPanel = undefined, rect = undefined) {
       chrome.windows.getLastFocused((window) => {
         if (
           window.id === vivaldiWindowId &&
           window.state !== chrome.windows.WindowState.MINIMIZED
         ) {
-          this.showDialog(linkUrl, fromPanel);
+          this.showDialog(linkUrl, fromPanel, rect);
         }
       });
     }
@@ -275,8 +276,9 @@
      * Opens a link in a dialog like display in the current visible tab
      * @param {string} linkUrl the url to load
      * @param {boolean} fromPanel indicates whether the dialog is opened from a panel
+     * @param {Object} linkRect coordinates of the link that triggered the dialog
      */
-    showDialog(linkUrl, fromPanel) {
+    showDialog(linkUrl, fromPanel, linkRect = undefined) {
       const dialogContainer = document.createElement("div"),
         dialogTab = document.createElement("div"),
         webview = document.createElement("webview"),
@@ -288,12 +290,11 @@
         fromPanel = Array.from(this.webviews.values()).at(-1).fromPanel;
       }
 
-      const tabId = !fromPanel
-        ? Number(
-            document.querySelector(".active.visible.webpageview webview")
-              .tab_id,
-          )
-        : null;
+      const activeWebview = document.querySelector(
+        ".active.visible.webpageview webview",
+      );
+      const tabId =
+        !fromPanel && activeWebview ? Number(activeWebview.tab_id) : null;
 
       // ESC key closing logic is in closeLastDialog method
 
@@ -302,6 +303,7 @@
         webview: webview,
         fromPanel: fromPanel,
         tabId: tabId,
+        linkRect: linkRect, // Store for closing animation
       });
 
       // remove dialogs when tab is closed without closing dialogs
@@ -323,17 +325,30 @@
       //#region dialogTab properties
       dialogTab.setAttribute("class", "dialog-tab");
 
-      let activeWebview = document.querySelector(
-        ".active.visible.webpageview webview",
-      );
       if (activeWebview) {
         const rect = activeWebview.getBoundingClientRect();
+        const targetWidth = rect.width * 0.85; // Wider preview
+        const targetHeight = rect.height * 0.9;
 
-        dialogTab.style.width = rect.width / 2 + "px";
+        dialogTab.style.width = targetWidth + "px";
+        dialogTab.style.height = targetHeight + "px";
 
-        dialogTab.style.height = rect.height + 5 + "px";
+        if (linkRect) {
+          // linkRect is relative to webview viewport.
+          // rect is the webview's position relative to the browser window.
+          const startX = rect.left + linkRect.left + linkRect.width / 2;
+          const startY = rect.top + linkRect.top + linkRect.height / 2;
 
-        dialogTab.style.margin = "5px 0";
+          // Variables for animation. Since .dialog-tab is centered in .dialog-container (fixed 0,0,0,0),
+          // its base position is (window.innerWidth/2, window.innerHeight/2).
+          dialogTab.style.setProperty("--start-x", `${startX}px`);
+          dialogTab.style.setProperty("--start-y", `${startY}px`);
+          dialogTab.style.setProperty("--start-width", `${linkRect.width}px`);
+          dialogTab.style.setProperty("--start-height", `${linkRect.height}px`);
+
+          dialogTab.style.setProperty("--end-width", `${targetWidth}px`);
+          dialogTab.style.setProperty("--end-height", `${targetHeight}px`);
+        }
       }
 
       //#endregion
@@ -659,7 +674,7 @@
       // react on demand to open a dialog
       chrome.runtime.onMessage.addListener((message) => {
         if (message.url) {
-          openDialog(message.url, message.fromPanel);
+          openDialog(message.url, message.fromPanel, message.rect);
         }
       });
     }
@@ -749,7 +764,7 @@
      */
     #setupMouseHandling() {
       let holdTimerForMiddleClick;
-      let holdTimerForRightClick;
+      let holdTimer;
 
       document.addEventListener("pointerdown", (event) => {
         // Check if the Ctrl key, Alt key, and mouse button were pressed
@@ -760,7 +775,7 @@
             () => this.#callDialog(event),
             500,
           );
-        } else if (event.button === 2) {
+        } else if (event.button === 0 || event.button === 2) {
           // Only create and show progress ring on long press over a link
           const link = this.#getLinkElement(event);
           if (link) {
@@ -896,7 +911,7 @@
               }, 16); // ~60fps
             }, this.config.rightClickHoldDelay);
 
-            holdTimerForRightClick = setTimeout(() => {
+            holdTimer = setTimeout(() => {
               event.preventDefault();
               event.stopPropagation();
               this.#callDialog(event);
@@ -911,8 +926,8 @@
 
       document.addEventListener("pointerup", (event) => {
         if (event.button === 1) clearTimeout(holdTimerForMiddleClick);
-        if (event.button === 2) {
-          clearTimeout(holdTimerForRightClick);
+        if (event.button === 0 || event.button === 2) {
+          clearTimeout(holdTimer);
           if (this.rightClickFeedbackElement && this.progressCircle) {
             this.rightClickFeedbackElement.style.opacity = "0";
             this.progressCircle.setAttribute(
@@ -1003,8 +1018,8 @@
       return event.target.closest('a[href]:not([href="#"])');
     }
 
-    #sendDialogMessage(url) {
-      chrome.runtime.sendMessage({ url, fromPanel: this.fromPanel });
+    #sendDialogMessage(url, rect) {
+      chrome.runtime.sendMessage({ url, fromPanel: this.fromPanel, rect });
     }
 
     #callDialog(event) {
@@ -1013,7 +1028,14 @@
         event.preventDefault();
         event.stopPropagation();
         this.dialogTriggered = true;
-        this.#sendDialogMessage(link.href);
+
+        const rect = link.getBoundingClientRect();
+        this.#sendDialogMessage(link.href, {
+          left: rect.left,
+          top: rect.top,
+          width: rect.width,
+          height: rect.height,
+        });
       }
     }
 

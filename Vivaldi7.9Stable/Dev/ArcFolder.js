@@ -56,7 +56,10 @@
       });
     }
 
-    console.log("[ArcFolder.js] initialized, tabbar width:", tabbarContainer.offsetWidth + "px");
+    console.log(
+      "[ArcFolder.js] initialized, tabbar width:",
+      tabbarContainer.offsetWidth + "px",
+    );
     return true;
   }
 

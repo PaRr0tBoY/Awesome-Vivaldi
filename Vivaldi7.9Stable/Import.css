@@ -14,7 +14,7 @@
 /* Community Mods */
 @import "CSS/DownloadPanel.css";
 @import "CSS/Extensions.css";
-@import "CSS/LineBreak.css"; 
+@import "CSS/LineBreak.css";
 /* @import "CSS/BtnHoverAnime.css";  */
 
 /* underActiveDev */
@@ -113,7 +113,6 @@
 /* ========================================
    HIDE ADDRESS BAR WHEN TABS ARE HIDDEN
    ======================================== */
-
 
 /* #browser:not(.tabs-top):not(.tabs-bottom):not(.fullscreen) #webpage-stack {
   border-radius: 15px 15px 15px 15px;

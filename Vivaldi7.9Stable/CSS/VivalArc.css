@@ -7,9 +7,15 @@ vivaldi version: v6.8
 /* ==================== CSS Variable Definition Area ==================== */
 :root {
   --window-border: 10px; /* Window border width, recommend 4px~16px, mimics Arc rounded border effect */
-  --mac-header: calc(var(--window-border) + 4px); /* Mac titlebar extra height */
-  --win-header: calc(var(--window-border) + 4px); /* Windows titlebar extra height */
-  --linux-header: calc(var(--window-border) + 6px); /* Linux titlebar extra height */
+  --mac-header: calc(
+    var(--window-border) + 4px
+  ); /* Mac titlebar extra height */
+  --win-header: calc(
+    var(--window-border) + 4px
+  ); /* Windows titlebar extra height */
+  --linux-header: calc(
+    var(--window-border) + 6px
+  ); /* Linux titlebar extra height */
   --addressbar-height: 36px; /* Addressbar height */
   --window-button-scale: 0.8; /* Window button scaling ratio */
   --window-button-opacity: 0.3; /* Window button default opacity */
