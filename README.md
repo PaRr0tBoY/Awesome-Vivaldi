@@ -42,7 +42,9 @@
 
 # Introduction
 
-This modpack support 2 version of Vivaldi. - [Vivaldi 7.9 latest](./Vivaldi7.9Stable) Currently Under Development - [Vivaldi 7.6.\*](./Vivaldi7.6Stable) Deprecated
+This modpack support 2 version of Vivaldi. 
+- [Vivaldi 7.9 latest](./Vivaldi7.9Stable) Currently Under Development 
+- [Vivaldi 7.6.\*](./Vivaldi7.6Stable) Deprecated
 
 Please choose the modpack that matches your Vivaldi Version. Which version of Vivaldi browser are you using? If you're not sure, check it out at `vivaldi:about`.
 
