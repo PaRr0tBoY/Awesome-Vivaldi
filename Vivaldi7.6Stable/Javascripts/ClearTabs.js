@@ -165,20 +165,28 @@
       for (const mutation of mutations) {
         if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
           for (const node of mutation.addedNodes) {
-            if (node.nodeType === Node.ELEMENT_NODE && node.tagName === "SPAN") {
+            if (
+              node.nodeType === Node.ELEMENT_NODE &&
+              node.tagName === "SPAN"
+            ) {
               hasTabChange = true;
               break;
             }
           }
         }
-        if (mutation.type === "attributes" && mutation.attributeName === "aria-owns") {
+        if (
+          mutation.type === "attributes" &&
+          mutation.attributeName === "aria-owns"
+        ) {
           hasWorkspaceSwitch = true;
         }
         if (hasTabChange && hasWorkspaceSwitch) break;
       }
 
       if (hasTabChange || hasWorkspaceSwitch) {
-        const delay = hasWorkspaceSwitch ? DELAYS.WORKSPACE_SWITCH : DELAYS.MUTATION;
+        const delay = hasWorkspaceSwitch
+          ? DELAYS.WORKSPACE_SWITCH
+          : DELAYS.MUTATION;
         scheduleAttachButtons(delay);
       }
     });

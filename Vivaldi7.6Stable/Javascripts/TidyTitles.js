@@ -76,9 +76,7 @@
     chrome.i18n?.getUILanguage?.() || navigator.language || "zh-CN";
 
   const getLanguageName = (langCode) =>
-    LANGUAGE_MAP[langCode] ||
-    LANGUAGE_MAP[langCode.split("-")[0]] ||
-    "English";
+    LANGUAGE_MAP[langCode] || LANGUAGE_MAP[langCode.split("-")[0]] || "English";
 
   const parseAIResponse = (content) => {
     if (!content) return null;
@@ -87,15 +85,19 @@
     const m = s.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/i);
     if (m) s = m[1].trim();
     // Find first { and last }
-    const first = s.indexOf("{"), last = s.lastIndexOf("}");
+    const first = s.indexOf("{"),
+      last = s.lastIndexOf("}");
     if (first !== -1 && last !== -1) {
       s = s.substring(first, last + 1);
     }
-    try { 
-      return JSON.parse(s); 
-    } catch (e) { 
-      console.error("[TidyTitles] JSON parse failed for content:", s.substring(0, 100) + "...");
-      return null; 
+    try {
+      return JSON.parse(s);
+    } catch (e) {
+      console.error(
+        "[TidyTitles] JSON parse failed for content:",
+        s.substring(0, 100) + "...",
+      );
+      return null;
     }
   };
 
@@ -104,7 +106,7 @@
    */
   async function generateOptimizedTitle(originalTitle, url) {
     // Skip special/internal URLs that cause permission errors
-    if (!url || (!url.startsWith('http') && !url.startsWith('https'))) {
+    if (!url || (!url.startsWith("http") && !url.startsWith("https"))) {
       console.log(`[TidyTitles] Skipping non-web URL: ${url}`);
       return originalTitle;
     }
@@ -136,14 +138,18 @@ Rules:
       const payload = {
         model: CONFIG.MODEL,
         messages: [
-          { role: "system", content: "You are a professional editor. You must output valid JSON. No conversation, no preamble, no thinking." },
+          {
+            role: "system",
+            content:
+              "You are a professional editor. You must output valid JSON. No conversation, no preamble, no thinking.",
+          },
           { role: "user", content: prompt },
         ],
         temperature: 0.1,
         max_tokens: 500,
         stream: false,
         // Standard OpenAI JSON mode
-        response_format: { type: "json_object" }
+        response_format: { type: "json_object" },
       };
 
       if (isGLM) {
@@ -171,26 +177,32 @@ Rules:
       // Handle common "pseudo-200" errors or non-OK responses
       if (!response.ok || (data && data.error)) {
         const status = response.status;
-        const errMsg = data?.error?.message || data?.error || `Status ${status}`;
-        
+        const errMsg =
+          data?.error?.message || data?.error || `Status ${status}`;
+
         // Suppress noisy logs for common issues like 429 or 401
         if (status === 429) {
-          console.warn(`[TidyTitles] API rate limit reached (429). Skipping for now.`);
+          console.warn(
+            `[TidyTitles] API rate limit reached (429). Skipping for now.`,
+          );
         } else {
           console.error(`[TidyTitles] API error (${status}): ${errMsg}`);
         }
         return originalTitle;
       }
-      
+
       if (!data || !data.choices || data.choices.length === 0) {
-        console.warn("[TidyTitles] API response missing choices:", JSON.stringify(data));
+        console.warn(
+          "[TidyTitles] API response missing choices:",
+          JSON.stringify(data),
+        );
         return originalTitle;
       }
 
       // Robustly extract content from various OpenAI-compatible formats
       let rawContent = "";
       const choice = data.choices[0];
-      
+
       if (choice.message) {
         rawContent = choice.message.content || choice.message.refusal || "";
       } else if (choice.text) {
@@ -199,11 +211,14 @@ Rules:
 
       // Debug log for empty results
       if (!rawContent) {
-        console.log(`[TidyTitles] AI returned empty content. Choice:`, JSON.stringify(choice));
+        console.log(
+          `[TidyTitles] AI returned empty content. Choice:`,
+          JSON.stringify(choice),
+        );
       }
 
       console.log(`[TidyTitles] AI raw response: "${rawContent || "EMPTY"}"`);
-      
+
       // Clean up potential thinking/thought tags
       rawContent = (rawContent || "")
         .replace(/<(thought|reasoning)>[\s\S]*?<\/\1>/gi, "")
@@ -237,14 +252,21 @@ Rules:
 
       vivExtData.fixedTitle = newTitle;
 
-      chrome.tabs.update(tabId, { vivExtData: JSON.stringify(vivExtData) }, () => {
-        if (chrome.runtime.lastError) {
-          console.error("[TidyTitles] Failed to update tab:", chrome.runtime.lastError.message);
-        } else {
-          console.log(`[TidyTitles] ✓ ${tabId} → ${newTitle}`);
-          processedTabs.add(tabId);
-        }
-      });
+      chrome.tabs.update(
+        tabId,
+        { vivExtData: JSON.stringify(vivExtData) },
+        () => {
+          if (chrome.runtime.lastError) {
+            console.error(
+              "[TidyTitles] Failed to update tab:",
+              chrome.runtime.lastError.message,
+            );
+          } else {
+            console.log(`[TidyTitles] ✓ ${tabId} → ${newTitle}`);
+            processedTabs.add(tabId);
+          }
+        },
+      );
     });
   }
 
@@ -256,9 +278,11 @@ Rules:
     if (!tabIdStr) return;
 
     const tabId = parseInt(tabIdStr.replace("tab-", ""));
-    
+
     if (processedTabs.has(tabId)) {
-      console.log(`[TidyTitles] Tab ${tabId} has already been processed, skipping.`);
+      console.log(
+        `[TidyTitles] Tab ${tabId} has already been processed, skipping.`,
+      );
       return;
     }
 
@@ -266,7 +290,10 @@ Rules:
 
     chrome.tabs.get(tabId, async (tab) => {
       if (chrome.runtime.lastError) {
-        console.warn(`[TidyTitles] Could not get info for tab ${tabId}:`, chrome.runtime.lastError.message);
+        console.warn(
+          `[TidyTitles] Could not get info for tab ${tabId}:`,
+          chrome.runtime.lastError.message,
+        );
         return;
       }
 
@@ -279,7 +306,9 @@ Rules:
 
       // Skip if it already has a fixedTitle
       if (vivExtData.fixedTitle) {
-        console.log(`[TidyTitles] Tab ${tabId} already has custom title ("${vivExtData.fixedTitle}"), skipping.`);
+        console.log(
+          `[TidyTitles] Tab ${tabId} already has custom title ("${vivExtData.fixedTitle}"), skipping.`,
+        );
         processedTabs.add(tabId);
         return;
       }
@@ -287,16 +316,20 @@ Rules:
       // Add loading animation class
       tabElement.classList.add("tidy-title-loading");
 
-      console.log(`[TidyTitles] Requesting AI generated title for tab ${tabId} ("${tab.title}")...`);
+      console.log(
+        `[TidyTitles] Requesting AI generated title for tab ${tabId} ("${tab.title}")...`,
+      );
 
       try {
         const optimizedTitle = await generateOptimizedTitle(
           tab.title || "",
           tab.url || "",
         );
-        
+
         if (optimizedTitle === tab.title) {
-          console.log(`[TidyTitles] AI returned title is identical or generation failed, no changes made (${tabId})`);
+          console.log(
+            `[TidyTitles] AI returned title is identical or generation failed, no changes made (${tabId})`,
+          );
           // Do not add to processed list on failure, allowing retry
           return;
         }
@@ -317,7 +350,9 @@ Rules:
       ".tab-position.is-pinned:not(.is-substack) .tab-wrapper",
     );
 
-    console.log(`[TidyTitles] Init: detected ${pinnedTabElements.length} pinned tabs`);
+    console.log(
+      `[TidyTitles] Init: detected ${pinnedTabElements.length} pinned tabs`,
+    );
 
     for (const tabElement of pinnedTabElements) {
       await processSingleTab(tabElement);
@@ -336,14 +371,19 @@ Rules:
 
     innerObserver = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
-        if (mutation.type !== "attributes" || mutation.attributeName !== "class") continue;
+        if (
+          mutation.type !== "attributes" ||
+          mutation.attributeName !== "class"
+        )
+          continue;
 
         const target = mutation.target;
         if (!target.classList?.contains("tab-position")) continue;
         if (target.classList.contains("is-substack")) continue;
 
         const isPinnedNow = target.classList.contains("is-pinned");
-        const wasPinnedBefore = mutation.oldValue?.includes("is-pinned") || false;
+        const wasPinnedBefore =
+          mutation.oldValue?.includes("is-pinned") || false;
 
         if (isPinnedNow && !wasPinnedBefore) {
           const tabWrapper = target.querySelector(".tab-wrapper");
@@ -379,12 +419,12 @@ Rules:
    */
   function init() {
     console.log("[TidyTitles] ✓ AI Tab Title Optimization module started");
-    
+
     injectStyles();
 
     const tabStrip = document.querySelector(".tab-strip");
     if (tabStrip) observeTabStripInner(tabStrip);
-    
+
     observeRoot();
     checkPinnedTabs();
   }

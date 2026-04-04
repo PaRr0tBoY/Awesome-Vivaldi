@@ -30,6 +30,20 @@
 
 <br/>
 
+# Table of Contents
+
+- [Features](#features)
+  - [ScreenShots](#screenshots)
+  - [Arc Like Workspaces](#lets-make-it-arc-not-just-look)
+  - [Nice-to-Have Tweaks](#nice-to-have-tweaks)
+- [How To Install](#how-to-install)
+  - [Adjust Vivaldi Settings](#i-adjust-vivaldi-settings)
+  - [Install Mods](#ii-install-mods)
+  - [Advanced Reading](#iii-advanced-reading)
+- [Community Mods](#community-mods)
+
+<br/>
+
 # **Features**
 
 ## ScreenShots

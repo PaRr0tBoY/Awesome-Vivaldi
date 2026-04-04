@@ -11,15 +11,16 @@ findPath="$(find /Applications/Vivaldi.app -name Vivaldi\ Framework.framework)"
 # Essential
 cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/YbAddressBar.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/EasyFiles.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/TidyTabs.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/TidyTitles.js "$findPath"/Resources/vivaldi/
+#cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/TidyTabs.js "$findPath"/Resources/vivaldi/
+#cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/TidyTitles.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/ClearTabs.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/DialogTab.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/ArcPeek.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/ElementCapture.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/GlobalMediaControls.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/MonochromeIcons.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/TabScroll.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/AutoHidePanel.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/Essential.js "$findPath"/Resources/vivaldi/
 
 # Need to Clarify
 # cp /Users/acid/Desktop/VivaldiModpack/Javascripts/luetage/accentMod.js "$findPath"/Resources/vivaldi/
@@ -74,8 +75,9 @@ sed -i '' -e '/<\/body>/i\
 <script src="elementCapture.js"></script>\
 <script src="globalMediaControls.js"></script>\
 <script src="easyFiles.js"></script>\
-<script src="dialogTab.js"></script>\
+<script src="ArcPeek.js"></script>\
 <script src="autoHidePanel.js"></script>\
+<script src="Essential.js"></script>\
 ' "$browserHtml"
 
 # <script src="arcFolder.js"></script>\

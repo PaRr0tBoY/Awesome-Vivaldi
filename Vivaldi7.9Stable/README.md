@@ -1,18 +1,23 @@
-### Feature
+## Table of Contents
 
-This folder is a collection of my css mods specifically for Vivaldi 7.9 Stable.
-The modification is listed as follow:
+- [Feature Showcase](#feature-showcase)
+- [Mod List](#mod-list)
+  - [CSS](#css)
+  - [Javascripts](#javascripts)
+  - [Dev (incomplete / buggy / WIP)](#dev-incomplete--buggy--wip)
+- [How to install](#how-to-install)
+  - [CSS Mods](#to-install-css-mods)
+  - [Javascripts Mods](#to-install-javascripts-mods)
 
-- Replace auto-hide animation with a smoother overscroll animation like Arc/Zen.
-- Introduce Favourite Tabs,inspired by Arc. Treat first 9 pinned tabs as Application and turn them into grids.
-- Better 2 level tab stack. You can now peek the main tabbar by hovering mouse over when in a tab stack. It's always a pain in the ass
-  to have to fit two level tab stack in a thin tabbar.
-- Better looking quick command panel
-- Tab trail indicator
-- Floating find bar
-- Better extensions panel and download panel mod from the community
-- Toolbar button hover animation mod from the community
-- and more,see it for yourself.
+## Feature Showcase
+
+| Demo                                                 | Mods                                                              |
+| ---------------------------------------------------- | ----------------------------------------------------------------- |
+| ![FavouriteTabs](../Others/assets/FavouriteTabs.gif) | `FavouriteTabs.css`                                               |
+| ![VivaldiMax](../Others/assets/VivaldiMax.gif)       | `TidyTabs.css` + `TidyTabs.js` + `ClearTabs.js` + `TidyTitles.js` |
+| ![PeekTabbar](../Others/assets/PeekTabbar.gif)       | `PeekTabbar.css`                                                  |
+| ![ArcPeek](../Others/assets/ArcPeek.gif)             | `ArcPeek.css` + `ArcPeek.js`                                      |
+| ![Quietify](../Others/assets/Quietify.gif)           | `Quietify.css`                                                    |
 
 ## Mod List
 
@@ -21,7 +26,7 @@ The modification is listed as follow:
 | File                  | Description                                                 |
 | --------------------- | ----------------------------------------------------------- |
 | `AdaptiveBF.css`      | Hide back/forward buttons when unnecessary                  |
-| `ArcPeek.css`         | Arc peek experience (pair with `DialogTab.js`)              |
+| `ArcPeek.css`         | Arc peek experience (pair with `ArcPeek.js`)                |
 | `BetterAnimation.css` | Smoother overscroll animation                               |
 | `BtnHoverAnime.css`   | Button hover animation _(disabled by default)_              |
 | `DownloadPanel.css`   | Download panel theming                                      |
@@ -37,14 +42,13 @@ The modification is listed as follow:
 | `TidyTabs.css`        | AI tab grouping _(requires `TidyTabs.js` + `ClearTabs.js`)_ |
 | `VivalArc.css`        | Arc theme port _(incompatible with this modpack)_           |
 
-
 ### Javascripts
 
 | File                     | Description                                              |
 | ------------------------ | -------------------------------------------------------- |
 | `AutoHidePanel.js`       | Auto-hide side panel                                     |
 | `ClearTabs.js`           | Clean tab separators _(pairs with `TidyTabs.css`)_       |
-| `DialogTab.js`           | Arc peek dialog support _(pairs with `ArcPeek.css`)_     |
+| `ArcPeek.js`             | Arc peek dialog support _(pairs with `ArcPeek.css`)_     |
 | `EasyFiles.js`           | Opera-inspired file attachment via clipboard & downloads |
 | `ElementCapture.js`      | Auto-select capture area for screenshots                 |
 | `GlobalMediaControls.js` | Global Media Controls panel (Chrome-like)                |
@@ -53,7 +57,6 @@ The modification is listed as follow:
 | `TidyTabs.js`            | AI tab grouping _(pairs with `TidyTabs.css`)_            |
 | `TidyTitles.js`          | AI tab title cleanup                                     |
 | `YbAddressBar.js`        | Address bar enhancements(buggy)                          |
-
 
 ### Dev (incomplete / buggy / WIP)
 

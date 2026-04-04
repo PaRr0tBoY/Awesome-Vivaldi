@@ -9,17 +9,17 @@
       url: "https://open.bigmodel.cn/api/paas/v4/chat/completions",
       key: "",
       model: "glm-4.7-flash",
-  
+
       // === Mimo ===
       // url: "https://api.xiaomimimo.com/v1/chat/completions",
       // key: "",
       // model: "mimo-v2-flash",
-  
+
       // === Openrouter/Free Quite Buggy===
       // url: "https://openrouter.ai/api/v1/chat/completions",
       // key: "",
       // model: "openrouter/free",
-  
+
       // === Deepseek ===
       // url: 'https://api.deepseek.com/v1/chat/completions',
       // key: "",
@@ -58,16 +58,35 @@
   };
 
   const LANGUAGE_MAP = {
-    zh: "Chinese", "zh-CN": "Chinese", "zh-TW": "Chinese",
-    en: "English", "en-US": "English", "en-GB": "English",
-    ja: "Japanese", "ja-JP": "Japanese",
-    ko: "Korean", "ko-KR": "Korean",
-    es: "Spanish", fr: "French", de: "German",
-    ru: "Russian", pt: "Portuguese", it: "Italian",
-    ar: "Arabic", hi: "Hindi",
+    zh: "Chinese",
+    "zh-CN": "Chinese",
+    "zh-TW": "Chinese",
+    en: "English",
+    "en-US": "English",
+    "en-GB": "English",
+    ja: "Japanese",
+    "ja-JP": "Japanese",
+    ko: "Korean",
+    "ko-KR": "Korean",
+    es: "Spanish",
+    fr: "French",
+    de: "German",
+    ru: "Russian",
+    pt: "Portuguese",
+    it: "Italian",
+    ar: "Arabic",
+    hi: "Hindi",
   };
 
-  const OTHERS_NAMES = ["其它", "Others", "その他", "Other", "Outros", "Andere", "Autres"];
+  const OTHERS_NAMES = [
+    "其它",
+    "Others",
+    "その他",
+    "Other",
+    "Outros",
+    "Andere",
+    "Autres",
+  ];
 
   let debounceTimer = null;
 
@@ -81,17 +100,23 @@
 
   const getOthersName = () => {
     const lang = getLanguageName(getBrowserLanguage());
-    return { "Chinese": "Others", "Japanese": "Others" }[lang] || "Others";
+    return { Chinese: "Others", Japanese: "Others" }[lang] || "Others";
   };
 
   const getUrlFragments = (url) => {
     try {
-      if (vivaldi?.utilities?.getUrlFragments) return vivaldi.utilities.getUrlFragments(url);
-    } catch (e) { /* fallback */ }
+      if (vivaldi?.utilities?.getUrlFragments)
+        return vivaldi.utilities.getUrlFragments(url);
+    } catch (e) {
+      /* fallback */
+    }
     try {
       const u = new URL(url);
       const parts = u.hostname.split(".");
-      return { hostForSecurityDisplay: u.hostname, tld: parts.length > 1 ? parts[parts.length - 1] : "" };
+      return {
+        hostForSecurityDisplay: u.hostname,
+        tld: parts.length > 1 ? parts[parts.length - 1] : "",
+      };
     } catch (e) {
       return { hostForSecurityDisplay: "", tld: "" };
     }
@@ -108,9 +133,16 @@
   const getTab = (tabId) =>
     new Promise((resolve) => {
       chrome.tabs.get(tabId, (tab) => {
-        if (chrome.runtime.lastError) { resolve(null); return; }
+        if (chrome.runtime.lastError) {
+          resolve(null);
+          return;
+        }
         if (tab.vivExtData) {
-          try { tab.vivExtData = JSON.parse(tab.vivExtData); } catch (e) { /* ignore */ }
+          try {
+            tab.vivExtData = JSON.parse(tab.vivExtData);
+          } catch (e) {
+            /* ignore */
+          }
         }
         resolve(tab);
       });
@@ -130,22 +162,33 @@
 
   const isAutoStackAllowed = async (workspaceId) => {
     if (CONFIG.autoStackWorkspaces.length === 0) return false;
-    return CONFIG.autoStackWorkspaces.includes(await getWorkspaceName(workspaceId));
+    return CONFIG.autoStackWorkspaces.includes(
+      await getWorkspaceName(workspaceId),
+    );
   };
 
   const getTabsByWorkspace = (workspaceId) =>
     new Promise((resolve) => {
       chrome.tabs.query({ currentWindow: true }, async (tabs) => {
-        if (chrome.runtime.lastError) { resolve([]); return; }
+        if (chrome.runtime.lastError) {
+          resolve([]);
+          return;
+        }
         const valid = [];
         for (const tab of tabs) {
           if (tab.id === -1 || !tab.vivExtData) continue;
           try {
             const viv = JSON.parse(tab.vivExtData);
-            if (viv.workspaceId === workspaceId && !tab.pinned && !viv.panelId) {
+            if (
+              viv.workspaceId === workspaceId &&
+              !tab.pinned &&
+              !viv.panelId
+            ) {
               valid.push({ ...tab, vivExtData: viv });
             }
-          } catch (e) { /* skip */ }
+          } catch (e) {
+            /* skip */
+          }
         }
         resolve(valid);
       });
@@ -159,7 +202,8 @@
     viv.group = stackId;
     return new Promise((resolve) => {
       chrome.tabs.update(tabId, { vivExtData: JSON.stringify(viv) }, () => {
-        if (chrome.runtime.lastError) console.error("[TidyTabs]", chrome.runtime.lastError.message);
+        if (chrome.runtime.lastError)
+          console.error("[TidyTabs]", chrome.runtime.lastError.message);
         resolve();
       });
     });
@@ -169,7 +213,8 @@
     if (chrome?.notifications) {
       chrome.notifications.create({
         type: "basic",
-        iconUrl: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><text y="32" font-size="32">⚠️</text></svg>',
+        iconUrl:
+          'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><text y="32" font-size="32">⚠️</text></svg>',
         title: "TidyTabs",
         message,
       });
@@ -183,28 +228,34 @@
   const buildAIPrompt = (tabs, existingStacks, languageName) => {
     // Build a map from chrome tab.id → local index for opener reference
     const chromeIdToIndex = {};
-    tabs.forEach((tab, i) => { chromeIdToIndex[tab.id] = i; });
+    tabs.forEach((tab, i) => {
+      chromeIdToIndex[tab.id] = i;
+    });
 
     const tabsInfo = tabs.map((tab, i) => ({
       id: i,
       title: tab.title || "Untitled",
       domain: getHostname(tab.url),
-      openerIndex: tab.openerTabId != null ? chromeIdToIndex[tab.openerTabId] : undefined,
+      openerIndex:
+        tab.openerTabId != null ? chromeIdToIndex[tab.openerTabId] : undefined,
     }));
 
     // Format each tab as "domain/id: title" with optional "↳ opener_domain/opener_id"
-    const tabLines = tabsInfo.map((t) => {
-      let line = `${t.domain}/${t.id}: ${t.title}`;
-      if (t.openerIndex !== undefined) {
-        const opener = tabsInfo[t.openerIndex];
-        if (opener) line = `${line}\n  \u21b3 ${opener.domain}/${opener.id}`;
-      }
-      return line;
-    }).join("\n");
+    const tabLines = tabsInfo
+      .map((t) => {
+        let line = `${t.domain}/${t.id}: ${t.title}`;
+        if (t.openerIndex !== undefined) {
+          const opener = tabsInfo[t.openerIndex];
+          if (opener) line = `${line}\n  \u21b3 ${opener.domain}/${opener.id}`;
+        }
+        return line;
+      })
+      .join("\n");
 
-    const existingInfo = existingStacks.length > 0
-      ? existingStacks.map((s) => `- ${s.name || "Unnamed"}`).join("\n")
-      : "None";
+    const existingInfo =
+      existingStacks.length > 0
+        ? existingStacks.map((s) => `- ${s.name || "Unnamed"}`).join("\n")
+        : "None";
 
     const othersName = getOthersName();
 
@@ -232,15 +283,22 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
     let s = content.trim();
     const m = s.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
     if (m) s = m[1].trim();
-    const first = s.indexOf("{"), last = s.lastIndexOf("}");
+    const first = s.indexOf("{"),
+      last = s.lastIndexOf("}");
     if (first !== -1 && last !== -1) s = s.substring(first, last + 1);
-    try { return JSON.parse(s); }
-    catch (e) { console.error("[TidyTabs] JSON parse error:", e); return null; }
+    try {
+      return JSON.parse(s);
+    } catch (e) {
+      console.error("[TidyTabs] JSON parse error:", e);
+      return null;
+    }
   };
 
   const validateAIGroups = (result) => {
     if (!result?.groups || !Array.isArray(result.groups)) return false;
-    return result.groups.every((g) => g.name && typeof g.name === "string" && Array.isArray(g.tab_ids));
+    return result.groups.every(
+      (g) => g.name && typeof g.name === "string" && Array.isArray(g.tab_ids),
+    );
   };
 
   const mapAIResultsToGroups = (aiResult, tabs, existingStacks) => {
@@ -267,28 +325,52 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
     if (othersGroup) {
       othersGroup.tabs.push(...orphans);
     } else {
-      const existing = existingStacks.find((s) => OTHERS_NAMES.includes(s.name));
+      const existing = existingStacks.find((s) =>
+        OTHERS_NAMES.includes(s.name),
+      );
       if (existing) {
-        groupedTabs.push({ name: existing.name, tabs: orphans, stackId: existing.id, isExisting: true });
+        groupedTabs.push({
+          name: existing.name,
+          tabs: orphans,
+          stackId: existing.id,
+          isExisting: true,
+        });
       } else if (orphans.length > 1) {
-        groupedTabs.push({ name: getOthersName(), tabs: orphans, stackId: crypto.randomUUID(), isExisting: false });
+        groupedTabs.push({
+          name: getOthersName(),
+          tabs: orphans,
+          stackId: crypto.randomUUID(),
+          isExisting: false,
+        });
       }
     }
   };
 
   const getAIGrouping = async (tabs, existingStacks = []) => {
-    if (!CONFIG.glm.key) { showNotification("GLM API Key not configured"); return null; }
-    if (tabs.length > CONFIG.maxTabsForAI) tabs = tabs.slice(0, CONFIG.maxTabsForAI);
+    if (!CONFIG.glm.key) {
+      showNotification("GLM API Key not configured");
+      return null;
+    }
+    if (tabs.length > CONFIG.maxTabsForAI)
+      tabs = tabs.slice(0, CONFIG.maxTabsForAI);
 
     const languageName = getLanguageName(getBrowserLanguage());
 
     try {
       const response = await fetch(CONFIG.glm.url, {
         method: "POST",
-        headers: { Authorization: `Bearer ${CONFIG.glm.key}`, "Content-Type": "application/json" },
+        headers: {
+          Authorization: `Bearer ${CONFIG.glm.key}`,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           model: CONFIG.glm.model,
-          messages: [{ role: "user", content: buildAIPrompt(tabs, existingStacks, languageName) }],
+          messages: [
+            {
+              role: "user",
+              content: buildAIPrompt(tabs, existingStacks, languageName),
+            },
+          ],
           temperature: CONFIG.glm.temperature,
           max_tokens: CONFIG.glm.maxTokens,
           stream: false,
@@ -322,7 +404,12 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
       .filter(([, t]) => t.length > 1)
       .map(([, t]) => {
         const base = getBaseDomain(t[0].url).split(".")[0];
-        return { name: base.charAt(0).toUpperCase() + base.slice(1), tabs: t, stackId: crypto.randomUUID(), isExisting: false };
+        return {
+          name: base.charAt(0).toUpperCase() + base.slice(1),
+          tabs: t,
+          stackId: crypto.randomUUID(),
+          isExisting: false,
+        };
       });
   };
 
@@ -338,7 +425,8 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
         const tab = group.tabs[i];
         await new Promise((resolve) => {
           chrome.tabs.move(tab.id, { index: targetIndex + i }, () => {
-            if (chrome.runtime.lastError) console.error("[TidyTabs]", chrome.runtime.lastError.message);
+            if (chrome.runtime.lastError)
+              console.error("[TidyTabs]", chrome.runtime.lastError.message);
             resolve();
           });
         });
@@ -351,24 +439,35 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
     const stacks = [];
     while (nextElement) {
       if (nextElement.tagName === "SPAN") {
-        const isStack = nextElement.querySelector(SELECTORS.STACK_COUNTER) ||
+        const isStack =
+          nextElement.querySelector(SELECTORS.STACK_COUNTER) ||
           nextElement.querySelector(SELECTORS.TAB_STACK) ||
           nextElement.querySelector(SELECTORS.SUBSTACK);
 
         if (isStack) {
           const wrapper = nextElement.querySelector(SELECTORS.TAB_WRAPPER);
-          const stackTabId = wrapper?.getAttribute("data-id")?.replace("tab-", "");
+          const stackTabId = wrapper
+            ?.getAttribute("data-id")
+            ?.replace("tab-", "");
           if (stackTabId) {
-            const allTabs = await new Promise((r) => chrome.tabs.query({ currentWindow: true }, r));
+            const allTabs = await new Promise((r) =>
+              chrome.tabs.query({ currentWindow: true }, r),
+            );
             const stackTab = allTabs.find((t) => {
               try {
                 const d = JSON.parse(t.vivExtData || "{}");
                 return d.group && t.vivExtData.includes(stackTabId.slice(0, 8));
-              } catch { return false; }
+              } catch {
+                return false;
+              }
             });
             if (stackTab) {
               const viv = JSON.parse(stackTab.vivExtData);
-              stacks.push({ id: viv.group, name: viv.fixedGroupTitle || stackTab.title || "Unnamed", tabId: stackTab.id });
+              stacks.push({
+                id: viv.group,
+                name: viv.fixedGroupTitle || stackTab.title || "Unnamed",
+                tabId: stackTab.id,
+              });
             }
           }
         }
@@ -383,7 +482,8 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
     let el = separator.nextElementSibling;
     while (el) {
       if (el.tagName === "SPAN") {
-        const isStack = el.querySelector(SELECTORS.STACK_COUNTER) ||
+        const isStack =
+          el.querySelector(SELECTORS.STACK_COUNTER) ||
           el.querySelector(SELECTORS.TAB_STACK) ||
           el.querySelector(SELECTORS.SUBSTACK);
         const pos = el.querySelector(SELECTORS.TAB_POSITION);
@@ -412,11 +512,15 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
 
   // Loading state: add class to separator, CSS implements wave animation
   const showLoading = (separator) => separator.classList.add(CLASSES.LOADING);
-  const hideLoading = (separator) => separator.classList.remove(CLASSES.LOADING);
+  const hideLoading = (separator) =>
+    separator.classList.remove(CLASSES.LOADING);
 
   const scheduleAttachButtons = (delay = CONFIG.delays.debounce) => {
     if (debounceTimer !== null) clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => { attachButtons(); debounceTimer = null; }, delay);
+    debounceTimer = setTimeout(() => {
+      attachButtons();
+      debounceTimer = null;
+    }, delay);
   };
 
   const attachButtons = () => {
@@ -424,7 +528,10 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
       if (separator.querySelector(`.${CLASSES.BUTTON}`)) return;
       const btn = createTidyButton();
       separator.appendChild(btn);
-      btn.addEventListener("click", (e) => { e.stopPropagation(); tidyTabsBelow(separator); });
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        tidyTabsBelow(separator);
+      });
     });
   };
 
@@ -435,15 +542,18 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
     const tabs = await getTabsByWorkspace(workspaceId);
     if (tabs.length < 2) return;
 
-    let groups = CONFIG.enableAIGrouping && CONFIG.glm.key
-      ? (await getAIGrouping(tabs)) || groupByDomain(tabs)
-      : groupByDomain(tabs);
+    let groups =
+      CONFIG.enableAIGrouping && CONFIG.glm.key
+        ? (await getAIGrouping(tabs)) || groupByDomain(tabs)
+        : groupByDomain(tabs);
 
     if (groups.length > 0) await createTabStacks(groups);
   };
 
   const tidyTabsBelow = async (separator) => {
-    const existingStacks = await detectExistingStacks(separator.nextElementSibling);
+    const existingStacks = await detectExistingStacks(
+      separator.nextElementSibling,
+    );
     const tabsInfo = collectTabsFromSeparator(separator);
 
     if (tabsInfo.length < 2 && existingStacks.length === 0) return;
@@ -451,12 +561,15 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
     showLoading(separator);
 
     try {
-      const tabs = (await Promise.all(tabsInfo.map((t) => getTab(t.id)))).filter(Boolean);
+      const tabs = (
+        await Promise.all(tabsInfo.map((t) => getTab(t.id)))
+      ).filter(Boolean);
       if (tabs.length < 1 && existingStacks.length === 0) return;
 
-      let groups = CONFIG.enableAIGrouping && CONFIG.glm.key
-        ? (await getAIGrouping(tabs, existingStacks)) || groupByDomain(tabs)
-        : groupByDomain(tabs);
+      let groups =
+        CONFIG.enableAIGrouping && CONFIG.glm.key
+          ? (await getAIGrouping(tabs, existingStacks)) || groupByDomain(tabs)
+          : groupByDomain(tabs);
 
       if (groups.length > 0) await createTabStacks(groups);
     } finally {
@@ -475,7 +588,10 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
       if (details.tabId !== -1 && details.frameType === "outermost_frame") {
         const tab = await getTab(details.tabId);
         if (tab && !tab.pinned && tab.vivExtData && !tab.vivExtData.panelId) {
-          setTimeout(() => autoStackWorkspace(tab.vivExtData.workspaceId), CONFIG.delays.autoStack);
+          setTimeout(
+            () => autoStackWorkspace(tab.vivExtData.workspaceId),
+            CONFIG.delays.autoStack,
+          );
         }
       }
     });
@@ -492,20 +608,33 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
     observedTabStrip = tabStrip;
 
     tabStripObserver = new MutationObserver((mutations) => {
-      let changed = false, wsSwitch = false;
+      let changed = false,
+        wsSwitch = false;
       for (const m of mutations) {
         if (m.type === "childList" && m.addedNodes.length > 0) {
           for (const n of m.addedNodes) {
-            if (n.nodeType === Node.ELEMENT_NODE && n.tagName === "SPAN") { changed = true; break; }
+            if (n.nodeType === Node.ELEMENT_NODE && n.tagName === "SPAN") {
+              changed = true;
+              break;
+            }
           }
         }
-        if (m.type === "attributes" && m.attributeName === "aria-owns") wsSwitch = true;
+        if (m.type === "attributes" && m.attributeName === "aria-owns")
+          wsSwitch = true;
         if (changed && wsSwitch) break;
       }
-      if (changed || wsSwitch) scheduleAttachButtons(wsSwitch ? CONFIG.delays.workspaceSwitch : CONFIG.delays.mutation);
+      if (changed || wsSwitch)
+        scheduleAttachButtons(
+          wsSwitch ? CONFIG.delays.workspaceSwitch : CONFIG.delays.mutation,
+        );
     });
 
-    tabStripObserver.observe(tabStrip, { childList: true, subtree: true, attributes: true, attributeFilter: ["aria-owns"] });
+    tabStripObserver.observe(tabStrip, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["aria-owns"],
+    });
   };
 
   // Listen to subtree changes of #browser to detect if .tab-strip is destroyed and rebuilt
@@ -548,6 +677,7 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
     setupAutoStackListener();
   };
 
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", init);
   else init();
 })();

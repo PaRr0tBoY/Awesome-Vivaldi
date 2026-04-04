@@ -30,14 +30,34 @@
 
 <br/>
 
-- This modpack support 2 version of Vivaldi.
-    - [Vivaldi 7.9 latest](./Vivaldi7.9Stable) Currently Under Development
-    - [Vivaldi 7.6.*](./Vivaldi7.6Stable) Deprecated
+# Table of Contents
 
+- [Introduction](#introduction)
+- [Feature Showcase](#feature-showcase)
+- [Main File Structure](#main-file-structure)
+- [Installation](#installation)
+- [Community Mods](#community-mods)
+
+<br/>
+
+# Introduction
+
+This modpack support 2 version of Vivaldi. - [Vivaldi 7.9 latest](./Vivaldi7.9Stable) Currently Under Development - [Vivaldi 7.6.\*](./Vivaldi7.6Stable) Deprecated
 
 Please choose the modpack that matches your Vivaldi Version. Which version of Vivaldi browser are you using? If you're not sure, check it out at `vivaldi:about`.
 
+## Feature Showcase
+
+| Demo                                                | Mods                                                              |
+| --------------------------------------------------- | ----------------------------------------------------------------- |
+| ![FavouriteTabs](./Others/assets/FavouriteTabs.gif) | `FavouriteTabs.css`                                               |
+| ![VivaldiMax](./Others/assets/VivaldiMax.gif)       | `TidyTabs.css` + `TidyTabs.js` + `ClearTabs.js` + `TidyTitles.js` |
+| ![PeekTabbar](./Others/assets/PeekTabbar.gif)       | `PeekTabbar.css`                                                  |
+| ![ArcPeek](./Others/assets/ArcPeek.gif)             | `ArcPeek.css` + `ArcPeek.js`                                      |
+| ![Quietify](./Others/assets/Quietify.gif)           | `Quietify.css`                                                    |
+
 # Main File Structure
+
 ```
 .
 ├── Vivaldi7.6Stable
@@ -52,10 +72,9 @@ Please choose the modpack that matches your Vivaldi Version. Which version of Vi
 # Installation
 
 Installation guide is under corresponding modpack.
+
 - [Installation Guide for Vivaldi 7.9 latest](./Vivaldi7.9Stable/README.md)
-- [Installation Guide for Vivaldi 7.6.*](./Vivaldi7.6Stable/README.md)
-
-
+- [Installation Guide for Vivaldi 7.6.\*](./Vivaldi7.6Stable/README.md)
 
 </details>
 

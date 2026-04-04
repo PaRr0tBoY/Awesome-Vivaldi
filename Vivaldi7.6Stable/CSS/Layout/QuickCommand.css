@@ -13,7 +13,9 @@ An Arc Like Quick Command Styling
   position: fixed;
   left: 50%;
   top: calc(var(--search-top, 50%)); /* Adjust offset using CSS variable */
-  transform: translateX(-50%); /* Horizontally center only, control vertical with top */
+  transform: translateX(
+    -50%
+  ); /* Horizontally center only, control vertical with top */
   border-radius: 15px !important;
   opacity: 0.91 !important;
   width: 650px;

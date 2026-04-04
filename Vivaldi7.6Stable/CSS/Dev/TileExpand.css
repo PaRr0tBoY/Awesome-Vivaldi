@@ -1,6 +1,9 @@
 .tiled.visible {
   display: grid !important;
-  grid-template-columns: repeat(auto-fill, 1fr) !important; /* Initial equal width */
+  grid-template-columns: repeat(
+    auto-fill,
+    1fr
+  ) !important; /* Initial equal width */
   transition: grid-template-columns 0.3s ease-out !important;
 }
 
