@@ -30,230 +30,32 @@
 
 <br/>
 
-# **Features**
+- This modpack support 2 version of Vivaldi.
+    - [Vivaldi 7.9 latest](./Vivaldi7.9Stable) Currently Under Development
+    - [Vivaldi 7.6.*](./Vivaldi7.6Stable) Deprecated
 
-## ScreenShots
 
-| Features                                                                                                      | Preview                                                                                                                                   |
-| :------------------------------------------------------------------------------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------- |
-| **Smart Sidebar Animations**<br>• Smooth expand/collapse transitions<br>• Intelligent show/hide functionality | <img alt="Smooth sidebar animation effects" height="300" src="./Others/Showcase/MainShowCase/Sidebar.gif" />                              |
-| **Dynamic Theme Colors**<br>• Automatic system theme adaptation<br>• Smooth color transition effects          | <img alt="Dynamic theme color changing demonstration" height="300" src="./Others/Showcase/MainShowCase/FollowThemeColor.gif" />           |
-| **Clean New Tab Page**<br>• Minimalist interface layout<br>• Fast access to favorite websites                 | <img alt="Clean and uncluttered new tab page" height="300" src="./Others/Showcase/MainShowCase/NeatNewTab.png" />                         |
-| **Expanded Webview**<br>• Optimized page display area<br>• Enhanced browsing experience                       | <img alt="Maximized webview for better content viewing" height="300" src="./Others/Showcase/MainShowCase/YouDeserveABiggerWebview.png" /> |
+Please choose the modpack that matches your Vivaldi Version. Which version of Vivaldi browser are you using? If you're not sure, check it out at `vivaldi:about`.
 
-## **More ScreenShots, Click to Expand**
-
-<details>
-<summary><h3> Let's Make it Arc (not just look) </h3></summary>
-
-<table>
-<tr>
-<td>Arc Peek</td>
-<td><img src="./Others/Showcase/ArcLike/ArcPeek.gif" height="300" /></td>
-</tr>
-<tr>
-<td>Tidy Tabs with AI Powered</td>
-<td><img src="./Others/Showcase/ArcLike/AIFeature/TidyTabs.gif" height="300" /></td>
-</tr>
-<tr>
-<td>Tidy Titles With AI Powered</td>
-<td><img src="./Others/Showcase/ArcLike/AIFeature/TidyTitles.gif" height="300" /></td>
-</tr>
-<tr>
-<td>Clear Tabs</td>
-<td><img src="./Others/Showcase/ArcLike/AIFeature/ClearTabs.gif" height="300" /></td>
-</tr>
-<tr>
-<td>Peek Favourites Tab Title</td>
-<td><img src="./Others/Showcase/ArcLike/FavouritesTabs/FavouritesPeek.gif" height="300" /></td>
-</tr>
-<tr>
-<td>Pin Favourite Tabs</td>
-<td><img src="./Others/Showcase/ArcLike/FavouritesTabs/PinOnTop.gif" height="300" /></td>
-</tr>
-</table>
-
-</details>
-
-<details>
-<summary><h3> Nice-to-Have Tweaks </h3></summary>
-
-<table>
-<tr>
-<td>Sleek Audio Icon</td>
-<td><img src="./Others/Showcase/FeatureSmall/MyMods/AudioIcon.gif" height="300" /></td>
-</tr>
-<tr>
-<td>Global Media Control</td>
-<td><img src="./Others/Showcase/FeatureSmall/Community/AudioPanel.png" height="300" /></td>
-</tr>
-<tr>
-<td>Who Needs a Disabled Button</td>
-<td><img src="./Others/Showcase/FeatureSmall/MyMods/AdaptiveBF.gif" height="300" /></td>
-</tr>
-<tr>
-<td>Select Files From Your History Downloads From [@tam710562](https://forum.vivaldi.net/user/tam710562)</td>
-<td><img src="./Others/Showcase/FeatureSmall/Community/EasyFile.png" height="300" /></td>
-</tr>
-<tr>
-<td>Adds a Trail to Hovered and Active Tabs, Close Buttons As Well</td>
-<td><img src="./Others/Showcase/FeatureSmall/MyMods/TabTrails.gif" height="300" /></td>
-</tr>
-<tr>
-<td>BiggerView</td>
-<td><img src="./Others/Showcase/FeatureSmall/Community/BiggerView.gif" height="300" /></td>
-</tr>
-</table>
-
-</details>
-
-> And More...
-
-# **How To Install**
-
-> Before we begin, it is necessary to make some declarations. My operating system is `macOS 15.7`, and my browser version is `Vivaldi 7.6.3797.58 (Stable channel) (arm64)`. Therefore, all mods are optimized for this environment. They may behave abnormally on other platforms such as Windows and Linux, but most mods are still usable. You can fork this repository and adapt it accordingly, or you can select specific modules from this repository for use.
-
-### I. Adjust Vivaldi Settings
-
-> Under `Appearance > WINDOW APPEARANCE`
-> <img width="1000" alt="Cleanshot at20251101-05PM" src="https://github.com/user-attachments/assets/e33b7a29-85d6-471b-b480-af66287b52a5" />
-
-> Under `Tabs > TAB FEATURES`
-> <img width="600" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/e5a20258-4f03-410b-902a-166f4689975b" />
-
-> Under `Themes > Editor > Colors`
-> <img width="400" alt="Cleanshot at20251101-05PM" src=image/README/1761752550644.png />
-
-> Under `Themes > Editor > Settings`
-> <img width="400" alt="Cleanshot at20251101-05PM" src=image/README/1761752555886.png />
-
-> Under `Start Page > SPEED DIAL` small
-> <img width="300" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/2216c3be-7e55-4574-ae95-32ea715512df" />
-
-> Under `Panels > Panel Options` Small
-> <img width="300" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/d7914fb0-914c-447d-b59a-5cb74d55119f" />
-
-> Under `Address Bar > ADDRESS BAR`
-
-- Check `Show Address Bar`
-
-> Under `Bookmarks > BOOKMARK BAR`
-
-- Check `Show Bookmark Bar`
-- Check `Bookmark Bar Position > Top`
-
-> Under `Search > Seach Options`
-
-- Check `Show Seach Field on Speed Dial`
-
-> Edit Toolbar Buttons
-> <img width="2672" height="1526" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/35baac9b-e56a-4b5d-8f7b-67015031f6bd" />
-
-> For more information about Arc-Like Workspaces Switch Buttons, see [Paweł shows you how to play with Workspaces and Custom Icons in Vivaldi.](https://vivaldi.com/blog/how-to/pawel-shows-you-how-to-play-with-workspaces-and-custom-icons-in-vivaldi/)
-
-## II. Install Mods
-
-==**BACKUP ALL NECESSARY FILES BEFORE STARTING**==
-
-### Install CSS:
-
-1. Open 'Vivaldi://experiments' in Vivaldi and check 'Allow CSS Modification'
-2. Restart Vivaldi
-3. Clone this repo
-4. Under 'CSS/' there's a file called 'Core.css' that import all css mods in this modpack,
-   You can also find all configurations of all the css mods in this mod pack;
-   Which means you can toggle on/off all your css mods as well as persist your configuration when updating all in one place.
-5. Go to Settings->Appearance and you'll see 'CUSTOM UI MODIFICATIONS'. Select file location as "/path/to/Awesome-Vivaldi/CSS"
-6. Restart Vivaldi, you're all set!
-
-### Install Javascript moddings
-
-#### Install Automatically
-
-1. If you're on windows, use [Vivaldi Mod Manager](https://github.com/eximido/vivaldimodmanager)
-2. If you're on linux, see [Vivaldi-Autoinject-Custom-js-ui](https://aur.archlinux.org/vivaldi-autoinject-custom-js-ui.git) for more info
-3. See also [Patching Vivaldi with batch scripts](https://forum.vivaldi.net/topic/10592/patching-vivaldi-with-batch-scripts/21?page=2) for all platform
-4. If you're on macOS use [macOS_Patch_Scripts | upviv](https://github.com/PaRr0tBoY/Vivaldi-Mods/blob/8a1e9f8a63f195f67f27ab2e5b86c4aff0081096/MacOSPatchScripts/upviv) as a reference for patchscript
-
-#### Install Manually
-
-1. Duplicate javascripts file under moddings to `<YOURVIVALDIDIRECTORY>`\Application\<VERSI0N>\resources\vivaldi.
-2. Under the same folder, there's a window.html and you should fill in your js file name one by one in `<body>`, after that
-   your window.html should look something like this.
-
-```html
-<!-- Vivaldi window document -->
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Vivaldi</title>
-    <link rel="stylesheet" href="style/common.css" />
-    <link rel="stylesheet" href="chrome://vivaldi-data/css-mods/css" />
-  </head>
-
-  <body>
-    <script src="TidyTitles.js"></script>
-    \
-    <script src="TidyTabs.js"></script>
-    \
-    <script src="ClearTabs.js"></script>
-    \
-    <script src="Mainbar.js"></script>
-    \
-    <script src="WrapToday.js"></script>
-    \
-    <script src="ImmersiveAddressbar.js"></script>
-    \
-    <script src="MonochromeIcons.js"></script>
-    \
-    <script src="YbAddressBar.js"></script>
-    \
-    <script src="MdNotes.js"></script>
-    \
-    <script src="ElementCapture.js"></script>
-    \
-    <script src="GlobalMediaControls.js"></script>
-    \
-    <script src="AutoHidePanel.js"></script>
-    \
-    <script src="EasyFiles.js"></script>
-    \
-    <script src="DialogTab.js"></script>
-    \
-    <script src="FeedIcon.js"></script>
-    \
-    <script src="AdaptiveWebPanelHeaders.js"></script>
-    \
-    <script src="CollapseKeyboardSettings.js"></script>
-    \
-    <script src="AccentMod.js"></script>
-    \
-    <script src="MoonPhase.js"></script>
-    \
-    <script src="BackupSearchEngines.js"></script>
-    \
-    <script src="ImportExportCommandChains.js"></script>
-    \
-    <script src="TabScroll.js"></script>
-    \
-    <script src="ActivateTabOnHover.js"></script>
-    \
-  </body>
-</html>
+# Main File Structure
+```
+.
+├── Vivaldi7.6Stable
+│   ├── CSS
+│   └── Javascripts
+└── Vivaldi7.9Stable
+    ├── CSS
+    ├── Dev
+    └── Javascripts
 ```
 
-3. That's it! You are all set. If any other issues please report it at [Issues · PaRr0tBoY/Awesome-Vivaldi](https://github.com/PaRr0tBoY/Awesome-Vivaldi/issues?q=sort%3Aupdated-desc+is%3Aissue+is%3Aopen) and I'll ~~probably~~ fix it at weekend.
+# Installation
 
-> Optionally, get an glm api key here for AI features [here](https://open.bigmodel.cn/usercenter/proj-mgmt/apikeys). FYI, It's experimental and not stable though. You can use other AI providers' api as well as long as it's compatible with OpenAI api.
+Installation guide is under corresponding modpack.
+- [Installation Guide for Vivaldi 7.9 latest](./Vivaldi7.9Stable/README.md)
+- [Installation Guide for Vivaldi 7.6.*](./Vivaldi7.6Stable/README.md)
 
-### III. Advanced Reading
 
-1. you can patch vivaldi with batch scripts. To learn more check [Patching Vivaldi with batch scripts](https://forum.vivaldi.net/topic/10592/patching-vivaldi-with-batch-scripts/21?page=2)
-2. To learn more about `js modddings` for Vivaldi check [Modding Vivaldi | Vivaldi Forum](https://forum.vivaldi.net/topic/10549/modding-vivaldi?page=1)
-3. To learn more about `css moddings` for Vivaldi by yourself check [Inspecting the Vivaldi UI with DevTools | Vivaldi Forum](https://forum.vivaldi.net/topic/16684/inspecting-the-vivaldi-ui-with-devtools?page=1)
-4. If you're on macOS use [macOS_Patch_Scripts | upviv](https://github.com/PaRr0tBoY/Vivaldi-Mods/blob/8a1e9f8a63f195f67f27ab2e5b86c4aff0081096/MacOSPatchScripts/upviv) as a reference for patchscript
-5. Arc like workspace switcher tutorial:[Paweł shows you how to play with Workspaces and Custom Icons in Vivaldi. | Vivaldi Browser](https://vivaldi.com/blog/how-to/pawel-shows-you-how-to-play-with-workspaces-and-custom-icons-in-vivaldi/)
 
 </details>
 
