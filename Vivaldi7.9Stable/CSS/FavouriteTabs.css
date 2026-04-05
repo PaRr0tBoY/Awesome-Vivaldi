@@ -97,7 +97,7 @@ Currently only support 3x3 tabs grid.
     /* background-color: var(--colorBg, rgba(255, 255, 255, 0.2)) !important; */
     z-index: 150;
     background-color: var(--colorBgAlpha) !important;
-    border: 1px solid var(--colorHighlightBgDark) !important;
+    border: 1px solid var(--colorHighlightBgFaded) !important;
     z-index: 150;
   }
 
@@ -399,13 +399,12 @@ Currently only support 3x3 tabs grid.
   #tabs-container .tab-strip .separator {
     grid-column: 1 / -1 !important;
     position: relative !important;
-    width: calc(100% - 12px) !important;
-    margin: 0 6px !important;
+    /*width: calc(100% - 12px) !important;*/
+    /*margin: 0 6px !important;*/
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
     transform: none !important;
-    /* margin-bottom: -6px !important; */
   }
 
   #tabs-container .tab-strip .separator hr {

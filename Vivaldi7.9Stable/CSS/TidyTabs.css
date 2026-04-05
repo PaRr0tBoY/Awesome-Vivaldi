@@ -14,8 +14,20 @@ Requires: TidyTabs.js + ClearTabs.js
 .tab-strip .separator {
   position: relative;
   overflow: visible !important;
-  margin-bottom: -14px !important;
   box-sizing: content-box !important;
+}
+
+/* margin-bottom when --fluid-tabs-grid is off or undefined */
+@container style(--fluid-tabs-grid: off) {
+  .tab-strip .separator {
+    margin-bottom: -14px !important;
+  }
+}
+
+@container style(not (--fluid-tabs-grid: on)) {
+  .tab-strip .separator {
+    margin-bottom: -14px !important;
+  }
 }
 
 /* <hr> Truncation: only when tabs-container is hovered AND width > 100px (buttons visible) */
