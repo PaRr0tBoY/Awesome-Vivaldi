@@ -4,13 +4,12 @@
 
 .toolbar-extensions {
   display: flex;
-  flex-wrap: nowrap;
-  overflow-x: auto;
+  flex-wrap: wrap;
+  overflow-x: visible;
   overflow-y: hidden;
   scrollbar-width: none;
   gap: var(--densityGap);
   max-width: 100%;
-  overscroll-behavior-x: contain;
 }
 
 .toolbar-extensions::-webkit-scrollbar {
