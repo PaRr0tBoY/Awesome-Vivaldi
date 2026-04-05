@@ -19,11 +19,12 @@
   }
 
   function trigger(tab) {
-    chrome.scripting.executeScript({
-      target: { tabId: Number(tab.parentNode.id.replace(/\D/g, "")) },
-      func: script,
-      args: [scb],
-    });
+    chrome.tabs.executeScript(
+      parseInt(tab.parentNode.id.replace(/\D/g, ""), 10),
+      {
+        code: `(${script})("${scb}")`,
+      },
+    );
     exit(tab);
   }
 
@@ -37,8 +38,8 @@
       !e.altKey &&
       !e.metaKey
     ) {
-      tab.addEventListener("mousemove", exit(tab));
-      tab.addEventListener("click", trigger(tab));
+      tab.addEventListener("mousemove", () => exit(tab));
+      tab.addEventListener("click", () => trigger(tab));
     }
   }
 
@@ -61,12 +62,13 @@
       arguments[0].tagName === "DIV" &&
       arguments[0].classList.contains("tab")
     ) {
-      setTimeout(
-        function () {
-          const ts = (event) => react(event, arguments[0]);
-          arguments[0].addEventListener("mousedown", ts);
-        }.bind(this, arguments[0]),
-      );
+      const tab = arguments[0];
+      setTimeout(function () {
+        const ts = function (e) {
+          react(e, tab);
+        };
+        tab.addEventListener("mousedown", ts);
+      });
     }
     return appendChild.apply(this, arguments);
   };

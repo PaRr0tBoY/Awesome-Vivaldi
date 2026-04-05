@@ -50,6 +50,10 @@
   // Set to store processed tab IDs to prevent duplicate processing
   const processedTabs = new Set();
 
+  // Set to track tabs currently awaiting AI response.
+  // Used to re-apply loading animation when Vivaldi mutates tab-wrapper className.
+  const processingTabs = new Set();
+
   // ========== Utility Functions ==========
 
   const injectStyles = () => {
@@ -100,6 +104,24 @@
       return null;
     }
   };
+
+  /**
+   * Queries the live DOM element for a given numeric tabId.
+   * Always returns the current node, not a stale reference.
+   */
+  function getLiveTabElement(tabId) {
+    return document.querySelector(`.tab-wrapper[data-id="tab-${tabId}"]`);
+  }
+
+  /**
+   * Re-applies the loading animation class to all currently processing tabs.
+   * Called after tab-strip rebuilds to restore animations on live DOM nodes.
+   */
+  function reapplyLoadingClasses() {
+    for (const tabId of processingTabs) {
+      getLiveTabElement(tabId)?.classList.add("tidy-title-loading");
+    }
+  }
 
   /**
    * Calls the AI API to generate an optimized title
@@ -277,7 +299,15 @@ Rules:
     const tabIdStr = tabElement.getAttribute("data-id");
     if (!tabIdStr) return;
 
-    const tabId = parseInt(tabIdStr.replace("tab-", ""));
+    // data-id 有两种格式：
+    //   数字型: "tab-89946916"       → 真实标签
+    //   UUID型: "tab-7e0556d7-9d40-..." → 标签组（substack），跳过
+    // parseInt 遇到 UUID 会截断（"7e0556d7" → 7），导致 chrome.tabs.get(7) 报错
+    const rawId = tabIdStr.replace(/^tab-/, "");
+    if (rawId.includes("-")) return; // UUID 格式，直接跳过
+
+    const tabId = parseInt(rawId, 10);
+    if (!Number.isInteger(tabId) || tabId <= 0) return;
 
     if (processedTabs.has(tabId)) {
       console.log(
@@ -313,8 +343,13 @@ Rules:
         return;
       }
 
-      // Add loading animation class
-      tabElement.classList.add("tidy-title-loading");
+      // Mark as in-progress and apply loading animation via live DOM query.
+      // Do NOT hold a reference to tabElement here — Vivaldi may mutate the
+      // node's className directly (e.g. removing "active") which can wipe our
+      // class if it replaces the full className string. The innerObserver will
+      // detect this and re-add "tidy-title-loading" automatically.
+      processingTabs.add(tabId);
+      getLiveTabElement(tabId)?.classList.add("tidy-title-loading");
 
       console.log(
         `[TidyTitles] Requesting AI generated title for tab ${tabId} ("${tab.title}")...`,
@@ -336,8 +371,10 @@ Rules:
 
         updateTabTitle(tabId, optimizedTitle);
       } finally {
-        // Remove loading animation after request finishes
-        tabElement.classList.remove("tidy-title-loading");
+        // Always clean up: remove from in-progress set and strip the animation
+        // class from whichever node is currently live in the DOM.
+        processingTabs.delete(tabId);
+        getLiveTabElement(tabId)?.classList.remove("tidy-title-loading");
       }
     });
   }
@@ -363,7 +400,11 @@ Rules:
   let observedTabStrip = null;
 
   /**
-   * Listener for tab pinned events (bound internally to .tab-strip)
+   * Listener for tab pinned events (bound internally to .tab-strip).
+   *
+   * Also handles the case where Vivaldi mutates a .tab-wrapper's className
+   * in-place (e.g. adding/removing "active") and inadvertently wipes our
+   * "tidy-title-loading" class. When that happens we immediately re-add it.
    */
   function observeTabStripInner(tabStrip) {
     if (innerObserver) innerObserver.disconnect();
@@ -378,6 +419,28 @@ Rules:
           continue;
 
         const target = mutation.target;
+
+        // ── Case 1: .tab-wrapper class mutated ──────────────────────────────
+        // Vivaldi replaces the full className string when toggling active state,
+        // which strips our "tidy-title-loading". Detect and restore it.
+        if (target.classList?.contains("tab-wrapper")) {
+          const tabIdStr = target.getAttribute("data-id");
+          if (tabIdStr) {
+            const rawId = tabIdStr.replace(/^tab-/, "");
+            if (!rawId.includes("-")) {
+              const tabId = parseInt(rawId, 10);
+              if (
+                processingTabs.has(tabId) &&
+                !target.classList.contains("tidy-title-loading")
+              ) {
+                target.classList.add("tidy-title-loading");
+              }
+            }
+          }
+          continue;
+        }
+
+        // ── Case 2: .tab-position class mutated (is-pinned detection) ───────
         if (!target.classList?.contains("tab-position")) continue;
         if (target.classList.contains("is-substack")) continue;
 
@@ -410,6 +473,8 @@ Rules:
       if (tabStrip && tabStrip !== observedTabStrip) {
         console.log("[TidyTitles] .tab-strip rebuilt, reattaching");
         observeTabStripInner(tabStrip);
+        // Restore loading animations on all tabs still awaiting AI response
+        reapplyLoadingClasses();
       }
     }).observe(root, { childList: true, subtree: true });
   }

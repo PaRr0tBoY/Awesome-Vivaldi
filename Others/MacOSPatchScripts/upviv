@@ -20,7 +20,6 @@ cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/GlobalMediaCo
 cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/MonochromeIcons.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/TabScroll.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/AutoHidePanel.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/Essential.js "$findPath"/Resources/vivaldi/
 
 # Need to Clarify
 # cp /Users/acid/Desktop/VivaldiModpack/Javascripts/luetage/accentMod.js "$findPath"/Resources/vivaldi/
@@ -77,7 +76,6 @@ sed -i '' -e '/<\/body>/i\
 <script src="easyFiles.js"></script>\
 <script src="ArcPeek.js"></script>\
 <script src="autoHidePanel.js"></script>\
-<script src="Essential.js"></script>\
 ' "$browserHtml"
 
 # <script src="arcFolder.js"></script>\
