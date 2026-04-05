@@ -18,15 +18,17 @@ Requires: TidyTabs.js + ClearTabs.js
   box-sizing: content-box !important;
 }
 
-/* <hr> Truncation: only when tabs-container is hovered and buttons are visible */
-#tabs-container:hover .tab-strip .separator hr {
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent 0px,
-    black 8px,
-    black calc(100% - 80px),
-    transparent calc(100% - 80px)
-  );
+/* <hr> Truncation: only when tabs-container is hovered AND width > 100px (buttons visible) */
+@container tabs-container (min-width: 100px) {
+  #tabs-container:hover .tab-strip .separator hr {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0px,
+      black 8px,
+      black calc(100% - 80px),
+      transparent calc(100% - 80px)
+    );
+  }
 }
 
 /* ============================================ */
@@ -59,6 +61,19 @@ Requires: TidyTabs.js + ClearTabs.js
   pointer-events: none;
   border: none;
   outline: none;
+}
+
+/* Only show buttons when #tabs-container width > 100px */
+#tabs-container {
+  container-type: inline-size;
+  container-name: tabs-container;
+}
+
+@container tabs-container (max-width: 100px) {
+  .tidy-tabs-below-button,
+  .clear-tabs-below-button {
+    display: none !important;
+  }
 }
 
 .tab-strip .separator .tidy-tabs-below-button {

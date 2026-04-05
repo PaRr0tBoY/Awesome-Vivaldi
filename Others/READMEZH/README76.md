@@ -1,5 +1,3 @@
-
-
 <div align="center">
     <img width="200" height="200" src="../../Others/Showcase/IMG5682.png">
 </div>
@@ -30,8 +28,6 @@
   - [安装修改](#ii-安装修改)
   - [高级阅读](#iii-高级阅读)
 - [社区修改](#社区修改)
-
-
 
 # 功能特性
 
