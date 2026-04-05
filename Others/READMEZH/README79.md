@@ -40,8 +40,6 @@
   - [安装 CSS 修改](#安装-css-修改)
   - [安装 JavaScripts 修改](#安装-javascripts-修改)
 
-<br/>
-
 # 功能展示
 
 | 演示                                                    | 修改                                                              |
