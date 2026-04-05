@@ -40,15 +40,16 @@
   - [CSS Mods](#to-install-css-mods)
   - [Javascripts Mods](#to-install-javascripts-mods)
 
-## Feature Showcase
 
-| Demo                                                                                     | Mods                                                              |
-| ---------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| <video src="../Others/assets/favouritetabs.mp4" autoplay loop muted playsinline></video> | `FavouriteTabs.css`                                               |
-| <video src="../Others/assets/VivaldiMax.mp4" autoplay loop muted playsinline></video>    | `TidyTabs.css` + `TidyTabs.js` + `ClearTabs.js` + `TidyTitles.js` |
-| <video src="../Others/assets/PeekTabbar.mp4" autoplay loop muted playsinline></video>    | `PeekTabbar.css`                                                  |
-| <video src="../Others/assets/ArcPeek.mp4" autoplay loop muted playsinline></video>       | `ArcPeek.css` + `ArcPeek.js`                                      |
-| <video src="../Others/assets/Quietify.gif" autoplay loop muted playsinline></video>      | `Quietify.css`                                                    |
+# Feature Showcase
+
+| Showcase                                             | Mods                                                         |
+| :--------------------------------------------------- | :----------------------------------------------------------- |
+| ![FavouriteTabs](../Others/assets/FavouriteTabs.gif) | `FavouriteTabs.css`                                          |
+| ![VivaldiMax](../Others/assets/VivaldiMax.gif)       | `TidyTabs.css` + `TidyTabs.js` + `ClearTabs.js` + `TidyTitles.js` |
+| ![PeekTabbar](../Others/assets/PeekTabbar.gif)       | `PeekTabbar.css`                                             |
+| ![ArcPeek](../Others/assets/ArcPeek.gif)             | `ArcPeek.css` + `ArcPeek.js`                                 |
+| ![Quietify](../Others/assets/Quietify.gif)           | `Quietify.css`                                               |
 
 ## Mod List
 
