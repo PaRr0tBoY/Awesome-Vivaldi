@@ -1,16 +1,16 @@
 <div align="center">
-    <img width="200" height="200" src="../Others/Showcase/IMG5682.png">
+    <img width="200" height="200" src="/Others/Showcase/IMG5682.png">
 </div>
 
 <div align="center">
     <h1>Awesome Vivaldi</h1>
 <div align="center">
-[![DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/PaRr0tBoY/Awesome-Vivaldi)
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/PaRr0tBoY/Awesome-Vivaldi)
 [![Vivaldi Forum](https://img.shields.io/badge/Vivaldi-Forum-red)](https://forum.vivaldi.net/topic/112064/modpack-community-essentials-mods-collection?_=1761221602450)
 ![GitHub Repo stars](https://img.shields.io/github/stars/PaRr0tBoY/Awesome-Vivaldi)
 
 </div>
-
     <p>A Curated Community Mod Pack for Vivaldi Browser</p>
 
 <div align="center">
@@ -19,11 +19,12 @@
 
 </div>
 
-
-
-
-
-
+<!-- <img src="" width="32%" alt="home" />
+<img src="" width="32%" alt="home" />
+<img src="" width="32%" alt="home" />
+<br/>
+<img src="" width="96%" alt="home" />
+<br/> -->
 
 </div>
 
