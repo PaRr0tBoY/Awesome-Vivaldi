@@ -85,9 +85,9 @@ Installation guide is under corresponding modpack.
 </details>
 
 <details>
-<summary><h1>Community Mods</h1></summary>
+<summary><h2>Community Mods</h2></summary>
 
-## Community JS Mods And CSS Included In This Modpack
+### Community JS Mods And CSS Included In This Modpack
 
 [📸 Element Capture](https://forum.vivaldi.net/topic/103686/element-capture?_=1758777284963)
 
