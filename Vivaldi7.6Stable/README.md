@@ -30,7 +30,7 @@
 
 <br/>
 
-# Table of Contents
+## Table of Contents
 
 - [Features](#features)
   - [ScreenShots](#screenshots)
@@ -42,11 +42,9 @@
   - [Advanced Reading](#iii-advanced-reading)
 - [Community Mods](#community-mods)
 
-<br/>
+## **Features**
 
-# **Features**
-
-## ScreenShots
+### ScreenShots
 
 | Features                                                                                                      | Preview                                                                                                                                   |
 | :------------------------------------------------------------------------------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------- |
@@ -55,7 +53,7 @@
 | **Clean New Tab Page**<br>• Minimalist interface layout<br>• Fast access to favorite websites                 | <img alt="Clean and uncluttered new tab page" height="300" src="./Others/Showcase/MainShowCase/NeatNewTab.png" />                         |
 | **Expanded Webview**<br>• Optimized page display area<br>• Enhanced browsing experience                       | <img alt="Maximized webview for better content viewing" height="300" src="./Others/Showcase/MainShowCase/YouDeserveABiggerWebview.png" /> |
 
-## **More ScreenShots, Click to Expand**
+### **More ScreenShots, Click to Expand**
 
 <details>
 <summary><h3> Let's Make it Arc (not just look) </h3></summary>
@@ -123,7 +121,7 @@
 
 > And More...
 
-# **How To Install**
+## **How To Install**
 
 > Before we begin, it is necessary to make some declarations. My operating system is `macOS 15.7`, and my browser version is `Vivaldi 7.6.3797.58 (Stable channel) (arm64)`. Therefore, all mods are optimized for this environment. They may behave abnormally on other platforms such as Windows and Linux, but most mods are still usable. You can fork this repository and adapt it accordingly, or you can select specific modules from this repository for use.
 
@@ -165,11 +163,11 @@
 
 > For more information about Arc-Like Workspaces Switch Buttons, see [Paweł shows you how to play with Workspaces and Custom Icons in Vivaldi.](https://vivaldi.com/blog/how-to/pawel-shows-you-how-to-play-with-workspaces-and-custom-icons-in-vivaldi/)
 
-## II. Install Mods
+### II. Install Mods
 
 ==**BACKUP ALL NECESSARY FILES BEFORE STARTING**==
 
-### Install CSS:
+#### Install CSS:
 
 1. Open 'Vivaldi://experiments' in Vivaldi and check 'Allow CSS Modification'
 2. Restart Vivaldi
@@ -180,16 +178,16 @@
 5. Go to Settings->Appearance and you'll see 'CUSTOM UI MODIFICATIONS'. Select file location as "/path/to/Awesome-Vivaldi/CSS"
 6. Restart Vivaldi, you're all set!
 
-### Install Javascript moddings
+#### Install Javascript moddings
 
-#### Install Automatically
+- Install Automatically
 
 1. If you're on windows, use [Vivaldi Mod Manager](https://github.com/eximido/vivaldimodmanager)
 2. If you're on linux, see [Vivaldi-Autoinject-Custom-js-ui](https://aur.archlinux.org/vivaldi-autoinject-custom-js-ui.git) for more info
 3. See also [Patching Vivaldi with batch scripts](https://forum.vivaldi.net/topic/10592/patching-vivaldi-with-batch-scripts/21?page=2) for all platform
 4. If you're on macOS use [macOS_Patch_Scripts | upviv](https://github.com/PaRr0tBoY/Vivaldi-Mods/blob/8a1e9f8a63f195f67f27ab2e5b86c4aff0081096/MacOSPatchScripts/upviv) as a reference for patchscript
 
-#### Install Manually
+- Install Manually
 
 1. Duplicate javascripts file under moddings to `<YOURVIVALDIDIRECTORY>`\Application\<VERSI0N>\resources\vivaldi.
 2. Under the same folder, there's a window.html and you should fill in your js file name one by one in `<body>`, after that
@@ -274,7 +272,7 @@
 <details>
 <summary><h1>Community Mods</h1></summary>
 
-# Community JS Mods And CSS Included In This Modpack
+## Community JS Mods And CSS Included In This Modpack
 
 [📸 Element Capture](https://forum.vivaldi.net/topic/103686/element-capture?_=1758777284963)
 
