@@ -345,7 +345,7 @@ vivaldi version: v6.8
 .color-behind-tabs-on.address-top#browser:not(.tabs-top):not(.tabs-bottom)
   .mainbar {
   border: none;
-  background: transparent;
+  /*background: transparent;*/
 }
 
 /* Set tabbar background color for color-behind-tabs-off mode */
