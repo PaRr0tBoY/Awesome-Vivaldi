@@ -30,7 +30,7 @@
 
 <br/>
 
-# 目录
+## 目录
 
 - [功能展示](#功能展示)
 - [修改列表](#修改列表)
@@ -40,7 +40,7 @@
   - [安装 CSS 修改](#安装-css-修改)
   - [安装 JavaScripts 修改](#安装-javascripts-修改)
 
-# 功能展示
+## 功能展示
 
 | 演示                                                    | 修改                                                              |
 | :------------------------------------------------------ | :---------------------------------------------------------------- |
@@ -50,9 +50,9 @@
 | ![ArcPeek](../../Others/assets/ArcPeek.gif)             | `ArcPeek.css` + `ArcPeek.js`                                      |
 | ![Quietify](../../Others/assets/Quietify.gif)           | `Quietify.css`                                                    |
 
-# 修改列表
+## 修改列表
 
-## CSS
+### CSS
 
 | 文件                  | 描述                                                  |
 | :-------------------- | :---------------------------------------------------- |
@@ -73,7 +73,7 @@
 | `TidyTabs.css`        | AI 标签分组 _（需要 `TidyTabs.js` + `ClearTabs.js`）_ |
 | `VivalArc.css`        | Arc 主题移植 _（与此修改包不兼容）_                   |
 
-## JavaScripts
+### JavaScripts
 
 | 文件                     | 描述                                        |
 | :----------------------- | :------------------------------------------ |
@@ -89,9 +89,9 @@
 | `TidyTitles.js`          | AI 标签标题清理                             |
 | `YbAddressBar.js`        | 地址栏增强（有 bug）                        |
 
-# 如何安装
+## 如何安装
 
-## 安装 CSS 修改
+### 安装 CSS 修改
 
 1. 打开 URL `vivaldi://flags/#vivaldi-css-mods`
 2. 启用该标志，按提示重启浏览器
@@ -111,16 +111,16 @@ CSS 文件名不能有空格，否则无法工作。目录/路径名中的空格
 要启用 CSS 修改，在搜索框中使用"vivaldi-"查找，或前往
 `chrome://flags/#vivaldi-css-mods` 设置为启用。
 
-## 安装 JavaScripts 修改
+### 安装 JavaScripts 修改
 
-### 自动安装
+- 自动安装
 
 1. 如果你在 Windows 上，使用 [Vivaldi Mod Manager](https://github.com/eximido/vivaldimodmanager)
 2. 如果你在 Linux 上，请参阅 [Vivaldi-Autoinject-Custom-js-ui](https://aur.archlinux.org/vivaldi-autoinject-custom-js-ui.git) 获取更多信息
 3. 另请参阅 [使用批处理脚本修补 Vivaldi](https://forum.vivaldi.net/topic/10592/patching-vivaldi-with-batch-scripts/21?page=2) 适用于所有平台
 4. 如果你在 macOS 上，使用 [macOS_Patch_Scripts | upviv](https://github.com/PaRr0tBoY/Vivaldi-Mods/blob/8a1e9f8a63f195f67f27ab2e5b86c4aff0081096/MacOSPatchScripts/upviv) 作为修补脚本的参考
 
-### 手动安装
+- 手动安装
 
 Vivaldi 中你唯一需要修改的文件是 window.html，它位于：
 
