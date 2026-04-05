@@ -91,6 +91,12 @@
 
 ## How to install
 
+If you have installed Claude Code or other agents, ask it to:
+```
+Guide me through the installation of https://github.com/PaRr0tBoY/Awesome-Vivaldi
+```
+If not:
+
 ### To Install CSS Mods
 
 1. Open the url `vivaldi://flags/#vivaldi-css-mods`
