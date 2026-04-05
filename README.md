@@ -38,8 +38,6 @@
 - [Installation](#installation)
 - [Community Mods](#community-mods)
 
-<br/>
-
 # Introduction
 
 This modpack support 2 version of Vivaldi.
@@ -49,7 +47,7 @@ This modpack support 2 version of Vivaldi.
 
 Please choose the modpack that matches your Vivaldi Version. Which version of Vivaldi browser are you using? If you're not sure, check it out at `vivaldi:about`.
 
-## Feature Showcase
+# Feature Showcase
 
 | Demo                                                | Mods                                                              |
 | --------------------------------------------------- | ----------------------------------------------------------------- |
