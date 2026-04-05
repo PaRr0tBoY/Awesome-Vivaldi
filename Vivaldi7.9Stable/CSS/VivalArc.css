@@ -520,7 +520,7 @@ vivaldi version: v6.8
 /* Left/right tabbar padding adjustment */
 .tabs-left .inner > .tabbar-wrapper:not(:has(.tab-small)),
 .tabs-right .inner > .tabbar-wrapper:not(:has(.tab-small)) {
-  margin: 0 var(--tab-padding);
+  /*margin: 0 var(--tab-padding);*/
 }
 
 /* Left/right tabbar accordion toggle arrow max width */
@@ -844,12 +844,6 @@ vivaldi version: v6.8
 }
 
 /* Set tab subcontainer to transparent background */
-#browser:not(.tabs-top):not(.tabs-bottom).color-behind-tabs-off
-  #tabs-subcontainer,
-#browser:not(.tabs-top):not(.tabs-bottom).transparent-tabbar
-  #tabs-subcontainer {
-  background-color: transparent;
-}
 
 /* ==================== Transparent Startpage Navigation Area ==================== */
 /* Remove shadow and background of startpage navigation to achieve transparent effect */
