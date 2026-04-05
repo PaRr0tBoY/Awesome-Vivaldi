@@ -1,3 +1,22 @@
+<div align="center">
+    <img width="200" height="200" src="../Others/Showcase/IMG5682.png">
+</div>
+
+<div align="center">
+    <h1>Awesome Vivaldi</h1>
+
+[![DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/PaRr0tBoY/Awesome-Vivaldi)
+[![Vivaldi Forum](https://img.shields.io/badge/Vivaldi-Forum-red)](https://forum.vivaldi.net/topic/112064/modpack-community-essentials-mods-collection?_=1761221602450)
+![GitHub Repo stars](https://img.shields.io/github/stars/PaRr0tBoY/Awesome-Vivaldi)
+
+    <p>A Curated Community Mod Pack for Vivaldi Browser</p>
+
+**English** | [简体中文](../Others/READMEZH/README79.md)
+
+</div>
+
+<br/>
+
 ## Table of Contents
 
 - [Feature Showcase](#feature-showcase)

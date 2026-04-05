@@ -18,8 +18,8 @@ Requires: TidyTabs.js + ClearTabs.js
   box-sizing: content-box !important;
 }
 
-/* <hr> Truncation: do not draw line in the right button area */
-.tab-strip .separator hr {
+/* <hr> Truncation: only when tabs-container is hovered and buttons are visible */
+#tabs-container:hover .tab-strip .separator hr {
   -webkit-mask-image: linear-gradient(
     to right,
     transparent 0px,

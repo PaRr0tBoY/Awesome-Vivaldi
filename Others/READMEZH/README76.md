@@ -1,44 +1,50 @@
+
+
 <div align="center">
-    <img width="200" height="200" src="../Others/Showcase/IMG5682.png">
+    <img width="200" height="200" src="../../Others/Showcase/IMG5682.png">
 </div>
 
 <div align="center">
     <h1>Awesome Vivaldi</h1>
-<div align="center">
 
 [![DeepWiki](https://img.shields.io/badge/DeepWiki-文档-blue)](https://deepwiki.com/PaRr0tBoY/Awesome-Vivaldi/2.3.1-main-ui-styles)
 [![Vivaldi Forum](https://img.shields.io/badge/Vivaldi-论坛-red)](https://forum.vivaldi.net/topic/112064/modpack-community-essentials-mods-collection?_=1761221602450)
-![GitHub repo size](https://img.shields.io/github/repo-size/PaRr0tBoY/Awesome-Vivaldi)
 ![GitHub Repo stars](https://img.shields.io/github/stars/PaRr0tBoY/Awesome-Vivaldi)
 
-</div>
     <p>Vivaldi 浏览器精选社区修改包</p>
 
-[English](../README.md) | **简体中文**
-
-<!-- <img src="" width="32%" alt="home" />
-<img src="" width="32%" alt="home" />
-<img src="" width="32%" alt="home" />
-<br/>
-<img src="" width="96%" alt="home" />
-<br/> -->
+[English](../../Vivaldi7.6Stable/README.md) | **简体中文**
 
 </div>
 
 <br/>
 
-# **功能特性**
+# 目录
+
+- [功能特性](#功能特性)
+  - [屏幕截图](#屏幕截图)
+  - [类似 Arc 的体验](#让我们把它变成-arc不仅仅是外观)
+  - [实用优化](#实用优化)
+- [如何安装](#如何安装)
+  - [调整 Vivaldi 设置](#i-调整-vivaldi-设置)
+  - [安装修改](#ii-安装修改)
+  - [高级阅读](#iii-高级阅读)
+- [社区修改](#社区修改)
+
+
+
+# 功能特性
 
 ## 屏幕截图
 
-| 功能                                                               | 预览                                                                                                                                 |
-| :----------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------- |
-| **智能侧边栏动画**<br>• 流畅的展开/折叠过渡<br>• 智能显示/隐藏功能 | <img alt="流畅的侧边栏动画效果" height="300" src="../Others/Showcase/MainShowCase/Sidebar.gif" />                                    |
-| **动态主题颜色**<br>• 自动适应系统主题<br>• 平滑的颜色过渡效果     | <img alt="动态主题颜色变化演示" height="300" src="../Others/Showcase/MainShowCase/FollowThemeColor.gif" />                           |
-| **简洁新标签页**<br>• 极简界面布局<br>• 快速访问收藏网站           | <img alt="整洁不杂乱的新标签页" height="300" src="../Others/Showcase/MainShowCase/NeatNewTab.png" />                                 |
-| **扩展网页视图**<br>• 优化的页面显示区域<br>• 增强的浏览体验       | <img alt="最大化网页视图以获得更好的内容查看体验" height="300" src="../Others/Showcase/MainShowCase/YouDeserveABiggerWebview.png" /> |
+| 功能                                                               | 预览                                                                                                                                    |
+| :----------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------- |
+| **智能侧边栏动画**<br>• 流畅的展开/折叠过渡<br>• 智能显示/隐藏功能 | <img alt="流畅的侧边栏动画效果" height="300" src="../../Others/Showcase/MainShowCase/Sidebar.gif" />                                    |
+| **动态主题颜色**<br>• 自动适应系统主题<br>• 平滑的颜色过渡效果     | <img alt="动态主题颜色变化演示" height="300" src="../../Others/Showcase/MainShowCase/FollowThemeColor.gif" />                           |
+| **简洁新标签页**<br>• 极简界面布局<br>• 快速访问收藏网站           | <img alt="整洁不杂乱的新标签页" height="300" src="../../Others/Showcase/MainShowCase/NeatNewTab.png" />                                 |
+| **扩展网页视图**<br>• 优化的页面显示区域<br>• 增强的浏览体验       | <img alt="最大化网页视图以获得更好的内容查看体验" height="300" src="../../Others/Showcase/MainShowCase/YouDeserveABiggerWebview.png" /> |
 
-## **更多屏幕截图，点击展开**
+## 更多屏幕截图，点击展开
 
 <details>
 <summary><h3> 让我们把它变成 Arc（不仅仅是外观） </h3></summary>
@@ -46,59 +52,59 @@
 <table>
 <tr>
 <td>Arc 预览</td>
-<td><img src="../Others/Showcase/ArcLike/ArcPeek.gif" height="300" /></td>
+<td><img src="../../Others/Showcase/ArcLike/ArcPeek.gif" height="300" /></td>
 </tr>
 <tr>
 <td>AI 驱动的整理标签页</td>
-<td><img src="../Others/Showcase/ArcLike/AIFeature/TidyTabs.gif" height="300" /></td>
+<td><img src="../../Others/Showcase/ArcLike/AIFeature/TidyTabs.gif" height="300" /></td>
 </tr>
 <tr>
 <td>AI 驱动的整理标题</td>
-<td><img src="../Others/Showcase/ArcLike/AIFeature/TidyTitles.gif" height="300" /></td>
+<td><img src="../../Others/Showcase/ArcLike/AIFeature/TidyTitles.gif" height="300" /></td>
 </tr>
 <tr>
 <td>清除标签页</td>
-<td><img src="../Others/Showcase/ArcLike/AIFeature/ClearTabs.gif" height="300" /></td>
+<td><img src="../../Others/Showcase/ArcLike/AIFeature/ClearTabs.gif" height="300" /></td>
 </tr>
 <tr>
 <td>预览收藏标签页标题</td>
-<td><img src="../Others/Showcase/ArcLike/FavouritesTabs/FavouritesPeek.gif" height="300" /></td>
+<td><img src="../../Others/Showcase/ArcLike/FavouritesTabs/FavouritesPeek.gif" height="300" /></td>
 </tr>
 <tr>
 <td>固定收藏标签页</td>
-<td><img src="../Others/Showcase/ArcLike/FavouritesTabs/PinOnTop.gif" height="300" /></td>
+<td><img src="../../Others/Showcase/ArcLike/FavouritesTabs/PinOnTop.gif" height="300" /></td>
 </tr>
 </table>
 
 </details>
 
 <details>
-<summary><h3> 优化调整 </h3></summary>
+<summary><h3> 实用优化 </h3></summary>
 
 <table>
 <tr>
 <td>流畅音频图标</td>
-<td><img src="../Others/Showcase/FeatureSmall/MyMods/AudioIcon.gif" height="300" /></td>
+<td><img src="../../Others/Showcase/FeatureSmall/MyMods/AudioIcon.gif" height="300" /></td>
 </tr>
 <tr>
 <td>全局媒体控制</td>
-<td><img src="../Others/Showcase/FeatureSmall/Community/AudioPanel.png" height="300" /></td>
+<td><img src="../../Others/Showcase/FeatureSmall/Community/AudioPanel.png" height="300" /></td>
 </tr>
 <tr>
 <td>谁需要禁用按钮？</td>
-<td><img src="../Others/Showcase/FeatureSmall/MyMods/AdaptiveBF.gif" height="300" /></td>
+<td><img src="../../Others/Showcase/FeatureSmall/MyMods/AdaptiveBF.gif" height="300" /></td>
 </tr>
 <tr>
 <td>从历史记录和下载中选择文件，来自 [@tam710562](https://forum.vivaldi.net/user/tam710562)</td>
-<td><img src="../Others/Showcase/FeatureSmall/Community/EasyFile.png" height="300" /></td>
+<td><img src="../../Others/Showcase/FeatureSmall/Community/EasyFile.png" height="300" /></td>
 </tr>
 <tr>
 <td>为悬停和活动标签页添加轨迹，以及关闭按钮</td>
-<td><img src="../Others/Showcase/FeatureSmall/MyMods/TabTrails.gif" height="300" /></td>
+<td><img src="../../Others/Showcase/FeatureSmall/MyMods/TabTrails.gif" height="300" /></td>
 </tr>
 <tr>
 <td>更大视图</td>
-<td><img src="../Others/Showcase/FeatureSmall/Community/BiggerView.gif" height="300" /></td>
+<td><img src="../../Others/Showcase/FeatureSmall/Community/BiggerView.gif" height="300" /></td>
 </tr>
 </table>
 
@@ -106,7 +112,7 @@
 
 > 以及更多...
 
-# **如何安装**
+# 如何安装
 
 > 在开始之前，有必要做一些声明。我的操作系统是 `macOS 15.7`，浏览器版本是 `Vivaldi 7.6.3797.58 (Stable channel) (arm64)`。因此，所有修改都针对此环境进行了优化。它们在 Windows 和 Linux 等其他平台上可能会有异常行为，但大多数修改仍然可以使用。你可以 fork 这个仓库并相应地进行适配，或者从这个仓库中选择特定模块使用。
 
@@ -119,10 +125,10 @@
 > <img width="600" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/e5a20258-4f03-410b-902a-166f4689975b" />
 
 > 在 `主题 > 编辑器 > 颜色` 下
-> <img width="400" alt="Cleanshot at20251101-05PM" src=../Image/README/1761752550644.png />
+> <img width="400" alt="Cleanshot at20251101-05PM" src="../../Image/README/1761752550644.png" />
 
 > 在 `主题 > 编辑器 > 设置` 下
-> <img width="400" alt="Cleanshot at20251101-05PM" src=../Image/README/1761752555886.png />
+> <img width="400" alt="Cleanshot at20251101-05PM" src="../../Image/README/1761752555886.png" />
 
 > 在 `起始页 > 快速拨号` 小图标
 > <img width="300" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/2216c3be-7e55-4574-ae95-32ea715512df" />
@@ -152,15 +158,15 @@
 
 ==**开始前备份所有必要文件**==
 
-### 安装 CSS：
+### 安装 CSS
 
-1. 在 Vivaldi 中打开 'Vivaldi://experiments' 并勾选 '允许 CSS 修改'
+1. 在 Vivaldi 中打开 `Vivaldi://experiments` 并勾选 `允许 CSS 修改`
 2. 重启 Vivaldi
 3. 克隆此仓库
-4. 在 'CSS/' 下有一个名为 'Core.css' 的文件，它会导入此修改包中的所有 css 修改，
+4. 在 `CSS/` 下有一个名为 `Core.css` 的文件，它会导入此修改包中的所有 css 修改，
    你还可以在此修改包中找到所有 css 修改的所有配置；
    这意味着你可以在一个地方打开/关闭所有 css 修改，并在更新时保持你的配置。
-5. 转到 设置->外观，你会看到 '自定义 UI 修改'。选择文件位置为 "/path/to/Awesome-Vivaldi/CSS"
+5. 转到 设置->外观，你会看到 `自定义 UI 修改`。选择文件位置为 "/path/to/Awesome-Vivaldi/CSS"
 6. 重启 Vivaldi，一切就绪！
 
 ### 安装 JavaScript 修改
@@ -317,10 +323,6 @@
 [在对话框中打开修改](https://forum.vivaldi.net/topic/92501/open-in-dialog-mod/95?_=1758776959371)
 
 > 在对话框弹出窗口中打开链接或搜索的修改。
-
-[两级标签堆栈的自动展开和折叠标签栏：重做](https://forum.vivaldi.net/topic/111893/auto-expand-and-collapse-tabbar-for-two-level-tab-stack-rework?_=1758777265037)
-
-> 自动展开和折叠标签栏
 
 [两级标签堆栈的自动展开和折叠标签栏：重做](https://forum.vivaldi.net/topic/111893/auto-expand-and-collapse-tabbar-for-two-level-tab-stack-rework?_=1758777265037)
 

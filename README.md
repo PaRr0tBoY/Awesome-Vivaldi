@@ -15,7 +15,7 @@
 
 <div align="center">
 
-**English** | [简体中文](./Others/READMEZh.md)
+**English** | [简体中文](./Others/READMEZH/READMEMAIN.md)
 
 </div>
 
