@@ -4,7 +4,6 @@
 - [Mod List](#mod-list)
   - [CSS](#css)
   - [Javascripts](#javascripts)
-  - [Dev (incomplete / buggy / WIP)](#dev-incomplete--buggy--wip)
 - [How to install](#how-to-install)
   - [CSS Mods](#to-install-css-mods)
   - [Javascripts Mods](#to-install-javascripts-mods)
@@ -57,19 +56,6 @@
 | `TidyTabs.js`            | AI tab grouping _(pairs with `TidyTabs.css`)_            |
 | `TidyTitles.js`          | AI tab title cleanup                                     |
 | `YbAddressBar.js`        | Address bar enhancements(buggy)                          |
-
-### Dev (incomplete / buggy / WIP)
-
-| File                    | Status |
-| ----------------------- | ------ |
-| `Addressbar.css`        | WIP    |
-| `AdressFieldExpand.css` | WIP    |
-| `ArcFolder.css` / `.js` | WIP    |
-| `BraveStyleTabs.css`    | WIP    |
-| `FuckClutter.css`       | WIP    |
-| `Panel.css`             | WIP    |
-| `StatusBar.css`         | WIP    |
-| `Tabbar.css`            | WIP    |
 
 ## How to install
 
