@@ -30,7 +30,7 @@
 
 <br/>
 
-# Table of Contents
+## Table of Contents
 
 - [Introduction](#introduction)
 - [Feature Showcase](#feature-showcase)
@@ -38,7 +38,7 @@
 - [Installation](#installation)
 - [Community Mods](#community-mods)
 
-# Introduction
+## Introduction
 
 This modpack support 2 version of Vivaldi.
 
@@ -47,7 +47,7 @@ This modpack support 2 version of Vivaldi.
 
 Please choose the modpack that matches your Vivaldi Version. Which version of Vivaldi browser are you using? If you're not sure, check it out at `vivaldi:about`.
 
-# Feature Showcase
+## Feature Showcase
 
 | Demo                                                | Mods                                                         |
 | --------------------------------------------------- | ------------------------------------------------------------ |
@@ -57,7 +57,7 @@ Please choose the modpack that matches your Vivaldi Version. Which version of Vi
 | ![ArcPeek](./Others/assets/ArcPeek.gif)             | `ArcPeek.css` + `ArcPeek.js`                                 |
 | ![Quietify](./Others/assets/Quietify.gif)           | `Quietify.css`                                               |
 
-# Main File Structure
+## Main File Structure
 
 ```
 .
@@ -69,7 +69,7 @@ Please choose the modpack that matches your Vivaldi Version. Which version of Vi
     └── Javascripts
 ```
 
-# Installation
+## Installation
 
 If you have installed Claude Code or other agents, ask it to:
 ```
@@ -87,7 +87,7 @@ Installation guide is under corresponding modpack.
 <details>
 <summary><h1>Community Mods</h1></summary>
 
-# Community JS Mods And CSS Included In This Modpack
+## Community JS Mods And CSS Included In This Modpack
 
 [📸 Element Capture](https://forum.vivaldi.net/topic/103686/element-capture?_=1758777284963)
 
