@@ -41,7 +41,7 @@
   - [Javascripts Mods](#to-install-javascripts-mods)
 
 
-# Feature Showcase
+## Feature Showcase
 
 | Showcase                                             | Mods                                                         |
 | :--------------------------------------------------- | :----------------------------------------------------------- |
