@@ -71,6 +71,12 @@ Please choose the modpack that matches your Vivaldi Version. Which version of Vi
 
 # Installation
 
+If you have installed Claude Code or other agents, ask it to:
+```
+Guide me through the installation of https://github.com/PaRr0tBoY/Awesome-Vivaldi
+```
+If not:
+
 Installation guide is under corresponding modpack.
 
 - [Installation Guide for Vivaldi 7.9 latest](./Vivaldi7.9Stable/README.md)
