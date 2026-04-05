@@ -1,17 +1,30 @@
 <div align="center">
-    <img width="200" height="200" src="../../Others/Showcase/IMG5682.png">
+    <img width="200" height="200" src="/Others/Showcase/IMG5682.png">
 </div>
 
 <div align="center">
     <h1>Awesome Vivaldi</h1>
+<div align="center">
 
-[![DeepWiki](https://img.shields.io/badge/DeepWiki-文档-blue)](https://deepwiki.com/PaRr0tBoY/Awesome-Vivaldi/2.3.1-main-ui-styles)
-[![Vivaldi Forum](https://img.shields.io/badge/Vivaldi-论坛-red)](https://forum.vivaldi.net/topic/112064/modpack-community-essentials-mods-collection?_=1761221602450)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/PaRr0tBoY/Awesome-Vivaldi)
+[![Vivaldi Forum](https://img.shields.io/badge/Vivaldi-Forum-red)](https://forum.vivaldi.net/topic/112064/modpack-community-essentials-mods-collection?_=1761221602450)
 ![GitHub Repo stars](https://img.shields.io/github/stars/PaRr0tBoY/Awesome-Vivaldi)
 
+</div>
     <p>Vivaldi 浏览器精选社区修改包</p>
 
+<div align="center">
+
 [English](../../Vivaldi7.6Stable/README.md) | **简体中文**
+
+</div>
+
+<!-- <img src="" width="32%" alt="home" />
+<img src="" width="32%" alt="home" />
+<img src="" width="32%" alt="home" />
+<br/>
+<img src="" width="96%" alt="home" />
+<br/> -->
 
 </div>
 
