@@ -40,16 +40,15 @@
   - [CSS Mods](#to-install-css-mods)
   - [Javascripts Mods](#to-install-javascripts-mods)
 
-
 ## Feature Showcase
 
-| Showcase                                             | Mods                                                         |
-| :--------------------------------------------------- | :----------------------------------------------------------- |
-| ![FavouriteTabs](../Others/assets/FavouriteTabs.gif) | `FavouriteTabs.css`                                          |
+| Showcase                                             | Mods                                                              |
+| :--------------------------------------------------- | :---------------------------------------------------------------- |
+| ![FavouriteTabs](../Others/assets/FavouriteTabs.gif) | `FavouriteTabs.css`                                               |
 | ![VivaldiMax](../Others/assets/VivaldiMax.gif)       | `TidyTabs.css` + `TidyTabs.js` + `ClearTabs.js` + `TidyTitles.js` |
-| ![PeekTabbar](../Others/assets/PeekTabbar.gif)       | `PeekTabbar.css`                                             |
-| ![ArcPeek](../Others/assets/ArcPeek.gif)             | `ArcPeek.css` + `ArcPeek.js`                                 |
-| ![Quietify](../Others/assets/Quietify.gif)           | `Quietify.css`                                               |
+| ![PeekTabbar](../Others/assets/PeekTabbar.gif)       | `PeekTabbar.css`                                                  |
+| ![ArcPeek](../Others/assets/ArcPeek.gif)             | `ArcPeek.css` + `ArcPeek.js`                                      |
+| ![Quietify](../Others/assets/Quietify.gif)           | `Quietify.css`                                                    |
 
 ## Mod List
 

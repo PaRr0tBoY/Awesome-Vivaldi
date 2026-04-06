@@ -8,7 +8,12 @@
 :root {
   --animation-test-speed: 120ms;
 }
-body:has(#tabs-subcontainer) #tabs-container {
+
+body:is(
+    :has(#tabs-tabbar-container.left),
+    :has(#tabs-tabbar-container.right)
+  ):has(#tabs-subcontainer)
+  #tabs-container {
   max-width: 18%;
   min-width: 18%;
   transition:
@@ -16,7 +21,11 @@ body:has(#tabs-subcontainer) #tabs-container {
     max-width var(--animation-test-speed) ease-in 300ms;
 }
 
-body:has(#tabs-container) #tabs-subcontainer {
+body:is(
+    :has(#tabs-tabbar-container.left),
+    :has(#tabs-tabbar-container.right)
+  ):has(#tabs-container)
+  #tabs-subcontainer {
   max-width: 82%;
   min-width: 82%;
   transition:
@@ -25,7 +34,11 @@ body:has(#tabs-container) #tabs-subcontainer {
   transform-origin: left center !important;
 }
 
-body:has(#tabs-subcontainer) #tabs-container:hover {
+body:is(
+    :has(#tabs-tabbar-container.left),
+    :has(#tabs-tabbar-container.right)
+  ):has(#tabs-subcontainer)
+  #tabs-container:hover {
   max-width: 82% !important;
   min-width: 82% !important;
   transition:
@@ -33,7 +46,11 @@ body:has(#tabs-subcontainer) #tabs-container:hover {
     max-width var(--animation-test-speed) ease-out 300ms;
 }
 
-body:has(#tabs-container:hover) #tabs-subcontainer {
+body:is(
+    :has(#tabs-tabbar-container.left),
+    :has(#tabs-tabbar-container.right)
+  ):has(#tabs-container:hover)
+  #tabs-subcontainer {
   max-width: 18% !important;
   min-width: 18% !important;
   transition:
@@ -41,7 +58,8 @@ body:has(#tabs-container:hover) #tabs-subcontainer {
     max-width var(--animation-test-speed) ease-out 300ms;
 }
 
-#tabs-container {
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  #tabs-container {
   container-type: inline-size;
   container-name: tabs-container;
 }
@@ -52,47 +70,71 @@ body:has(#tabs-container:hover) #tabs-subcontainer {
   }
 }
 
-/* Hide scrollbars for vertical tab bars */
-#browser #tabs-tabbar-container.left ::-webkit-scrollbar,
-#browser #tabs-tabbar-container.right ::-webkit-scrollbar {
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  #browser
+  #tabs-tabbar-container.left
+  ::-webkit-scrollbar,
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  #browser
+  #tabs-tabbar-container.right
+  ::-webkit-scrollbar {
   display: none;
 }
 
-/* Disable tab bar resizing while auto-hide enabled */
-body:has(.auto-hide-wrapper) #tabs-tabbar-container .SlideBar {
+body:is(
+    :has(#tabs-tabbar-container.left),
+    :has(#tabs-tabbar-container.right)
+  ):has(.auto-hide-wrapper)
+  #tabs-tabbar-container
+  .SlideBar {
   display: none !important;
 }
 
-/* Hide accordion arrow for right-side tabs in density mode */
-.tabs-right#browser.density-on .accordion-toggle-arrow:after,
-.tabs-right#browser.density-on .tab-wrapper:after {
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  .tabs-right#browser.density-on
+  .accordion-toggle-arrow:after,
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  .tabs-right#browser.density-on
+  .tab-wrapper:after {
   display: none !important;
 }
 
-#tabs-tabbar-container {
-  /* overflow: hidden !important; */
-}
-
-/* Disabled drag area, allow hover */
-#tabs-tabbar-container,
-#tabs-tabbar-container * {
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  #tabs-tabbar-container,
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  #tabs-tabbar-container
+  * {
   -webkit-app-region: no-drag !important;
 }
 
-#tabs-tabbar-container .toolbar-spacer,
-#tabs-tabbar-container .toolbar-spacer-flexible,
-#tabs-tabbar-container .toolbar-spacer-panel,
-#tabs-tabbar-container .toolbar-divider {
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  #tabs-tabbar-container
+  .toolbar-spacer,
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  #tabs-tabbar-container
+  .toolbar-spacer-flexible,
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  #tabs-tabbar-container
+  .toolbar-spacer-panel,
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  #tabs-tabbar-container
+  .toolbar-divider {
   -webkit-app-region: no-drag !important;
 }
 
-#tabs-tabbar-container .button-ntp,
-#tabs-tabbar-container .tab-header {
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  #tabs-tabbar-container
+  .button-ntp,
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  #tabs-tabbar-container
+  .tab-header {
   -webkit-app-region: no-drag !important;
 }
 
-/* Keep mainbar expand while popout exists */
-body:has(#tabs-subcontainer):has(
+body:is(
+    :has(#tabs-tabbar-container.left),
+    :has(#tabs-tabbar-container.right)
+  ):has(#tabs-subcontainer):has(
     #tabs-tabbar-container .ToolbarButton-Button.button-pressed
   )
   #tabs-container {
@@ -103,7 +145,10 @@ body:has(#tabs-subcontainer):has(
     max-width 200ms ease-out 300ms;
 }
 
-body:has(#tabs-subcontainer):has(
+body:is(
+    :has(#tabs-tabbar-container.left),
+    :has(#tabs-tabbar-container.right)
+  ):has(#tabs-subcontainer):has(
     #tabs-tabbar-container .ToolbarButton-Button.button-pressed
   )
   #tabs-subcontainer {
@@ -114,8 +159,11 @@ body:has(#tabs-subcontainer):has(
     max-width 200ms ease-out 300ms;
 }
 
-/* Tooltip hover triggers panel slide-in */
-body:has(#vivaldi-tooltip:hover) .auto-hide-wrapper.has-tabbar {
+body:is(
+    :has(#tabs-tabbar-container.left),
+    :has(#tabs-tabbar-container.right)
+  ):has(#vivaldi-tooltip:hover)
+  .auto-hide-wrapper.has-tabbar {
   transition: transform 300ms cubic-bezier(0.25, 0.8, 0.25, 1.08) !important;
   transform: translateX(0) !important;
 }
