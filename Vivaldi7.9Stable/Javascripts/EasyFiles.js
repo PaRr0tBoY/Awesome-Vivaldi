@@ -10,7 +10,7 @@
     stream: {
       async compress(input, outputType = "arrayBuffer", format = "gzip") {
         const compressedStream = new Response(input).body.pipeThrough(
-          new CompressionStream(format),
+          new CompressionStream(format)
         );
         return await new Response(compressedStream)[outputType]();
       },
@@ -18,7 +18,9 @@
     file: {
       readableFileSize(size) {
         const i = Math.floor(Math.log(size) / Math.log(1024));
-        return `${(size / Math.pow(1024, i)).toFixed(2)} ${["B", "kB", "MB", "GB", "TB"][i]}`;
+        return `${(size / Math.pow(1024, i)).toFixed(2)} ${
+          ["B", "kB", "MB", "GB", "TB"][i]
+        }`;
       },
       getFileExtension(fileName) {
         return /(?:\.([^.]+))?$/.exec(fileName)[1];
@@ -32,7 +34,7 @@
           .split(",")
           .map((x) => x.trim())
           .filter(
-            (x) => !!x && (x.startsWith(".") || /\w+\/([-+.\w]+|\*)/.test(x)),
+            (x) => !!x && (x.startsWith(".") || /\w+\/([-+.\w]+|\*)/.test(x))
           );
 
         if (!mimeTypes.length) {
@@ -78,7 +80,7 @@
           html: css || "",
           "data-id": id,
         },
-        document.head,
+        document.head
       );
       return this.styles[id];
     },
@@ -223,7 +225,7 @@
       let cancelEvent;
       const id = this.uuid.generate();
       const inner = document.querySelector(
-        "#main > .inner, #main > .webpageview",
+        "#main > .inner, #main > .webpageview"
       );
 
       if (!config) {
@@ -244,7 +246,7 @@
         mousedown,
         button,
         clientX,
-        clientY,
+        clientY
       ) {
         if (
           config.autoClose &&
@@ -315,7 +317,7 @@
           "data-dialog-id": id,
           class: "dialog-custom modal-wrapper",
         },
-        div,
+        div
       );
       if (config.class) {
         dialog.classList.add(config.class);
@@ -326,7 +328,7 @@
           class: "dialog-header",
         },
         dialog,
-        "<h1>" + (title || "") + "</h1>",
+        "<h1>" + (title || "") + "</h1>"
       );
       const dialogContent = this.createElement(
         "div",
@@ -337,7 +339,7 @@
           },
         },
         dialog,
-        content,
+        content
       );
       if (buttons && buttons.length > 0) {
         const dialogFooter = this.createElement(
@@ -346,7 +348,7 @@
             class: "dialog-footer",
           },
           dialog,
-          buttonElements,
+          buttonElements
         );
       }
       modalBg = this.createElement(
@@ -356,7 +358,7 @@
           class: "slide",
         },
         inner,
-        [focusModal.cloneNode(true), div, focusModal.cloneNode(true)],
+        [focusModal.cloneNode(true), div, focusModal.cloneNode(true)]
       );
       return {
         dialog,
@@ -403,10 +405,10 @@
         const id = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
           /[xy]/g,
           (c) => {
-            r = ((d + Math.random() * 16) % 16) | 0;
+            r = (d + Math.random() * 16) % 16 | 0;
             d = Math.floor(d / 16);
             return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
-          },
+          }
         );
 
         if (Array.isArray(ids) && ids.includes(id)) {
@@ -471,7 +473,7 @@
       `.${nameKey}.dialog-custom .dialog-content .selectbox-wrapper .selectbox-container .selectbox-title .filename-container .filename-text { white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }`,
       `.${nameKey}.dialog-custom .dialog-content .selectbox-wrapper .selectbox-container .selectbox-title .filename-container .filename-extension { white-space: nowrap; }`,
     ],
-    nameKey,
+    nameKey
   );
 
   function inject(nameKey) {
@@ -493,7 +495,7 @@
 
     async function decompressArrayBuffer(input) {
       const decompressedStream = new Response(input).body.pipeThrough(
-        new DecompressionStream("gzip"),
+        new DecompressionStream("gzip")
       );
       return await new Response(decompressedStream).arrayBuffer();
     }
@@ -585,14 +587,15 @@
               const dataTransfer = new DataTransfer();
               const base64String = fileData.join("");
               const unit8Array = Uint8Array.from(atob(base64String), (c) =>
-                c.charCodeAt(0),
+                c.charCodeAt(0)
               );
-              const decompressedArrayBuffer =
-                await decompressArrayBuffer(unit8Array);
+              const decompressedArrayBuffer = await decompressArrayBuffer(
+                unit8Array
+              );
               dataTransfer.items.add(
                 new File([decompressedArrayBuffer], info.file.fileName, {
                   type: info.file.mimeType,
-                }),
+                })
               );
 
               changeFile(dataTransfer);
@@ -639,7 +642,7 @@
             isRealFile,
           });
         },
-        { once: true },
+        { once: true }
       );
 
       document.execCommand("paste");
@@ -668,8 +671,8 @@
       const supportedType = supportedTypes.find((s) =>
         gnoh.file.verifyAccept(
           { fileName: "image." + s.extension, mimeType: s.mimeType },
-          accept,
-        ),
+          accept
+        )
       );
 
       const pasteData = await simulatePaste();
@@ -681,7 +684,7 @@
           if (item.isRealFile) {
             checkType = gnoh.file.verifyAccept(
               { fileName: file.name, mimeType: file.type },
-              accept,
+              accept
             );
           } else {
             checkType = supportedType && file.type === "Image/png";
@@ -700,8 +703,8 @@
           const compressedBase64String = btoa(
             new Uint8Array(compressedArrayBuffer).reduce(
               (data, byte) => data + String.fromCharCode(byte),
-              "",
-            ),
+              ""
+            )
           );
           const fileData = gnoh.array.chunks(compressedBase64String, chunkSize);
           const clipboardFile = {
@@ -733,7 +736,7 @@
               } catch (error) {
                 console.warn(
                   "Failed to create preview for clipboard image",
-                  error,
+                  error
                 );
                 // Continue without preview if it fails
               }
@@ -787,7 +790,7 @@
         downloadedFile.mime !== "application/x-msdownload" &&
         gnoh.file.verifyAccept(
           { fileName: downloadedFile.filename, mimeType: downloadedFile.mime },
-          accept,
+          accept
         )
       ) {
         downloadedFile = (
@@ -824,7 +827,7 @@
                 console.warn(
                   "Failed to create preview for file:",
                   file.path,
-                  error,
+                  error
                 );
                 // Continue without preview if it fails
               }
@@ -849,7 +852,7 @@
       colorBg.r,
       colorBg.g,
       colorBg.b,
-      isLightBg ? 0.4 : -0.4,
+      isLightBg ? 0.4 : -0.4
     );
 
     const fileIcon = gnoh.createElement("div", {
@@ -858,12 +861,12 @@
         "--colorFileIconBg": gnoh.color.rgbToHex(
           colorBg.r,
           colorBg.g,
-          colorBg.b,
+          colorBg.b
         ),
         "--colorFileIconBgLighter": gnoh.color.rgbToHex(
           colorBgLighter.r,
           colorBgLighter.g,
-          colorBgLighter.b,
+          colorBgLighter.b
         ),
         "--colorFileIconFg": isLightBg ? "#f6f6f6" : "#111111",
       },
@@ -875,7 +878,7 @@
         class: "file-icon-content",
         text: extension,
       },
-      fileIcon,
+      fileIcon
     );
 
     return fileIcon;
@@ -883,7 +886,9 @@
 
   async function createSelectbox(sender, file, dialog) {
     const selectbox = gnoh.createElement("button", {
-      title: `${file.fileName ? file.fileName + "\n" : ""}Size: ${gnoh.file.readableFileSize(file.size)}`,
+      title: `${
+        file.fileName ? file.fileName + "\n" : ""
+      }Size: ${gnoh.file.readableFileSize(file.size)}`,
       class: "selectbox",
       events: {
         async click(event) {
@@ -894,19 +899,20 @@
             case "downloaded-file":
               if (!file.fileData) {
                 const arrayBuffer = await vivaldi.mailPrivate.readFileToBuffer(
-                  file.path,
+                  file.path
                 );
-                const compressedArrayBuffer =
-                  await gnoh.stream.compress(arrayBuffer);
+                const compressedArrayBuffer = await gnoh.stream.compress(
+                  arrayBuffer
+                );
                 const compressedBase64String = btoa(
                   new Uint8Array(compressedArrayBuffer).reduce(
                     (data, byte) => data + String.fromCharCode(byte),
-                    "",
-                  ),
+                    ""
+                  )
                 );
                 file.fileData = gnoh.array.chunks(
                   compressedBase64String,
-                  chunkSize,
+                  chunkSize
                 );
                 file.fileDataLength = file.fileData.length;
               }
@@ -939,7 +945,7 @@
       {
         class: "selectbox-image",
       },
-      selectbox,
+      selectbox
     );
 
     if (file.previewUrl) {
@@ -954,7 +960,7 @@
         {
           src: file.previewUrl,
         },
-        selectboxImage,
+        selectboxImage
       );
     } else {
       const extension =
@@ -967,7 +973,7 @@
       {
         class: "selectbox-title",
       },
-      selectbox,
+      selectbox
     );
 
     const filenameText = gnoh.createElement(
@@ -975,7 +981,7 @@
       {
         class: "filename-container",
       },
-      selectboxTitle,
+      selectboxTitle
     );
 
     if (file.fileName) {
@@ -984,7 +990,7 @@
       const name = extension
         ? file.fileName.substring(
             0,
-            file.fileName.length - extension.length - 1,
+            file.fileName.length - extension.length - 1
           )
         : file.fileName;
 
@@ -994,7 +1000,7 @@
           class: "filename-text",
           text: name,
         },
-        filenameText,
+        filenameText
       );
 
       if (extension) {
@@ -1004,7 +1010,7 @@
             class: "filename-extension",
             text: "." + extension,
           },
-          filenameText,
+          filenameText
         );
       }
     }
@@ -1028,7 +1034,7 @@
           showAllFiles(sender);
           disconnectResizeObserver && disconnectResizeObserver();
         },
-      },
+      }
     );
 
     const buttonCancelElement = gnoh.object.merge(
@@ -1037,7 +1043,7 @@
         click() {
           disconnectResizeObserver && disconnectResizeObserver();
         },
-      },
+      }
     );
 
     const dialog = gnoh.dialog(
@@ -1046,7 +1052,7 @@
       [buttonShowAllFilesElement, buttonCancelElement],
       {
         class: nameKey,
-      },
+      }
     );
     dialog.dialog.style.maxWidth = 570 + "px";
 
@@ -1106,7 +1112,7 @@
         {
           text: langs.clipboard,
         },
-        selectboxWrapperClipboard,
+        selectboxWrapperClipboard
       );
 
       const selectboxContainerClipboard = gnoh.createElement(
@@ -1114,12 +1120,12 @@
         {
           class: "selectbox-container",
         },
-        selectboxWrapperClipboard,
+        selectboxWrapperClipboard
       );
 
       for (const clipboardFile of clipboardFiles) {
         selectboxContainerClipboard.append(
-          await createSelectbox(sender, clipboardFile, dialog),
+          await createSelectbox(sender, clipboardFile, dialog)
         );
       }
 
@@ -1136,7 +1142,7 @@
         {
           text: langs.downloads,
         },
-        selectboxWrapperDownloaded,
+        selectboxWrapperDownloaded
       );
 
       const selectboxContainerDownloaded = gnoh.createElement(
@@ -1144,12 +1150,12 @@
         {
           class: "selectbox-container",
         },
-        selectboxWrapperDownloaded,
+        selectboxWrapperDownloaded
       );
 
       for (const downloadedFile of downloadedFiles) {
         selectboxContainerDownloaded.append(
-          await createSelectbox(sender, downloadedFile, dialog),
+          await createSelectbox(sender, downloadedFile, dialog)
         );
       }
 
@@ -1168,7 +1174,7 @@
       },
       {
         frameId: sender.frameId,
-      },
+      }
     );
   }
 
@@ -1195,7 +1201,7 @@
         },
         {
           frameId: sender.frameId,
-        },
+        }
       );
     }
   }
@@ -1206,7 +1212,7 @@
         pointerPosition.x = clientX;
         pointerPosition.y = clientY;
       }
-    },
+    }
   );
 
   chrome.runtime.onMessage.addListener(async (info, sender, sendResponse) => {
@@ -1223,7 +1229,7 @@
               window[sender.tab.id] ||
               document.elementFromPoint(pointerPosition.x, pointerPosition.y);
             const zoom = parseFloat(
-              gnoh.element.getStyle(webview).getPropertyValue("--uiZoomLevel"),
+              gnoh.element.getStyle(webview).getPropertyValue("--uiZoomLevel")
             );
             const webviewZoom = await new Promise((resolve) => {
               webview.getZoom((res) => {
@@ -1279,7 +1285,7 @@
               args: [nameKey],
             });
           });
-        },
+        }
       );
 
       chrome.webNavigation.onCommitted.addListener((details) => {
@@ -1295,6 +1301,6 @@
         }
       });
     },
-    () => window.vivaldiWindowId != null,
+    () => window.vivaldiWindowId != null
   );
 })();

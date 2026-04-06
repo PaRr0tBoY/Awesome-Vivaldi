@@ -99,7 +99,7 @@
     } catch (e) {
       console.error(
         "[TidyTitles] JSON parse failed for content:",
-        s.substring(0, 100) + "...",
+        s.substring(0, 100) + "..."
       );
       return null;
     }
@@ -205,7 +205,7 @@ Rules:
         // Suppress noisy logs for common issues like 429 or 401
         if (status === 429) {
           console.warn(
-            `[TidyTitles] API rate limit reached (429). Skipping for now.`,
+            `[TidyTitles] API rate limit reached (429). Skipping for now.`
           );
         } else {
           console.error(`[TidyTitles] API error (${status}): ${errMsg}`);
@@ -216,7 +216,7 @@ Rules:
       if (!data || !data.choices || data.choices.length === 0) {
         console.warn(
           "[TidyTitles] API response missing choices:",
-          JSON.stringify(data),
+          JSON.stringify(data)
         );
         return originalTitle;
       }
@@ -235,7 +235,7 @@ Rules:
       if (!rawContent) {
         console.log(
           `[TidyTitles] AI returned empty content. Choice:`,
-          JSON.stringify(choice),
+          JSON.stringify(choice)
         );
       }
 
@@ -281,13 +281,13 @@ Rules:
           if (chrome.runtime.lastError) {
             console.error(
               "[TidyTitles] Failed to update tab:",
-              chrome.runtime.lastError.message,
+              chrome.runtime.lastError.message
             );
           } else {
             console.log(`[TidyTitles] ✓ ${tabId} → ${newTitle}`);
             processedTabs.add(tabId);
           }
-        },
+        }
       );
     });
   }
@@ -311,7 +311,7 @@ Rules:
 
     if (processedTabs.has(tabId)) {
       console.log(
-        `[TidyTitles] Tab ${tabId} has already been processed, skipping.`,
+        `[TidyTitles] Tab ${tabId} has already been processed, skipping.`
       );
       return;
     }
@@ -322,7 +322,7 @@ Rules:
       if (chrome.runtime.lastError) {
         console.warn(
           `[TidyTitles] Could not get info for tab ${tabId}:`,
-          chrome.runtime.lastError.message,
+          chrome.runtime.lastError.message
         );
         return;
       }
@@ -337,7 +337,7 @@ Rules:
       // Skip if it already has a fixedTitle
       if (vivExtData.fixedTitle) {
         console.log(
-          `[TidyTitles] Tab ${tabId} already has custom title ("${vivExtData.fixedTitle}"), skipping.`,
+          `[TidyTitles] Tab ${tabId} already has custom title ("${vivExtData.fixedTitle}"), skipping.`
         );
         processedTabs.add(tabId);
         return;
@@ -352,18 +352,18 @@ Rules:
       getLiveTabElement(tabId)?.classList.add("tidy-title-loading");
 
       console.log(
-        `[TidyTitles] Requesting AI generated title for tab ${tabId} ("${tab.title}")...`,
+        `[TidyTitles] Requesting AI generated title for tab ${tabId} ("${tab.title}")...`
       );
 
       try {
         const optimizedTitle = await generateOptimizedTitle(
           tab.title || "",
-          tab.url || "",
+          tab.url || ""
         );
 
         if (optimizedTitle === tab.title) {
           console.log(
-            `[TidyTitles] AI returned title is identical or generation failed, no changes made (${tabId})`,
+            `[TidyTitles] AI returned title is identical or generation failed, no changes made (${tabId})`
           );
           // Do not add to processed list on failure, allowing retry
           return;
@@ -384,11 +384,11 @@ Rules:
    */
   async function checkPinnedTabs() {
     const pinnedTabElements = document.querySelectorAll(
-      ".tab-position.is-pinned:not(.is-substack) .tab-wrapper",
+      ".tab-position.is-pinned:not(.is-substack) .tab-wrapper"
     );
 
     console.log(
-      `[TidyTitles] Init: detected ${pinnedTabElements.length} pinned tabs`,
+      `[TidyTitles] Init: detected ${pinnedTabElements.length} pinned tabs`
     );
 
     for (const tabElement of pinnedTabElements) {

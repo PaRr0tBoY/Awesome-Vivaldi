@@ -19,12 +19,13 @@
   }
 
   function trigger(tab) {
-    chrome.tabs.executeScript(
-      parseInt(tab.parentNode.id.replace(/\D/g, ""), 10),
-      {
+    const tabId = parseInt(tab.parentNode.id.replace(/\D/g, ""), 10);
+    const webview = document.querySelector(`webview[tab_id="${tabId}"]`);
+    if (webview) {
+      webview.executeScript({
         code: `(${script})("${scb}")`,
-      },
-    );
+      });
+    }
     exit(tab);
   }
 
