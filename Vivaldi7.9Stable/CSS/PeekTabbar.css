@@ -16,8 +16,7 @@ body:is(
   #tabs-container {
   max-width: 18%;
   min-width: 18%;
-  transition:
-    min-width var(--animation-test-speed) ease-in 300ms,
+  transition: min-width var(--animation-test-speed) ease-in 300ms,
     max-width var(--animation-test-speed) ease-in 300ms;
 }
 
@@ -28,8 +27,7 @@ body:is(
   #tabs-subcontainer {
   max-width: 82%;
   min-width: 82%;
-  transition:
-    min-width var(--animation-test-speed) ease-in 300ms,
+  transition: min-width var(--animation-test-speed) ease-in 300ms,
     max-width var(--animation-test-speed) ease-in 300ms;
   transform-origin: left center !important;
 }
@@ -41,8 +39,7 @@ body:is(
   #tabs-container:hover {
   max-width: 82% !important;
   min-width: 82% !important;
-  transition:
-    min-width var(--animation-test-speed) ease-out 300ms,
+  transition: min-width var(--animation-test-speed) ease-out 300ms,
     max-width var(--animation-test-speed) ease-out 300ms;
 }
 
@@ -53,8 +50,7 @@ body:is(
   #tabs-subcontainer {
   max-width: 18% !important;
   min-width: 18% !important;
-  transition:
-    min-width var(--animation-test-speed) ease-out 300ms,
+  transition: min-width var(--animation-test-speed) ease-out 300ms,
     max-width var(--animation-test-speed) ease-out 300ms;
 }
 
@@ -140,9 +136,7 @@ body:is(
   #tabs-container {
   max-width: 82% !important;
   min-width: 82% !important;
-  transition:
-    min-width 200ms ease-out 300ms,
-    max-width 200ms ease-out 300ms;
+  transition: min-width 200ms ease-out 300ms, max-width 200ms ease-out 300ms;
 }
 
 body:is(
@@ -154,9 +148,7 @@ body:is(
   #tabs-subcontainer {
   max-width: 18% !important;
   min-width: 18% !important;
-  transition:
-    min-width 200ms ease-out 300ms,
-    max-width 200ms ease-out 300ms;
+  transition: min-width 200ms ease-out 300ms, max-width 200ms ease-out 300ms;
 }
 
 body:is(

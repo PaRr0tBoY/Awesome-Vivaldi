@@ -100,13 +100,8 @@ Download Panel Theme
   position: absolute;
   color: white;
   -webkit-text-stroke: 0.2px;
-  text-shadow:
-    -0.5px -0.5px 1px cyan,
-    0.5px 0.5px 1px red,
-    -1px 0 1px black,
-    1px 0 1px black,
-    0 -0.5px 1px black,
-    0.5px 1.5px 1px black;
+  text-shadow: -0.5px -0.5px 1px cyan, 0.5px 0.5px 1px red, -1px 0 1px black,
+    1px 0 1px black, 0 -0.5px 1px black, 0.5px 1.5px 1px black;
 }
 
 .button-toolbar

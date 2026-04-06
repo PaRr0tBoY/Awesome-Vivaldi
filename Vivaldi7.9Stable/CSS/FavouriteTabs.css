@@ -227,8 +227,7 @@ body:has(#tabs-tabbar-container.right) {
       .title {
       opacity: 0 !important;
       max-width: 0 !important;
-      transition:
-        opacity var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1),
+      transition: opacity var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1),
         max-width var(--animation-speed) cubic-bezier(0.4, 0, 0.2, 1);
     }
 

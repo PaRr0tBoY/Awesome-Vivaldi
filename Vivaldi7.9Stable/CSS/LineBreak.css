@@ -24,9 +24,9 @@
 }
 :root:not(
     :has(
-      #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
-      #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
-    )
+        #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
+        #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
+      )
   )
   #browser:not(.toolbar-edit-mode)
   .button-toolbar.toolbar-command:has(> button[title^="vvh-insert-linebreak"]) {

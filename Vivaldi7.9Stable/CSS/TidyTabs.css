@@ -60,10 +60,7 @@ Requires: TidyTabs.js + ClearTabs.js
   color: var(--colorFgFadedMost, #808080);
   opacity: 0;
   visibility: hidden;
-  transition:
-    opacity 0.2s ease,
-    visibility 0.2s ease,
-    color 0.15s ease,
+  transition: opacity 0.2s ease, visibility 0.2s ease, color 0.15s ease,
     background-color 0.15s ease;
   top: 50%;
   transform: translateY(-50%);
@@ -122,7 +119,8 @@ Requires: TidyTabs.js + ClearTabs.js
   M0,4 Q10,0 20,4 Q30,8 40,4
 */
 
-.tab-strip .separator.tidy-loading hr {
+/* Higher specificity to override FavouriteTabs' separator hr styles when grid is active */
+#tabs-container .tab-strip .separator.tidy-loading hr {
   border-color: transparent !important;
   height: 8px !important;
   background: currentColor !important;
@@ -146,8 +144,8 @@ Requires: TidyTabs.js + ClearTabs.js
 }
 
 /* Hide buttons during loading */
-.tab-strip .separator.tidy-loading .tidy-tabs-below-button,
-.tab-strip .separator.tidy-loading .clear-tabs-below-button {
+#tabs-container .tab-strip .separator.tidy-loading .tidy-tabs-below-button,
+#tabs-container .tab-strip .separator.tidy-loading .clear-tabs-below-button {
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
