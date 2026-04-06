@@ -49,6 +49,7 @@
 | ![PeekTabbar](../Others/assets/PeekTabbar.gif)       | `PeekTabbar.css`                                                  |
 | ![ArcPeek](../Others/assets/ArcPeek.gif)             | `ArcPeek.css` + `ArcPeek.js`                                      |
 | ![Quietify](../Others/assets/Quietify.gif)           | `Quietify.css`                                                    |
+| ![TidyDownloads](../Others/assets/TidyDownloads.gif) | `TidyDownloads.js`                                                |
 
 ## Mod List
 
