@@ -195,9 +195,7 @@ icons for blocked content and the bookmark button in the addressfield.
   transition: background-color 0.7s;
 }
 .color-behind-tabs-off.address-bottom .toolbar-mainbar {
-  transition:
-    background-color 0.7s,
-    box-shadow 0.7s;
+  transition: background-color 0.7s, box-shadow 0.7s;
 }
 .color-behind-tabs-off #tabs-container.top,
 .color-behind-tabs-off #tabs-container.bottom {

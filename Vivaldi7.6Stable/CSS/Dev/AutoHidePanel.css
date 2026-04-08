@@ -11,9 +11,7 @@
   margin-top: calc(var(--mod-mainbar-height) + 6px);
   z-index: 999 !important;
   pointer-events: auto !important;
-  transition:
-    opacity 280ms ease-out,
-    width 280ms ease-out,
+  transition: opacity 280ms ease-out, width 280ms ease-out,
     background-color 280ms ease-out !important;
 }
 
@@ -56,18 +54,14 @@ body:has(:is(.toolbar-editor, .addwebpanel-wrapper))
 #panels-container.icons:not(:hover) #panels {
   opacity: 0 !important;
   visibility: hidden !important;
-  transition:
-    opacity 280ms ease-out,
-    visibility 280ms ease-out;
+  transition: opacity 280ms ease-out, visibility 280ms ease-out;
 }
 
 /* Show panel content on hover */
 #panels-container.icons:hover #panels {
   opacity: 1 !important;
   visibility: visible !important;
-  transition:
-    opacity 280ms ease-out,
-    visibility 280ms ease-out;
+  transition: opacity 280ms ease-out, visibility 280ms ease-out;
 }
 
 /* Default styles without .icons class */

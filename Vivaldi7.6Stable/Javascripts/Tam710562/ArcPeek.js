@@ -48,7 +48,7 @@
     searchEngineUtils = new SearchEngineUtils(
       (url) => this.dialogTab(url),
       (engineId, searchText) => this.dialogTabSearch(engineId, searchText),
-      CONTEXT_MENU_CONFIG,
+      CONTEXT_MENU_CONFIG
     );
     KEYBOARD_SHORTCUTS = {
       "Ctrl+Alt+Period": this.searchForSelectedText.bind(this),
@@ -67,13 +67,13 @@
 
       // Setup keyboard shortcuts
       vivaldi.tabsPrivate.onKeyboardShortcut.addListener(
-        this.keyCombo.bind(this),
+        this.keyCombo.bind(this)
       );
 
       new WebsiteInjectionUtils(
         (navigationDetails) => this.getWebviewConfig(navigationDetails),
         (url, fromPanel) => this.dialogTab(url, fromPanel),
-        ICON_CONFIG,
+        ICON_CONFIG
       );
     }
 
@@ -130,20 +130,20 @@
 
       // first dialog from tab or webpanel
       let webview = document.querySelector(
-        `webview[tab_id="${navigationDetails.tabId}"]`,
+        `webview[tab_id="${navigationDetails.tabId}"]`
       );
       if (webview)
         return { webview, fromPanel: webview.name === "vivaldi-webpanel" };
 
       // follow-up dialog from the webpanel
       webview = Array.from(this.webviews.values()).find(
-        (view) => view.fromPanel,
+        (view) => view.fromPanel
       )?.webview;
       if (webview) return { webview, fromPanel: true };
 
       // follow-up dialog from tab
       const lastWebviewId = document.querySelector(
-        ".active.visible.webpageview .dialog-container:last-of-type webview",
+        ".active.visible.webpageview .dialog-container:last-of-type webview"
       )?.id;
       return {
         webview: this.webviews.get(lastWebviewId)?.webview,
@@ -158,7 +158,7 @@
     async searchForSelectedText() {
       const tabs = await chrome.tabs.query({ active: true });
       vivaldi.utilities.getSelectedText(tabs[0].id, (text) =>
-        this.dialogTabSearch(this.searchEngineUtils.defaultSearchId, text),
+        this.dialogTabSearch(this.searchEngineUtils.defaultSearchId, text)
       );
     }
 
@@ -170,7 +170,7 @@
     async dialogTabSearch(engineId, selectionText) {
       let searchRequest = await vivaldi.searchEngines.getSearchRequest(
         engineId,
-        selectionText,
+        selectionText
       );
       this.dialogTab(searchRequest.url);
     }
@@ -197,7 +197,7 @@
         chrome.tabs.query({}, (tabs) => {
           const tab = tabs.find(
             (tab) =>
-              tab.vivExtData && tab.vivExtData.includes(`${webviewId}tabId`),
+              tab.vivExtData && tab.vivExtData.includes(`${webviewId}tabId`)
           );
           if (tab) chrome.tabs.remove(tab.id);
         });
@@ -218,7 +218,7 @@
       let webviewData = webviewValues.at(-1);
       if (!webviewData.fromPanel) {
         const tabId = Number(
-          document.querySelector(".active.visible.webpageview webview").tab_id,
+          document.querySelector(".active.visible.webpageview webview").tab_id
         );
         webviewData = webviewValues.findLast((_data) => _data.tabId === tabId);
       }
@@ -242,7 +242,7 @@
             dialogContainer.remove();
             // Clean up from webviews collection
             const webviewId = Array.from(this.webviews.entries()).find(
-              ([_, data]) => data.divContainer === dialogContainer,
+              ([_, data]) => data.divContainer === dialogContainer
             )?.[0];
             if (webviewId) {
               this.webviews.delete(webviewId);
@@ -250,7 +250,7 @@
             // Notify link interaction handler that closing is complete
             chrome.runtime.sendMessage({ type: "dialog-closed" });
           },
-          { once: true },
+          { once: true }
         );
       }
     }
@@ -290,8 +290,7 @@
 
       const tabId = !fromPanel
         ? Number(
-            document.querySelector(".active.visible.webpageview webview")
-              .tab_id,
+            document.querySelector(".active.visible.webpageview webview").tab_id
           )
         : null;
 
@@ -311,7 +310,7 @@
             this.webviews.forEach(
               (view, key) =>
                 view.tabCloseListener === clearWebviews &&
-                this.closeLastDialog(),
+                this.closeLastDialog()
             );
             chrome.tabs.onRemoved.removeListener(clearWebviews);
           }
@@ -324,7 +323,7 @@
       dialogTab.setAttribute("class", "dialog-tab");
 
       let activeWebview = document.querySelector(
-        ".active.visible.webpageview webview",
+        ".active.visible.webpageview webview"
       );
       if (activeWebview) {
         const rect = activeWebview.getBoundingClientRect();
@@ -376,7 +375,7 @@
       webview.addEventListener("loadstop", () => progressBar.clear(true));
       fromPanel &&
         webview.addEventListener("mousedown", (event) =>
-          event.stopPropagation(),
+          event.stopPropagation()
         );
       //#endregion
 
@@ -464,7 +463,7 @@
           VALID_URL_PREFIXES = ["http://", "https://", "file://", "vivaldi://"],
           isValidUrl = (url) =>
             VALID_URL_PREFIXES.some(
-              (prefix) => url.startsWith(prefix) || url === "about:blank",
+              (prefix) => url.startsWith(prefix) || url === "about:blank"
             );
 
         input.value = webview.src;
@@ -480,7 +479,7 @@
               const searchRequest =
                 await vivaldi.searchEngines.getSearchRequest(
                   this.searchEngineUtils.defaultSearchId,
-                  value,
+                  value
                 );
               webview.src = searchRequest.url;
             }
@@ -515,9 +514,9 @@
             this.createOptionsButton(
               button.content,
               button.action,
-              button.cls || "",
-            ),
-          ),
+              button.cls || ""
+            )
+          )
         );
         fragment.appendChild(input);
 
@@ -608,7 +607,7 @@
 
       // Get target dimensions from active webview
       let activeWebview = document.querySelector(
-        ".active.visible.webpageview webview",
+        ".active.visible.webpageview webview"
       );
       if (activeWebview) {
         const rect = activeWebview.getBoundingClientRect();
@@ -758,7 +757,7 @@
         } else if (event.button === 1) {
           holdTimerForMiddleClick = setTimeout(
             () => this.#callDialog(event),
-            500,
+            500
           );
         } else if (event.button === 2) {
           // Only create and show progress ring on long press over a link
@@ -785,24 +784,26 @@
               // Create SVG progress ring
               const svg = document.createElementNS(
                 "http://www.w3.org/2000/svg",
-                "svg",
+                "svg"
               );
               svg.setAttribute(
                 "width",
-                this.config.progressRingRadius * 2 + 10,
+                this.config.progressRingRadius * 2 + 10
               );
               svg.setAttribute(
                 "height",
-                this.config.progressRingRadius * 2 + 10,
+                this.config.progressRingRadius * 2 + 10
               );
               svg.setAttribute(
                 "viewBox",
-                `0 0 ${this.config.progressRingRadius * 2 + 10} ${this.config.progressRingRadius * 2 + 10}`,
+                `0 0 ${this.config.progressRingRadius * 2 + 10} ${
+                  this.config.progressRingRadius * 2 + 10
+                }`
               );
 
               const bgCircle = document.createElementNS(
                 "http://www.w3.org/2000/svg",
-                "circle",
+                "circle"
               );
               bgCircle.setAttribute("cx", this.config.progressRingRadius + 5);
               bgCircle.setAttribute("cy", this.config.progressRingRadius + 5);
@@ -811,27 +812,27 @@
               bgCircle.setAttribute("stroke", "rgba(0, 0, 0, 0.3)");
               bgCircle.setAttribute(
                 "stroke-width",
-                this.config.progressRingWidth,
+                this.config.progressRingWidth
               );
 
               const progressCircle = document.createElementNS(
                 "http://www.w3.org/2000/svg",
-                "circle",
+                "circle"
               );
               progressCircle.setAttribute(
                 "cx",
-                this.config.progressRingRadius + 5,
+                this.config.progressRingRadius + 5
               );
               progressCircle.setAttribute(
                 "cy",
-                this.config.progressRingRadius + 5,
+                this.config.progressRingRadius + 5
               );
               progressCircle.setAttribute("r", this.config.progressRingRadius);
               progressCircle.setAttribute("fill", "none");
               progressCircle.setAttribute("stroke", "#ffffff");
               progressCircle.setAttribute(
                 "stroke-width",
-                this.config.progressRingWidth,
+                this.config.progressRingWidth
               );
               progressCircle.setAttribute("stroke-linecap", "round");
 
@@ -841,7 +842,9 @@
               progressCircle.setAttribute("stroke-dashoffset", circumference);
               progressCircle.setAttribute(
                 "transform",
-                `rotate(-90 ${this.config.progressRingRadius + 5} ${this.config.progressRingRadius + 5})`,
+                `rotate(-90 ${this.config.progressRingRadius + 5} ${
+                  this.config.progressRingRadius + 5
+                })`
               );
 
               svg.appendChild(bgCircle);
@@ -860,7 +863,7 @@
             this.visibilityDelayTimer = setTimeout(() => {
               this.progressCircle.setAttribute(
                 "stroke-dashoffset",
-                this.progressCircumference,
+                this.progressCircumference
               );
               this.rightClickFeedbackElement.style.opacity = "1";
               this.rightClickFeedbackElement.style.left = event.clientX + "px";
@@ -878,7 +881,7 @@
                 if (this.config.ringColor !== "default") {
                   this.progressCircle.setAttribute(
                     "stroke",
-                    this.config.ringColor,
+                    this.config.ringColor
                   );
                 } else {
                   const hue = 120 * progress;
@@ -886,7 +889,7 @@
                   const lightness = 50 + 50 * (1 - progress);
                   this.progressCircle.setAttribute(
                     "stroke",
-                    `hsl(${hue}, ${saturation}%, ${lightness}%)`,
+                    `hsl(${hue}, ${saturation}%, ${lightness}%)`
                   );
                 }
 
@@ -917,7 +920,7 @@
             this.rightClickFeedbackElement.style.opacity = "0";
             this.progressCircle.setAttribute(
               "stroke-dashoffset",
-              this.progressCircumference || "157",
+              this.progressCircumference || "157"
             );
             if (this.progressInterval) {
               clearInterval(this.progressInterval);
@@ -956,7 +959,7 @@
           this.icon.dataset.targetUrl = link.href;
 
           link.addEventListener("mouseleave", this.#hideLinkIcon.bind(this));
-        }, this.config.showIconDelay),
+        }, this.config.showIconDelay)
       );
     }
 
@@ -969,18 +972,18 @@
         icon.addEventListener("mouseenter", () => {
           this.timers.showDialog = setTimeout(
             () => this.#sendDialogMessage(this.icon.dataset.targetUrl),
-            this.config.showDialogOnHoverDelay,
+            this.config.showDialogOnHoverDelay
           );
         });
         icon.addEventListener("mouseleave", () =>
-          clearTimeout(this.timers.showDialog),
+          clearTimeout(this.timers.showDialog)
         );
       } else {
         icon.addEventListener("click", () =>
-          this.#sendDialogMessage(this.icon.dataset.targetUrl),
+          this.#sendDialogMessage(this.icon.dataset.targetUrl)
         );
         icon.addEventListener("mouseenter", () =>
-          clearTimeout(this.timers.hideIcon),
+          clearTimeout(this.timers.hideIcon)
         );
         icon.addEventListener("mouseleave", this.#hideLinkIcon.bind(this));
       }
@@ -995,7 +998,7 @@
           this.icon.style.display = "none";
           clearTimeout(this.timers.showIcon);
         },
-        this.config.linkIconInteractionOnHover ? 300 : 600,
+        this.config.linkIconInteractionOnHover ? 300 : 600
       );
     }
 
@@ -1029,7 +1032,7 @@
           e.stopPropagation();
           e.stopImmediatePropagation();
         },
-        { capture: true, once: true },
+        { capture: true, once: true }
       );
     }
 
@@ -1307,7 +1310,7 @@
       IconUtils.VIVALDI_BUTTONS.forEach((button) => {
         this.#iconMap.set(
           button.name,
-          this.#getVivaldiButton(button.buttonName, button.fallback),
+          this.#getVivaldiButton(button.buttonName, button.fallback)
         );
       });
 
@@ -1322,7 +1325,7 @@
      */
     #getVivaldiButton(buttonName, fallbackSVG) {
       const svg = document.querySelector(
-        `.button-toolbar [name="${buttonName}"] svg`,
+        `.button-toolbar [name="${buttonName}"] svg`
       );
       return svg ? svg.cloneNode(true).outerHTML : fallbackSVG;
     }

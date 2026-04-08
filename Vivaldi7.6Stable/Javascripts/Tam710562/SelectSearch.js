@@ -14,10 +14,10 @@
         const id = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
           /[xy]/g,
           function (c) {
-            r = ((d + Math.random() * 16) % 16) | 0;
+            r = (d + Math.random() * 16) % 16 | 0;
             d = Math.floor(d / 16);
             return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
-          },
+          }
         );
 
         if (Array.isArray(ids) && ids.includes(id)) {
@@ -38,7 +38,7 @@
           html: css || "",
           "data-id": id,
         },
-        document.head,
+        document.head
       );
       return this.styles[id];
     },
@@ -131,7 +131,7 @@
         config || {
           childList: true,
           subtree: true,
-        },
+        }
       );
     },
     override: function (obj, functionName, callback, conditon, runbefore) {
@@ -150,7 +150,7 @@
             id = this.uuid.generate(
               this._overrides._elements.map(function (item) {
                 return item.id;
-              }),
+              })
             );
             this._overrides._elements.push({
               element: obj,
@@ -230,7 +230,7 @@
       ".UrlBar-AddressField .OmniDropdown .search-engines-in-address-bar button.disabled { pointer-events: none; }",
       ".UrlBar-AddressField .OmniDropdown .search-engines-in-address-bar button:first-child { border-left-color: transparent; }",
     ],
-    "search-engines-in-address-bar",
+    "search-engines-in-address-bar"
   );
 
   const settings = {
@@ -266,7 +266,7 @@
 
       pattern.searchEngines = new RegExp(
         "^(" + regKeywords.join("|") + ")\\s(.*)",
-        "i",
+        "i"
       );
     }
   }
@@ -291,11 +291,11 @@
       null,
       {
         isPrepend: true,
-      },
+      }
     );
 
     const addressfieldEl = document.querySelector(
-      'input[type="text"].url.vivaldi-addressfield',
+      'input[type="text"].url.vivaldi-addressfield'
     );
 
     searchEngineButtons = [];
@@ -331,13 +331,13 @@
                       new KeyboardEvent("keydown", {
                         key: "Enter",
                         metaKey: true,
-                      }),
+                      })
                     );
                     observer.disconnect();
                   },
                   {
                     attributeFilter: ["value"],
-                  },
+                  }
                 );
                 addressfieldEl[reactPropsKey].onChange({
                   currentTarget: { value: value },
@@ -351,7 +351,7 @@
             },
           },
         },
-        searchEnginesInAddressBar,
+        searchEnginesInAddressBar
       );
       const icon = engine.faviconUrl.startsWith("data:image")
         ? engine.faviconUrl
@@ -368,7 +368,7 @@
           width: 16,
           height: 16,
         },
-        searchEngineButton,
+        searchEngineButton
       );
       searchEngineButtons.push({
         keyword: engine.keyword,
@@ -400,7 +400,7 @@
         },
       },
       searchEnginesInAddressBar,
-      '<svg style="width:16px; height:16px" viewBox="0 0 24 24"><path fill="currentColor" d="M12,2C17.53,2 22,6.47 22,12C22,17.53 17.53,22 12,22C6.47,22 2,17.53 2,12C2,6.47 6.47,2 12,2M15.59,7L12,10.59L8.41,7L7,8.41L10.59,12L7,15.59L8.41,17L12,13.41L15.59,17L17,15.59L13.41,12L17,8.41L15.59,7Z"/></svg>',
+      '<svg style="width:16px; height:16px" viewBox="0 0 24 24"><path fill="currentColor" d="M12,2C17.53,2 22,6.47 22,12C22,17.53 17.53,22 12,22C6.47,22 2,17.53 2,12C2,6.47 6.47,2 12,2M15.59,7L12,10.59L8.41,7L7,8.41L10.59,12L7,15.59L8.41,17L12,13.41L15.59,17L17,15.59L13.41,12L17,8.41L15.59,7Z"/></svg>'
     );
 
     searchEngineButtons.push({
@@ -416,12 +416,12 @@
 
       const valueSetter = Object.getOwnPropertyDescriptor(
         addressfieldEl,
-        "value",
+        "value"
       ).set;
       const prototype = Object.getPrototypeOf(addressfieldEl);
       const prototypeValueSetter = Object.getOwnPropertyDescriptor(
         prototype,
-        "value",
+        "value"
       ).set;
 
       Object.defineProperty(addressfieldEl, "value", {

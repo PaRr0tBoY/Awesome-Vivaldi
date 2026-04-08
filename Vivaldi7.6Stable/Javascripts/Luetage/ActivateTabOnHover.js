@@ -35,7 +35,7 @@
         function () {
           const trigger = (event) => hover(event, arguments[0]);
           arguments[0].addEventListener("mouseenter", trigger);
-        }.bind(this, arguments[0]),
+        }.bind(this, arguments[0])
       );
     }
     return appendChild.apply(this, arguments);

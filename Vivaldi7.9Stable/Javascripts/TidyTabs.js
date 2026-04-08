@@ -24,7 +24,7 @@
       // url: 'https://api.deepseek.com/v1/chat/completions',
       // key: "",
       // model: 'deepseek-chat',
-      temperature: 0.3,
+      temperature: 0,
       maxTokens: 2048,
     },
     autoStackWorkspaces: [],
@@ -373,8 +373,8 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
           ],
           temperature: CONFIG.glm.temperature,
           max_tokens: CONFIG.glm.maxTokens,
-          stream: false,
-          thinking: { type: "disabled" },
+          response_format: { type: "text" },
+          stream_options: { include_usage: true },
         }),
       });
 

@@ -30,21 +30,15 @@ Move pointer to bottom-center of window (or above bottom position tabbar) to acc
   border-radius: var(--radius);
   border: none;
   box-shadow: none;
-  transition:
-    top 0.25s ease-out 0.5s,
-    box-shadow 0s 0.75s !important;
+  transition: top 0.25s ease-out 0.5s, box-shadow 0s 0.75s !important;
 }
 
 #browser:not(:has(.toolbar-editor))
   footer
   > .toolbar-statusbar:is(:hover, :focus-within, :has(.button-pressed)) {
   top: -40px;
-  box-shadow:
-    0 0 0 1px var(--colorBorder),
-    0 2px 6px hsl(0deg 0% 0% / 25%);
-  transition:
-    top 0.15s ease-out 0.08s,
-    box-shadow 0s 0.08s !important;
+  box-shadow: 0 0 0 1px var(--colorBorder), 0 2px 6px hsl(0deg 0% 0% / 25%);
+  transition: top 0.15s ease-out 0.08s, box-shadow 0s 0.08s !important;
 }
 
 #browser:not(:has(.toolbar-editor)) footer > .toolbar-statusbar > div {
@@ -111,16 +105,12 @@ Move pointer to bottom-center of window (or above bottom position tabbar) to acc
     var(--colorBg) 0 77%,
     #0000 0 100%
   );
-  box-shadow:
-    0 0 0 7px var(--colorBg),
-    0 0 0 8px var(--colorBorder),
+  box-shadow: 0 0 0 7px var(--colorBg), 0 0 0 8px var(--colorBorder),
     0 2px 12px hsl(0deg 0% 0% / 25%);
   visibility: hidden;
   opacity: 0;
   transform: translate(-25px, -20px);
-  transition:
-    visibility 0.6s,
-    opacity 0.2s ease-out 0.4s,
+  transition: visibility 0.6s, opacity 0.2s ease-out 0.4s,
     transform 0.25s ease-in 0.35s !important;
 }
 #browser
@@ -130,9 +120,7 @@ Move pointer to bottom-center of window (or above bottom position tabbar) to acc
   visibility: visible;
   opacity: 1;
   transform: translate(-25px, -25px);
-  transition:
-    opacity 0.1s ease-out 0.12s,
-    transform 0.1s ease 0.1s !important;
+  transition: opacity 0.1s ease-out 0.12s, transform 0.1s ease 0.1s !important;
 }
 #browser > footer .page-zoom-controls input[type="range"]::before {
   content: "";

@@ -149,7 +149,7 @@
           Math,
           rgbKeys.map(function (rgb) {
             return rgbs[rgb];
-          }),
+          })
         );
         log("rgbCount: ", rgbCount);
         var rgbKeysMax = rgbKeys.filter(function (rgb) {
@@ -225,7 +225,7 @@
               removeColors(panel);
             }
             log("colors", colors);
-          },
+          }
         );
       }
     }
@@ -272,6 +272,6 @@
     [
       "#panels .webpanel-stack .webpanel .webpanel-header { background-color: var(--colorBgWebpanel); color: var(--colorFgWebpanel); fill: var(--colorFgWebpanel); }",
       "#panels .button-toolbar { background-image: none; background-color: var(--colorBgWebpanel); color: var(--colorFgWebpanel); fill: var(--colorFgWebpanel); }",
-    ].join(""),
+    ].join("")
   );
 })();

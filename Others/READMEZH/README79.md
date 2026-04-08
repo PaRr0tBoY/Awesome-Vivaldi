@@ -40,6 +40,12 @@
   - [安装 CSS 修改](#安装-css-修改)
   - [安装 JavaScripts 修改](#安装-javascripts-修改)
 
+| Demo                                                | Mods                                                              |
+| --------------------------------------------------- | ----------------------------------------------------------------- |
+| ![AskInPage](../../Others/assets/AskInPage.png) | `AskInPage.js`                                                |
+| ![TidyDownloads](../../Others/assets/TidyDownloads.gif) | `TidyDownloads.js`                                                |
+
+
 ## 功能展示
 
 | 演示                                                    | 修改                                                              |
@@ -49,7 +55,7 @@
 | ![PeekTabbar](../../Others/assets/PeekTabbar.gif)       | `PeekTabbar.css`                                                  |
 | ![ArcPeek](../../Others/assets/ArcPeek.gif)             | `ArcPeek.css` + `ArcPeek.js`                                      |
 | ![Quietify](../../Others/assets/Quietify.gif)           | `Quietify.css`                                                    |
-| ![TidyDownloads](./Others/assets/TidyDownloads.gif) | `TidyDownloads.js`                                           |
+| ![TidyDownloads](./Others/assets/TidyDownloads.gif)     | `TidyDownloads.js`                                                |
 
 ## 修改列表
 

@@ -23,7 +23,7 @@
       parseInt(tab.parentNode.id.replace(/\D/g, ""), 10),
       {
         code: `(${script})("${scb}")`,
-      },
+      }
     );
     exit(tab);
   }

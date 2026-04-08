@@ -30,7 +30,7 @@
 
 <br/>
 
-## 目录
+# 目录
 
 - [功能特性](#功能特性)
   - [屏幕截图](#屏幕截图)
@@ -42,9 +42,9 @@
   - [高级阅读](#iii-高级阅读)
 - [社区修改](#社区修改)
 
-## 功能特性
+# 功能特性
 
-### 屏幕截图
+## 屏幕截图
 
 | 功能                                                               | 预览                                                                                                                                    |
 | :----------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------- |
@@ -53,7 +53,7 @@
 | **简洁新标签页**<br>• 极简界面布局<br>• 快速访问收藏网站           | <img alt="整洁不杂乱的新标签页" height="300" src="../../Others/Showcase/MainShowCase/NeatNewTab.png" />                                 |
 | **扩展网页视图**<br>• 优化的页面显示区域<br>• 增强的浏览体验       | <img alt="最大化网页视图以获得更好的内容查看体验" height="300" src="../../Others/Showcase/MainShowCase/YouDeserveABiggerWebview.png" /> |
 
-### 更多屏幕截图，点击展开
+## 更多屏幕截图，点击展开
 
 <details>
 <summary><h3> 让我们把它变成 Arc（不仅仅是外观） </h3></summary>
@@ -121,7 +121,7 @@
 
 > 以及更多...
 
-## 如何安装
+# 如何安装
 
 > 在开始之前，有必要做一些声明。我的操作系统是 `macOS 15.7`，浏览器版本是 `Vivaldi 7.6.3797.58 (Stable channel) (arm64)`。因此，所有修改都针对此环境进行了优化。它们在 Windows 和 Linux 等其他平台上可能会有异常行为，但大多数修改仍然可以使用。你可以 fork 这个仓库并相应地进行适配，或者从这个仓库中选择特定模块使用。
 
@@ -163,11 +163,11 @@
 
 > 有关类似 Arc 的工作区切换按钮的更多信息，请参阅 [Paweł 向您展示如何在 Vivaldi 中使用工作区和自定义图标。](https://vivaldi.com/blog/how-to/pawel-shows-you-how-to-play-with-workspaces-and-custom-icons-in-vivaldi/)
 
-### II. 安装修改
+## II. 安装修改
 
 ==**开始前备份所有必要文件**==
 
-#### 安装 CSS
+### 安装 CSS
 
 1. 在 Vivaldi 中打开 `Vivaldi://experiments` 并勾选 `允许 CSS 修改`
 2. 重启 Vivaldi
@@ -178,16 +178,16 @@
 5. 转到 设置->外观，你会看到 `自定义 UI 修改`。选择文件位置为 "/path/to/Awesome-Vivaldi/CSS"
 6. 重启 Vivaldi，一切就绪！
 
-#### 安装 JavaScript 修改
+### 安装 JavaScript 修改
 
-- 自动安装
+#### 自动安装
 
 1. 如果你在 Windows 上，使用 [Vivaldi Mod Manager](https://github.com/eximido/vivaldimodmanager)
 2. 如果你在 Linux 上，请参阅 [Vivaldi-Autoinject-Custom-js-ui](https://aur.archlinux.org/vivaldi-autoinject-custom-js-ui.git) 获取更多信息
 3. 另请参阅 [使用批处理脚本修补 Vivaldi](https://forum.vivaldi.net/topic/10592/patching-vivaldi-with-batch-scripts/21?page=2) 适用于所有平台
 4. 如果你在 macOS 上，使用 [macOS_Patch_Scripts | upviv](https://github.com/PaRr0tBoY/Vivaldi-Mods/blob/8a1e9f8a63f195f67f27ab2e5b86c4aff0081096/MacOSPatchScripts/upviv) 作为修补脚本的参考
 
-- 手动安装
+#### 手动安装
 
 1. 将 moddings 下的 javascript 文件复制到 `<YOURVIVALDIDIRECTORY>`\Application\<VERSI0N>\resources\vivaldi。
 2. 在同一文件夹下，有一个 window.html 文件，你应该在 `<body>` 中逐一填入你的 js 文件名，之后
@@ -272,7 +272,7 @@
 <details>
 <summary><h1>社区修改</h1></summary>
 
-## 此修改包中包含的社区 JS 修改和 CSS
+# 此修改包中包含的社区 JS 修改和 CSS
 
 [📸 元素捕获](https://forum.vivaldi.net/topic/103686/element-capture?_=1758777284963)
 

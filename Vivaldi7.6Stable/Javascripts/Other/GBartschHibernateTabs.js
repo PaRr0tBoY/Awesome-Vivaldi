@@ -18,7 +18,7 @@
             chrome.tabs.discard(tab.id);
           }
         });
-      },
+      }
     );
   }
 

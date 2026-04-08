@@ -1207,15 +1207,21 @@
      */
     #createContextMenuSelectSearch() {
       this.searchEngineCollection.forEach((engine) => {
-        if (!this.createdContextMenuMap.has(engine.guid)) {
-          chrome.contextMenus.create({
-            id: this.SELECT_SEARCH_ID + engine.guid,
-            parentId: this.SELECT_SEARCH_ID,
-            title: engine.name,
-            contexts: ["selection"],
-          });
-          this.createdContextMenuMap.set(engine.guid, true);
+        const menuId = this.SELECT_SEARCH_ID + engine.guid;
+        // Ensure idempotency: remove first if exists, then create
+        // This prevents "duplicate id" errors when Map and actual menu state desync
+        try {
+          chrome.contextMenus.remove(menuId);
+        } catch (e) {
+          // Ignore errors from remove (item might not exist)
         }
+        chrome.contextMenus.create({
+          id: menuId,
+          parentId: this.SELECT_SEARCH_ID,
+          title: engine.name,
+          contexts: ["selection"],
+        });
+        this.createdContextMenuMap.set(engine.guid, true);
       });
     }
   }
