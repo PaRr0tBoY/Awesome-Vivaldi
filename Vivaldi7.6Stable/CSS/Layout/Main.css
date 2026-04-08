@@ -1,0 +1,288 @@
+/*
+Main
+version 2025.10.31
+Author PaRr0tBoY
+https://github.com/PaRr0tBoY/Awesome-Vivaldi
+I used to only have this one file to store all css mods from community, until there's too many of them and I decided to seperate them into single file and manage all by Core.css. And the rest is css mods that I wrote myself or don't know where to store.
+*/
+
+/* VivalArc Legacy */
+
+#browser.mac:not(.fullscreen):not(
+    .address-top-off,
+    .address-bottom-off,
+    .address-bottom
+  )
+  .mainbar:not(:has(.window-buttongroup.on-mainbar)) {
+  padding-left: calc(68px / var(--uiZoomLevel));
+}
+
+#browser:not(.address-top-off, .address-bottom-off, .address-bottom)
+  .mainbar
+  > .toolbar-mainbar {
+  min-height: calc(34px / var(--uiZoomLevel));
+}
+
+/* Top Header Mac */
+#browser.mac:not(.is-settingspage):not(.address-top).tabs-left.tabs-right
+  > #header,
+#browser.mac:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom) #header,
+#browser.mac.color-behind-tabs-off:not(.is-settingspage)
+  #browser.tabs-left.tabs-right
+  #header {
+  background: transparent;
+  min-height: var(--mac-header) !important;
+  height: var(--mac-header) !important;
+}
+
+/* Header hiding with conditional logic */
+#browser:not(.is-settingspage):not(.address-top) > #header,
+#browser:not(.is-settingspage):not(.tabs-top) #header,
+#browser.color-behind-tabs-off:not(.is-settingspage):not(.tabs-top):not(
+    .tabs-bottom
+  )
+  #header {
+  box-shadow: none;
+  overflow: visible;
+}
+
+#browser:not(.is-settingspage).fullscreen > #header,
+#browser:not(.is-settingspage):not(.address-top).tabs-bottom > #header,
+#browser:not(.is-settingspage).tabs-off.address-top > #header,
+.color-behind-tabs-off:not(.is-settingspage).tabs-bottom #header {
+  display: none;
+}
+
+/* Page title styling */
+.mac #titlebar #pagetitle,
+#titlebar #pagetitle .linux.alt {
+  height: var(--mac-header) !important;
+  font-size: 11px;
+  color: var(--colorFg);
+  color: white !important;
+  display: none;
+}
+
+/* Linux Header Styling */
+#browser.linux:not(.is-settingspage):not(.address-top) > #header,
+#browser.linux:not(.is-settingspage):not(.tabs-top) #header,
+#browser.linux.color-behind-tabs-off:not(.is-settingspage):not(.tabs-top):not(
+    .tabs-bottom
+  )
+  #header {
+  min-height: var(--linux-header) !important;
+  height: var(--linux-header) !important;
+  background: var(--colorTabBar);
+}
+
+.linux:not(.alt) #titlebar #pagetitle {
+  height: var(--linux-header);
+  padding: 0 120px;
+}
+
+/* Windows Header Styling */
+#browser.win:not(.is-settingspage):not(.address-top) > #header,
+#browser.win:not(.is-settingspage):not(.tabs-top) #header,
+#browser.win.color-behind-tabs-off:not(.is-settingspage):not(.tabs-top):not(
+    .tabs-bottom
+  )
+  #header {
+  min-height: var(--win-header) !important;
+  height: var(--win-header) !important;
+  background: var(--colorTabBar);
+}
+
+#browser.win #titlebar #pagetitle {
+  height: var(--win-header);
+  padding: 0 140px;
+}
+
+/* Cross-platform titlebar styling */
+.linux:not(.alt) #titlebar #pagetitle,
+#browser.win #titlebar #pagetitle,
+#browser.mac #titlebar #pagetitle {
+  font-size: 11px;
+  color: var(--colorFg);
+  opacity: 0.5;
+}
+
+.win #titlebar #pagetitle > span,
+.linux:not(.alt) #titlebar #pagetitle > span {
+  text-align: center;
+}
+
+/* Window Button Group Mac */
+/* #browser.mac:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+  #header
+  .window-buttongroup
+  button {
+  width: calc(var(--mac-header) * var(--uiZoomLevel));
+  height: calc(var(--mac-header) * var(--uiZoomLevel));
+  padding-right: 4px;
+  margin: 0;
+  margin-bottom: 20px !important;
+  flex: 0 0 calc(var(--window-border) - 4px);
+} */
+
+.window-buttongroup button {
+  height: 30px !important;
+}
+
+/* Window Button Group Windows */
+#browser.win:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+  #header
+  #titlebar
+  .window-buttongroup {
+  opacity: var(--window-button-opacity);
+  color: var(--colorFg);
+  line-height: var(--win-header);
+}
+
+#browser.win:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+  #header
+  #titlebar
+  .window-buttongroup:hover {
+  opacity: 1;
+}
+
+#browser.win:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+  #header
+  #titlebar
+  .window-buttongroup
+  button,
+#browser.win:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+  #header
+  #titlebar
+  .window-buttongroup
+  button.window-close {
+  width: calc(var(--win-header) * 2);
+  height: var(--win-header);
+}
+
+#browser.win:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+  #header
+  #titlebar
+  .window-buttongroup
+  button.window-minimize
+  svg,
+#browser.win:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+  #header
+  #titlebar
+  .window-buttongroup
+  button.window-maximize
+  svg,
+#browser.win:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+  #header
+  #titlebar
+  .window-buttongroup
+  button.window-close
+  svg {
+  scale: var(--window-button-scale);
+}
+
+/* Window Button Group Linux */
+#browser.linux:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+  .window-buttongroup {
+  right: calc(var(--window-border) / var(--uiZoomLevel));
+  top: calc(1px / var(--uiZoomLevel));
+}
+
+#browser.linux:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+  .window-buttongroup
+  button {
+  width: calc((var(--linux-header) - 2px) * 1.32 / var(--uiZoomLevel));
+  height: calc((var(--linux-header) - 2px) / var(--uiZoomLevel));
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#browser.linux:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+  .window-buttongroup
+  button
+  svg {
+  scale: calc(var(--window-button-scale) / var(--uiZoomLevel));
+  opacity: var(--window-button-opacity);
+}
+
+#browser.linux:not(.is-settingspage):not(.tabs-top):not(.tabs-bottom)
+  .window-buttongroup
+  button
+  svg:hover {
+  opacity: 1;
+}
+
+/* ========================================
+   HIDDEN ELEMENTS
+   ======================================== */
+
+.hasfocus .webpageview.tiled.active {
+  /* box-shadow: 0 0 0 2px var(--colorHighlightBgFaded), var(--bgCoverShadow); */
+  box-shadow: none !important;
+}
+
+#browser .tile:has(> .tiled.webpageview) {
+  /* border: var(--mosaicPadding) solid var(--colorBgDarker); */
+  border: 0 3px !important;
+}
+
+/* ========================================
+   SCROLLBAR CUSTOMIZATION
+   ======================================== */
+
+/* Hide scrollbars for left and right tabbars */
+#browser #tabs-tabbar-container.left ::-webkit-scrollbar,
+#browser #tabs-tabbar-container.right ::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbars for left and right tabbar wrappers */
+.tabs-left .tabbar-wrapper,
+.tabs-right .tabbar-wrapper {
+  background-color: transparent;
+  overflow: visible;
+}
+
+.WorkspacePopup-Items {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ========================================
+   TAB STYLING
+   ======================================== */
+
+/* Tab bar container */
+#tabs-tabbar-container.top {
+  margin-bottom: var(--mod-whitespace-y);
+  border-width: 0;
+  box-shadow: none !important;
+  padding-right: var(--mod-whitespace-tabbar-right);
+}
+
+#tabs-tabbar-container.top .tab-strip > span + span .tab:not(.pinned) {
+  margin-left: var(--mod-whitespace-x);
+}
+
+/* ========================================
+   HIDE ADDRESS BAR WHEN TABS ARE HIDDEN
+   ======================================== */
+
+#browser.tabs-off .toolbar-mainbar.toolbar-required,
+#browser.tabs-off .UrlBar-AddressField,
+#browser.tabs-off .toolbar-mainbar[aria-label="Address"] {
+  display: none !important;
+}
+
+#browser:is(.tabs-left, .tabs-right).tabs-off .toolbar-mainbar.toolbar-required,
+#browser:is(.tabs-left, .tabs-right).tabs-off .UrlBar-AddressField {
+  display: none !important;
+}
+
+#browser:not(.tabs-top):not(.tabs-bottom):not(.fullscreen) #webpage-stack {
+  border-radius: 15px 15px 15px 15px;
+}

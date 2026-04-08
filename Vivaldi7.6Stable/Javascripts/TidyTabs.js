@@ -1,0 +1,683 @@
+(function () {
+  "use strict";
+
+  // ==================== Configuration ====================
+
+  const CONFIG = {
+    glm: {
+      // === GLM(free) ===
+      url: "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+      key: "",
+      model: "glm-4.7-flash",
+
+      // === Mimo ===
+      // url: "https://api.xiaomimimo.com/v1/chat/completions",
+      // key: "",
+      // model: "mimo-v2-flash",
+
+      // === Openrouter/Free Quite Buggy===
+      // url: "https://openrouter.ai/api/v1/chat/completions",
+      // key: "",
+      // model: "openrouter/free",
+
+      // === Deepseek ===
+      // url: 'https://api.deepseek.com/v1/chat/completions',
+      // key: "",
+      // model: 'deepseek-chat',
+      temperature: 0.3,
+      maxTokens: 2048,
+    },
+    autoStackWorkspaces: [],
+    enableAIGrouping: true,
+    maxTabsForAI: 50,
+    delays: {
+      init: 500,
+      mutation: 50,
+      workspaceSwitch: 100,
+      retry: 500,
+      reattach: 500,
+      debounce: 150,
+      autoStack: 1000,
+    },
+  };
+
+  const SELECTORS = {
+    TAB_STRIP: ".tab-strip",
+    SEPARATOR: ".tab-strip .separator",
+    TAB_WRAPPER: ".tab-wrapper",
+    TAB_POSITION: ".tab-position",
+    STACK_COUNTER: ".stack-counter",
+    TAB_STACK: ".svg-tab-stack",
+    SUBSTACK: ".tab-position.is-substack, .tab-position.is-stack",
+  };
+
+  const CLASSES = {
+    BUTTON: "tidy-tabs-below-button",
+    LOADING: "tidy-loading",
+    PINNED: "is-pinned",
+  };
+
+  const LANGUAGE_MAP = {
+    zh: "Chinese",
+    "zh-CN": "Chinese",
+    "zh-TW": "Chinese",
+    en: "English",
+    "en-US": "English",
+    "en-GB": "English",
+    ja: "Japanese",
+    "ja-JP": "Japanese",
+    ko: "Korean",
+    "ko-KR": "Korean",
+    es: "Spanish",
+    fr: "French",
+    de: "German",
+    ru: "Russian",
+    pt: "Portuguese",
+    it: "Italian",
+    ar: "Arabic",
+    hi: "Hindi",
+  };
+
+  const OTHERS_NAMES = [
+    "其它",
+    "Others",
+    "その他",
+    "Other",
+    "Outros",
+    "Andere",
+    "Autres",
+  ];
+
+  let debounceTimer = null;
+
+  // ==================== Utility Functions ====================
+
+  const getBrowserLanguage = () =>
+    chrome.i18n?.getUILanguage?.() || navigator.language || "zh-CN";
+
+  const getLanguageName = (langCode) =>
+    LANGUAGE_MAP[langCode] || LANGUAGE_MAP[langCode.split("-")[0]] || "English";
+
+  const getOthersName = () => {
+    const lang = getLanguageName(getBrowserLanguage());
+    return { Chinese: "Others", Japanese: "Others" }[lang] || "Others";
+  };
+
+  const getUrlFragments = (url) => {
+    try {
+      if (vivaldi?.utilities?.getUrlFragments)
+        return vivaldi.utilities.getUrlFragments(url);
+    } catch (e) {
+      /* fallback */
+    }
+    try {
+      const u = new URL(url);
+      const parts = u.hostname.split(".");
+      return {
+        hostForSecurityDisplay: u.hostname,
+        tld: parts.length > 1 ? parts[parts.length - 1] : "",
+      };
+    } catch (e) {
+      return { hostForSecurityDisplay: "", tld: "" };
+    }
+  };
+
+  const getBaseDomain = (url) => {
+    const { hostForSecurityDisplay, tld } = getUrlFragments(url);
+    const match = hostForSecurityDisplay.match(`([^.]+\\.${tld})$`);
+    return match ? match[1] : hostForSecurityDisplay;
+  };
+
+  const getHostname = (url) => getUrlFragments(url).hostForSecurityDisplay;
+
+  const getTab = (tabId) =>
+    new Promise((resolve) => {
+      chrome.tabs.get(tabId, (tab) => {
+        if (chrome.runtime.lastError) {
+          resolve(null);
+          return;
+        }
+        if (tab.vivExtData) {
+          try {
+            tab.vivExtData = JSON.parse(tab.vivExtData);
+          } catch (e) {
+            /* ignore */
+          }
+        }
+        resolve(tab);
+      });
+    });
+
+  const getWorkspaceName = (workspaceId) => {
+    if (!workspaceId) return Promise.resolve("<default_workspace>");
+    return new Promise((resolve) => {
+      if (vivaldi?.prefs) {
+        vivaldi.prefs.get("vivaldi.workspaces.list", (list) => {
+          const ws = list.find((w) => w.id === workspaceId);
+          resolve(ws ? ws.name : "<unknown_workspace>");
+        });
+      } else resolve("<unknown_workspace>");
+    });
+  };
+
+  const isAutoStackAllowed = async (workspaceId) => {
+    if (CONFIG.autoStackWorkspaces.length === 0) return false;
+    return CONFIG.autoStackWorkspaces.includes(
+      await getWorkspaceName(workspaceId),
+    );
+  };
+
+  const getTabsByWorkspace = (workspaceId) =>
+    new Promise((resolve) => {
+      chrome.tabs.query({ currentWindow: true }, async (tabs) => {
+        if (chrome.runtime.lastError) {
+          resolve([]);
+          return;
+        }
+        const valid = [];
+        for (const tab of tabs) {
+          if (tab.id === -1 || !tab.vivExtData) continue;
+          try {
+            const viv = JSON.parse(tab.vivExtData);
+            if (
+              viv.workspaceId === workspaceId &&
+              !tab.pinned &&
+              !viv.panelId
+            ) {
+              valid.push({ ...tab, vivExtData: viv });
+            }
+          } catch (e) {
+            /* skip */
+          }
+        }
+        resolve(valid);
+      });
+    });
+
+  const addTabToStack = async (tabId, stackId, stackName) => {
+    const tab = await getTab(tabId);
+    if (!tab?.vivExtData) return;
+    const viv = tab.vivExtData;
+    if (stackName) viv.fixedGroupTitle = stackName;
+    viv.group = stackId;
+    return new Promise((resolve) => {
+      chrome.tabs.update(tabId, { vivExtData: JSON.stringify(viv) }, () => {
+        if (chrome.runtime.lastError)
+          console.error("[TidyTabs]", chrome.runtime.lastError.message);
+        resolve();
+      });
+    });
+  };
+
+  const showNotification = (message) => {
+    if (chrome?.notifications) {
+      chrome.notifications.create({
+        type: "basic",
+        iconUrl:
+          'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><text y="32" font-size="32">⚠️</text></svg>',
+        title: "TidyTabs",
+        message,
+      });
+    } else {
+      console.error(`[TidyTabs] ${message}`);
+    }
+  };
+
+  // ==================== AI Grouping ====================
+
+  const buildAIPrompt = (tabs, existingStacks, languageName) => {
+    // Build a map from chrome tab.id → local index for opener reference
+    const chromeIdToIndex = {};
+    tabs.forEach((tab, i) => {
+      chromeIdToIndex[tab.id] = i;
+    });
+
+    const tabsInfo = tabs.map((tab, i) => ({
+      id: i,
+      title: tab.title || "Untitled",
+      domain: getHostname(tab.url),
+      openerIndex:
+        tab.openerTabId != null ? chromeIdToIndex[tab.openerTabId] : undefined,
+    }));
+
+    // Format each tab as "domain/id: title" with optional "↳ opener_domain/opener_id"
+    const tabLines = tabsInfo
+      .map((t) => {
+        let line = `${t.domain}/${t.id}: ${t.title}`;
+        if (t.openerIndex !== undefined) {
+          const opener = tabsInfo[t.openerIndex];
+          if (opener) line = `${line}\n  \u21b3 ${opener.domain}/${opener.id}`;
+        }
+        return line;
+      })
+      .join("\n");
+
+    const existingInfo =
+      existingStacks.length > 0
+        ? existingStacks.map((s) => `- ${s.name || "Unnamed"}`).join("\n")
+        : "None";
+
+    const othersName = getOthersName();
+
+    return `You are a meticulous expert organizer who follows instructions concisely. I have some tabs! Please help me sort them into groups. I'll provide you with a list of tabs, with their IDs (e.g. google.com/3), their titles, and the tab they were opened from if applicable (e.g. \u21b3 google.com/0). Think about the groupings of my browsing, and then choose a descriptive group name for each. Group based on keywords in common, domain, website purpose, and referring tab. If a tab has a unique keyword in common with tabs in a group, include it in that group. Use the unique keyword in the group name. Some tabs may be in a group of their own, but you should try to include each tab in a group if possible.
+
+Existing tab stacks:
+${existingInfo}
+
+My tabs:
+${tabLines}
+
+**Rules:**
+1. If a tab relates to an existing stack's title, add it there.
+2. Group names: concise, specific, in ${languageName}.
+3. Tabs that don't fit any group go to "${othersName}".
+4. Each tab in exactly one group.
+5. Output strictly valid JSON only, no explanation:
+
+{"groups":[{"name":"Group name","tab_ids":[0,1,2]},{"name":"${othersName}","tab_ids":[3]}]}
+
+The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \u2192 tab_id is 3).`;
+  };
+
+  const parseAIResponse = (content) => {
+    let s = content.trim();
+    const m = s.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
+    if (m) s = m[1].trim();
+    const first = s.indexOf("{"),
+      last = s.lastIndexOf("}");
+    if (first !== -1 && last !== -1) s = s.substring(first, last + 1);
+    try {
+      return JSON.parse(s);
+    } catch (e) {
+      console.error("[TidyTabs] JSON parse error:", e);
+      return null;
+    }
+  };
+
+  const validateAIGroups = (result) => {
+    if (!result?.groups || !Array.isArray(result.groups)) return false;
+    return result.groups.every(
+      (g) => g.name && typeof g.name === "string" && Array.isArray(g.tab_ids),
+    );
+  };
+
+  const mapAIResultsToGroups = (aiResult, tabs, existingStacks) => {
+    return aiResult.groups
+      .map((group) => {
+        const existing = existingStacks.find((s) => s.name === group.name);
+        return {
+          name: group.name,
+          tabs: group.tab_ids.map((id) => tabs[id]).filter(Boolean),
+          stackId: existing ? existing.id : crypto.randomUUID(),
+          isExisting: !!existing,
+        };
+      })
+      .filter((g) => g.isExisting || g.tabs.length > 1);
+  };
+
+  const handleOrphanTabs = (groupedTabs, tabs, existingStacks) => {
+    const grouped = new Set();
+    groupedTabs.forEach((g) => g.tabs.forEach((t) => grouped.add(t.id)));
+    const orphans = tabs.filter((t) => !grouped.has(t.id));
+    if (orphans.length === 0) return;
+
+    let othersGroup = groupedTabs.find((g) => OTHERS_NAMES.includes(g.name));
+    if (othersGroup) {
+      othersGroup.tabs.push(...orphans);
+    } else {
+      const existing = existingStacks.find((s) =>
+        OTHERS_NAMES.includes(s.name),
+      );
+      if (existing) {
+        groupedTabs.push({
+          name: existing.name,
+          tabs: orphans,
+          stackId: existing.id,
+          isExisting: true,
+        });
+      } else if (orphans.length > 1) {
+        groupedTabs.push({
+          name: getOthersName(),
+          tabs: orphans,
+          stackId: crypto.randomUUID(),
+          isExisting: false,
+        });
+      }
+    }
+  };
+
+  const getAIGrouping = async (tabs, existingStacks = []) => {
+    if (!CONFIG.glm.key) {
+      showNotification("GLM API Key not configured");
+      return null;
+    }
+    if (tabs.length > CONFIG.maxTabsForAI)
+      tabs = tabs.slice(0, CONFIG.maxTabsForAI);
+
+    const languageName = getLanguageName(getBrowserLanguage());
+
+    try {
+      const response = await fetch(CONFIG.glm.url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${CONFIG.glm.key}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: CONFIG.glm.model,
+          messages: [
+            {
+              role: "user",
+              content: buildAIPrompt(tabs, existingStacks, languageName),
+            },
+          ],
+          temperature: CONFIG.glm.temperature,
+          max_tokens: CONFIG.glm.maxTokens,
+          stream: false,
+          thinking: { type: "disabled" },
+        }),
+      });
+
+      if (!response.ok) throw new Error(`API error: ${response.status}`);
+
+      const data = await response.json();
+      const result = parseAIResponse(data.choices[0].message.content);
+      if (!result || !validateAIGroups(result)) return null;
+
+      const groups = mapAIResultsToGroups(result, tabs, existingStacks);
+      handleOrphanTabs(groups, tabs, existingStacks);
+      return groups.length > 0 ? groups : null;
+    } catch (error) {
+      console.error("[TidyTabs] AI error:", error.message);
+      showNotification(`AI call failed: ${error.message}`);
+      return null;
+    }
+  };
+
+  const groupByDomain = (tabs) => {
+    const byHost = {};
+    tabs.forEach((tab) => {
+      const host = getHostname(tab.url);
+      (byHost[host] ||= []).push(tab);
+    });
+    return Object.entries(byHost)
+      .filter(([, t]) => t.length > 1)
+      .map(([, t]) => {
+        const base = getBaseDomain(t[0].url).split(".")[0];
+        return {
+          name: base.charAt(0).toUpperCase() + base.slice(1),
+          tabs: t,
+          stackId: crypto.randomUUID(),
+          isExisting: false,
+        };
+      });
+  };
+
+  // ==================== Tab Stack Operations ====================
+
+  const createTabStacks = async (groups) => {
+    for (const group of groups) {
+      const stackId = group.stackId || crypto.randomUUID();
+      group.tabs.sort((a, b) => a.index - b.index);
+      const targetIndex = group.tabs[0].index;
+
+      for (let i = 0; i < group.tabs.length; i++) {
+        const tab = group.tabs[i];
+        await new Promise((resolve) => {
+          chrome.tabs.move(tab.id, { index: targetIndex + i }, () => {
+            if (chrome.runtime.lastError)
+              console.error("[TidyTabs]", chrome.runtime.lastError.message);
+            resolve();
+          });
+        });
+        await addTabToStack(tab.id, stackId, group.name);
+      }
+    }
+  };
+
+  const detectExistingStacks = async (nextElement) => {
+    const stacks = [];
+    while (nextElement) {
+      if (nextElement.tagName === "SPAN") {
+        const isStack =
+          nextElement.querySelector(SELECTORS.STACK_COUNTER) ||
+          nextElement.querySelector(SELECTORS.TAB_STACK) ||
+          nextElement.querySelector(SELECTORS.SUBSTACK);
+
+        if (isStack) {
+          const wrapper = nextElement.querySelector(SELECTORS.TAB_WRAPPER);
+          const stackTabId = wrapper
+            ?.getAttribute("data-id")
+            ?.replace("tab-", "");
+          if (stackTabId) {
+            const allTabs = await new Promise((r) =>
+              chrome.tabs.query({ currentWindow: true }, r),
+            );
+            const stackTab = allTabs.find((t) => {
+              try {
+                const d = JSON.parse(t.vivExtData || "{}");
+                return d.group && t.vivExtData.includes(stackTabId.slice(0, 8));
+              } catch {
+                return false;
+              }
+            });
+            if (stackTab) {
+              const viv = JSON.parse(stackTab.vivExtData);
+              stacks.push({
+                id: viv.group,
+                name: viv.fixedGroupTitle || stackTab.title || "Unnamed",
+                tabId: stackTab.id,
+              });
+            }
+          }
+        }
+      }
+      nextElement = nextElement.nextElementSibling;
+    }
+    return stacks;
+  };
+
+  const collectTabsFromSeparator = (separator) => {
+    const tabs = [];
+    let el = separator.nextElementSibling;
+    while (el) {
+      if (el.tagName === "SPAN") {
+        const isStack =
+          el.querySelector(SELECTORS.STACK_COUNTER) ||
+          el.querySelector(SELECTORS.TAB_STACK) ||
+          el.querySelector(SELECTORS.SUBSTACK);
+        const pos = el.querySelector(SELECTORS.TAB_POSITION);
+        if (!isStack && pos && !pos.classList.contains(CLASSES.PINNED)) {
+          const wrapper = el.querySelector(SELECTORS.TAB_WRAPPER);
+          const id = wrapper?.getAttribute("data-id");
+          if (id) {
+            const num = parseInt(id.replace("tab-", ""));
+            if (!isNaN(num)) tabs.push({ id: num });
+          }
+        }
+      }
+      el = el.nextElementSibling;
+    }
+    return tabs;
+  };
+
+  // ==================== UI Components ====================
+
+  const createTidyButton = () => {
+    const btn = document.createElement("div");
+    btn.className = CLASSES.BUTTON;
+    btn.textContent = "Tidy";
+    return btn;
+  };
+
+  // Loading state: add class to separator, CSS implements wave animation
+  const showLoading = (separator) => separator.classList.add(CLASSES.LOADING);
+  const hideLoading = (separator) =>
+    separator.classList.remove(CLASSES.LOADING);
+
+  const scheduleAttachButtons = (delay = CONFIG.delays.debounce) => {
+    if (debounceTimer !== null) clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      attachButtons();
+      debounceTimer = null;
+    }, delay);
+  };
+
+  const attachButtons = () => {
+    document.querySelectorAll(SELECTORS.SEPARATOR).forEach((separator) => {
+      if (separator.querySelector(`.${CLASSES.BUTTON}`)) return;
+      const btn = createTidyButton();
+      separator.appendChild(btn);
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        tidyTabsBelow(separator);
+      });
+    });
+  };
+
+  // ==================== Core ====================
+
+  const autoStackWorkspace = async (workspaceId) => {
+    if (!(await isAutoStackAllowed(workspaceId))) return;
+    const tabs = await getTabsByWorkspace(workspaceId);
+    if (tabs.length < 2) return;
+
+    let groups =
+      CONFIG.enableAIGrouping && CONFIG.glm.key
+        ? (await getAIGrouping(tabs)) || groupByDomain(tabs)
+        : groupByDomain(tabs);
+
+    if (groups.length > 0) await createTabStacks(groups);
+  };
+
+  const tidyTabsBelow = async (separator) => {
+    const existingStacks = await detectExistingStacks(
+      separator.nextElementSibling,
+    );
+    const tabsInfo = collectTabsFromSeparator(separator);
+
+    if (tabsInfo.length < 2 && existingStacks.length === 0) return;
+
+    showLoading(separator);
+
+    try {
+      const tabs = (
+        await Promise.all(tabsInfo.map((t) => getTab(t.id)))
+      ).filter(Boolean);
+      if (tabs.length < 1 && existingStacks.length === 0) return;
+
+      let groups =
+        CONFIG.enableAIGrouping && CONFIG.glm.key
+          ? (await getAIGrouping(tabs, existingStacks)) || groupByDomain(tabs)
+          : groupByDomain(tabs);
+
+      if (groups.length > 0) await createTabStacks(groups);
+    } finally {
+      hideLoading(separator);
+      scheduleAttachButtons(CONFIG.delays.reattach);
+      // Notify other scripts (like ClearTabs.js) to reattach buttons
+      document.dispatchEvent(new CustomEvent("separator-buttons-reattach"));
+    }
+  };
+
+  // ==================== Event Listeners ====================
+
+  const setupAutoStackListener = () => {
+    if (!chrome.webNavigation) return;
+    chrome.webNavigation.onCommitted.addListener(async (details) => {
+      if (details.tabId !== -1 && details.frameType === "outermost_frame") {
+        const tab = await getTab(details.tabId);
+        if (tab && !tab.pinned && tab.vivExtData && !tab.vivExtData.panelId) {
+          setTimeout(
+            () => autoStackWorkspace(tab.vivExtData.workspaceId),
+            CONFIG.delays.autoStack,
+          );
+        }
+      }
+    });
+  };
+
+  // ==================== DOM Observers ====================
+
+  let observedTabStrip = null;
+  let tabStripObserver = null;
+
+  // Listen to inner changes of .tab-strip (tab additions/deletions, workspace switching)
+  const observeTabStripInner = (tabStrip) => {
+    if (tabStripObserver) tabStripObserver.disconnect();
+    observedTabStrip = tabStrip;
+
+    tabStripObserver = new MutationObserver((mutations) => {
+      let changed = false,
+        wsSwitch = false;
+      for (const m of mutations) {
+        if (m.type === "childList" && m.addedNodes.length > 0) {
+          for (const n of m.addedNodes) {
+            if (n.nodeType === Node.ELEMENT_NODE && n.tagName === "SPAN") {
+              changed = true;
+              break;
+            }
+          }
+        }
+        if (m.type === "attributes" && m.attributeName === "aria-owns")
+          wsSwitch = true;
+        if (changed && wsSwitch) break;
+      }
+      if (changed || wsSwitch)
+        scheduleAttachButtons(
+          wsSwitch ? CONFIG.delays.workspaceSwitch : CONFIG.delays.mutation,
+        );
+    });
+
+    tabStripObserver.observe(tabStrip, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["aria-owns"],
+    });
+  };
+
+  // Listen to subtree changes of #browser to detect if .tab-strip is destroyed and rebuilt
+  const observeStructure = () => {
+    const root = document.getElementById("browser") || document.body;
+
+    new MutationObserver(() => {
+      const tabStrip = document.querySelector(SELECTORS.TAB_STRIP);
+      if (!tabStrip) return;
+
+      // .tab-strip changed (rebuilt), rebind
+      if (tabStrip !== observedTabStrip) {
+        console.log("[TidyTabs] .tab-strip rebuilt, reattaching");
+        observeTabStripInner(tabStrip);
+        scheduleAttachButtons(CONFIG.delays.init);
+        return;
+      }
+
+      // Buttons lost, reattach
+      const seps = tabStrip.querySelectorAll(".separator");
+      const btns = tabStrip.querySelectorAll(`.${CLASSES.BUTTON}`);
+      if (seps.length > 0 && btns.length === 0) {
+        scheduleAttachButtons(200);
+      }
+    }).observe(root, { childList: true, subtree: true });
+  };
+
+  // ==================== Init ====================
+
+  const init = () => {
+    console.log("[TidyTabs] ✓ Initialization complete");
+    setTimeout(attachButtons, CONFIG.delays.init);
+
+    // Try binding current .tab-strip first
+    const tabStrip = document.querySelector(SELECTORS.TAB_STRIP);
+    if (tabStrip) observeTabStripInner(tabStrip);
+
+    // Listen for structural changes (e.g. auto-hide toggle causing .tab-strip rebuild)
+    observeStructure();
+    setupAutoStackListener();
+  };
+
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();

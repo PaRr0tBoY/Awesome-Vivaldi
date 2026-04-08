@@ -1,0 +1,165 @@
+/*
+Download Panel Theme
+version ???
+Author ???
+https://???
+Download Panel Theme
+*/
+
+/* ========================================
+   DOWNLOAD PROGRESS STYLING
+   ======================================== */
+
+/* Download editor styling */
+.panel.downloads section.download-editor {
+  flex-basis: fit-content !important;
+}
+
+.panel.downloads section.download-editor > .data.disabled {
+  max-height: 0;
+}
+
+.panel.downloads section.download-editor > .data:not(.disabled) {
+  padding-bottom: 12px;
+}
+
+/* Progress bar base styling */
+.button-toolbar .progress {
+  background-color: black !important;
+}
+
+.button-toolbar .progress .loaded {
+  transition: background-color 300ms ease-out 0s !important;
+}
+
+/* Progress color variations */
+.button-toolbar
+  .progress
+  .loaded:is(
+    [style^="width: 0."],
+    [style^="width: 1."],
+    [style^="width: 2."],
+    [style^="width: 3."],
+    [style^="width: 4."],
+    [style^="width: 5."],
+    [style^="width: 6."],
+    [style^="width: 7."],
+    [style^="width: 8."],
+    [style^="width: 9."]
+  ) {
+  background-color: magenta;
+}
+
+.button-toolbar
+  .progress
+  .loaded[style^="width: 1"]:not([style^="width: 1."]):not(
+    [style^="width: 100%"]
+  ) {
+  background-color: #ff0080;
+}
+
+.button-toolbar .progress .loaded[style^="width: 2"]:not([style^="width: 2."]) {
+  background-color: darkorange;
+}
+
+.button-toolbar .progress .loaded[style^="width: 3"]:not([style^="width: 3."]) {
+  background-color: orange;
+}
+
+.button-toolbar .progress .loaded[style^="width: 4"]:not([style^="width: 4."]) {
+  background-color: gold;
+}
+
+.button-toolbar .progress .loaded[style^="width: 5"]:not([style^="width: 5."]) {
+  background-color: yellow;
+}
+
+.button-toolbar .progress .loaded[style^="width: 6"]:not([style^="width: 6."]) {
+  background-color: greenyellow;
+}
+
+.button-toolbar .progress .loaded[style^="width: 7"]:not([style^="width: 7."]) {
+  background-color: limegreen;
+}
+
+.button-toolbar .progress .loaded[style^="width: 8"]:not([style^="width: 8."]) {
+  background-color: mediumturquoise;
+}
+
+.button-toolbar .progress .loaded[style^="width: 9"]:not([style^="width: 9."]) {
+  background-color: deepskyblue;
+}
+
+.button-toolbar .progress .loaded[style^="width: 100"] {
+  background-color: lightcyan !important;
+}
+
+/* Progress counter styling */
+.button-toolbar .progress .loaded::before,
+.button-toolbar .progress .loaded::after {
+  position: absolute;
+  color: white;
+  -webkit-text-stroke: 0.2px;
+  text-shadow:
+    -0.5px -0.5px 1px cyan,
+    0.5px 0.5px 1px red,
+    -1px 0 1px black,
+    1px 0 1px black,
+    0 -0.5px 1px black,
+    0.5px 1.5px 1px black;
+}
+
+.button-toolbar
+  .progress
+  .loaded:not([style^="width: 100%"]):not([style^="width: 0%"])::before {
+  content: attr(style);
+  left: -3px;
+  bottom: 1px;
+  width: 13px;
+  height: 30px;
+  font-size: 10px;
+  clip-path: inset(13px 0 0 0);
+}
+
+.button-toolbar
+  .progress
+  .loaded:not([style^="width: 100%"]):not([style^="width: 0%"]):not(
+    [style^="width: 0."]
+  ):not([style^="width: 1."]):not([style^="width: 2."]):not(
+    [style^="width: 3."]
+  ):not([style^="width: 4."]):not([style^="width: 5."]):not(
+    [style^="width: 6."]
+  ):not([style^="width: 7."]):not([style^="width: 8."]):not(
+    [style^="width: 9."]
+  )::before {
+  left: -2.5px;
+  width: 11.5px;
+}
+
+.button-toolbar
+  .progress
+  .loaded:not([style^="width: 100%"]):not([style^="width: 0%"])::after {
+  content: "%";
+  left: 11px;
+  bottom: 6.5px;
+  font-size: 8px;
+}
+
+.button-toolbar
+  .progress
+  .loaded:not([style^="width: 100%"]):not([style^="width: 0%"]):not(
+    [style^="width: 0."]
+  ):not([style^="width: 1."]):not([style^="width: 2."]):not(
+    [style^="width: 3."]
+  ):not([style^="width: 4."]):not([style^="width: 5."]):not(
+    [style^="width: 6."]
+  ):not([style^="width: 7."]):not([style^="width: 8."]):not(
+    [style^="width: 9."]
+  )::after {
+  left: 9px;
+}
+
+/* Download icon opacity */
+.button-toolbar > button[title="Downloads"] > span > svg {
+  opacity: 0.4;
+}
