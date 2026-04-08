@@ -15,6 +15,7 @@
 
   let dragCard = null;
   let isDragging = false;
+  let dragEnterCount = 0;
 
   const createDragCard = () => {
     if (dragCard) return dragCard;
@@ -109,60 +110,42 @@
 
     // Listen for drag end to detect when drag session ends
     vivaldi.tabsPrivate.onDragEnd.addListener(() => {
-      handleDragEnd();
+      isDragging = false;
+      hideCard();
+      setTimeout(removeCard, 150);
     });
 
-    // Use a MutationObserver to detect when native drag starts on tab elements
-    // This is needed because dragstart doesn't bubble
-    const observer = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        for (const node of mutation.addedNodes) {
-          if (node.nodeType === Node.ELEMENT_NODE) {
-            const tabElements = node.matches?.(".tab")
-              ? [node]
-              : node.querySelectorAll?.(".tab");
-            for (const tab of tabElements) {
-              if (!tab.dataset.dragCardAttached) {
-                tab.dataset.dragCardAttached = "true";
-                tab.addEventListener("dragstart", () => {
-                  isDragging = true;
-                });
-              }
-            }
-          }
-        }
+    // Listen for native drag events on document level
+    // dragenter fires when drag image enters an element
+    document.addEventListener("dragenter", (e) => {
+      dragEnterCount++;
+      if (dragEnterCount === 1) {
+        isDragging = true;
       }
-    });
+    }, { capture: true });
 
-    // Observe the tab strip for new tabs
-    const tabStrip = document.querySelector("#tabs-container .tab-strip");
-    if (tabStrip) {
-      observer.observe(tabStrip, { childList: true, subtree: true });
-    }
-
-    // Also attach directly to existing tabs
-    document.querySelectorAll("#tabs-container .tab").forEach((tab) => {
-      if (!tab.dataset.dragCardAttached) {
-        tab.dataset.dragCardAttached = "true";
-        tab.addEventListener("dragstart", () => {
-          isDragging = true;
-        });
+    document.addEventListener("dragleave", (e) => {
+      dragEnterCount--;
+      if (dragEnterCount <= 0) {
+        dragEnterCount = 0;
+        isDragging = false;
+        hideCard();
       }
+    }, { capture: true });
+
+    document.addEventListener("dragend", () => {
+      dragEnterCount = 0;
+      isDragging = false;
+      hideCard();
+      setTimeout(removeCard, 150);
     });
   };
 
-  // Attach drag event listeners to browser container
+  // Attach drag event listeners - listen at document level for capture phase
   const initDragListeners = () => {
-    const browser = document.getElementById("browser");
-    if (!browser) {
-      console.warn("TabDragCard: #browser element not found");
-      return;
-    }
-
-    browser.addEventListener("dragover", handleDragOver, { passive: false });
-    browser.addEventListener("dragenter", handleDragEnter, { passive: false });
-    browser.addEventListener("dragleave", handleDragLeave);
-    browser.addEventListener("drop", handleDrop, { passive: false });
+    document.addEventListener("dragover", handleDragOver, { capture: true, passive: false });
+    document.addEventListener("dragenter", handleDragEnter, { capture: true, passive: false });
+    document.addEventListener("drop", handleDrop, { capture: true, passive: false });
   };
 
   // Wait for DOM and initialize
