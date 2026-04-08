@@ -1,6 +1,15 @@
 /* ========================================
    EXTENSIONS MENU STYLING
    ======================================== */
+/*
+Extension Menu
+version 2024.3.21
+Author @quodroc
+https://forum.vivaldi.net/post/742203
+CSS modification for a vertical extension dropdown menu, similar to Chrome.
+I modified it a little bit so you can add ext buttons to vertical tabbar without overflow.
+*/
+
 
 .toolbar-extensions {
   display: flex;
