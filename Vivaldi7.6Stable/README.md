@@ -127,17 +127,13 @@
 
 ### I. Adjust Vivaldi Settings
 
-> Under `Appearance > WINDOW APPEARANCE`
-> <img width="1000" alt="Cleanshot at20251101-05PM" src="https://github.com/user-attachments/assets/e33b7a29-85d6-471b-b480-af66287b52a5" />
+> Under `Appearance > WINDOW APPEARANCE` > <img width="1000" alt="Cleanshot at20251101-05PM" src="https://github.com/user-attachments/assets/e33b7a29-85d6-471b-b480-af66287b52a5" />
 
-> Under `Tabs > TAB FEATURES`
-> <img width="600" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/e5a20258-4f03-410b-902a-166f4689975b" />
+> Under `Tabs > TAB FEATURES` > <img width="600" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/e5a20258-4f03-410b-902a-166f4689975b" />
 
-> Under `Themes > Editor > Colors`
-> <img width="400" alt="Cleanshot at20251101-05PM" src=image/README/1761752550644.png />
+> Under `Themes > Editor > Colors` > <img width="400" alt="Cleanshot at20251101-05PM" src=image/README/1761752550644.png />
 
-> Under `Themes > Editor > Settings`
-> <img width="400" alt="Cleanshot at20251101-05PM" src=image/README/1761752555886.png />
+> Under `Themes > Editor > Settings` > <img width="400" alt="Cleanshot at20251101-05PM" src=image/README/1761752555886.png />
 
 > Under `Start Page > SPEED DIAL` small
 > <img width="300" alt="Cleanshot at20251101-06PM" src="https://github.com/user-attachments/assets/2216c3be-7e55-4574-ae95-32ea715512df" />

@@ -53,10 +53,7 @@ Make Text Selectable
   line-height: 40px;
   color: white;
   text-align: center;
-  text-shadow:
-    1px 1px 1px black,
-    0 0 3px black,
-    0 0 6px black;
+  text-shadow: 1px 1px 1px black, 0 0 3px black, 0 0 6px black;
   overflow: visible !important;
   display: flex;
   justify-content: center;

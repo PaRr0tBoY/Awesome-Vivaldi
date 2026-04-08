@@ -89,7 +89,7 @@
           const url = prefix + domainInfo.domain;
           this.#activeWebview.setAttribute("src", url);
         },
-        true,
+        true
       );
     }
 
@@ -105,7 +105,7 @@
       const domainInfo = this.#parseUrlDomain(
         this.#urlFragmentLink
           ? this.#urlFragmentLink.innerText
-          : this.#urlFragmentHighlight.innerText,
+          : this.#urlFragmentHighlight.innerText
       );
       if (!domainInfo.domain) {
         return null;
@@ -118,7 +118,7 @@
       ybDomainButton.appendChild(ybDomain);
       this.#urlBarAddressField.insertBefore(
         ybDomainButton,
-        this.#urlBarUrlFieldWrapper,
+        this.#urlBarUrlFieldWrapper
       );
       if (domainInfo.clickable) {
         this.#addDomainButtonListener(domainInfo);
@@ -137,7 +137,7 @@
       var title = this.#title.innerText;
       if (title === "Vivaldi") {
         title = this.#parseTitleFromUrl(
-          this.#activeWebview.getAttribute("src"),
+          this.#activeWebview.getAttribute("src")
         );
       }
 
@@ -237,13 +237,13 @@
 
     get #urlBarUrlFieldWrapper() {
       return document.querySelector(
-        ".UrlBar-AddressField .UrlBar-UrlFieldWrapper",
+        ".UrlBar-AddressField .UrlBar-UrlFieldWrapper"
       );
     }
 
     get #urlFragmentWrapper() {
       return document.querySelector(
-        ".UrlBar-AddressField .UrlFragment-Wrapper",
+        ".UrlBar-AddressField .UrlFragment-Wrapper"
       );
     }
 
@@ -253,7 +253,7 @@
 
     get #urlFragmentHighlight() {
       return document.querySelector(
-        ".UrlBar-AddressField span.UrlFragment--Highlight",
+        ".UrlBar-AddressField span.UrlFragment--Highlight"
       );
     }
 

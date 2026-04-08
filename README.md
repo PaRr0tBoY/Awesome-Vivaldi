@@ -38,6 +38,14 @@
 - [Installation](#installation)
 - [Community Mods](#community-mods)
 
+
+## Latest Update
+
+| Demo                                                | Mods                                                              |
+| --------------------------------------------------- | ----------------------------------------------------------------- |
+| ![AskInPage](./Others/assets/AskInPage.png) | `AskInPage.js`                                                |
+| ![TidyDownloads](./Others/assets/TidyDownloads.gif) | `TidyDownloads.js`                                                |
+
 ## Introduction
 
 This modpack support 2 version of Vivaldi.
@@ -49,14 +57,13 @@ Please choose the modpack that matches your Vivaldi Version. Which version of Vi
 
 ## Feature Showcase
 
-| Demo                                                | Mods                                                         |
-| --------------------------------------------------- | ------------------------------------------------------------ |
-| ![FavouriteTabs](./Others/assets/FavouriteTabs.gif) | `FavouriteTabs.css`                                          |
+| Demo                                                | Mods                                                              |
+| --------------------------------------------------- | ----------------------------------------------------------------- |
+| ![FavouriteTabs](./Others/assets/FavouriteTabs.gif) | `FavouriteTabs.css`                                               |
 | ![VivaldiMax](./Others/assets/VivaldiMax.gif)       | `TidyTabs.css` + `TidyTabs.js` + `ClearTabs.js` + `TidyTitles.js` |
-| ![PeekTabbar](./Others/assets/PeekTabbar.gif)       | `PeekTabbar.css`                                             |
-| ![ArcPeek](./Others/assets/ArcPeek.gif)             | `ArcPeek.css` + `ArcPeek.js`                                 |
-| ![Quietify](./Others/assets/Quietify.gif)           | `Quietify.css`                                               |
-| ![TidyDownloads](./Others/assets/TidyDownloads.gif) | `TidyDownloads.js`                                           |
+| ![PeekTabbar](./Others/assets/PeekTabbar.gif)       | `PeekTabbar.css`                                                  |
+| ![ArcPeek](./Others/assets/ArcPeek.gif)             | `ArcPeek.css` + `ArcPeek.js`                                      |
+| ![Quietify](./Others/assets/Quietify.gif)           | `Quietify.css`                                                    |
 
 ## Main File Structure
 
@@ -73,9 +80,11 @@ Please choose the modpack that matches your Vivaldi Version. Which version of Vi
 ## Installation
 
 If you have installed Claude Code or other agents, ask it to:
+
 ```
 Guide me through the installation of https://github.com/PaRr0tBoY/Awesome-Vivaldi
 ```
+
 If not:
 
 Installation guide is under corresponding modpack.

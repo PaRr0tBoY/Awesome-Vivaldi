@@ -80,8 +80,7 @@ Auto Hide Tabbar, expand when hover.
   margin-top: var(--tabbar-margin-top) !important;
   margin-bottom: var(--tabbar-margin-bottom) !important;
   border-radius: var(--tabbar-border-radius-collapse) !important;
-  transition:
-    border-radius var(--animation-speed) ease-out,
+  transition: border-radius var(--animation-speed) ease-out,
     /* border var(--animation-speed) ease-out, */ background-color
       var(--animation-speed) ease-out,
     min-width var(--animation-speed) ease-out,
@@ -105,25 +104,24 @@ Auto Hide Tabbar, expand when hover.
   ) */
 body:not(
     :has(
-      :is(
-        #panel_switch,
-        .WorkspacePopup,
-        .toolbar-editor,
-        #tabs-tabbar-container
-          .toolbar-tabbar-before
-          .UrlBar-AddressField:focus-within,
-        #vivaldi-tooltip:hover
-          .toolbar-tabbar-before
-          .ToolbarButton-Button.button-pressed,
-        .toolbar-tabbar-after .ToolbarButton-Button.button-pressed
+        :is(
+            #panel_switch,
+            .WorkspacePopup,
+            .toolbar-editor,
+            #tabs-tabbar-container
+              .toolbar-tabbar-before
+              .UrlBar-AddressField:focus-within,
+            #vivaldi-tooltip:hover
+              .toolbar-tabbar-before
+              .ToolbarButton-Button.button-pressed,
+            .toolbar-tabbar-after .ToolbarButton-Button.button-pressed
+          )
       )
-    )
   )
   #tabs-container:hover {
   min-width: var(--tabs-container-expand-width) !important;
   max-width: var(--tabs-container-expand-width) !important;
-  transition:
-    border-radius var(--animation-speed) ease-out,
+  transition: border-radius var(--animation-speed) ease-out,
     /* border var(--animation-speed) ease-out, */ background-color
       var(--animation-speed) ease-out,
     min-width var(--animation-speed) ease-out,
@@ -150,8 +148,7 @@ body:has(
   #tabs-container {
   min-width: var(--tabs-container-expand-width) !important;
   max-width: var(--tabs-container-expand-width) !important;
-  transition:
-    border-radius var(--animation-speed) ease-out,
+  transition: border-radius var(--animation-speed) ease-out,
     /* border var(--animation-speed) ease-out, */ background-color
       var(--animation-speed) ease-out,
     min-width var(--animation-speed) ease-out,
@@ -169,8 +166,7 @@ body:has(
   margin-bottom: var(--tabbar-margin-bottom) !important;
   padding-top: var(--tabbar-padding) !important;
   border-radius: var(--tabbar-border-radius-collapse) !important;
-  transition:
-    min-width var(--animation-speed) ease-out,
+  transition: min-width var(--animation-speed) ease-out,
     max-width var(--animation-speed) ease-out,
     background-color var(--animation-speed) ease-out,
     border-radius var(--animation-speed) ease-out,
@@ -184,21 +180,20 @@ body:has(
 /* Sub tab bar expansion on hover */
 body:not(
     :has(
-      :is(
-        .WorkspacePopup,
-        .toolbar-editor,
-        #tabs-tabbar-container
-          .toolbar-tabbar-before
-          .UrlBar-AddressField:focus-within,
-        #panel_switch
+        :is(
+            .WorkspacePopup,
+            .toolbar-editor,
+            #tabs-tabbar-container
+              .toolbar-tabbar-before
+              .UrlBar-AddressField:focus-within,
+            #panel_switch
+          )
       )
-    )
   )
   #tabs-subcontainer:hover {
   min-width: var(--tabs-subcontainer-expand-width) !important;
   max-width: var(--tabs-subcontainer-expand-width) !important;
-  transition:
-    border-radius var(--animation-speed) ease-out,
+  transition: border-radius var(--animation-speed) ease-out,
     /* border var(--animation-speed) ease-out, */ min-width
       var(--animation-speed) ease-out,
     max-width var(--animation-speed) ease-out,
@@ -214,13 +209,13 @@ body:not(
 @container not style(--fluid-compact-mode: on) {
   body:not(
       :has(
-        :is(
-          .WorkspacePopup,
-          #panel_switch,
-          .toolbar-editor,
-          .UrlBar-AddressField:focus-within
+          :is(
+              .WorkspacePopup,
+              #panel_switch,
+              .toolbar-editor,
+              .UrlBar-AddressField:focus-within
+            )
         )
-      )
     )
     #tabs-tabbar-container:has(#tabs-subcontainer:hover),
   body:has(.StackEditor) #tabs-tabbar-container {
@@ -256,8 +251,7 @@ body:not(
   border-radius: calc(var(--radius) + 6px);
   box-shadow: none !important;
   box-sizing: border-box !important;
-  transition:
-    width var(--animation-speed) ease-out,
+  transition: width var(--animation-speed) ease-out,
     min-width var(--animation-speed) ease-out,
     max-width var(--animation-speed) ease-out !important;
   position: relative !important;
@@ -334,9 +328,7 @@ body:not(:has(.toolbar-editor)) .button-toolbar.newtab {
   z-index: 100 !important;
   opacity: 0;
   visibility: hidden;
-  transition:
-    opacity 0.2s ease-in-out,
-    visibility 0.2s ease-in-out;
+  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
   overflow: hidden;
 }
 
@@ -421,8 +413,7 @@ body:not(:has(.toolbar-editor)) .button-toolbar.newtab {
     flex-grow: 0 !important;
     flex-basis: 0 !important;
     overflow: hidden !important;
-    transition:
-      max-width 0s cubic-bezier(0.4, 0, 0.2, 1),
+    transition: max-width 0s cubic-bezier(0.4, 0, 0.2, 1),
       min-width 0s cubic-bezier(0.4, 0, 0.2, 1),
       opacity 0s cubic-bezier(0.4, 0, 0.2, 1);
     transition-delay: var(--transition-delay-time-collapse);
@@ -444,8 +435,7 @@ body:not(:has(.toolbar-editor)) .button-toolbar.newtab {
       flex-shrink: 1 !important;
       flex-grow: 1 !important;
       flex-basis: auto !important;
-      transition:
-        max-width 0s cubic-bezier(0.4, 0, 0.2, 1),
+      transition: max-width 0s cubic-bezier(0.4, 0, 0.2, 1),
         min-width 0s cubic-bezier(0.4, 0, 0.2, 1),
         opacity 0s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -494,8 +484,7 @@ body:not(:has(.toolbar-editor)) .button-toolbar.newtab {
     padding: 0 !important;
     overflow: hidden !important;
     opacity: 0 !important;
-    transition:
-      min-width 0s ease-out
+    transition: min-width 0s ease-out
         calc(var(--transition-delay-time-collapse) + var(--animation-speed)),
       max-width 0s ease-out
         calc(var(--transition-delay-time-collapse) + var(--animation-speed)),
@@ -570,10 +559,10 @@ body:not(:has(.toolbar-editor)) .button-toolbar.newtab {
 /* Before toolbar: expanded state */
 body:has(
     :is(
-      #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField,
-      .toolbar-editor,
-      .toolbar-tabbar-before .ToolbarButton-Button.button-pressed
-    )
+        #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField,
+        .toolbar-editor,
+        .toolbar-tabbar-before .ToolbarButton-Button.button-pressed
+      )
   )
   .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
 .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover {
@@ -822,13 +811,13 @@ body:has(#panel_switch)
   /* Main recovers delay when sub is not hovered */
   body:not(
       :has(
-        :is(
-          .WorkspacePopup,
-          #panel_switch,
-          .toolbar-editor,
-          .UrlBar-AddressField:focus-within
+          :is(
+              .WorkspacePopup,
+              #panel_switch,
+              .toolbar-editor,
+              .UrlBar-AddressField:focus-within
+            )
         )
-      )
     )
     #tabs-tabbar-container:has(#tabs-subcontainer):not(
       :has(#tabs-subcontainer:hover)
@@ -876,11 +865,11 @@ body:has(#panel_switch)
     /* Border radius when toolbar is active */
     body:has(
         :is(
-          .toolbar-editor,
-          #tabs-tabbar-container
-            .toolbar-tabbar-before
-            .UrlBar-AddressField:focus-within
-        )
+            .toolbar-editor,
+            #tabs-tabbar-container
+              .toolbar-tabbar-before
+              .UrlBar-AddressField:focus-within
+          )
       )
       #tabs-subcontainer.left {
       border-radius: 0 calc(var(--radius) + 5px) calc(var(--radius) + 5px) 0 !important;
@@ -888,11 +877,11 @@ body:has(#panel_switch)
 
     body:has(
         :is(
-          .toolbar-editor,
-          #tabs-tabbar-container
-            .toolbar-tabbar-before
-            .UrlBar-AddressField:focus-within
-        )
+            .toolbar-editor,
+            #tabs-tabbar-container
+              .toolbar-tabbar-before
+              .UrlBar-AddressField:focus-within
+          )
       )
       #tabs-subcontainer.right {
       border-radius: calc(var(--radius) + 5px) 0 0 calc(var(--radius) + 5px) !important;
@@ -900,11 +889,11 @@ body:has(#panel_switch)
 
     body:has(
         :is(
-          .toolbar-editor,
-          #tabs-tabbar-container
-            .toolbar-tabbar-before
-            .UrlBar-AddressField:focus-within
-        )
+            .toolbar-editor,
+            #tabs-tabbar-container
+              .toolbar-tabbar-before
+              .UrlBar-AddressField:focus-within
+          )
       )
       :not(:has(#tabs-subcontainer))
       #tabs-container.left {
@@ -913,11 +902,11 @@ body:has(#panel_switch)
 
     body:has(
         :is(
-          .toolbar-editor,
-          #tabs-tabbar-container
-            .toolbar-tabbar-before
-            .UrlBar-AddressField:focus-within
-        )
+            .toolbar-editor,
+            #tabs-tabbar-container
+              .toolbar-tabbar-before
+              .UrlBar-AddressField:focus-within
+          )
       )
       :not(:has(#tabs-subcontainer))
       #tabs-container.right {
@@ -934,13 +923,13 @@ body:has(#panel_switch)
   /* Show preview of main tab bar when hovering overall container */
   body:not(
       :has(
-        :is(
-          .WorkspacePopup,
-          #panel_switch,
-          .toolbar-editor,
-          .UrlBar-AddressField:focus-within
+          :is(
+              .WorkspacePopup,
+              #panel_switch,
+              .toolbar-editor,
+              .UrlBar-AddressField:focus-within
+            )
         )
-      )
     )
     #tabs-tabbar-container:hover {
     & #tabs-container:not(:hover) {
@@ -965,18 +954,18 @@ body:has(#panel_switch)
   /* Compact width for main tab bar */
   body:not(
       :has(
-        :is(
-          #panel_switch,
-          .WorkspacePopup,
-          .toolbar-editor,
-          #tabs-tabbar-container
-            .toolbar-tabbar-before
-            .UrlBar-AddressField:focus-within,
-          #vivaldi-tooltip:hover,
-          .toolbar-tabbar-before .ToolbarButton-Button.button-pressed,
-          .toolbar-tabbar-after .ToolbarButton-Button.button-pressed
+          :is(
+              #panel_switch,
+              .WorkspacePopup,
+              .toolbar-editor,
+              #tabs-tabbar-container
+                .toolbar-tabbar-before
+                .UrlBar-AddressField:focus-within,
+              #vivaldi-tooltip:hover,
+              .toolbar-tabbar-before .ToolbarButton-Button.button-pressed,
+              .toolbar-tabbar-after .ToolbarButton-Button.button-pressed
+            )
         )
-      )
     )
     #tabs-container {
     min-width: var(--tabs-container-collapse-width-compact) !important;
@@ -986,18 +975,18 @@ body:has(#panel_switch)
   /* Compact mode sub bar expansion adjustment */
   body:not(
       :has(
-        :is(
-          #panel_switch,
-          .WorkspacePopup,
-          .toolbar-editor,
-          #tabs-tabbar-container
-            .toolbar-tabbar-before
-            .UrlBar-AddressField:focus-within,
-          #vivaldi-tooltip:hover,
-          .toolbar-tabbar-before .ToolbarButton-Button.button-pressed,
-          .toolbar-tabbar-after .ToolbarButton-Button.button-pressed
+          :is(
+              #panel_switch,
+              .WorkspacePopup,
+              .toolbar-editor,
+              #tabs-tabbar-container
+                .toolbar-tabbar-before
+                .UrlBar-AddressField:focus-within,
+              #vivaldi-tooltip:hover,
+              .toolbar-tabbar-before .ToolbarButton-Button.button-pressed,
+              .toolbar-tabbar-after .ToolbarButton-Button.button-pressed
+            )
         )
-      )
     )
     #tabs-subcontainer:hover {
     min-width: calc(
@@ -1221,8 +1210,7 @@ body:has(#panel_switch)
       --tabbar-bg-color-collapse,
       var(--colorBg)
     ) !important;
-    transition:
-      background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
       color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
@@ -1263,15 +1251,15 @@ body:has(#panel_switch)
   /* Hover states for collapsed background */
   body:not(
       :has(
-        :is(
-          .WorkspacePopup,
-          .toolbar-editor,
-          #tabs-tabbar-container
-            .toolbar-tabbar-before
-            .UrlBar-AddressField:focus-within,
-          #panel_switch
+          :is(
+              .WorkspacePopup,
+              .toolbar-editor,
+              #tabs-tabbar-container
+                .toolbar-tabbar-before
+                .UrlBar-AddressField:focus-within,
+              #panel_switch
+            )
         )
-      )
     )
     #tabs-container:hover,
   #tabs-container:hover .tab-position::after,
@@ -1279,15 +1267,15 @@ body:has(#panel_switch)
   #tabs-container:hover .clear-tabs-below-button,
   body:not(
       :has(
-        :is(
-          .WorkspacePopup,
-          .toolbar-editor,
-          #tabs-tabbar-container
-            .toolbar-tabbar-before
-            .UrlBar-AddressField:focus-within,
-          #panel_switch
+          :is(
+              .WorkspacePopup,
+              .toolbar-editor,
+              #tabs-tabbar-container
+                .toolbar-tabbar-before
+                .UrlBar-AddressField:focus-within,
+              #panel_switch
+            )
         )
-      )
     )
     #tabs-subcontainer:hover {
     background-color: var(
@@ -1299,15 +1287,15 @@ body:has(#panel_switch)
   /* Force expanded background when specific elements are active */
   body:has(
       :is(
-        .WorkspacePopup,
-        .toolbar-editor,
-        #tabs-tabbar-container
-          .toolbar-tabbar-before
-          .UrlBar-AddressField:focus-within,
-        #vivaldi-tooltip:hover,
-        .toolbar-tabbar-before .ToolbarButton-Button.button-pressed,
-        .toolbar-tabbar-after .ToolbarButton-Button.button-pressed
-      )
+          .WorkspacePopup,
+          .toolbar-editor,
+          #tabs-tabbar-container
+            .toolbar-tabbar-before
+            .UrlBar-AddressField:focus-within,
+          #vivaldi-tooltip:hover,
+          .toolbar-tabbar-before .ToolbarButton-Button.button-pressed,
+          .toolbar-tabbar-after .ToolbarButton-Button.button-pressed
+        )
     )
     #tabs-container {
     background-color: var(
@@ -1319,10 +1307,10 @@ body:has(#panel_switch)
   /* Toolbar before expanded states */
   body:has(
       :is(
-        #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField,
-        .toolbar-editor,
-        .toolbar-tabbar-before .ToolbarButton-Button.button-pressed
-      )
+          #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField,
+          .toolbar-editor,
+          .toolbar-tabbar-before .ToolbarButton-Button.button-pressed
+        )
     )
     .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
   .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover {
@@ -1374,8 +1362,7 @@ body:has(#panel_switch)
     background-color: var(--immersive-bg-color, --colorAccentBg) !important;
     color: var(--immersive-text-color) !important;
     border: none !important;
-    transition:
-      background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
       color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
@@ -1418,15 +1405,15 @@ body:has(#panel_switch)
   /* Hover states for collapsed background */
   body:not(
       :has(
-        :is(
-          .WorkspacePopup,
-          .toolbar-editor,
-          #tabs-tabbar-container
-            .toolbar-tabbar-before
-            .UrlBar-AddressField:focus-within,
-          #panel_switch
+          :is(
+              .WorkspacePopup,
+              .toolbar-editor,
+              #tabs-tabbar-container
+                .toolbar-tabbar-before
+                .UrlBar-AddressField:focus-within,
+              #panel_switch
+            )
         )
-      )
     )
     #tabs-container:hover,
   #tabs-container:hover .tab-position::after,
@@ -1434,15 +1421,15 @@ body:has(#panel_switch)
   #tabs-container:hover .clear-tabs-below-button,
   body:not(
       :has(
-        :is(
-          .WorkspacePopup,
-          .toolbar-editor,
-          #tabs-tabbar-container
-            .toolbar-tabbar-before
-            .UrlBar-AddressField:focus-within,
-          #panel_switch
+          :is(
+              .WorkspacePopup,
+              .toolbar-editor,
+              #tabs-tabbar-container
+                .toolbar-tabbar-before
+                .UrlBar-AddressField:focus-within,
+              #panel_switch
+            )
         )
-      )
     )
     #tabs-subcontainer:hover {
     background-color: var(--immersive-bg-color, --colorBgLighter) !important;
@@ -1453,15 +1440,15 @@ body:has(#panel_switch)
   /* Force expanded background when specific elements are active */
   body:has(
       :is(
-        .WorkspacePopup,
-        .toolbar-editor,
-        #tabs-tabbar-container
-          .toolbar-tabbar-before
-          .UrlBar-AddressField:focus-within,
-        #vivaldi-tooltip:hover,
-        .toolbar-tabbar-before .ToolbarButton-Button.button-pressed,
-        .toolbar-tabbar-after .ToolbarButton-Button.button-pressed
-      )
+          .WorkspacePopup,
+          .toolbar-editor,
+          #tabs-tabbar-container
+            .toolbar-tabbar-before
+            .UrlBar-AddressField:focus-within,
+          #vivaldi-tooltip:hover,
+          .toolbar-tabbar-before .ToolbarButton-Button.button-pressed,
+          .toolbar-tabbar-after .ToolbarButton-Button.button-pressed
+        )
     )
     #tabs-container {
     /* background-color: var(--immersive-bg-color,--colorBgLighter) !important; */
@@ -1473,10 +1460,10 @@ body:has(#panel_switch)
   /* Toolbar before expanded states */
   body:has(
       :is(
-        #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField,
-        .toolbar-editor,
-        .toolbar-tabbar-before .ToolbarButton-Button.button-pressed
-      )
+          #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField,
+          .toolbar-editor,
+          .toolbar-tabbar-before .ToolbarButton-Button.button-pressed
+        )
     )
     .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget,
   .toolbar.toolbar-tabbar-before.toolbar-large.toolbar-droptarget:hover {
@@ -1501,8 +1488,7 @@ body:has(#panel_switch)
   #panels-container > *,
   #panels > * {
     background-color: transparent !important;
-    transition:
-      background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
       color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }

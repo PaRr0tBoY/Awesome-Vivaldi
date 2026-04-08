@@ -16,7 +16,7 @@
       }
       if (!this.reactPropsKey) {
         this.reactPropsKey = Object.keys(element).find((key) =>
-          key.startsWith("__reactProps"),
+          key.startsWith("__reactProps")
         );
       }
       return element[this.reactPropsKey];
@@ -32,7 +32,9 @@
       },
       executeScript(element, details, callback) {
         if (details.func) {
-          details.code = `(${details.func})(${JSON.stringify(details.args || []).slice(1, -1)})`;
+          details.code = `(${details.func})(${JSON.stringify(
+            details.args || []
+          ).slice(1, -1)})`;
           delete details.func;
           delete details.args;
         }
@@ -55,14 +57,14 @@
         if (obj.ownerDocument === document) {
           this._overrides._elements = this._overrides._elements || [];
           const element = this._overrides._elements.find(
-            (item) => item.element === obj,
+            (item) => item.element === obj
           );
           let id;
           if (element) {
             id = element.id;
           } else {
             id = this.uuid.generate(
-              this._overrides._elements.map((item) => item.id),
+              this._overrides._elements.map((item) => item.id)
             );
             this._overrides._elements.push({
               element: obj,
@@ -87,7 +89,7 @@
                   (typeof gnoh._overrides[key][i].skipApply === "function" &&
                     !!gnoh._overrides[key][i].skipApply.apply(
                       this,
-                      arguments,
+                      arguments
                     )));
               if (
                 skipApply !== false &&
@@ -124,10 +126,10 @@
         const id = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
           /[xy]/g,
           (c) => {
-            r = ((d + Math.random() * 16) % 16) | 0;
+            r = (d + Math.random() * 16) % 16 | 0;
             d = Math.floor(d / 16);
             return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
-          },
+          }
         );
 
         if (Array.isArray(ids) && ids.includes(id)) {
@@ -174,7 +176,7 @@
         clientX: rect.left,
         clientY: rect.top,
         pointerId: 1,
-      }),
+      })
     );
 
     await gnoh.promise.delay(10);
@@ -187,7 +189,7 @@
         pointerType: "mouse",
         clientX: rect.right,
         clientY: rect.bottom,
-      }),
+      })
     );
 
     await gnoh.promise.delay(10);
@@ -199,7 +201,7 @@
         buttons: 1,
         pointerType: "mouse",
         pointerId: 1,
-      }),
+      })
     );
 
     await gnoh.promise.delay(10);
@@ -209,10 +211,10 @@
       Math.abs(rect.top - parseFloat(style.borderTopWidth)) >= 10 ||
       Math.abs(rect.left - parseFloat(style.borderLeftWidth)) >= 10 ||
       Math.abs(
-        window.innerHeight - rect.bottom - parseFloat(style.borderBottomWidth),
+        window.innerHeight - rect.bottom - parseFloat(style.borderBottomWidth)
       ) >= 10 ||
       Math.abs(
-        window.innerWidth - rect.right - parseFloat(style.borderRightWidth),
+        window.innerWidth - rect.right - parseFloat(style.borderRightWidth)
       ) >= 10
     ) {
       await simulateSelect(captureArea);
@@ -228,7 +230,7 @@
   async function pointerMoveEventHandler(event) {
     if (
       Array.from(document.forms).find((f) =>
-        f.classList.contains("ControlPanel"),
+        f.classList.contains("ControlPanel")
       )?.elements.modePicker?.value === "area"
     ) {
       if (
@@ -241,7 +243,7 @@
         this.removeEventListener(
           "pointerleave",
           pointerLeaveEventHandler,
-          true,
+          true
         );
 
         const captureAreaProps = gnoh.getReactProps(this);
@@ -254,7 +256,7 @@
           const webview = element.closest("webview");
           const webviewRect = getRect(webview);
           const zoom = parseFloat(
-            gnoh.element.getStyle(element).getPropertyValue("--uiZoomLevel"),
+            gnoh.element.getStyle(element).getPropertyValue("--uiZoomLevel")
           );
           const webviewZoom = await new Promise((resolve) => {
             webview.getZoom((res) => {
@@ -287,7 +289,9 @@
 
         if (rect) {
           this.style.background = "transparent";
-          this.style.borderWidth = `${rect.top}px ${window.innerWidth - rect.right}px ${window.innerHeight - rect.bottom}px ${rect.left}px`;
+          this.style.borderWidth = `${rect.top}px ${
+            window.innerWidth - rect.right
+          }px ${window.innerHeight - rect.bottom}px ${rect.left}px`;
         }
       }
     }
@@ -303,7 +307,7 @@
       captureAreaProps.onKeyDown(
         new KeyboardEvent("keydown", {
           keyCode: 27,
-        }),
+        })
       );
     } else {
       await simulateSelect(this);

@@ -163,7 +163,7 @@
   const isAutoStackAllowed = async (workspaceId) => {
     if (CONFIG.autoStackWorkspaces.length === 0) return false;
     return CONFIG.autoStackWorkspaces.includes(
-      await getWorkspaceName(workspaceId),
+      await getWorkspaceName(workspaceId)
     );
   };
 
@@ -297,7 +297,7 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
   const validateAIGroups = (result) => {
     if (!result?.groups || !Array.isArray(result.groups)) return false;
     return result.groups.every(
-      (g) => g.name && typeof g.name === "string" && Array.isArray(g.tab_ids),
+      (g) => g.name && typeof g.name === "string" && Array.isArray(g.tab_ids)
     );
   };
 
@@ -326,7 +326,7 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
       othersGroup.tabs.push(...orphans);
     } else {
       const existing = existingStacks.find((s) =>
-        OTHERS_NAMES.includes(s.name),
+        OTHERS_NAMES.includes(s.name)
       );
       if (existing) {
         groupedTabs.push({
@@ -451,7 +451,7 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
             ?.replace("tab-", "");
           if (stackTabId) {
             const allTabs = await new Promise((r) =>
-              chrome.tabs.query({ currentWindow: true }, r),
+              chrome.tabs.query({ currentWindow: true }, r)
             );
             const stackTab = allTabs.find((t) => {
               try {
@@ -552,7 +552,7 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
 
   const tidyTabsBelow = async (separator) => {
     const existingStacks = await detectExistingStacks(
-      separator.nextElementSibling,
+      separator.nextElementSibling
     );
     const tabsInfo = collectTabsFromSeparator(separator);
 
@@ -590,7 +590,7 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
         if (tab && !tab.pinned && tab.vivExtData && !tab.vivExtData.panelId) {
           setTimeout(
             () => autoStackWorkspace(tab.vivExtData.workspaceId),
-            CONFIG.delays.autoStack,
+            CONFIG.delays.autoStack
           );
         }
       }
@@ -625,7 +625,7 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
       }
       if (changed || wsSwitch)
         scheduleAttachButtons(
-          wsSwitch ? CONFIG.delays.workspaceSwitch : CONFIG.delays.mutation,
+          wsSwitch ? CONFIG.delays.workspaceSwitch : CONFIG.delays.mutation
         );
     });
 

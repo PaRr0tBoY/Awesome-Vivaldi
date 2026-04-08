@@ -134,7 +134,7 @@
     const check = document.getElementById("vm-bse-backup");
     if (!check) {
       const place = document.querySelector(
-        ".setting-section > div > .setting-group.unlimited > .setting-single",
+        ".setting-section > div > .setting-group.unlimited > .setting-single"
       );
       const btn = document.createElement("input");
       btn.setAttribute("type", "button");

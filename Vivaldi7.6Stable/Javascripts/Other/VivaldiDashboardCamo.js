@@ -21,12 +21,14 @@
     return new Map(
       Array.from(browserStyle)
         .filter((prop) => /^--.*/.test(prop))
-        .map((prop) => [prop, browserStyle.getPropertyValue(prop)]),
+        .map((prop) => [prop, browserStyle.getPropertyValue(prop)])
     );
   };
 
   const cssDeclarationMap2String = (map) =>
-    `:root {${Array.from(map.entries().map((entry) => `${entry[0]}: ${entry[1]};`)).join("")}}`;
+    `:root {${Array.from(
+      map.entries().map((entry) => `${entry[0]}: ${entry[1]};`)
+    ).join("")}}`;
 
   // # State & Lifecycle
 
@@ -34,7 +36,7 @@
 
   const updateCssOfTab = async (tab) => {
     const newCssString = cssDeclarationMap2String(
-      getCustomPropertiesOfBrowserAsMap(),
+      getCustomPropertiesOfBrowserAsMap()
     );
     const previousCssString = currentCssStringByTabId.get(tab.id);
     currentCssStringByTabId.set(tab.id, newCssString);

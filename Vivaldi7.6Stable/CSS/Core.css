@@ -75,8 +75,7 @@ You may manage and config all your css mods and config them as well all in this 
   --tabs-container-expand-width: 280px;
   --tabs-subcontainer-collapse-width: 44px;
   --tabs-subcontainer-expand-width: calc(
-    var(--tabs-container-expand-width) +
-      var(--tabs-subcontainer-collapse-width) -
+    var(--tabs-container-expand-width) + var(--tabs-subcontainer-collapse-width) -
       var(--tabs-container-collapse-width-default)
   );
 

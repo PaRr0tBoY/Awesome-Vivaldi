@@ -188,7 +188,7 @@ var PIP = {
       this.containerElm_.classList.remove(
         "transparent",
         "initial",
-        "fullscreen",
+        "fullscreen"
       );
       this.clearTimer(); // Stop hide timer as mouse is over video/button
     } else {
@@ -232,7 +232,7 @@ var PIP = {
       if (this.onPipExitBound) {
         videoExiting.removeEventListener(
           "leavepictureinpicture",
-          this.onPipExitBound,
+          this.onPipExitBound
         );
         console.log("PiP INFO: 'leavepictureinpicture' listener removed.");
       }
@@ -254,7 +254,7 @@ var PIP = {
     if (!videoTarget && event && typeof event.clientX === "number") {
       videoTarget = this.findVideoElementForCoordinate(
         event.clientX,
-        event.clientY,
+        event.clientY
       );
     }
 
@@ -271,13 +271,13 @@ var PIP = {
           document
             .exitPictureInPicture()
             .catch((err) =>
-              console.error("PiP ERROR: Failed to exit PiP on click:", err),
+              console.error("PiP ERROR: Failed to exit PiP on click:", err)
             );
         } else {
           // Otherwise, request PiP
           console.log(
             "PiP INFO: Attempting to request PiP for video:",
-            videoTarget,
+            videoTarget
           );
           videoTarget
             .requestPictureInPicture()
@@ -285,12 +285,12 @@ var PIP = {
               const pipVideoElement = document.pictureInPictureElement; // Get the actual element in PiP
               console.log(
                 "PiP INFO: Successfully entered PiP. Current PiP element:",
-                pipVideoElement,
+                pipVideoElement
               );
 
               if (!pipVideoElement) {
                 console.error(
-                  "PiP ERROR: document.pictureInPictureElement is null after successful PiP request!",
+                  "PiP ERROR: document.pictureInPictureElement is null after successful PiP request!"
                 );
                 return;
               }
@@ -304,18 +304,18 @@ var PIP = {
               ) {
                 this.lastPipElement.removeEventListener(
                   "leavepictureinpicture",
-                  this.onPipExitBound,
+                  this.onPipExitBound
                 );
               }
               this.onPipExitBound = () => this.onPipExit(pipVideoElement);
               pipVideoElement.addEventListener(
                 "leavepictureinpicture",
-                this.onPipExitBound,
+                this.onPipExitBound
               );
               this.lastPipElement = pipVideoElement;
               console.log(
                 "PiP INFO: 'leavepictureinpicture' listener added to PiP element:",
-                pipVideoElement,
+                pipVideoElement
               );
 
               this.setupMediaSessionHandlers(pipVideoElement); // Set up media controls
@@ -324,7 +324,7 @@ var PIP = {
               console.error(
                 "PiP ERROR: Failed to enter PiP for video:",
                 videoTarget,
-                err,
+                err
               );
             });
         }
@@ -402,7 +402,7 @@ var PIP = {
         const skipTime = details.seekOffset || K_SEEK_AMOUNT;
         video.currentTime = Math.min(
           video.duration,
-          video.currentTime + skipTime,
+          video.currentTime + skipTime
         );
       });
       navigator.mediaSession.setActionHandler("seekto", (details) => {
@@ -415,32 +415,32 @@ var PIP = {
       navigator.mediaSession.setActionHandler("previoustrack", () => {
         video.currentTime = 0;
         console.log(
-          "PiP INFO: Media session 'previoustrack' action handled (seek to start).",
+          "PiP INFO: Media session 'previoustrack' action handled (seek to start)."
         );
       });
       navigator.mediaSession.setActionHandler("nexttrack", () => {
         if (video.duration) {
           video.currentTime = Math.max(
             0,
-            video.duration - K_TRACK_SKIP_THRESHOLD,
+            video.duration - K_TRACK_SKIP_THRESHOLD
           );
         } else {
           video.currentTime = 0;
         }
         console.log(
-          "PiP INFO: Media session 'nexttrack' action handled (seek to end).",
+          "PiP INFO: Media session 'nexttrack' action handled (seek to end)."
         );
       });
 
       console.log(
         "PiP INFO: All available media session handlers set up (seek amount: " +
           K_SEEK_AMOUNT +
-          "s).",
+          "s)."
       );
     } catch (error) {
       console.warn(
         "PiP WARNING: Error setting up media session handlers:",
-        error,
+        error
       );
     }
   },
@@ -464,7 +464,7 @@ var PIP = {
     } catch (error) {
       console.warn(
         "PiP WARNING: Error removing media session handlers:",
-        error,
+        error
       );
     }
   },
@@ -489,12 +489,12 @@ var PIP = {
     videoElement.addEventListener(
       "mousemove",
       this.videoOver.bind(this),
-      useCapture,
+      useCapture
     );
     videoElement.addEventListener(
       "mouseout",
       this.videoOut.bind(this),
-      useCapture,
+      useCapture
     );
     videoElement.addEventListener(
       "play",
@@ -509,7 +509,7 @@ var PIP = {
           this.doVideoOver(clientX, clientY, e.target);
         }
       },
-      useCapture,
+      useCapture
     );
   },
 
@@ -524,7 +524,7 @@ var PIP = {
     } catch (e) {
       console.warn(
         "PiP WARNING: Shadow DOM not supported or failed, appending directly to host.",
-        e,
+        e
       );
       this.root_ = this.host_;
     }
@@ -538,7 +538,7 @@ var PIP = {
       this.root_.appendChild(link);
     } else {
       console.warn(
-        "PiP WARNING: Could not load picture-in-picture.css. Button may lack styling.",
+        "PiP WARNING: Could not load picture-in-picture.css. Button may lack styling."
       );
     }
 
@@ -546,7 +546,7 @@ var PIP = {
     this.containerElm_.classList.add(
       "vivaldi-picture-in-picture-container",
       "initial",
-      "transparent",
+      "transparent"
     );
     this.root_.appendChild(this.containerElm_);
 
@@ -555,7 +555,7 @@ var PIP = {
     this.pipButton_.classList.add("vivaldi-picture-in-picture-button");
     this.pipButton_.setAttribute(
       "aria-label",
-      "Toggle Picture-in-Picture Mode",
+      "Toggle Picture-in-Picture Mode"
     );
     this.pipButton_.title = "Picture-in-Picture"; // Removed shortcut from title
     this.containerElm_.appendChild(this.pipButton_);
@@ -563,12 +563,12 @@ var PIP = {
     this.containerElm_.addEventListener(
       "mouseenter",
       this.buttonOver.bind(this),
-      true,
+      true
     );
     this.containerElm_.addEventListener(
       "mouseleave",
       this.buttonOut.bind(this),
-      true,
+      true
     );
     this.pipButton_.addEventListener("click", this.pipClicked.bind(this), true);
 
@@ -640,10 +640,10 @@ var PIP = {
       // document.addEventListener('keydown', this.handleKeyboardShortcut.bind(this), true); // REMOVED
       document.addEventListener(
         "fullscreenchange",
-        this.onFullscreenChange.bind(this),
+        this.onFullscreenChange.bind(this)
       );
       console.log(
-        "PiP INFO: Script (International English Version, No Shortcut) injected and initialized.",
+        "PiP INFO: Script (International English Version, No Shortcut) injected and initialized."
       );
     });
   },
