@@ -101,14 +101,14 @@
 
   // Hook into Vivaldi's tab drag system via tabsPrivate API
   const init = () => {
-    // Check if tabsPrivate API is available
-    if (!chrome.tabs?.tabsPrivate) {
+    // Check if tabsPrivate API is available (vivaldi namespace)
+    if (!vivaldi?.tabsPrivate) {
       console.warn("TabDragCard: tabsPrivate API not available");
       return;
     }
 
     // Listen for drag end to detect when drag session ends
-    chrome.tabs.tabsPrivate.onDragEnd.addListener(() => {
+    vivaldi.tabsPrivate.onDragEnd.addListener(() => {
       handleDragEnd();
     });
 
