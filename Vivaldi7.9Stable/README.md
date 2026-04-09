@@ -39,7 +39,7 @@
 - [How to install](#how-to-install)
   - [CSS Mods](#to-install-css-mods)
   - [Javascripts Mods](#to-install-javascripts-mods)
-- [Frequently Asked Questions](#Frequently Asked Questions)
+- [Frequently Asked Questions](#FAQ)
 ## Latest Update
 
 | Demo                                                | Mods                                                              |
@@ -180,13 +180,13 @@ To install, Just copy all the content under ./Javascripts/ to your `<YOURVIVALDI
 
 > Optionally, get an glm api key here for AI features [here](https://open.bigmodel.cn/usercenter/proj-mgmt/apikeys). FYI, It's experimental and not stable though. You can use other AI providers' api as well as long as it's compatible with OpenAI api.
 
-# Frequently Asked Questions 
+# FAQ 
 > I've Installed all the mod correctly but I didn't see the infect?
 Have you installed correctly?
-Check
+Check the list
 - [ ] Css Customization Allowed at vivaldi:flags
 - [ ] Set the folder to Awesome-Vivaldi-main\Vivaldi7.9Stable in vivaldi's settings > appearance > custom ui modifications
-- [ ] Replace all the files from ./Javascripts in "C:\Users\{username}\AppData\Local\Vivaldi\AApplication\{version}\resources\vivaldi"
+- [ ] Replaced all the files from ./Javascripts in "C:\Users\{username}\AppData\Local\Vivaldi\AApplication\{version}\resources\vivaldi"
 
 If you confirmed you installed it right:
 - Missing AI features?:
