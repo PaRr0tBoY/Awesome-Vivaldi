@@ -100,9 +100,9 @@
 ## How to install
 
 ### Vivaldi Settings
-- Switch to two-level tab stacking under Tab setting.
-- Turn on Auto-hide under Appearance settings.
-- Turn on Open New Tabs in Tab Stack in Tab settings
+- Switch to two-level tab stacking under Tab Setting.
+- Turn on Auto-hide under Appearance Setting.
+- Turn on Open New Tabs in Tab Stack Under Tab setting.
 
 ### To Install CSS Mods
 
@@ -194,10 +194,8 @@ To install, Just copy all the content under ./Javascripts/ to your `<YOURVIVALDI
 - [ ] Set correct folder path  
   → `Settings > Appearance > Custom UI Modifications`  
   → `Awesome-Vivaldi-main\Vivaldi7.9Stable`
-- [ ] Replace all files in
-’’’
-C:\Users{username}\AppData\Local\Vivaldi\Application{version}\resources\vivaldi
-’’’
+- [ ] Copied all the **contents** under ./Javascripts/ to your `<YOURVIVALDIDIRECTORY>`\Application\<VERSI0N>\resources\vivaldi\
+
 ---
 
 ## ❓ Why are some features missing?
