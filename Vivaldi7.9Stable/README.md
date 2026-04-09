@@ -99,6 +99,11 @@
 
 ## How to install
 
+### Vivaldi Settings
+- Switch to two-level tab stacking under Tab setting.
+- Turn on Auto-hide under Appearance settings.
+- Turn on Open New Tabs in Tab Stack in Tab settings
+
 ### To Install CSS Mods
 
 1. Open the url `vivaldi://flags/#vivaldi-css-mods`
@@ -181,24 +186,59 @@ To install, Just copy all the content under ./Javascripts/ to your `<YOURVIVALDI
 > Optionally, get an glm api key here for AI features [here](https://open.bigmodel.cn/usercenter/proj-mgmt/apikeys). FYI, It's experimental and not stable though. You can use other AI providers' api as well as long as it's compatible with OpenAI api.
 
 # FAQ
-> I've Installed all the mod correctly but I didn't see the effect?
 
-Have you installed correctly?
-Check the list below 
-- [ ] Css Customization Allowed at vivaldi:flags
-- [ ] Set the folder to Awesome-Vivaldi-main\Vivaldi7.9Stable in vivaldi's settings > appearance > custom ui modifications
-- [ ] Replaced all the files inside ./Javascripts in "C:\Users\{username}\AppData\Local\Vivaldi\AApplication\{version}\resources\vivaldi"
+## ❓ I installed everything, but nothing changed
 
-If you confirmed you installed it right:
-- Missing AI features?:
-All the AI-related mods require your own [OpenAI Compatible](https://developers.openai.com/api/reference/overview) API configured at first few lines of codes.
-- Missing FavouriteTabs?:
-Only first 9 pinned tabs/stacks is turned into grid.
-Others:
-- Turned on 2 level tab stacking under tabstacking.
-- Turned on Auto-hide under Appearance settings.
-- Read mod list to understand what these mods do. Most mods have a short description on top of file content.
-** Many mods of this pack works in backgroYouwoYou won't notice them instantly when you first installed them. Read the mod list to understand what they do if you're interested. **
-** Some mods are disabled for being buggy or not finished.**
-Turned on disabled css mods at Import.css
-Turned on disabled js mods at window.html
+**Check these first:**
+- [ ] Enable **CSS Customization** at `vivaldi://flags`
+- [ ] Set correct folder path  
+  → `Settings > Appearance > Custom UI Modifications`  
+  → `Awesome-Vivaldi-main\Vivaldi7.9Stable`
+- [ ] Replace all files in
+’’’
+C:\Users{username}\AppData\Local\Vivaldi\Application{version}\resources\vivaldi
+’’’
+---
+
+## ❓ Why are some features missing?
+
+### 🤖 AI features not working
+These mods **do NOT work out of the box**.
+
+You must configure your own **OpenAI-compatible API**  
+→ Edit the first few lines in the script files.
+
+---
+
+### ⭐ FavouriteTabs not showing
+- Only **first 9 pinned tabs / tab stacks** are supported
+- Anything beyond that won’t appear in grid view
+
+---
+
+## ❓ I installed it correctly, but still don’t see changes
+
+That’s normal.
+
+- Many mods run **in the background**
+- Effects may be subtle or only appear in specific situations
+
+👉 Check the mod list to understand what each one does
+
+---
+
+## ❓ Some features seem disabled
+
+Some mods are intentionally turned off (buggy / unfinished)
+
+**Enable them manually:**
+- CSS mods → `Import.css`
+- JS mods → `window.html`
+
+---
+
+## ❓ Still not working?
+
+- Restart Vivaldi
+- Double-check file paths (most common issue)
+- Make sure files were actually replaced (not copied alongside)
