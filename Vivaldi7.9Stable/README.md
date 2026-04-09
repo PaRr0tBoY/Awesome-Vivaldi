@@ -180,13 +180,14 @@ To install, Just copy all the content under ./Javascripts/ to your `<YOURVIVALDI
 
 > Optionally, get an glm api key here for AI features [here](https://open.bigmodel.cn/usercenter/proj-mgmt/apikeys). FYI, It's experimental and not stable though. You can use other AI providers' api as well as long as it's compatible with OpenAI api.
 
-# FAQ 
-> I've Installed all the mod correctly but I didn't see the infect?
+# FAQ
+> I've Installed all the mod correctly but I didn't see the effect?
+
 Have you installed correctly?
-Check the list
+Check the list below 
 - [ ] Css Customization Allowed at vivaldi:flags
 - [ ] Set the folder to Awesome-Vivaldi-main\Vivaldi7.9Stable in vivaldi's settings > appearance > custom ui modifications
-- [ ] Replaced all the files from ./Javascripts in "C:\Users\{username}\AppData\Local\Vivaldi\AApplication\{version}\resources\vivaldi"
+- [ ] Replaced all the files inside ./Javascripts in "C:\Users\{username}\AppData\Local\Vivaldi\AApplication\{version}\resources\vivaldi"
 
 If you confirmed you installed it right:
 - Missing AI features?:
@@ -197,3 +198,7 @@ Others:
 - Turned on 2 level tab stacking under tabstacking.
 - Turned on Auto-hide under Appearance settings.
 - Read mod list to understand what these mods do. Most mods have a short description on top of file content.
+** Many mods of this pack works in backgroYouwoYou won't notice them instantly when you first installed them. Read the mod list to understand what they do if you're interested. **
+** Some mods are disabled for being buggy or not finished.**
+Turned on disabled css mods at Import.css
+Turned on disabled js mods at window.html
