@@ -49,6 +49,40 @@
       subtitle: 'Clear explanation with examples',
     },
   ];
+  const formatCapabilityDefinitions = [
+    {
+      id: 'textProposal',
+      title: 'Text block',
+      subtitle: 'Format the response as a text proposal',
+      iconText: 'T',
+      content: 'The user is requesting that you format your response using a text proposal.',
+      aliases: ['text', 'proposal', 'textproposal', 'block'],
+    },
+    {
+      id: 'table',
+      title: 'Table',
+      subtitle: 'Format the response as a table',
+      iconText: '▦',
+      content: 'The user is requesting that you format your response as a table.',
+      aliases: ['table', 'grid'],
+    },
+    {
+      id: 'codeBlock',
+      title: 'Code block',
+      subtitle: 'Format the response as a code block',
+      iconText: '</>',
+      content: 'The user is requesting that you format your response using a code block.',
+      aliases: ['code', 'codeblock', 'block', 'md'],
+    },
+    {
+      id: 'list',
+      title: 'List',
+      subtitle: 'Format the response as a list',
+      iconText: '≡',
+      content: 'The user is requesting that you format your response as a list.',
+      aliases: ['list', 'bullet'],
+    },
+  ];
   const AI_CONFIG = {
     // apiEndpoint: 'https://open.bigmodel.cn/api/paas/v4',
     // apiKey: '',
@@ -56,21 +90,45 @@
     // apiEndpoint: 'https://api.minimaxi.com/v1',
     // apiKey: '',
     // model: 'MiniMax-M2.5',
-    apiEndpoint: 'https://openrouter.ai/api/v1',
+    apiEndpoint: 'https://api.groq.com/openai/v1',
     apiKey: '',
-    model: 'openrouter/free',
+    model: 'groq/compound',
+    // apiEndpoint: 'https://openrouter.ai/api/v1',
+    // apiKey: '',
+    // model: 'openrouter/free',
+    //apiEndpoint: 'https://integrate.api.nvidia.com/v1',
+    //apiKey: '',
+    //model: 'google/gemma-4-31b-it',
     timeout: 90000,
     temperature: 0.5,
-    maxTokens: 20000,
+    maxTokens: 4096,
   };
   const CONTEXT_LIMITS = {
-    pageContentChars: 50000,
-    filePreviewChars: 50000,
+    pageContentChars: 18000,
+    filePreviewChars: 18000,
   };
   const ASK_IN_PAGE_DEBUG = false;
+  const ASK_IN_PAGE_CONSOLE_DEBUG = true;
   const PERFORMANCE_CONFIG = {
     selectionPollIntervalMs: 1500,
     tabSnapshotCacheTtlMs: 15000,
+  };
+  const TAB_SUGGESTION_LIMITS = {
+    collapsed: 5,
+    expanded: 15,
+  };
+  const CONVERSATION_MEMORY_CONFIG = {
+    recentTurns: 6,
+    summaryChunkTurns: 3,
+    maxRetrievedAttachments: 2,
+  };
+  const LIGHTWEIGHT_SNAPSHOT_CONFIG = {
+    maxContentChars: 1600,
+    maxHeadingCount: 8,
+    maxImageAltCount: 6,
+    maxImportantLinkCount: 6,
+    maxJsonLdCount: 4,
+    candidateNodeLimit: 80,
   };
   const STREAM_UI_CONFIG = {
     startDelayMs: 180,
@@ -78,6 +136,7 @@
     punctuationPause: 0,
     newlinePause: 0,
     ghostTailChars: 14,
+    minCharsPerFrame: 1,
   };
   const LANGUAGE_MAP = {
     zh: 'Chinese',
@@ -99,12 +158,336 @@
     ar: 'Arabic',
     hi: 'Hindi',
   };
+  const UI_STRINGS = {
+    en: {
+      newChat: 'New chat',
+      commandShortcuts: 'Quick commands',
+      emptyHint: 'Use @ to add tabs or files',
+      emptySubhint: 'Use / to run commands like Analyze, Summarize, and Explain',
+      editing: 'Editing',
+      editedOverwrite: 'Responses after edited messages will be overwritten',
+      cancelEdit: 'Cancel edit',
+      currentPage: 'Current page',
+      close: 'Close',
+      selectedText: 'Selected text',
+      inputPlaceholder: 'Ask about this page...',
+      inputMessage: 'Type a message',
+      attachments: 'Attachments',
+      addAttachments: 'Add attachments',
+      send: 'Send',
+      sendMessage: 'Send message',
+      stopOutput: 'Stop generating',
+      stopOutputMessage: 'Stop generating',
+      commandsSection: 'Commands',
+      tabsSection: 'Tabs',
+      filesSection: 'Files',
+      formatsSection: 'Formats',
+      showMoreTabs: 'Show more',
+      showMoreTabsSubtitle: 'Show {count} more tabs',
+      allOpenTabsTitle: 'All open tabs ({count})',
+      allOpenTabsSubtitle: 'Add all open tabs in this window',
+      domainTabsTitle: 'All open {host} tabs ({count})',
+      domainTabsSubtitle: 'Add all tabs from this domain',
+      chooseFileTitle: 'Choose a File...',
+      chooseFileSubtitle: 'Choose a file from your system',
+    },
+    'zh-CN': {
+      newChat: '新建对话',
+      commandShortcuts: '快捷命令',
+      emptyHint: '使用 @ 添加标签页或文件',
+      emptySubhint: '使用 / 运行 Analyze、Summarize、Explain 等命令',
+      editing: '正在编辑',
+      editedOverwrite: '编辑后的消息后续回复会被覆盖',
+      cancelEdit: '取消编辑',
+      currentPage: '当前页面',
+      close: '关闭',
+      selectedText: '已选文字',
+      inputPlaceholder: '向此页面提问...',
+      inputMessage: '输入消息',
+      attachments: '附件',
+      addAttachments: '添加附件',
+      send: '发送',
+      sendMessage: '发送消息',
+      stopOutput: '终止输出',
+      stopOutputMessage: '终止输出',
+      commandsSection: '命令',
+      tabsSection: '标签页',
+      filesSection: '文件',
+      formatsSection: '格式',
+      showMoreTabs: '显示更多',
+      showMoreTabsSubtitle: '再展开 {count} 个标签页',
+      allOpenTabsTitle: '全部打开的标签页 ({count})',
+      allOpenTabsSubtitle: '一次性加入当前窗口中的全部标签页',
+      domainTabsTitle: '全部打开的 {host} 标签页 ({count})',
+      domainTabsSubtitle: '加入该域名下的全部标签页',
+      chooseFileTitle: '选择文件...',
+      chooseFileSubtitle: '从系统选择文件',
+    },
+    'zh-TW': {
+      newChat: '新增對話',
+      commandShortcuts: '快捷指令',
+      emptyHint: '使用 @ 加入分頁或檔案',
+      emptySubhint: '使用 / 執行 Analyze、Summarize、Explain 等指令',
+      editing: '正在編輯',
+      editedOverwrite: '編輯後的訊息後續回覆將被覆寫',
+      cancelEdit: '取消編輯',
+      currentPage: '目前頁面',
+      close: '關閉',
+      selectedText: '已選文字',
+      inputPlaceholder: '針對此頁面提問...',
+      inputMessage: '輸入訊息',
+      attachments: '附件',
+      addAttachments: '加入附件',
+      send: '傳送',
+      sendMessage: '傳送訊息',
+      stopOutput: '停止輸出',
+      stopOutputMessage: '停止輸出',
+      commandsSection: '命令',
+      tabsSection: '分頁',
+      filesSection: '檔案',
+      formatsSection: '格式',
+      showMoreTabs: '顯示更多',
+      showMoreTabsSubtitle: '再展開 {count} 個分頁',
+      allOpenTabsTitle: '全部已開啟的分頁 ({count})',
+      allOpenTabsSubtitle: '一次加入目前視窗中的全部分頁',
+      domainTabsTitle: '全部已開啟的 {host} 分頁 ({count})',
+      domainTabsSubtitle: '加入這個網域下的全部分頁',
+      chooseFileTitle: '選擇檔案...',
+      chooseFileSubtitle: '從系統選擇檔案',
+    },
+    ja: {
+      newChat: '新しいチャット',
+      commandShortcuts: 'クイックコマンド',
+      emptyHint: 'タブやファイルを追加するには @ を使います',
+      emptySubhint: 'Analyze、Summarize、Explain などのコマンドには / を使います',
+      editing: '編集中',
+      editedOverwrite: '編集後のメッセージ以降の応答は上書きされます',
+      cancelEdit: '編集をキャンセル',
+      currentPage: '現在のページ',
+      close: '閉じる',
+      selectedText: '選択したテキスト',
+      inputPlaceholder: 'このページについて質問...',
+      inputMessage: 'メッセージを入力',
+      attachments: '添付',
+      addAttachments: '添付を追加',
+      send: '送信',
+      sendMessage: 'メッセージを送信',
+      stopOutput: '生成を停止',
+      stopOutputMessage: '生成を停止',
+      commandsSection: 'コマンド',
+      tabsSection: 'タブ',
+      filesSection: 'ファイル',
+      formatsSection: '形式',
+      showMoreTabs: 'さらに表示',
+      showMoreTabsSubtitle: 'さらに {count} 個のタブを表示',
+      allOpenTabsTitle: '開いているすべてのタブ ({count})',
+      allOpenTabsSubtitle: 'このウィンドウの全タブをまとめて追加',
+      domainTabsTitle: '{host} の開いているタブをすべて追加 ({count})',
+      domainTabsSubtitle: 'このドメインのタブをまとめて追加',
+      chooseFileTitle: 'ファイルを選択...',
+      chooseFileSubtitle: 'システムからファイルを選択',
+    },
+    ko: {
+      newChat: '새 채팅',
+      commandShortcuts: '빠른 명령',
+      emptyHint: '@로 탭이나 파일을 추가하세요',
+      emptySubhint: '/로 Analyze, Summarize, Explain 같은 명령을 실행하세요',
+      editing: '편집 중',
+      editedOverwrite: '편집한 메시지 이후의 응답은 덮어써집니다',
+      cancelEdit: '편집 취소',
+      currentPage: '현재 페이지',
+      close: '닫기',
+      selectedText: '선택한 텍스트',
+      inputPlaceholder: '이 페이지에 관해 질문하세요...',
+      inputMessage: '메시지 입력',
+      attachments: '첨부',
+      addAttachments: '첨부 추가',
+      send: '보내기',
+      sendMessage: '메시지 보내기',
+      stopOutput: '생성 중지',
+      stopOutputMessage: '생성 중지',
+      commandsSection: '명령',
+      tabsSection: '탭',
+      filesSection: '파일',
+      formatsSection: '형식',
+      showMoreTabs: '더 보기',
+      showMoreTabsSubtitle: '탭 {count}개 더 펼치기',
+      allOpenTabsTitle: '열린 모든 탭 ({count})',
+      allOpenTabsSubtitle: '이 창의 모든 탭을 한 번에 추가',
+      domainTabsTitle: '열린 {host} 탭 전체 ({count})',
+      domainTabsSubtitle: '이 도메인의 탭을 한 번에 추가',
+      chooseFileTitle: '파일 선택...',
+      chooseFileSubtitle: '시스템에서 파일 선택',
+    },
+    es: {
+      newChat: 'Nuevo chat',
+      commandShortcuts: 'Comandos rápidos',
+      emptyHint: 'Usa @ para añadir pestañas o archivos',
+      emptySubhint: 'Usa / para ejecutar comandos como Analyze, Summarize y Explain',
+      editing: 'Editando',
+      editedOverwrite: 'Las respuestas después del mensaje editado se sobrescribirán',
+      cancelEdit: 'Cancelar edición',
+      currentPage: 'Página actual',
+      close: 'Cerrar',
+      selectedText: 'Texto seleccionado',
+      inputPlaceholder: 'Pregunta sobre esta página...',
+      inputMessage: 'Escribe un mensaje',
+      attachments: 'Adjuntos',
+      addAttachments: 'Añadir adjuntos',
+      send: 'Enviar',
+      sendMessage: 'Enviar mensaje',
+      stopOutput: 'Detener generación',
+      stopOutputMessage: 'Detener generación',
+      commandsSection: 'Comandos',
+      tabsSection: 'Pestañas',
+      filesSection: 'Archivos',
+      formatsSection: 'Formatos',
+      showMoreTabs: 'Mostrar más',
+      showMoreTabsSubtitle: 'Mostrar {count} pestañas más',
+      allOpenTabsTitle: 'Todas las pestañas abiertas ({count})',
+      allOpenTabsSubtitle: 'Añadir todas las pestañas abiertas de esta ventana',
+      domainTabsTitle: 'Todas las pestañas abiertas de {host} ({count})',
+      domainTabsSubtitle: 'Añadir todas las pestañas de este dominio',
+      chooseFileTitle: 'Elegir archivo...',
+      chooseFileSubtitle: 'Elegir un archivo del sistema',
+    },
+    fr: {
+      newChat: 'Nouvelle discussion',
+      commandShortcuts: 'Commandes rapides',
+      emptyHint: 'Utilisez @ pour ajouter des onglets ou des fichiers',
+      emptySubhint: 'Utilisez / pour lancer des commandes comme Analyze, Summarize et Explain',
+      editing: 'Modification',
+      editedOverwrite: 'Les réponses après le message modifié seront écrasées',
+      cancelEdit: 'Annuler la modification',
+      currentPage: 'Page actuelle',
+      close: 'Fermer',
+      selectedText: 'Texte sélectionné',
+      inputPlaceholder: 'Poser une question sur cette page...',
+      inputMessage: 'Saisir un message',
+      attachments: 'Pièces jointes',
+      addAttachments: 'Ajouter des pièces jointes',
+      send: 'Envoyer',
+      sendMessage: 'Envoyer le message',
+      stopOutput: 'Arrêter la génération',
+      stopOutputMessage: 'Arrêter la génération',
+      commandsSection: 'Commandes',
+      tabsSection: 'Onglets',
+      filesSection: 'Fichiers',
+      formatsSection: 'Formats',
+      showMoreTabs: 'Afficher plus',
+      showMoreTabsSubtitle: 'Afficher {count} onglets de plus',
+      allOpenTabsTitle: 'Tous les onglets ouverts ({count})',
+      allOpenTabsSubtitle: 'Ajouter tous les onglets ouverts de cette fenêtre',
+      domainTabsTitle: 'Tous les onglets ouverts de {host} ({count})',
+      domainTabsSubtitle: 'Ajouter tous les onglets de ce domaine',
+      chooseFileTitle: 'Choisir un fichier...',
+      chooseFileSubtitle: 'Choisir un fichier depuis le système',
+    },
+    de: {
+      newChat: 'Neuer Chat',
+      commandShortcuts: 'Schnellbefehle',
+      emptyHint: 'Verwende @, um Tabs oder Dateien hinzuzufügen',
+      emptySubhint: 'Verwende / für Befehle wie Analyze, Summarize und Explain',
+      editing: 'Bearbeiten',
+      editedOverwrite: 'Antworten nach der bearbeiteten Nachricht werden überschrieben',
+      cancelEdit: 'Bearbeiten abbrechen',
+      currentPage: 'Aktuelle Seite',
+      close: 'Schließen',
+      selectedText: 'Ausgewählter Text',
+      inputPlaceholder: 'Frage zu dieser Seite...',
+      inputMessage: 'Nachricht eingeben',
+      attachments: 'Anhänge',
+      addAttachments: 'Anhänge hinzufügen',
+      send: 'Senden',
+      sendMessage: 'Nachricht senden',
+      stopOutput: 'Generierung stoppen',
+      stopOutputMessage: 'Generierung stoppen',
+      commandsSection: 'Befehle',
+      tabsSection: 'Tabs',
+      filesSection: 'Dateien',
+      formatsSection: 'Formate',
+      showMoreTabs: 'Mehr anzeigen',
+      showMoreTabsSubtitle: '{count} weitere Tabs anzeigen',
+      allOpenTabsTitle: 'Alle offenen Tabs ({count})',
+      allOpenTabsSubtitle: 'Alle offenen Tabs dieses Fensters hinzufügen',
+      domainTabsTitle: 'Alle offenen {host}-Tabs ({count})',
+      domainTabsSubtitle: 'Alle Tabs dieser Domain hinzufügen',
+      chooseFileTitle: 'Datei auswählen...',
+      chooseFileSubtitle: 'Eine Datei aus dem System auswählen',
+    },
+    pt: {
+      newChat: 'Novo chat',
+      commandShortcuts: 'Comandos rápidos',
+      emptyHint: 'Use @ para adicionar abas ou arquivos',
+      emptySubhint: 'Use / para executar comandos como Analyze, Summarize e Explain',
+      editing: 'Editando',
+      editedOverwrite: 'As respostas após a mensagem editada serão sobrescritas',
+      cancelEdit: 'Cancelar edição',
+      currentPage: 'Página atual',
+      close: 'Fechar',
+      selectedText: 'Texto selecionado',
+      inputPlaceholder: 'Pergunte sobre esta página...',
+      inputMessage: 'Digite uma mensagem',
+      attachments: 'Anexos',
+      addAttachments: 'Adicionar anexos',
+      send: 'Enviar',
+      sendMessage: 'Enviar mensagem',
+      stopOutput: 'Parar geração',
+      stopOutputMessage: 'Parar geração',
+      commandsSection: 'Comandos',
+      tabsSection: 'Abas',
+      filesSection: 'Arquivos',
+      formatsSection: 'Formatos',
+      showMoreTabs: 'Mostrar mais',
+      showMoreTabsSubtitle: 'Mostrar mais {count} abas',
+      allOpenTabsTitle: 'Todas as abas abertas ({count})',
+      allOpenTabsSubtitle: 'Adicionar todas as abas abertas desta janela',
+      domainTabsTitle: 'Todas as abas abertas de {host} ({count})',
+      domainTabsSubtitle: 'Adicionar todas as abas deste domínio',
+      chooseFileTitle: 'Escolher arquivo...',
+      chooseFileSubtitle: 'Escolher um arquivo do sistema',
+    },
+    ru: {
+      newChat: 'Новый чат',
+      commandShortcuts: 'Быстрые команды',
+      emptyHint: 'Используйте @, чтобы добавить вкладки или файлы',
+      emptySubhint: 'Используйте / для команд вроде Analyze, Summarize и Explain',
+      editing: 'Редактирование',
+      editedOverwrite: 'Ответы после измененного сообщения будут перезаписаны',
+      cancelEdit: 'Отменить редактирование',
+      currentPage: 'Текущая страница',
+      close: 'Закрыть',
+      selectedText: 'Выделенный текст',
+      inputPlaceholder: 'Спросите об этой странице...',
+      inputMessage: 'Введите сообщение',
+      attachments: 'Вложения',
+      addAttachments: 'Добавить вложения',
+      send: 'Отправить',
+      sendMessage: 'Отправить сообщение',
+      stopOutput: 'Остановить генерацию',
+      stopOutputMessage: 'Остановить генерацию',
+      commandsSection: 'Команды',
+      tabsSection: 'Вкладки',
+      filesSection: 'Файлы',
+      formatsSection: 'Форматы',
+      showMoreTabs: 'Показать еще',
+      showMoreTabsSubtitle: 'Показать еще {count} вкладок',
+      allOpenTabsTitle: 'Все открытые вкладки ({count})',
+      allOpenTabsSubtitle: 'Добавить все открытые вкладки этого окна',
+      domainTabsTitle: 'Все открытые вкладки {host} ({count})',
+      domainTabsSubtitle: 'Добавить все вкладки этого домена',
+      chooseFileTitle: 'Выбрать файл...',
+      chooseFileSubtitle: 'Выбрать файл из системы',
+    },
+  };
 
   let reactPropsKey = null;
   let panelRoot = null;
   let panelState = null;
   let panelResizeObserver = null;
   const tabSnapshotCache = new Map();
+  const pendingLightSnapshots = new Map();
+  const INTERNAL_CLIPBOARD_MIME = 'application/x-vivaldi-ask-in-page';
 
   function getReactProps(element) {
     if (typeof element === 'string') {
@@ -194,8 +577,80 @@
     return LANGUAGE_MAP[langCode] || LANGUAGE_MAP[String(langCode || '').split('-')[0]] || 'English';
   }
 
+  function getUiStrings() {
+    const language = getBrowserLanguage();
+    return UI_STRINGS[language] || UI_STRINGS[String(language || '').split('-')[0]] || UI_STRINGS.en;
+  }
+
+  function t(key) {
+    const localized = getUiStrings();
+    return localized[key] || UI_STRINGS.en[key] || key;
+  }
+
+  function tf(key, replacements) {
+    return Object.entries(replacements || {}).reduce((message, [token, value]) => {
+      return message.replace(new RegExp('\\{' + token + '\\}', 'g'), String(value));
+    }, t(key));
+  }
+
   function getCommandDefinition(name) {
     return commandDefinitions.find((item) => item.name === name) || null;
+  }
+
+  function getFormatCapabilityDefinition(id) {
+    return formatCapabilityDefinitions.find((item) => item.id === id) || null;
+  }
+
+  function escapeXmlText(text) {
+    return String(text || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  function escapeXmlAttribute(text) {
+    return escapeXmlText(text).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function buildTokenPayload(item) {
+    return {
+      key: item.key || '',
+      kind: item.kind || '',
+      title: item.title || '',
+      iconText: item.iconText || '',
+      refId: item.refId || '',
+      tokenRole: item.tokenRole || '',
+      capabilityId: item.capabilityId || '',
+      capabilityType: item.capabilityType || '',
+      capabilityCategory: item.capabilityCategory || '',
+      capabilityContent: item.capabilityContent || '',
+    };
+  }
+
+  function serializeTokenPayload(item) {
+    return encodeURIComponent(JSON.stringify(buildTokenPayload(item)));
+  }
+
+  function parseSerializedTokenPayload(value) {
+    try {
+      return JSON.parse(decodeURIComponent(value));
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function getTokenVisibleText(item) {
+    return String(item?.title || '');
+  }
+
+  function buildVisibleTextFromSequence(parts, activeCmd) {
+    const prefix = activeCmd ? ('/' + activeCmd + ' ') : '';
+    return prefix + parts.map((part) => {
+      if (part.type === 'text') {
+        return part.text || '';
+      }
+      return getTokenVisibleText(part);
+    }).join('');
   }
 
   function cleanModelText(text) {
@@ -309,6 +764,21 @@
 
   function logAiCompose(groupTitle, payload) {
     if (!ASK_IN_PAGE_DEBUG) {
+      return;
+    }
+    try {
+      console.groupCollapsed('[AskInPage] ' + groupTitle);
+      Object.entries(payload || {}).forEach(([key, value]) => {
+        console.log(key + ':', value);
+      });
+      console.groupEnd();
+    } catch (error) {
+      console.log('[AskInPage] ' + groupTitle, payload);
+    }
+  }
+
+  function logAiDebug(groupTitle, payload) {
+    if (!ASK_IN_PAGE_CONSOLE_DEBUG) {
       return;
     }
     try {
@@ -757,7 +1227,7 @@
         if (!a.active && b.active) return 1;
         return (b.lastAccessed || 0) - (a.lastAccessed || 0);
       })
-      .slice(0, 10);
+      .slice(0, TAB_SUGGESTION_LIMITS.expanded);
   }
 
   async function getCurrentTabSelection() {
@@ -774,6 +1244,7 @@
         tabId: tab.id,
         allFrames: true,
       },
+      injectImmediately: true,
       func: () => {
         try {
           const active = document.activeElement;
@@ -800,7 +1271,11 @@
       .sort((a, b) => b.length - a.length)[0] || '';
   }
 
-  async function getTabContentSnapshot(tabLike) {
+  async function getTabContentSnapshot(tabLike, options) {
+    const config = {
+      lightweight: Boolean(options?.lightweight),
+      allowCachedLightweight: Boolean(options?.allowCachedLightweight),
+    };
     const tabId = Number(tabLike?.id || tabLike?.raw?.id);
     const url = String(tabLike?.url || tabLike?.raw?.url || tabLike?.raw?.pendingUrl || '');
     const title = String(tabLike?.title || tabLike?.raw?.title || '');
@@ -820,7 +1295,11 @@
     }
     const cached = tabSnapshotCache.get(cacheKey);
     if (cached && (Date.now() - cached.timestamp) < PERFORMANCE_CONFIG.tabSnapshotCacheTtlMs) {
-      return cached.value;
+      if (!config.lightweight && cached.mode === 'lightweight' && !config.allowCachedLightweight) {
+        // fall through and upgrade to a fuller snapshot
+      } else {
+        return cached.value;
+      }
     }
     try {
       const results = await promisifyChrome(chrome.scripting, 'executeScript', [{
@@ -828,7 +1307,9 @@
           tabId,
           allFrames: true,
         },
-        func: () => {
+        injectImmediately: true,
+        args: [config.lightweight ? LIGHTWEIGHT_SNAPSHOT_CONFIG : null],
+        func: (lightweightConfig) => {
           try {
             const normalizeText = (value) => String(value || '').replace(/\s+/g, ' ').trim();
             const truncate = (value, maxLength) => {
@@ -938,7 +1419,7 @@
             });
 
             Array.from(document.querySelectorAll('article, main, section, div'))
-              .slice(0, 160)
+              .slice(0, lightweightConfig?.candidateNodeLimit || 160)
               .forEach((el) => {
                 const rect = typeof el.getBoundingClientRect === 'function' ? el.getBoundingClientRect() : null;
                 if (rect && rect.width < 280) {
@@ -955,12 +1436,12 @@
               .map((node) => normalizeText(node.innerText || node.textContent || ''))
               .filter(Boolean)
               .filter((value, index, arr) => arr.indexOf(value) === index)
-              .slice(0, 12);
+              .slice(0, lightweightConfig?.maxHeadingCount || 12);
             const imageAlts = Array.from(document.querySelectorAll('img[alt]'))
               .map((node) => normalizeText(node.getAttribute('alt')))
               .filter((value) => value && value.length >= 4)
               .filter((value, index, arr) => arr.indexOf(value) === index)
-              .slice(0, 12);
+              .slice(0, lightweightConfig?.maxImageAltCount || 12);
             const importantLinks = Array.from((bestCandidate?.el || document.body).querySelectorAll?.('a[href]') || [])
               .map((node) => {
                 const text = normalizeText(node.innerText || node.textContent || '');
@@ -969,7 +1450,7 @@
               })
               .filter(Boolean)
               .filter((value, index, arr) => arr.indexOf(value) === index)
-              .slice(0, 12);
+              .slice(0, lightweightConfig?.maxImportantLinkCount || 12);
             const jsonLd = Array.from(document.querySelectorAll('script[type="application/ld+json"]'))
               .map((node) => {
                 try {
@@ -996,7 +1477,7 @@
               })
               .flat()
               .filter((value, index, arr) => arr.indexOf(value) === index)
-              .slice(0, 8);
+              .slice(0, lightweightConfig?.maxJsonLdCount || 8);
 
             return {
               title: document.title || '',
@@ -1004,8 +1485,8 @@
               frameType: window.top === window ? 'top' : 'subframe',
               metaDescription: getMeta('meta[name="description"]') || getMeta('meta[property="og:description"]') || getMeta('meta[name="twitter:description"]'),
               metaTitle: getMeta('meta[property="og:title"]') || getMeta('meta[name="twitter:title"]'),
-              content: mainText,
-              fullText: bodyText,
+              content: lightweightConfig?.maxContentChars ? truncate(mainText, lightweightConfig.maxContentChars) : mainText,
+              fullText: lightweightConfig?.maxContentChars ? truncate(bodyText, lightweightConfig.maxContentChars) : bodyText,
               headings,
               imageAlts,
               importantLinks,
@@ -1101,9 +1582,20 @@
         extractionSource: String(topFrame.extractionSource || ''),
         content: combinedContent,
       };
+      if (!snapshot.content) {
+        snapshot.content = [
+          'Tab metadata only.',
+          snapshot.title ? ('Title: ' + snapshot.title) : '',
+          snapshot.url ? ('URL: ' + snapshot.url) : '',
+          snapshot.metaDescription ? ('Meta Description: ' + snapshot.metaDescription) : '',
+          'The page DOM is not readable yet. This often happens when the tab is still loading, discarded, or has not been opened in a live renderer.',
+        ].filter(Boolean).join('\n');
+        snapshot.extractionSource = snapshot.extractionSource || 'tab-metadata-fallback';
+      }
       tabSnapshotCache.set(cacheKey, {
         timestamp: Date.now(),
         value: snapshot,
+        mode: config.lightweight ? 'lightweight' : 'full',
       });
       return snapshot;
     } catch (error) {
@@ -1122,10 +1614,38 @@
         imageAlts: [],
         importantLinks: [],
         jsonLd: [],
-        extractionSource: '',
-        content: '',
+        extractionSource: 'tab-metadata-fallback',
+        content: [
+          'Tab metadata only.',
+          title ? ('Title: ' + title) : '',
+          url ? ('URL: ' + url) : '',
+          'The page DOM could not be read. This often happens when the tab is still loading, discarded, or has not been opened in a live renderer.',
+        ].filter(Boolean).join('\n'),
       };
     }
+  }
+
+  async function prefetchLightTabSnapshot(tabLike) {
+    const tabId = Number(tabLike?.id || tabLike?.raw?.id);
+    const url = String(tabLike?.url || tabLike?.raw?.url || tabLike?.raw?.pendingUrl || '');
+    if (!tabId || !url || /^chrome:\/\//.test(url) || /^vivaldi:\/\//.test(url) || url === code) {
+      return null;
+    }
+    const cacheKey = tabId + '::' + url;
+    const cached = tabSnapshotCache.get(cacheKey);
+    if (cached && (Date.now() - cached.timestamp) < PERFORMANCE_CONFIG.tabSnapshotCacheTtlMs) {
+      return cached.value;
+    }
+    if (pendingLightSnapshots.has(cacheKey)) {
+      return pendingLightSnapshots.get(cacheKey);
+    }
+    const task = getTabContentSnapshot(tabLike, { lightweight: true, allowCachedLightweight: true })
+      .catch(() => null)
+      .finally(() => {
+        pendingLightSnapshots.delete(cacheKey);
+      });
+    pendingLightSnapshots.set(cacheKey, task);
+    return task;
   }
 
   async function readBlobPreview(blobLike, mimeHint) {
@@ -1260,7 +1780,7 @@
     return `
       <div class="ask-in-page-shell" role="main">
         <header class="ask-top-bar">
-          <button class="ask-btn-new" type="button" title="新建对话" aria-label="新建对话">
+          <button class="ask-btn-new" type="button" title="${t('newChat')}" aria-label="${t('newChat')}">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
             </svg>
@@ -1269,13 +1789,11 @@
         </header>
         <div class="ask-messages" id="askMessages">
           <div class="ask-empty" id="askEmpty">
-            <svg class="ask-empty-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-            </svg>
-            <span class="ask-empty-text">向当前页面提问</span>
+            <span class="ask-empty-text">${t('emptyHint')}</span>
+            <span class="ask-empty-subtext">${t('emptySubhint')}</span>
           </div>
         </div>
-        <nav class="ask-commands-row" id="askCommandsRow" aria-label="快捷命令">
+        <nav class="ask-commands-row" id="askCommandsRow" aria-label="${t('commandShortcuts')}">
           <button class="ask-btn-cmd" type="button" data-cmd="Analyze">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -1308,43 +1826,43 @@
           <div class="ask-input-box" id="askInputBox">
             <div class="ask-edit-banner hidden" id="askEditBanner">
               <div class="ask-edit-copy">
-                <div class="ask-edit-title">Editing</div>
-                <div class="ask-edit-subtitle">Responses after edited messages will be overwritten</div>
+                <div class="ask-edit-title">${t('editing')}</div>
+                <div class="ask-edit-subtitle">${t('editedOverwrite')}</div>
               </div>
-              <button class="ask-edit-close" id="askEditClose" type="button" title="取消编辑">×</button>
+              <button class="ask-edit-close" id="askEditClose" type="button" title="${t('cancelEdit')}">×</button>
             </div>
             <div class="ask-input-context" id="askInputContext">
               <div class="ask-context-track">
               <div class="ask-context-card ask-ref-chip" id="askContextCard">
                 <div class="ask-ref-chip-icon" id="askContextFavicon">A</div>
                 <div class="ask-ref-chip-info">
-                  <div class="ask-ref-chip-title" id="askContextTitle">当前页面</div>
+                  <div class="ask-ref-chip-title" id="askContextTitle">${t('currentPage')}</div>
                   <div class="ask-ref-chip-subtitle" id="askContextUrl"></div>
                 </div>
-                <button class="ask-context-close ask-chip-close" id="askContextClose" type="button" title="关闭">×</button>
+                <button class="ask-context-close ask-chip-close" id="askContextClose" type="button" title="${t('close')}">×</button>
               </div>
               <div class="ask-context-card ask-context-card-selection ask-ref-chip hidden" id="askSelectionCard">
                 <div class="ask-ref-chip-icon ask-context-favicon-selection" id="askSelectionFavicon">AI</div>
                 <div class="ask-ref-chip-info">
                   <div class="ask-ref-chip-title" id="askSelectionTitle"></div>
-                  <div class="ask-ref-chip-subtitle">Selected Text</div>
+                  <div class="ask-ref-chip-subtitle">${t('selectedText')}</div>
                 </div>
-                <button class="ask-context-close ask-chip-close" id="askSelectionClose" type="button" title="关闭">×</button>
+                <button class="ask-context-close ask-chip-close" id="askSelectionClose" type="button" title="${t('close')}">×</button>
               </div>
               <div class="ask-ref-row-inline" id="askRefRowInline"></div>
               </div>
             </div>
             <div class="ask-input-main" id="askInputMain">
               <div class="ask-inline-ref-row" id="askInlineRefRow"></div>
-              <div class="ask-input-field" contenteditable="true" id="askInputField" data-placeholder="向此页面提问..." spellcheck="false" role="textbox" aria-label="输入消息"></div>
+              <div class="ask-input-field" contenteditable="true" id="askInputField" data-placeholder="${t('inputPlaceholder')}" spellcheck="false" role="textbox" aria-label="${t('inputMessage')}"></div>
             </div>
             <div class="ask-input-toolbar">
-              <button class="ask-btn-tool" type="button" title="附件" aria-label="添加附件">
+              <button class="ask-btn-tool" type="button" title="${t('attachments')}" aria-label="${t('addAttachments')}">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
                   <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                 </svg>
               </button>
-              <button class="ask-btn-send" id="askBtnSend" type="button" title="发送" aria-label="发送消息">
+              <button class="ask-btn-send" id="askBtnSend" type="button" title="${t('send')}" aria-label="${t('sendMessage')}">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>
                 </svg>
@@ -1366,29 +1884,31 @@
       'button[data-name="' + webPanelId + '"] { position:relative; display:flex; align-items:center; justify-content:center; padding:0 !important; }',
       'button[data-name="' + webPanelId + '"] > img, button[data-name="' + webPanelId + '"] .button-badge, button[data-name="' + webPanelId + '"] .ToolbarButton-Button-SVG { opacity:0 !important; }',
       'button[data-name="' + webPanelId + '"]:before { position:absolute; left:50%; top:50%; width:18px; height:18px; margin:0; content:""; background-color:var(--colorFg); transform:translate(-50%,-50%); -webkit-mask-image:url(' + JSON.stringify(panelIconMask) + '); -webkit-mask-repeat:no-repeat; -webkit-mask-position:center; -webkit-mask-size:contain; mask-image:url(' + JSON.stringify(panelIconMask) + '); mask-repeat:no-repeat; mask-position:center; mask-size:contain; }',
-      '.ask-in-page-content { --aip-bg:#0A0B0D; --aip-surface:#1C1F23; --aip-elevated:#2D3139; --aip-border:rgba(255,255,255,0.08); --aip-border-hover:rgba(255,255,255,0.14); --aip-accent:#33B1FF; --aip-accent-dim:rgba(51,177,255,0.12); --aip-text-primary:#FFFFFF; --aip-text-secondary:#8B949E; --aip-text-muted:#484F58; --aip-chip-bg:#3A3F47; --aip-r-xs:6px; --aip-r-sm:8px; --aip-r-md:12px; --aip-r-lg:20px; --aip-r-pill:100px; --aip-r-full:50%; --radius:var(--aip-r-sm); width:100%; height:100%; min-height:0; background:var(--aip-bg); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; -webkit-font-smoothing:antialiased; }',
+      '.ask-in-page-content { --aip-bg:var(--colorBg); --aip-surface:color-mix(in srgb, var(--colorBgLight) 82%, transparent); --aip-surface-strong:color-mix(in srgb, var(--colorBgLighter) 88%, transparent); --aip-elevated:color-mix(in srgb, var(--colorBgLightIntense) 92%, var(--colorAccentBgAlpha)); --aip-border:var(--colorBorderSubtle); --aip-border-hover:var(--colorBorderIntense); --aip-accent:var(--colorHighlightBg); --aip-accent-dim:var(--colorHighlightBgAlpha); --aip-text-primary:var(--colorFg); --aip-text-secondary:var(--colorFgFaded); --aip-text-muted:var(--colorFgFadedMost); --aip-chip-bg:color-mix(in srgb, var(--colorAccentBgAlphaHeavy) 68%, var(--colorBgLight)); --aip-r-xs:var(--radiusRounded); --aip-r-sm:var(--radiusHalf); --aip-r-md:var(--radiusCap); --aip-r-lg:var(--radius); --aip-r-pill:var(--radiusRound); --aip-r-full:50%; --radius:var(--aip-r-sm); width:100%; height:100%; min-height:0; background:linear-gradient(180deg, color-mix(in srgb, var(--colorBgLight) 90%, transparent) 0%, var(--aip-bg) 18%, var(--colorBgDark) 100%); color:var(--aip-text-primary); font-family:var(--sansSerifFont), sans-serif; -webkit-font-smoothing:antialiased; }',
       '.ask-in-page-content *, .ask-in-page-content *::before, .ask-in-page-content *::after { box-sizing:border-box; }',
-      '.ask-in-page-shell { width:100%; height:100%; display:flex; flex:1; flex-direction:column; min-height:0; background:var(--aip-bg); }',
-      '.ask-top-bar { display:flex; align-items:center; padding:12px 14px 6px; flex-shrink:0; }',
-      '.ask-version-badge { margin-left:auto; padding:3px 8px; border:1px solid var(--aip-border); border-radius:999px; color:var(--aip-text-secondary); background:rgba(255,255,255,0.03); font-size:11px; line-height:1; letter-spacing:.04em; }',
-      '.ask-btn-new, .ask-btn-tool { width:32px; height:32px; border:none; background:transparent; color:var(--aip-text-secondary); cursor:pointer; border-radius:var(--aip-r-sm); display:flex; align-items:center; justify-content:center; transition:color .15s, background .15s; }',
-      '.ask-btn-new:hover, .ask-btn-tool:hover { color:var(--aip-text-primary); background:rgba(255,255,255,0.06); }',
+      '.ask-in-page-shell { width:100%; height:100%; display:flex; flex:1; flex-direction:column; min-height:0; background:transparent; position:relative; }',
+      '.ask-in-page-shell::before { content:""; position:absolute; inset:0 0 auto; height:92px; background:linear-gradient(180deg, color-mix(in srgb, var(--colorAccentBgAlpha) 42%, transparent) 0%, transparent 100%); opacity:.75; pointer-events:none; }',
+      '.ask-top-bar { display:flex; align-items:center; padding:10px 12px 6px; flex-shrink:0; position:relative; z-index:1; }',
+      '.ask-version-badge { margin-left:auto; padding:2px 8px; border:1px solid var(--aip-border); border-radius:999px; color:var(--aip-text-muted); background:color-mix(in srgb, var(--colorBgAlphaHeavy) 86%, transparent); font-size:10px; line-height:1; letter-spacing:.08em; text-transform:uppercase; }',
+      '.ask-btn-new, .ask-btn-tool { width:30px; height:30px; border:1px solid transparent; background:transparent; color:var(--aip-text-secondary); cursor:pointer; border-radius:var(--aip-r-md); display:flex; align-items:center; justify-content:center; transition:color .15s, background .15s, border-color .15s, transform .12s; }',
+      '.ask-btn-new:hover, .ask-btn-tool:hover { color:var(--aip-text-primary); background:color-mix(in srgb, var(--colorBgLight) 80%, transparent); border-color:var(--aip-border); }',
+      '.ask-btn-new:active, .ask-btn-tool:active { transform:scale(.96); }',
       '.ask-btn-new svg, .ask-btn-tool svg { width:18px; height:18px; }',
-      '.ask-messages { display:flex !important; flex-direction:column !important; flex:1 1 auto !important; min-height:0 !important; overflow-y:auto !important; overflow-x:hidden !important; padding:12px 14px 0; }',
-      '.ask-messages::-webkit-scrollbar, .ask-suggestion-body::-webkit-scrollbar { width:4px; }',
-      '.ask-messages::-webkit-scrollbar-thumb, .ask-suggestion-body::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.08); border-radius:999px; }',
-      '.ask-empty { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:24px 0; }',
-      '.ask-empty-icon { width:40px; height:40px; color:var(--aip-text-muted); opacity:.4; }',
-      '.ask-empty-text { color:var(--aip-text-muted); font-size:13px; }',
-      '.ask-commands-row { display:flex; gap:6px; padding:2px 14px 10px; flex-shrink:0; overflow:hidden; max-height:40px; opacity:1; transition:max-height .24s, opacity .18s, padding-bottom .24s; }',
+      '.ask-messages { display:flex !important; flex-direction:column !important; flex:1 1 auto !important; min-height:0 !important; overflow-y:auto !important; overflow-x:hidden !important; padding:10px 12px 0; position:relative; z-index:1; }',
+      '.ask-messages::-webkit-scrollbar, .ask-suggestion-body::-webkit-scrollbar { width:var(--scrollbarWidth); }',
+      '.ask-messages::-webkit-scrollbar-thumb, .ask-suggestion-body::-webkit-scrollbar-thumb { background:color-mix(in srgb, var(--colorFgAlpha) 70%, transparent); border:4px solid transparent; border-radius:999px; background-clip:padding-box; }',
+      '.ask-empty { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:24px 0; text-align:center; }',
+      '.ask-empty-text { max-width:220px; color:var(--aip-text-secondary); font-size:13px; font-weight:600; line-height:1.45; }',
+      '.ask-empty-subtext { max-width:240px; color:var(--aip-text-muted); font-size:12px; line-height:1.45; }',
+      '.ask-commands-row { display:flex; gap:6px; padding:2px 12px 10px; flex-shrink:0; overflow:hidden; max-height:40px; opacity:1; transition:max-height .24s, opacity .18s, padding-bottom .24s; position:relative; z-index:1; }',
       '.ask-commands-row.hidden { max-height:0; opacity:0; padding-bottom:0; pointer-events:none; }',
-      '.ask-btn-cmd { display:inline-flex; align-items:center; gap:5px; padding:6px 12px; background:var(--aip-chip-bg); color:var(--aip-text-secondary); border:1px solid var(--aip-border); border-radius:var(--aip-r-pill) !important; font-size:12px; font-weight:500; cursor:pointer; white-space:nowrap; transition:color .15s, background .15s, border-color .15s, transform .1s; }',
-      '.ask-btn-cmd:hover { color:var(--aip-text-primary); background:rgba(255,255,255,0.08); border-color:var(--aip-border-hover); }',
+      '.ask-btn-cmd { display:inline-flex; align-items:center; gap:5px; padding:6px 12px; background:var(--aip-chip-bg); color:var(--aip-text-secondary); border:1px solid var(--aip-border); border-radius:var(--aip-r-pill) !important; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap; transition:color .15s, background .15s, border-color .15s, transform .1s, box-shadow .15s; }',
+      '.ask-btn-cmd:hover { color:var(--aip-text-primary); background:color-mix(in srgb, var(--colorBgLighter) 82%, var(--colorAccentBgAlphaHeavy)); border-color:var(--aip-border-hover); box-shadow:inset 0 1px 0 rgba(255,255,255,0.03); }',
       '.ask-btn-cmd:active { transform:scale(.96); }',
       '.ask-btn-cmd svg { width:13px; height:13px; flex-shrink:0; }',
-      '.ask-input-area { display:block !important; flex:0 0 auto !important; flex-shrink:0 !important; margin-top:auto; padding:0 14px 16px; position:relative; z-index:20; overflow:visible !important; }',
-      '.ask-input-box { background:var(--aip-surface); border:1px solid var(--aip-border); border-radius:var(--aip-r-lg); display:flex; flex-direction:column; overflow:hidden; transition:border-color .2s, box-shadow .2s; }',
-      '.ask-input-box.focused { border-color:var(--aip-border-hover); box-shadow:0 0 0 3px rgba(51,177,255,0.04); }',
+      '.ask-input-area { display:block !important; flex:0 0 auto !important; flex-shrink:0 !important; margin-top:auto; padding:0 12px 14px; position:relative; z-index:20; overflow:visible !important; }',
+      '.ask-input-box { background:linear-gradient(180deg, color-mix(in srgb, var(--colorBgLight) 94%, transparent) 0%, color-mix(in srgb, var(--colorBgLightIntense) 96%, transparent) 100%); border:1px solid var(--aip-border); border-radius:calc(var(--aip-r-lg) + 2px); display:flex; flex-direction:column; overflow:hidden; box-shadow:0 14px 32px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.02); backdrop-filter:var(--backgroundBlur); transition:border-color .2s, box-shadow .2s, background .2s; }',
+      '.ask-input-box.focused { border-color:var(--colorHighlightBg); box-shadow:0 0 0 1px var(--colorHighlightBgAlpha), 0 18px 34px rgba(0,0,0,0.22); }',
       '.ask-edit-banner { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:12px 14px 10px; background:rgba(255,255,255,0.06); border-bottom:1px solid rgba(255,255,255,0.06); }',
       '.ask-edit-banner.hidden { display:none; }',
       '.ask-edit-copy { min-width:0; }',
@@ -1399,25 +1919,25 @@
       '.ask-input-context { padding:8px 8px 0 12px; overflow:hidden; }',
       '.ask-input-context.hidden { display:none; }',
       '.ask-context-track { display:flex; align-items:center; gap:8px; width:100%; padding:4px 4px 0 0; overflow:hidden; white-space:nowrap; }',
-      '.ask-context-card, .ask-ref-chip { position:relative; display:flex; align-items:center; gap:10px; min-width:180px; width:180px; max-width:180px; height:52px; padding:0 18px 0 12px; border-radius:14px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.06); box-shadow:inset 0 1px 0 rgba(255,255,255,0.03); overflow:visible; flex:0 0 180px; }',
+      '.ask-context-card, .ask-ref-chip { position:relative; display:flex; align-items:center; gap:10px; min-width:180px; width:180px; max-width:180px; height:52px; padding:0 18px 0 12px; border-radius:calc(var(--aip-r-md) + 2px); background:color-mix(in srgb, var(--colorBgLighter) 84%, transparent); border:1px solid var(--aip-border); box-shadow:inset 0 1px 0 rgba(255,255,255,0.03); overflow:visible; flex:0 0 180px; }',
       '.ask-context-card.hidden { display:none; }',
-      '.ask-context-card-selection { background:rgba(255,255,255,0.1); }',
-      '.ask-ref-chip-icon { width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:14px; font-weight:700; color:#fff; background:#1A1B1E; }',
-      '.ask-context-favicon-selection { background:#1B1C20; color:#9AA4AF; font-size:13px; letter-spacing:.02em; }',
+      '.ask-context-card-selection { background:color-mix(in srgb, var(--colorAccentBgAlpha) 55%, var(--colorBgLight)); }',
+      '.ask-ref-chip-icon { width:32px; height:32px; border-radius:var(--aip-r-md); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:14px; font-weight:700; color:var(--colorAccentFg); background:linear-gradient(180deg, var(--colorAccentBgFadedMore) 0%, var(--colorAccentBg) 100%); }',
+      '.ask-context-favicon-selection { background:color-mix(in srgb, var(--colorBgLighter) 88%, transparent); color:var(--aip-text-secondary); font-size:13px; letter-spacing:.02em; }',
       '.ask-ref-chip-info { flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:2px; }',
       '.ask-ref-chip-title { color:var(--aip-text-primary); font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.25; }',
       '.ask-ref-chip-subtitle { color:var(--aip-text-secondary); font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.2; }',
       '.ask-context-close, .ask-ref-chip .ask-chip-close { position:absolute; top:0; right:0; z-index:3; width:16px; height:16px; margin-top:0; border:none; background:rgba(91,97,106,0.95); color:#E2E6EA; cursor:pointer; border-radius:999px; display:flex; align-items:center; justify-content:center; font-size:12px; line-height:1; flex-shrink:0; opacity:0; pointer-events:none; box-shadow:0 2px 8px rgba(0,0,0,0.28); transform:translate(35%,-35%); transition:opacity .15s, color .15s, background .15s, transform .12s; }',
       '.ask-context-card:hover .ask-context-close, .ask-ref-chip:hover .ask-chip-close { opacity:1; pointer-events:auto; }',
-      '.ask-context-close:hover, .ask-ref-chip .ask-chip-close:hover { color:var(--aip-text-primary); background:rgba(121,128,138,0.98); transform:translate(35%,-35%) scale(1.04); }',
+      '.ask-context-close:hover, .ask-ref-chip .ask-chip-close:hover { color:var(--aip-text-primary); background:color-mix(in srgb, var(--colorBgLighter) 78%, transparent); transform:translate(35%,-35%) scale(1.04); }',
       '.ask-input-main { display:flex; align-items:flex-start; gap:8px; padding:12px 14px 0; min-height:24px; flex-wrap:wrap; }',
       '.ask-inline-ref-row { display:none; }',
       '.ask-composer-token { display:inline-flex; align-items:center; gap:6px; min-width:0; max-width:180px; margin:0 2px; vertical-align:baseline; color:var(--aip-text-secondary); font-size:13px; line-height:1.35; border-radius:8px; user-select:none; }',
-      '.ask-composer-token.focused { background:rgba(255,255,255,0.08); box-shadow:0 0 0 1.5px rgba(255,255,255,0.12); padding:2px 6px; }',
+      '.ask-composer-token.focused { background:color-mix(in srgb, var(--colorBgLighter) 84%, transparent); box-shadow:0 0 0 1px var(--colorHighlightBgAlpha); padding:2px 6px; }',
       '.ask-composer-token-icon { width:14px; height:14px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--aip-accent); font-size:12px; line-height:1; }',
       '.ask-composer-token-label { min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }',
       '.ask-inline-ref-token { display:inline-flex; align-items:center; gap:6px; min-width:0; max-width:180px; color:var(--aip-text-secondary); font-size:13px; line-height:1.35; padding:2px 0; border-radius:8px; }',
-      '.ask-inline-ref-token.focused { background:rgba(255,255,255,0.08); box-shadow:0 0 0 1.5px rgba(255,255,255,0.12); padding:2px 6px; }',
+      '.ask-inline-ref-token.focused { background:color-mix(in srgb, var(--colorBgLighter) 84%, transparent); box-shadow:0 0 0 1px var(--colorHighlightBgAlpha); padding:2px 6px; }',
       '.ask-inline-ref-token-icon { width:14px; height:14px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--aip-accent); font-size:12px; line-height:1; }',
       '.ask-inline-ref-token-label { min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }',
       '.ask-input-field { flex:1; min-width:0; background:transparent; border:none; outline:none; color:var(--aip-text-primary); font-size:14px; line-height:1.5; caret-color:var(--aip-accent); word-break:break-word; max-height:100px; overflow-y:auto; position:relative; }',
@@ -1425,8 +1945,8 @@
       '.ask-input-field:empty::before { content:attr(data-placeholder); color:var(--aip-text-muted); pointer-events:none; }',
       '.ask-cmd-chip { position:relative; display:inline-flex; align-items:center; font-size:12px; font-weight:500; user-select:none; animation:askChipPop .22s cubic-bezier(.22,1,.36,1); overflow:hidden; }',
       '.ask-ref-chip { position:relative; display:flex; align-items:center; font-size:13px; font-weight:500; user-select:none; animation:askChipPop .22s cubic-bezier(.22,1,.36,1); overflow:visible; }',
-      'span.ask-cmd-chip { padding:4px 10px; background:var(--aip-chip-bg); color:var(--aip-text-secondary); border-radius:var(--radius); }',
-      '.ask-cmd-chip.focused { background:var(--aip-accent-dim); box-shadow:0 0 0 1.5px var(--aip-accent); color:var(--aip-accent); }',
+      'span.ask-cmd-chip { padding:4px 10px; background:var(--aip-chip-bg); color:var(--aip-text-secondary); border-radius:var(--radius); border:1px solid var(--aip-border); }',
+      '.ask-cmd-chip.focused { background:var(--aip-accent-dim); box-shadow:0 0 0 1px var(--aip-accent); color:var(--aip-accent); }',
       '.ask-ref-row-inline { display:flex; align-items:center; gap:8px; min-width:0; padding:4px 4px 0 0; overflow:hidden; flex:0 1 auto; }',
       '.ask-cmd-chip::after, .ask-ref-chip::after { content:""; position:absolute; top:0; right:0; width:28px; height:100%; opacity:0; transition:opacity .15s; pointer-events:none; }',
       '.ask-cmd-chip::after { background:linear-gradient(to right, rgba(58,63,71,0), rgba(58,63,71,0.82) 42%, rgba(58,63,71,1) 100%); }',
@@ -1434,30 +1954,32 @@
       '.ask-chip-close { position:absolute; top:50%; right:4px; z-index:2; width:18px; height:18px; margin-top:-9px; border-radius:var(--aip-r-xs); display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--aip-text-muted); font-size:15px; line-height:1; opacity:0; pointer-events:auto; transition:opacity .15s, color .12s, background .12s; }',
       '.ask-cmd-chip:hover::after, .ask-ref-chip:hover::after { opacity:1; }',
       '.ask-cmd-chip:hover .ask-chip-close { opacity:1; }',
-      '.ask-chip-close:hover { color:var(--aip-text-primary); background:rgba(255,255,255,0.14); }',
+      '.ask-chip-close:hover { color:var(--aip-text-primary); background:color-mix(in srgb, var(--colorBgLighter) 78%, transparent); }',
       '.ask-input-toolbar { display:flex; align-items:center; justify-content:space-between; padding:8px 10px 10px; }',
-      '.ask-btn-send { width:32px; height:32px; border-radius:50%; border:none; background:var(--aip-accent); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:filter .15s, transform .1s; }',
-      '.ask-btn-send:hover { filter:brightness(1.12); }',
+      '.ask-btn-send { width:32px; height:32px; border-radius:var(--aip-r-pill); border:1px solid color-mix(in srgb, var(--colorHighlightBgDark) 70%, transparent); background:linear-gradient(180deg, var(--colorHighlightBg) 0%, var(--colorHighlightBgDark) 100%); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:filter .15s, transform .1s, box-shadow .15s; box-shadow:inset 0 1px 0 rgba(255,255,255,0.18); }',
+      '.ask-btn-send:hover { filter:brightness(1.06); box-shadow:inset 0 1px 0 rgba(255,255,255,0.22), 0 6px 16px color-mix(in srgb, var(--colorHighlightBgAlpha) 70%, transparent); }',
       '.ask-btn-send:active { transform:scale(.9); }',
       '.ask-btn-send svg { width:14px; height:14px; }',
       '.ask-hidden-file-input { position:fixed; left:-9999px; top:-9999px; width:1px; height:1px; opacity:0; pointer-events:none; }',
-      '.ask-suggestion-dropdown { position:absolute; left:14px; right:14px; bottom:calc(100% + 8px); display:none; flex-direction:column; background:rgba(21,24,29,.98); color:var(--aip-text-primary); border:1px solid var(--aip-border-hover); border-radius:16px; box-shadow:0 20px 48px rgba(0,0,0,.4); overflow:hidden; z-index:9999; opacity:0; transform:translateY(8px); pointer-events:none; transition:opacity .18s, transform .18s; }',
+      '.ask-suggestion-dropdown { position:absolute; left:12px; right:12px; bottom:calc(100% + 8px); display:none; flex-direction:column; background:color-mix(in srgb, var(--colorBgAlphaBlur) 90%, transparent); color:var(--aip-text-primary); border:1px solid var(--aip-border-hover); border-radius:calc(var(--aip-r-lg) + 2px); box-shadow:0 16px 36px rgba(0,0,0,.28); backdrop-filter:var(--backgroundBlur); overflow:hidden; z-index:9999; opacity:0; transform:translateY(8px); pointer-events:none; transition:opacity .18s, transform .18s; }',
       '.ask-suggestion-dropdown.visible { opacity:1; transform:translateY(0); pointer-events:auto; }',
       '.ask-suggestion-search { display:flex; align-items:center; gap:8px; padding:12px 14px; border-bottom:1px solid var(--aip-border); color:var(--aip-text-secondary); font-size:13px; }',
       '.ask-suggestion-search svg { width:14px; height:14px; flex-shrink:0; }',
       '.ask-suggestion-search-text { color:var(--aip-text-primary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }',
       '.ask-suggestion-body { max-height:320px; min-height:48px; overflow-y:auto; padding:8px 0; }',
       '.ask-suggestion-section { display:block !important; flex:none !important; position:static !important; overflow:visible !important; }',
-      '.ask-suggestion-section + .ask-suggestion-section { margin-top:4px; border-top:1px solid rgba(255,255,255,0.05); padding-top:4px; }',
+      '.ask-suggestion-section + .ask-suggestion-section { margin-top:4px; border-top:1px solid color-mix(in srgb, var(--colorFgAlpha) 22%, transparent); padding-top:4px; }',
       '.ask-suggestion-section-title { padding:6px 14px; color:var(--aip-text-secondary); font-size:11px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; }',
       '.ask-suggestion-item { width:100%; border:none; background:transparent; color:inherit; display:flex; align-items:center; gap:10px; padding:10px 14px; cursor:pointer; text-align:left; transition:background .12s; }',
-      '.ask-suggestion-item:hover, .ask-suggestion-item.active { background:rgba(255,255,255,0.06); }',
-      '.ask-suggestion-icon { width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; overflow:hidden; background:rgba(255,255,255,0.08); color:var(--aip-text-primary); font-size:12px; font-weight:700; }',
+      '.ask-suggestion-item:hover, .ask-suggestion-item.active { background:color-mix(in srgb, var(--colorBgLighter) 82%, var(--colorAccentBgAlphaHeavy)); }',
+      '.ask-suggestion-item-action { border-top:1px solid color-mix(in srgb, var(--colorFgAlpha) 22%, transparent); }',
+      '.ask-suggestion-icon { width:28px; height:28px; border-radius:var(--aip-r-md); display:flex; align-items:center; justify-content:center; flex-shrink:0; overflow:hidden; background:color-mix(in srgb, var(--colorBgLighter) 88%, transparent); color:var(--aip-text-primary); font-size:12px; font-weight:700; }',
       '.ask-suggestion-icon img { width:100%; height:100%; object-fit:cover; }',
       '.ask-suggestion-text { flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }',
       '.ask-suggestion-title { display:block; color:var(--aip-text-primary); font-size:13px; line-height:1.35; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }',
       '.ask-suggestion-subtitle { display:block; color:var(--aip-text-secondary); font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }',
       '.ask-suggestion-meta { color:var(--aip-text-muted); font-size:11px; flex-shrink:0; }',
+      '.ask-suggestion-divider { height:1px; margin:8px 14px; background:color-mix(in srgb, var(--colorFgAlpha) 28%, transparent); }',
       '.ask-suggestion-empty { padding:18px 14px; color:var(--aip-text-secondary); font-size:12px; }',
       '.ask-messages, .ask-messages * { -webkit-user-select:text !important; user-select:text !important; }',
       '.ask-msg { max-width:92%; font-size:13px; line-height:1.55; margin-bottom:12px; animation:askMsgIn .3s cubic-bezier(.22,1,.36,1); cursor:text; }',
@@ -1472,10 +1994,10 @@
       '.ask-turn-action { width:18px; height:18px; border:none; background:transparent; color:var(--aip-text-muted); cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; }',
       '.ask-turn-action:hover { color:var(--aip-text-primary); }',
       '.ask-turn-action svg { width:14px; height:14px; stroke:currentColor; }',
-      '.ask-msg-user { align-self:flex-end; background:#2A3138; color:var(--aip-text-primary); border-radius:20px; padding:10px 14px 12px; cursor:text; }',
+      '.ask-msg-user { align-self:flex-end; background:linear-gradient(180deg, color-mix(in srgb, var(--colorAccentBgFadedMore) 72%, var(--colorBgLight)) 0%, color-mix(in srgb, var(--colorAccentBg) 88%, var(--colorBgLight)) 100%); color:var(--colorAccentFg); border:1px solid color-mix(in srgb, var(--colorAccentBorder) 80%, transparent); border-radius:18px 18px 6px 18px; padding:10px 14px 12px; box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); cursor:text; }',
       '.ask-msg-ref-group { display:flex; justify-content:flex-end; margin:0 0 8px; }',
       '.ask-msg-ref-stack { position:relative; display:flex; justify-content:flex-end; align-items:flex-end; width:min(100%, 520px); cursor:pointer; user-select:none; }',
-      '.ask-msg-ref-stack:focus-visible { outline:none; box-shadow:0 0 0 2px rgba(51,177,255,0.28); border-radius:16px; }',
+      '.ask-msg-ref-stack:focus-visible { outline:none; box-shadow:0 0 0 2px var(--colorHighlightBgAlpha); border-radius:16px; }',
       '.ask-msg-ref-stack[aria-expanded="false"] { min-height:80px; }',
       '.ask-msg-ref-stack[aria-expanded="true"] { display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:10px; width:min(100%, 560px); }',
       '.ask-msg-ref-stack[aria-expanded="false"] .ask-msg-ref-card { position:absolute; right:0; bottom:0; width:180px; pointer-events:auto; transform-origin:right bottom; transition:transform .18s ease, box-shadow .18s ease; }',
@@ -1494,14 +2016,14 @@
       '.ask-msg-ref-stack[aria-expanded="false"][data-card-count="2"]:hover .ask-msg-ref-card[data-stack-index="0"] { transform:translate(-4px, -18px) scale(.9) rotate(9deg); }',
       '.ask-msg-ref-stack[aria-expanded="false"][data-card-count="2"]:hover .ask-msg-ref-card[data-stack-index="1"] { transform:translate(0, 0) scale(1) rotate(0deg); }',
       '.ask-msg-ref-stack[aria-expanded="true"]:hover .ask-msg-ref-card { transform:none; }',
-      '.ask-msg-ref-card { position:relative; display:flex; align-items:center; gap:10px; min-width:0; width:180px; max-width:180px; height:52px; padding:0 12px; border-radius:14px; background:#31363D; border:1px solid rgba(255,255,255,0.06); box-shadow:inset 0 1px 0 rgba(255,255,255,0.03), 0 10px 24px rgba(0,0,0,0.2); overflow:hidden; opacity:1; }',
-      '.ask-msg-ref-card-icon { width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:14px; font-weight:700; color:#fff; background:#1A1B1E; }',
+      '.ask-msg-ref-card { position:relative; display:flex; align-items:center; gap:10px; min-width:0; width:180px; max-width:180px; height:52px; padding:0 12px; border-radius:calc(var(--aip-r-md) + 2px); background:linear-gradient(180deg, color-mix(in srgb, var(--colorBgLighter) 86%, transparent) 0%, color-mix(in srgb, var(--colorBgLight) 94%, transparent) 100%); border:1px solid var(--aip-border); box-shadow:inset 0 1px 0 rgba(255,255,255,0.03), 0 8px 20px rgba(0,0,0,0.18); overflow:hidden; opacity:1; }',
+      '.ask-msg-ref-card-icon { width:32px; height:32px; border-radius:var(--aip-r-md); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:14px; font-weight:700; color:var(--colorAccentFg); background:linear-gradient(180deg, var(--colorAccentBgFadedMore) 0%, var(--colorAccentBg) 100%); }',
       '.ask-msg-ref-card-info { flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:2px; }',
       '.ask-msg-ref-card-title { color:var(--aip-text-primary); font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.25; }',
       '.ask-msg-ref-card-subtitle { color:var(--aip-text-secondary); font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.2; }',
-      '.ask-msg-ref-more { position:absolute; right:-2px; bottom:-6px; z-index:4; min-width:26px; height:26px; padding:0 8px; border-radius:999px; display:flex; align-items:center; justify-content:center; background:rgba(10,11,13,0.92); border:1px solid rgba(255,255,255,0.08); color:var(--aip-text-primary); font-size:11px; font-weight:700; box-shadow:0 8px 20px rgba(0,0,0,0.35); }',
+      '.ask-msg-ref-more { position:absolute; right:-2px; bottom:-6px; z-index:4; min-width:26px; height:26px; padding:0 8px; border-radius:999px; display:flex; align-items:center; justify-content:center; background:color-mix(in srgb, var(--colorBgAlphaBlur) 92%, transparent); border:1px solid var(--aip-border); color:var(--aip-text-primary); font-size:11px; font-weight:700; box-shadow:0 8px 20px rgba(0,0,0,0.28); }',
       '.ask-msg-ref-stack[aria-expanded="true"] .ask-msg-ref-more { display:none; }',
-      '.ask-msg-cmd-tag { display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:999px; font-size:12px; font-weight:600; background:rgba(255,255,255,0.14); color:var(--aip-text-primary); }',
+      '.ask-msg-cmd-tag { display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:999px; font-size:12px; font-weight:600; background:color-mix(in srgb, var(--colorHighlightBgAlpha) 72%, transparent); border:1px solid color-mix(in srgb, var(--colorHighlightBgAlpha) 92%, transparent); color:var(--aip-text-primary); }',
       '.ask-msg-inline-refs { display:inline-flex; align-items:center; gap:8px; min-width:0; flex-wrap:wrap; }',
       '.ask-msg-inline-ref { display:inline-flex; align-items:center; gap:6px; min-width:0; max-width:180px; color:rgba(255,255,255,0.72); font-size:13px; line-height:1.35; cursor:text; }',
       '.ask-msg-inline-ref-icon { width:14px; height:14px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--aip-accent); font-size:12px; line-height:1; }',
@@ -1511,18 +2033,18 @@
       '.ask-msg-ai { align-self:stretch; width:100%; max-width:none; color:var(--aip-text-primary); cursor:text; }',
       '.ask-msg-ai-processing { display:flex; flex-direction:column; gap:10px; margin:6px 0 10px; }',
       '.ask-msg-ai-processing.hidden { display:none; }',
-      '.ask-msg-ai-thinking { color:var(--aip-text-secondary); font-weight:600; background:linear-gradient(90deg, currentColor 0%, currentColor 42%, rgba(0,0,0,0.08) 46.5%, rgba(0,0,0,0.30) 50%, rgba(0,0,0,0.08) 53.5%, currentColor 58%, currentColor 100%); background-size:185% 100%; -webkit-background-clip:text; -webkit-text-fill-color:transparent; animation:askThinkingShimmer 5.1s infinite linear; }',
+      '.ask-msg-ai-thinking { color:var(--aip-text-secondary); font-weight:600; background:linear-gradient(90deg, currentColor 0%, currentColor 42%, rgba(0,0,0,0.08) 46.5%, rgba(0,0,0,0.30) 50%, rgba(0,0,0,0.08) 53.5%, currentColor 58%, currentColor 100%); background-size:185% 100%; -webkit-background-clip:text; -webkit-text-fill-color:transparent; animation:askThinkingShimmer 2s infinite linear; }',
       '.ask-msg-ai-reading { display:flex; align-items:center; gap:8px; color:var(--aip-text-secondary); font-weight:600; }',
       '.ask-msg-ai-reading-list { display:flex; flex-direction:column; gap:8px; margin:0 0 12px; }',
-      '.ask-msg-ai-reading-pill { display:flex; align-items:center; gap:8px; max-width:240px; padding:8px 12px; border-radius:999px; background:rgba(255,255,255,0.08); color:var(--aip-text-secondary); }',
+      '.ask-msg-ai-reading-pill { display:flex; align-items:center; gap:8px; max-width:240px; padding:8px 12px; border-radius:999px; background:color-mix(in srgb, var(--colorBgLighter) 85%, transparent); border:1px solid var(--aip-border); color:var(--aip-text-secondary); }',
       '.ask-msg-ai-reading-pill-icon { color:var(--aip-accent); font-size:14px; line-height:1; flex-shrink:0; }',
       '.ask-msg-ai-reading-pill-text { min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:12px; }',
       '.ask-msg-ai-thought-wrap { display:none; margin:0 0 10px; }',
       '.ask-msg-ai-thought-wrap.has-content { display:block; }',
       '.ask-msg-ai-thought { display:inline-flex; align-items:center; gap:8px; padding:2px 6px; border:none; border-radius:8px; background:transparent; color:rgba(255,255,255,0.62); font-weight:600; margin:0; cursor:default; transition:background .14s ease, color .14s ease; }',
       '.ask-msg-ai-thought.has-content { cursor:pointer; }',
-      '.ask-msg-ai-thought.has-content:hover { background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.82); }',
-      '.ask-msg-ai-thought-panel { display:none; margin-top:8px; padding:10px 12px; border-radius:12px; background:rgba(255,255,255,0.05); color:var(--aip-text-secondary); white-space:pre-wrap; line-height:1.6; font-size:13px; cursor:text; }',
+      '.ask-msg-ai-thought.has-content:hover { background:color-mix(in srgb, var(--colorBgLighter) 84%, transparent); color:var(--aip-text-primary); }',
+      '.ask-msg-ai-thought-panel { display:none; margin-top:8px; padding:10px 12px; border-radius:var(--aip-r-lg); background:color-mix(in srgb, var(--colorBgLight) 90%, transparent); border:1px solid var(--aip-border); color:var(--aip-text-secondary); white-space:pre-wrap; line-height:1.6; font-size:13px; cursor:text; }',
       '.ask-msg-ai-thought-wrap[aria-expanded="true"] .ask-msg-ai-thought-panel { display:block; }',
       '.ask-msg-ai-thought-arrow { color:var(--aip-text-secondary); display:inline-flex; align-items:center; justify-content:center; transition:transform .18s ease, color .14s ease; transform-origin:center; }',
       '.ask-msg-ai-thought-wrap[aria-expanded="true"] .ask-msg-ai-thought-arrow { transform:rotate(90deg); }',
@@ -1543,38 +2065,38 @@
       '.ask-msg-ai-answer h1 { font-size:1.6em; font-weight:800; }',
       '.ask-msg-ai-answer h2 { font-size:1.32em; font-weight:760; }',
       '.ask-msg-ai-answer h3 { font-size:1.14em; font-weight:700; }',
-      '.ask-msg-ai-answer h4 { font-size:1em; font-weight:680; color:rgba(255,255,255,0.9); }',
-      '.ask-msg-ai-answer hr { border:none; border-top:1px solid rgba(255,255,255,0.08); }',
+      '.ask-msg-ai-answer h4 { font-size:1em; font-weight:680; color:color-mix(in srgb, var(--colorFg) 90%, transparent); }',
+      '.ask-msg-ai-answer hr { border:none; border-top:1px solid var(--aip-border); }',
       '.ask-msg-ai-answer ul { padding-left:20px; list-style:disc outside !important; }',
       '.ask-msg-ai-answer ol { padding-left:20px; list-style:decimal outside !important; }',
       '.ask-msg-ai-answer ul ul { list-style:circle outside !important; }',
       '.ask-msg-ai-answer ul ul ul { list-style:square outside !important; }',
       '.ask-msg-ai-answer li { display:list-item !important; }',
       '.ask-msg-ai-answer li + li { margin-top:4px; }',
-      '.ask-msg-ai-answer mark { padding:0 .24em; border-radius:4px; background:rgba(255,230,120,0.28); color:var(--aip-text-primary); }',
-      '.ask-msg-ai-answer code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.92em; padding:.14em .34em; border-radius:6px; background:rgba(255,255,255,0.08); }',
-      '.ask-msg-ai-answer pre { position:relative; overflow:auto; padding:40px 14px 12px; border-radius:12px; background:rgba(255,255,255,0.06); }',
+      '.ask-msg-ai-answer mark { padding:0 .24em; border-radius:4px; background:color-mix(in srgb, var(--colorWarningBgAlpha) 88%, transparent); color:var(--aip-text-primary); }',
+      '.ask-msg-ai-answer code { font-family:var(--monospaceFont), ui-monospace, monospace; font-size:.92em; padding:.14em .34em; border-radius:6px; background:color-mix(in srgb, var(--colorBgLighter) 90%, transparent); }',
+      '.ask-msg-ai-answer pre { position:relative; max-width:100%; overflow:auto; padding:40px 14px 12px; border-radius:var(--aip-r-lg); background:color-mix(in srgb, var(--colorBgLight) 94%, transparent); border:1px solid var(--aip-border); -webkit-overflow-scrolling:touch; }',
       '.ask-msg-ai-answer pre code { padding:0; background:transparent; }',
-      '.ask-code-copy { position:absolute; top:10px; right:10px; z-index:5; border:none; border-radius:8px; padding:4px 8px; background:rgba(255,255,255,0.08); color:var(--aip-text-secondary); cursor:pointer; font-size:12px; line-height:1; pointer-events:auto; }',
-      '.ask-code-copy:hover { background:rgba(255,255,255,0.14); color:var(--aip-text-primary); }',
+      '.ask-code-copy { position:absolute; top:10px; right:10px; z-index:5; border:1px solid var(--aip-border); border-radius:8px; padding:4px 8px; background:color-mix(in srgb, var(--colorBgLighter) 88%, transparent); color:var(--aip-text-secondary); cursor:pointer; font-size:12px; line-height:1; pointer-events:auto; }',
+      '.ask-code-copy:hover { background:color-mix(in srgb, var(--colorBgLighter) 96%, transparent); color:var(--aip-text-primary); }',
       '.ask-code-keyword { color:#7CC7FF; }',
       '.ask-code-string { color:#E7B97A; }',
       '.ask-code-number { color:#9FE3A2; }',
       '.ask-code-key { color:#C59BFF; }',
-      '.ask-msg-ai-answer blockquote { padding-left:12px; border-left:2px solid rgba(255,255,255,0.12); color:rgba(255,255,255,0.78); }',
+      '.ask-msg-ai-answer blockquote { padding-left:12px; border-left:2px solid var(--colorHighlightBg); color:color-mix(in srgb, var(--colorFg) 78%, transparent); }',
       '.ask-msg-ai-answer a { color:var(--aip-accent); text-decoration:none; }',
       '.ask-msg-ai-answer a:hover { text-decoration:underline; }',
-      '.ask-msg-ai-answer table { width:100%; border-collapse:collapse; border-spacing:0; overflow:hidden; border:1px solid rgba(255,255,255,0.12); border-radius:12px; }',
-      '.ask-msg-ai-answer th, .ask-msg-ai-answer td { padding:8px 10px; text-align:left; vertical-align:top; border:1px solid rgba(255,255,255,0.12); }',
-      '.ask-msg-ai-answer thead th { background:rgba(255,255,255,0.06); font-weight:700; }',
-      '.ask-msg-ai-answer tbody tr:nth-child(even) td { background:rgba(255,255,255,0.02); }',
+      '.ask-msg-ai-answer table { display:block; width:max-content; min-width:100%; max-width:100%; overflow-x:auto; overflow-y:hidden; border-collapse:collapse; border-spacing:0; border:1px solid var(--aip-border); border-radius:var(--aip-r-lg); -webkit-overflow-scrolling:touch; }',
+      '.ask-msg-ai-answer th, .ask-msg-ai-answer td { padding:8px 10px; text-align:left; vertical-align:top; border:1px solid var(--aip-border); }',
+      '.ask-msg-ai-answer thead th { background:color-mix(in srgb, var(--colorBgLighter) 88%, transparent); font-weight:700; }',
+      '.ask-msg-ai-answer tbody tr:nth-child(even) td { background:color-mix(in srgb, var(--colorBgLight) 96%, transparent); }',
       '.ask-task-item { list-style:none !important; display:flex !important; align-items:flex-start; gap:8px; margin-left:-18px; }',
-      '.ask-task-box { width:16px; height:16px; margin-top:2px; border-radius:5px; border:1px solid rgba(255,255,255,0.18); display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--aip-bg); font-size:12px; line-height:1; }',
+      '.ask-task-box { width:16px; height:16px; margin-top:2px; border-radius:5px; border:1px solid var(--aip-border-hover); display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--aip-bg); font-size:12px; line-height:1; }',
       '.ask-task-box.checked { background:var(--aip-accent); border-color:var(--aip-accent); }',
       '.ask-task-content { min-width:0; flex:1; }',
       '.ask-latex-inline code, .ask-latex-block code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-style:italic; }',
-      '.ask-latex-block { margin:0 0 12px; padding:10px 12px; border-radius:12px; background:rgba(255,255,255,0.05); overflow:auto; }',
-      '.ask-msg-ai-error { color:#FF9B9B; font-size:14px; line-height:1.6; }',
+      '.ask-latex-block { margin:0 0 12px; padding:10px 12px; border-radius:var(--aip-r-lg); background:color-mix(in srgb, var(--colorBgLight) 90%, transparent); border:1px solid var(--aip-border); overflow:auto; }',
+      '.ask-msg-ai-error { color:var(--colorErrorBg); font-size:14px; line-height:1.6; }',
       '.ask-turn-ai-meta { display:flex; align-items:center; justify-content:flex-start; gap:10px; margin:4px 0 0; min-height:18px; width:100%; }',
       '@keyframes askChipPop { from { opacity:0; transform:scale(.8); } to { opacity:1; transform:scale(1); } }',
       '@keyframes askMsgIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }',
@@ -1687,11 +2209,16 @@
       cmdChipEl: null,
       cmdChipFocused: false,
       refs: [],
+      capabilities: [],
       nextRefId: 1,
+      nextCapabilityId: 1,
       suggestionToken: null,
       suggestionItems: [],
+      suggestionSections: [],
       suggestionSelectedIndex: 0,
       suggestionMode: null,
+      atTabsExpanded: false,
+      atSuggestionData: null,
       currentContext: null,
       contextCardVisible: true,
       selectedText: '',
@@ -1699,35 +2226,50 @@
       focusedComposerTokenKey: null,
       editingTurnId: null,
       nextTurnId: 1,
+      conversationMemory: {
+        summary: '',
+        summarizedTurnCount: 0,
+      },
       pendingAiTasks: new Map(),
       currentStreamingTurnId: null,
       isBusy: false,
       scrollAnimationFrame: null,
+      autoScrollPinned: true,
+      userScrollingMessages: false,
+      lastSummaryDebug: null,
     };
 
     function setSendButtonMode(mode) {
       if (mode === 'stop') {
-        state.btnSend.title = '终止输出';
-        state.btnSend.setAttribute('aria-label', '终止输出');
+        state.btnSend.title = t('stopOutput');
+        state.btnSend.setAttribute('aria-label', t('stopOutputMessage'));
         state.btnSend.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><rect x="6" y="6" width="12" height="12" rx="2.5" fill="#000000"/></svg>';
         return;
       }
-      state.btnSend.title = '发送';
-      state.btnSend.setAttribute('aria-label', '发送消息');
+      state.btnSend.title = t('send');
+      state.btnSend.setAttribute('aria-label', t('sendMessage'));
       state.btnSend.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>';
     }
 
     function syncBusyState() {
       state.isBusy = state.pendingAiTasks.size > 0;
       setSendButtonMode(state.isBusy ? 'stop' : 'send');
-      state.inputField.contentEditable = state.isBusy ? 'false' : 'true';
-      state.inputField.setAttribute('aria-disabled', state.isBusy ? 'true' : 'false');
-      state.inputField.classList.toggle('disabled', state.isBusy);
-      state.btnTool.disabled = state.isBusy;
-      state.commandsRow.style.pointerEvents = state.isBusy ? 'none' : '';
+      state.inputField.contentEditable = 'true';
+      state.inputField.setAttribute('aria-disabled', 'false');
+      state.inputField.classList.remove('disabled');
+      state.btnTool.disabled = false;
+      state.commandsRow.style.pointerEvents = '';
+    }
+
+    function isNearBottom() {
+      const threshold = 20;
+      return (state.messages.scrollHeight - state.messages.clientHeight - state.messages.scrollTop) <= threshold;
     }
 
     function animateScrollToBottom(duration) {
+      if (!state.autoScrollPinned) {
+        return;
+      }
       const startTop = state.messages.scrollTop;
       const endTop = state.messages.scrollHeight - state.messages.clientHeight;
       if (endTop <= startTop) {
@@ -1751,6 +2293,9 @@
     }
 
     function scrollToBottom(options) {
+      if (!state.autoScrollPinned) {
+        return;
+      }
       const settings = Object.assign({ smooth: false }, options || {});
       if (settings.smooth) {
         animateScrollToBottom(420);
@@ -1772,13 +2317,7 @@
         if (part.type === 'text') {
           return part.text;
         }
-        return '[[aip:' + encodeURIComponent(JSON.stringify({
-          key: part.key || '',
-          kind: part.kind || '',
-          title: part.title || '',
-          iconText: part.iconText || '',
-          refId: part.refId || '',
-        })) + ']]';
+        return '[[aip:' + serializeTokenPayload(part) + ']]';
       }).join('');
     }
 
@@ -1828,6 +2367,9 @@
     function isSuggestionAlreadySelected(item) {
       if (!item) {
         return false;
+      }
+      if (item.kind === 'capability') {
+        return state.capabilities.some((entry) => entry.type === item.capabilityType || entry.title === item.title);
       }
       if (item.kind === 'context') {
         const currentContextId = String(state.currentContext?.id || state.currentContext?.raw?.id || '');
@@ -1915,6 +2457,10 @@
               setSelectedText('');
               return;
             }
+            if (item.key && item.key.startsWith('cap:')) {
+              removeCapability(item.key.slice(4));
+              return;
+            }
             if (item.refId) {
               removeReference(item.refId);
             }
@@ -1945,6 +2491,7 @@
         removeCommand();
       }
       state.refs = [];
+      state.capabilities = [];
       state.selectedText = '';
       state.selectionTitle.textContent = '';
       state.contextCardVisible = Boolean(settings.showDefaultContext);
@@ -2080,6 +2627,10 @@
             setSelectedText('');
             return;
           }
+          if (key.startsWith('cap:')) {
+            removeCapability(key.slice(4));
+            return;
+          }
           const refId = candidate.dataset.refId || '';
           if (refId) {
             removeReference(refId);
@@ -2096,8 +2647,21 @@
       token.dataset.tokenKind = item.kind;
       token.dataset.tokenTitle = item.title;
       token.dataset.tokenIcon = item.iconText || '';
+      token.dataset.tokenRole = item.tokenRole || '';
       if (item.refId) {
         token.dataset.refId = item.refId;
+      }
+      if (item.capabilityId) {
+        token.dataset.capabilityId = item.capabilityId;
+      }
+      if (item.capabilityType) {
+        token.dataset.capabilityType = item.capabilityType;
+      }
+      if (item.capabilityCategory) {
+        token.dataset.capabilityCategory = item.capabilityCategory;
+      }
+      if (item.capabilityContent) {
+        token.dataset.capabilityContent = item.capabilityContent;
       }
       const icon = document.createElement('span');
       icon.className = 'ask-composer-token-icon';
@@ -2217,6 +2781,11 @@
             title: node.dataset.tokenTitle || '',
             iconText: node.dataset.tokenIcon || '',
             refId: node.dataset.refId || '',
+            tokenRole: node.dataset.tokenRole || '',
+            capabilityId: node.dataset.capabilityId || '',
+            capabilityType: node.dataset.capabilityType || '',
+            capabilityCategory: node.dataset.capabilityCategory || '',
+            capabilityContent: node.dataset.capabilityContent || '',
           });
         }
       });
@@ -2231,16 +2800,21 @@
       const presentRefIds = tokenNodes
         .map((node) => node.dataset.refId || '')
         .filter(Boolean);
+      const presentCapabilityIds = tokenNodes
+        .map((node) => node.dataset.capabilityId || '')
+        .filter(Boolean);
       const refsChanged = presentRefIds.length !== state.refs.length || state.refs.some((ref) => !presentRefIds.includes(ref.id));
+      const capabilitiesChanged = presentCapabilityIds.length !== state.capabilities.length || state.capabilities.some((item) => !presentCapabilityIds.includes(item.id));
       const contextChanged = state.contextCardVisible !== hasContextToken;
       const selectionChanged = state.selectedText !== nextSelectedText;
-      if (!refsChanged && !contextChanged && !selectionChanged) {
+      if (!refsChanged && !capabilitiesChanged && !contextChanged && !selectionChanged) {
         return;
       }
       state.contextCardVisible = hasContextToken;
       state.selectedText = nextSelectedText;
       state.selectionTitle.textContent = state.selectedText;
       state.refs = state.refs.filter((ref) => presentRefIds.includes(ref.id));
+      state.capabilities = state.capabilities.filter((item) => presentCapabilityIds.includes(item.id));
       syncReferenceStrip();
     }
 
@@ -2255,19 +2829,127 @@
           return;
         }
         if (node.classList.contains('ask-composer-token')) {
-          const payload = encodeURIComponent(JSON.stringify({
+          output += '[[aip:' + serializeTokenPayload({
             key: node.dataset.tokenKey || '',
             kind: node.dataset.tokenKind || '',
             title: node.dataset.tokenTitle || '',
             iconText: node.dataset.tokenIcon || '',
             refId: node.dataset.refId || '',
-          }));
-          output += '[[aip:' + payload + ']]';
+            tokenRole: node.dataset.tokenRole || '',
+            capabilityId: node.dataset.capabilityId || '',
+            capabilityType: node.dataset.capabilityType || '',
+            capabilityCategory: node.dataset.capabilityCategory || '',
+            capabilityContent: node.dataset.capabilityContent || '',
+          }) + ']]';
           return;
         }
         output += serializeComposerFragment(node);
       });
       return output;
+    }
+
+    function getVisibleTextFromFragment(fragment) {
+      let output = '';
+      Array.from(fragment.childNodes).forEach((node) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          output += node.textContent || '';
+          return;
+        }
+        if (!(node instanceof HTMLElement)) {
+          return;
+        }
+        if (node.classList.contains('ask-composer-token') || node.hasAttribute('data-aip-payload')) {
+          output += node.dataset.tokenTitle || node.textContent || '';
+          return;
+        }
+        output += getVisibleTextFromFragment(node);
+      });
+      return output;
+    }
+
+    function buildClipboardHtmlFromFragment(fragment) {
+      let output = '';
+      Array.from(fragment.childNodes).forEach((node) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          output += escapeHtml(node.textContent || '');
+          return;
+        }
+        if (!(node instanceof HTMLElement)) {
+          return;
+        }
+        if (node.classList.contains('ask-composer-token')) {
+          output += '<span data-aip-payload="' + serializeTokenPayload({
+            key: node.dataset.tokenKey || '',
+            kind: node.dataset.tokenKind || '',
+            title: node.dataset.tokenTitle || '',
+            iconText: node.dataset.tokenIcon || '',
+            refId: node.dataset.refId || '',
+            tokenRole: node.dataset.tokenRole || '',
+            capabilityId: node.dataset.capabilityId || '',
+            capabilityType: node.dataset.capabilityType || '',
+            capabilityCategory: node.dataset.capabilityCategory || '',
+            capabilityContent: node.dataset.capabilityContent || '',
+          }) + '">' + escapeHtml(node.dataset.tokenTitle || '') + '</span>';
+          return;
+        }
+        output += buildClipboardHtmlFromFragment(node);
+      });
+      return output;
+    }
+
+    function insertComposerPayloadToken(payload) {
+      if (!payload) {
+        return;
+      }
+      if (payload.key === 'context') {
+        setContextCardVisible(true);
+        return;
+      }
+      if (payload.key === 'selection') {
+        setSelectedText(payload.title || '');
+        return;
+      }
+      if (payload.capabilityId || payload.tokenRole === 'capability') {
+        const capabilityInstanceId = payload.capabilityId || ('cap-' + state.nextCapabilityId++);
+        const existingCapability = state.capabilities.find((item) => item.id === capabilityInstanceId);
+        if (!existingCapability) {
+          state.capabilities.push({
+            id: capabilityInstanceId,
+            title: payload.title || '',
+            iconText: payload.iconText || '',
+            type: payload.capabilityType || '',
+            category: payload.capabilityCategory || 'format',
+            content: payload.capabilityContent || '',
+          });
+        }
+        insertNodeAtComposerCaret(createComposerTokenElement({
+          key: payload.key || ('cap:' + capabilityInstanceId),
+          kind: payload.kind || 'capability',
+          title: payload.title || '',
+          iconText: payload.iconText || '',
+          tokenRole: 'capability',
+          capabilityId: capabilityInstanceId,
+          capabilityType: payload.capabilityType || '',
+          capabilityCategory: payload.capabilityCategory || 'format',
+          capabilityContent: payload.capabilityContent || '',
+        }));
+        return;
+      }
+      if (payload.refId) {
+        const existing = state.refs.find((ref) => ref.id === payload.refId);
+        if (!existing) {
+          state.refs.push({
+            id: payload.refId,
+            kind: payload.kind,
+            title: payload.title || '',
+            subtitle: '',
+            meta: '',
+            iconText: payload.iconText || '',
+            source: payload.kind,
+          });
+        }
+        insertNodeAtComposerCaret(createComposerTokenElement(payload));
+      }
     }
 
     function insertSerializedComposerText(text) {
@@ -2286,28 +2968,8 @@
         if (plain) {
           insertNodeAtComposerCaret(document.createTextNode(plain));
         }
-        try {
-          const payload = JSON.parse(decodeURIComponent(match[1]));
-          if (payload?.key === 'context') {
-            setContextCardVisible(true);
-          } else if (payload?.key === 'selection') {
-            setSelectedText(payload.title || '');
-          } else if (payload?.refId) {
-            const existing = state.refs.find((ref) => ref.id === payload.refId);
-            if (!existing) {
-              state.refs.push({
-                id: payload.refId,
-                kind: payload.kind,
-                title: payload.title || '',
-                subtitle: '',
-                meta: '',
-                iconText: payload.iconText || '',
-                source: payload.kind,
-              });
-            }
-            insertNodeAtComposerCaret(createComposerTokenElement(payload));
-          }
-        } catch (error) {}
+        const payload = parseSerializedTokenPayload(match[1]);
+        insertComposerPayloadToken(payload);
         lastIndex = pattern.lastIndex;
       }
       const trailing = text.slice(lastIndex);
@@ -2315,6 +2977,35 @@
         insertNodeAtComposerCaret(document.createTextNode(trailing));
       }
       syncReferenceStrip();
+    }
+
+    function insertClipboardHtmlWithTokens(html) {
+      const template = document.createElement('template');
+      template.innerHTML = String(html || '');
+      const walk = (parent) => {
+        Array.from(parent.childNodes).forEach((node) => {
+          if (node.nodeType === Node.TEXT_NODE) {
+            if (node.textContent) {
+              insertNodeAtComposerCaret(document.createTextNode(node.textContent));
+            }
+            return;
+          }
+          if (!(node instanceof HTMLElement)) {
+            return;
+          }
+          const payload = parseSerializedTokenPayload(node.getAttribute('data-aip-payload') || '');
+          if (payload) {
+            insertComposerPayloadToken(payload);
+            return;
+          }
+          walk(node);
+          if (/^(?:div|p|br)$/i.test(node.tagName)) {
+            insertNodeAtComposerCaret(document.createTextNode('\n'));
+          }
+        });
+      };
+      walk(template.content);
+      syncStateFromComposerDom();
     }
 
     function syncReferenceStrip() {
@@ -2336,6 +3027,19 @@
       syncReferenceStrip();
     }
 
+    function hasReferenceForTab(tabLike) {
+      const tabId = String(tabLike?.id || tabLike?.raw?.id || '');
+      const url = String(tabLike?.url || tabLike?.raw?.url || tabLike?.raw?.pendingUrl || '');
+      return state.refs.some((ref) => {
+        if (ref.kind !== 'tab') {
+          return false;
+        }
+        const refTabId = String(ref.raw?.id || '');
+        const refUrl = String(ref.raw?.url || ref.raw?.pendingUrl || '');
+        return (tabId && refTabId && tabId === refTabId) || (url && refUrl && url === refUrl);
+      });
+    }
+
     function setContextFromTab(tab) {
       if (!tab) {
         return;
@@ -2351,11 +3055,15 @@
 
     async function syncContext() {
       try {
-        setContextFromTab(await getCurrentTab());
+        const tab = await getCurrentTab();
+        setContextFromTab(tab);
+        if (tab && !hasReferenceForTab(tab)) {
+          setContextCardVisible(true);
+        }
       } catch (error) {
         if (!state.currentContext) {
           setContextFromTab({
-            title: '当前页面',
+            title: t('currentPage'),
             url: '',
           });
         }
@@ -2383,6 +3091,9 @@
       }
     }
 
+    state.syncContext = syncContext;
+    state.syncSelectedText = syncSelectedText;
+
     function startSelectionPolling() {
       if (state.selectionPollId) {
         clearInterval(state.selectionPollId);
@@ -2405,9 +3116,11 @@
 
     function hideSuggestions() {
       state.suggestionItems = [];
+      state.suggestionSections = [];
       state.suggestionToken = null;
       state.suggestionSelectedIndex = 0;
       state.suggestionMode = null;
+      state.atSuggestionData = null;
       state.suggestionDropdown.style.display = 'none';
       state.suggestionDropdown.classList.remove('visible');
       state.suggestionDropdown.setAttribute('aria-hidden', 'true');
@@ -2527,6 +3240,16 @@
     function createTurnData() {
       const sequenceParts = getComposerSequenceParts();
       const text = sequenceParts.filter((part) => part.type === 'text').map((part) => part.text).join('').trim();
+      const capabilitySnapshots = sequenceParts
+        .filter((part) => part.type === 'ref' && part.tokenRole === 'capability')
+        .map((part) => ({
+          id: part.capabilityId || '',
+          type: part.capabilityType || '',
+          category: part.capabilityCategory || 'format',
+          title: part.title,
+          iconText: part.iconText || '',
+          content: part.capabilityContent || '',
+        }));
       const commandDefinition = getCommandDefinition(state.activeCmd);
       const contextSnapshot = state.contextCardVisible && state.currentContext
         ? {
@@ -2541,7 +3264,7 @@
         ? {
           kind: 'selection',
           title: state.selectedText,
-          subtitle: 'Selected Text',
+          subtitle: t('selectedText'),
           iconText: 'AI',
         }
         : null;
@@ -2608,6 +3331,7 @@
         activeCmd: state.activeCmd,
         activeCmdPrompt: commandDefinition?.prompt || '',
         sequenceParts,
+        capabilitySnapshots,
         text,
         contextSnapshot,
         selectedTextSnapshot,
@@ -2617,6 +3341,7 @@
         fileRefs: refSnapshots.filter((ref) => ref.kind === 'file'),
         timestamp: formatMessageTime(),
         serialized: serializeMessagePayload(sequenceParts, state.activeCmd),
+        visibleText: buildVisibleTextFromSequence(sequenceParts, state.activeCmd),
         aiReplyText: '',
         aiReasoningText: '',
         apiUserMessage: '',
@@ -2746,7 +3471,7 @@
         attachmentTasks.push(Promise.resolve({
           kind: 'selected-text',
           title: truncateText(turnData.selectedTextSnapshot.title, 120),
-          subtitle: 'Selected Text',
+          subtitle: t('selectedText'),
           content: turnData.selectedTextSnapshot.title,
         }));
       }
@@ -2784,78 +3509,268 @@
     }
 
     function buildUserTurnPayload(turnData, attachments) {
-      const commandBlock = turnData.activeCmd && turnData.activeCmdPrompt
-        ? [
-          'Command:',
-          '/' + turnData.activeCmd,
-          '',
-          'Command instruction:',
-          turnData.activeCmdPrompt,
-        ].join('\n')
-        : '';
-      const attachmentBlock = attachments.map((item) => {
+      const capabilityBlocks = (turnData.capabilitySnapshots || []).map((item) => (
+        '<attachment><assistant-capability type="' + escapeXmlAttribute(item.type) + '" category="' + escapeXmlAttribute(item.category) + '"><content>' + escapeXmlText(item.content) + '</content></assistant-capability></attachment>'
+      ));
+      const attachmentBlocks = attachments.map((item) => {
         if (item.kind === 'current-page') {
-          return [
-            '[Current Webpage]',
-            'Title: ' + item.title,
-            'URL: ' + item.url,
+          const content = [
             item.metaDescription ? ('Meta Description: ' + item.metaDescription) : '',
             item.headings?.length ? ('Headings:\n- ' + item.headings.join('\n- ')) : '',
             item.jsonLd?.length ? ('Structured Data:\n- ' + item.jsonLd.join('\n- ')) : '',
             item.imageAlts?.length ? ('Image Alts:\n- ' + item.imageAlts.join('\n- ')) : '',
             item.importantLinks?.length ? ('Important Links:\n- ' + item.importantLinks.join('\n- ')) : '',
             item.extractionSource ? ('Extraction Source: ' + item.extractionSource) : '',
-            item.content ? 'Main Content:\n' + item.content : 'Main Content: (unavailable)',
-          ].filter(Boolean).join('\n');
+            item.content ? ('Main Content:\n' + item.content) : 'Main Content: (unavailable)',
+          ].filter(Boolean).join('\n\n');
+          return '<attachment><referenced-webpage type="current-page" title="' + escapeXmlAttribute(item.title) + '" url="' + escapeXmlAttribute(item.url) + '"><content>' + escapeXmlText(content) + '</content></referenced-webpage></attachment>';
         }
         if (item.kind === 'selected-text') {
-          return [
-            '[Selected Text]',
-            item.content,
-          ].join('\n');
+          return '<attachment><selected-text title="' + escapeXmlAttribute(item.title) + '"><content>' + escapeXmlText(item.content) + '</content></selected-text></attachment>';
         }
         if (item.kind === 'referenced-page') {
-          return [
-            '[Referenced Webpage]',
-            'Title: ' + item.title,
-            item.url ? ('URL: ' + item.url) : '',
+          const content = [
             item.metaDescription ? ('Meta Description: ' + item.metaDescription) : '',
             item.headings?.length ? ('Headings:\n- ' + item.headings.join('\n- ')) : '',
             item.jsonLd?.length ? ('Structured Data:\n- ' + item.jsonLd.join('\n- ')) : '',
             item.imageAlts?.length ? ('Image Alts:\n- ' + item.imageAlts.join('\n- ')) : '',
             item.importantLinks?.length ? ('Important Links:\n- ' + item.importantLinks.join('\n- ')) : '',
             item.extractionSource ? ('Extraction Source: ' + item.extractionSource) : '',
-            item.content ? 'Main Content:\n' + item.content : 'Main Content: (unavailable)',
-          ].filter(Boolean).join('\n');
+            item.content ? ('Main Content:\n' + item.content) : 'Main Content: (unavailable)',
+          ].filter(Boolean).join('\n\n');
+          return '<attachment><referenced-webpage type="referenced-page" title="' + escapeXmlAttribute(item.title) + '"' + (item.url ? (' url="' + escapeXmlAttribute(item.url) + '"') : '') + '><content>' + escapeXmlText(content) + '</content></referenced-webpage></attachment>';
         }
-        return [
-          '[Referenced File]',
-          'Title: ' + item.title,
-          item.subtitle ? ('Meta: ' + item.subtitle) : '',
-          item.content ? 'Extracted text:\n' + item.content : 'Extracted text: (unavailable, use filename and metadata only)',
-        ].filter(Boolean).join('\n');
-      }).join('\n\n');
-      const orderedComposer = turnData.sequenceParts
-        .filter((part) => part.type === 'ref')
-        .map((part) => '[' + part.title + ']')
-        .join('')
-        .trim();
-      const contextBlock = [
-        'Context:',
-        attachmentBlock ? ('Attachments:\n' + attachmentBlock) : 'Attachments:\n(none)',
-        '',
-        'Composer sequence:',
-        orderedComposer || '(empty)',
-      ].filter(Boolean).join('\n\n');
-      const userRequest = [
-        'Question:',
-        turnData.text || '(empty)',
-      ].join('\n');
+        return '<attachment><referenced-file title="' + escapeXmlAttribute(item.title) + '"' + (item.subtitle ? (' meta="' + escapeXmlAttribute(item.subtitle) + '"') : '') + '><content>' + escapeXmlText(item.content || 'Extracted text: (unavailable, use filename and metadata only)') + '</content></referenced-file></attachment>';
+      });
+      const messages = capabilityBlocks.concat(attachmentBlocks);
+      messages.push('<user-message>' + escapeXmlText(turnData.visibleText || '(empty)') + '</user-message>');
+      if (turnData.activeCmdPrompt) {
+        messages.push('<user-message>' + escapeXmlText(turnData.activeCmdPrompt) + '</user-message>');
+      }
+      return messages;
+    }
+
+    function extractLeadSentence(text, maxLength) {
+      const normalized = String(text || '').replace(/\s+/g, ' ').trim();
+      if (!normalized) {
+        return '';
+      }
+      const match = normalized.match(/^(.+?[.!?。！？])(?:\s|$)/);
+      const sentence = match?.[1] || normalized;
+      return truncateText(sentence, maxLength || 220);
+    }
+
+    function buildCompactUserText(data) {
+      const visible = truncateText(String(data?.visibleText || '').trim(), 240);
+      if (visible) {
+        return visible;
+      }
+      const titles = [];
+      if (data?.contextSnapshot?.title) {
+        titles.push(data.contextSnapshot.title);
+      }
+      (data?.refSnapshots || []).slice(0, 3).forEach((ref) => {
+        if (ref?.title) {
+          titles.push(ref.title);
+        }
+      });
+      return titles.length ? ('Attachments: ' + titles.join(', ')) : '(empty)';
+    }
+
+    function buildSummaryLineForTurn(data, index) {
+      const userText = buildCompactUserText(data);
+      const aiText = extractLeadSentence(data?.aiReplyText || '', 220);
+      const refTitles = (data?.headerCards || [])
+        .map((item) => String(item?.title || '').trim())
+        .filter(Boolean)
+        .slice(0, 3)
+        .join(', ');
       return [
-        commandBlock,
-        contextBlock,
-        userRequest,
-      ].filter(Boolean);
+        '[' + (index + 1) + '] User: ' + userText,
+        aiText ? ('Assistant: ' + aiText) : '',
+        refTitles ? ('Refs: ' + refTitles) : '',
+      ].filter(Boolean).join(' | ');
+    }
+
+    function buildConversationSummary(turns) {
+      const recentWindow = CONVERSATION_MEMORY_CONFIG.recentTurns;
+      const olderTurns = turns.slice(0, Math.max(0, turns.length - recentWindow));
+      const summarizeCount = Math.floor(olderTurns.length / CONVERSATION_MEMORY_CONFIG.summaryChunkTurns) * CONVERSATION_MEMORY_CONFIG.summaryChunkTurns;
+      if (summarizeCount <= 0) {
+        state.conversationMemory.summary = '';
+        state.conversationMemory.summarizedTurnCount = 0;
+        state.lastSummaryDebug = {
+          summary: '',
+          summarizedTurnCount: 0,
+          totalTurns: turns.length,
+          recentWindow,
+        };
+        logAiDebug('Conversation Summary', {
+          mode: 'cleared',
+          totalTurns: turns.length,
+          summarizedTurnCount: 0,
+          recentWindow,
+          summary: '',
+        });
+        return {
+          summary: '',
+          summarizedTurnCount: 0,
+        };
+      }
+      const lines = olderTurns
+        .slice(0, summarizeCount)
+        .map((node, index) => buildSummaryLineForTurn(node._askTurnData || {}, index))
+        .filter(Boolean);
+      const summary = [
+        'Conversation memory for earlier turns.',
+        'Use this as compressed context for turns older than the recent window.',
+        lines.join('\n'),
+      ].filter(Boolean).join('\n');
+      state.conversationMemory.summary = summary;
+      state.conversationMemory.summarizedTurnCount = summarizeCount;
+      state.lastSummaryDebug = {
+        summary,
+        summarizedTurnCount: summarizeCount,
+        totalTurns: turns.length,
+        recentWindow,
+        chunkTurns: CONVERSATION_MEMORY_CONFIG.summaryChunkTurns,
+      };
+      logAiCompose('Conversation Summary', {
+        totalTurns: turns.length,
+        summarizedTurnCount: summarizeCount,
+        recentWindow,
+        chunkTurns: CONVERSATION_MEMORY_CONFIG.summaryChunkTurns,
+        summary,
+      });
+      logAiDebug('Conversation Summary', {
+        mode: 'updated',
+        totalTurns: turns.length,
+        summarizedTurnCount: summarizeCount,
+        recentWindow,
+        chunkTurns: CONVERSATION_MEMORY_CONFIG.summaryChunkTurns,
+        summary,
+      });
+      return {
+        summary,
+        summarizedTurnCount: summarizeCount,
+      };
+    }
+
+    function tokenizeForRetrieval(text) {
+      const normalized = String(text || '').toLowerCase();
+      return Array.from(new Set(
+        normalized
+          .split(/[^a-z0-9\u4e00-\u9fff]+/i)
+          .map((token) => token.trim())
+          .filter((token) => token.length >= 2)
+      ));
+    }
+
+    function scoreAttachmentCandidate(candidate, tokens) {
+      if (!tokens.length) {
+        return 0;
+      }
+      const haystack = [
+        candidate.title,
+        candidate.subtitle,
+        candidate.meta,
+        candidate.url,
+      ].filter(Boolean).join(' ').toLowerCase();
+      let score = 0;
+      tokens.forEach((token) => {
+        if (haystack.includes(token)) {
+          score += 3;
+        }
+      });
+      return score;
+    }
+
+    async function buildRetrievedHistoryAttachments(turnData, priorTurnNodes) {
+      const tokens = tokenizeForRetrieval(turnData.visibleText || '');
+      if (!tokens.length) {
+        return [];
+      }
+      const seenKeys = new Set();
+      const candidates = [];
+      priorTurnNodes.forEach((node) => {
+        const data = node?._askTurnData;
+        if (!data) {
+          return;
+        }
+        const addCandidate = (candidate) => {
+          if (!candidate) {
+            return;
+          }
+          const key = [
+            candidate.kind,
+            candidate.url || '',
+            candidate.raw?.id || '',
+            candidate.title || '',
+          ].join('::');
+          if (seenKeys.has(key)) {
+            return;
+          }
+          seenKeys.add(key);
+          const score = scoreAttachmentCandidate(candidate, tokens);
+          if (score <= 0) {
+            return;
+          }
+          candidates.push({ candidate, score });
+        };
+        if (data.contextSnapshot) {
+          addCandidate({
+            kind: 'referenced-page',
+            title: data.contextSnapshot.title,
+            subtitle: data.contextSnapshot.subtitle,
+            url: data.contextSnapshot.raw?.url || data.contextSnapshot.raw?.pendingUrl || '',
+            raw: data.contextSnapshot.raw || data.contextSnapshot,
+          });
+        }
+        (data.refSnapshots || []).forEach((ref) => {
+          addCandidate(ref);
+        });
+      });
+      const topCandidates = candidates
+        .sort((a, b) => b.score - a.score)
+        .slice(0, CONVERSATION_MEMORY_CONFIG.maxRetrievedAttachments);
+      const attachments = await Promise.all(topCandidates.map(async ({ candidate }) => {
+        if (candidate.kind === 'file') {
+          return {
+            kind: 'referenced-file',
+            title: candidate.title,
+            subtitle: candidate.subtitle || candidate.meta || 'file',
+            content: await readBlobPreview(candidate.rawBlob || candidate.rawFile || candidate.raw, candidate.mime || candidate.raw?.mime || candidate.raw?.type),
+          };
+        }
+        const snapshot = await getTabContentSnapshot(candidate.raw || candidate, { allowCachedLightweight: true });
+        return {
+          kind: 'referenced-page',
+          title: snapshot.title || candidate.title,
+          subtitle: snapshot.subtitle || candidate.subtitle || '',
+          url: snapshot.url || candidate.url || '',
+          metaDescription: snapshot.metaDescription || '',
+          headings: snapshot.headings || [],
+          imageAlts: snapshot.imageAlts || [],
+          importantLinks: snapshot.importantLinks || [],
+          jsonLd: snapshot.jsonLd || [],
+          extractionSource: snapshot.extractionSource || 'history-retrieval',
+          content: snapshot.content || '',
+        };
+      }));
+      const filtered = attachments.filter(Boolean);
+      logAiDebug('History Attachment Retrieval', {
+        query: turnData.visibleText || '',
+        tokenCount: tokens.length,
+        candidateCount: candidates.length,
+        selectedCount: filtered.length,
+        selectedItems: filtered.map((item) => ({
+          kind: item.kind,
+          title: item.title,
+          url: item.url || '',
+          extractionSource: item.extractionSource || '',
+        })),
+      });
+      return filtered;
     }
 
     function buildSystemPrompt() {
@@ -2874,14 +3789,24 @@
     function getConversationMessagesForTurn(turnNode, currentUserContents) {
       const messages = [{ role: 'system', content: buildSystemPrompt() }];
       const turns = Array.from(state.messages.querySelectorAll('.ask-turn'));
-      for (const node of turns) {
+      const targetIndex = turns.indexOf(turnNode);
+      const priorTurnNodes = targetIndex >= 0 ? turns.slice(0, targetIndex) : turns.slice();
+      const summaryInfo = buildConversationSummary(priorTurnNodes);
+      if (summaryInfo.summary) {
+        messages.push({
+          role: 'system',
+          content: summaryInfo.summary,
+        });
+      }
+      const recentTurnNodes = priorTurnNodes.slice(-CONVERSATION_MEMORY_CONFIG.recentTurns);
+      for (const node of recentTurnNodes.concat(targetIndex >= 0 ? [turnNode] : [])) {
         const data = node._askTurnData;
         if (!data) {
           continue;
         }
         const userContents = node === turnNode
           ? currentUserContents
-          : (Array.isArray(data.apiUserMessages) && data.apiUserMessages.length ? data.apiUserMessages : (data.apiUserMessage ? [data.apiUserMessage] : []));
+          : [buildCompactUserText(data)];
         userContents.filter(Boolean).forEach((content) => {
           messages.push({ role: 'user', content });
         });
@@ -2892,6 +3817,15 @@
           break;
         }
       }
+      logAiDebug('Conversation Context Window', {
+        totalTurns: turns.length,
+        targetIndex,
+        summarizedTurnCount: summaryInfo.summarizedTurnCount,
+        recentTurnsIncluded: recentTurnNodes.length,
+        currentUserMessageCount: currentUserContents.length,
+        messageCount: messages.length,
+        summary: summaryInfo.summary || '',
+      });
       return messages;
     }
 
@@ -3041,10 +3975,9 @@
     }
 
     function openAtSuggestions(query) {
-      if (state.isBusy) {
-        return;
-      }
       const safeQuery = String(query || '');
+      state.atTabsExpanded = false;
+      state.atSuggestionData = null;
       state.suggestionSearchText.textContent = '@' + safeQuery;
       state.suggestionBody.innerHTML = '<div class="ask-suggestion-empty">正在准备建议项...</div>';
       showSuggestions();
@@ -3075,12 +4008,22 @@
       }
 
       const attachments = await buildTurnAttachments(turnData);
-      const currentUserMessages = buildUserTurnPayload(turnData, attachments);
+      const allTurnNodes = Array.from(state.messages.querySelectorAll('.ask-turn'));
+      const turnIndex = allTurnNodes.indexOf(turnNode);
+      const priorTurnNodes = turnIndex >= 0 ? allTurnNodes.slice(0, turnIndex) : [];
+      const retrievedHistoryAttachments = await buildRetrievedHistoryAttachments(turnData, priorTurnNodes);
+      const currentUserMessages = buildUserTurnPayload(turnData, attachments.concat(retrievedHistoryAttachments));
       turnData.apiUserMessages = currentUserMessages.slice();
       turnData.apiUserMessage = currentUserMessages.join('\n\n');
       turnNode._askTurnData = turnData;
       const messages = getConversationMessagesForTurn(turnNode, currentUserMessages);
       const body = createChatRequestBody(messages);
+      logAiDebug('Raw User Requests', {
+        turnId: turnData.id,
+        visibleText: turnData.visibleText,
+        rawUserRequests: currentUserMessages,
+        requestBody: body,
+      });
       if (ASK_IN_PAGE_DEBUG) {
         const compiledPrompt = messages.map((message, index) => [
           '# Message ' + (index + 1),
@@ -3167,6 +4110,10 @@
           playbackLastTick = timestamp;
           playbackCarry += (elapsed / 1000) * STREAM_UI_CONFIG.charsPerSecond;
           let nextLength = displayedLength;
+          const guaranteedAdvance = Math.min(
+            answerText.length,
+            displayedLength + STREAM_UI_CONFIG.minCharsPerFrame
+          );
           while (playbackCarry >= 1 && nextLength < answerText.length) {
             playbackCarry -= 1;
             nextLength += 1;
@@ -3177,10 +4124,13 @@
               playbackCarry = Math.max(playbackCarry - STREAM_UI_CONFIG.newlinePause, 0);
             }
           }
+          if (nextLength < guaranteedAdvance && answerText.length > displayedLength) {
+            nextLength = guaranteedAdvance;
+          }
           if (nextLength !== displayedLength) {
             displayedLength = nextLength;
             renderStreamingMarkdown(scaffold.answer, answerText.slice(0, displayedLength), answerText);
-            if (timestamp - playbackLastScrollAt > 90 || displayedLength === answerText.length) {
+            if (state.autoScrollPinned && (timestamp - playbackLastScrollAt > 90 || displayedLength === answerText.length)) {
               playbackLastScrollAt = timestamp;
               scrollToBottom();
             }
@@ -3219,6 +4169,12 @@
             turnId: turnData.id,
             response: data,
             rawResponseBody,
+          });
+          logAiDebug('AI Response', {
+            turnId: turnData.id,
+            rawResponseBody,
+            answerText: data?.choices?.[0]?.message?.content || '',
+            reasoningText: data?.choices?.[0]?.message?.reasoning_content || data?.choices?.[0]?.message?.reasoning || '',
           });
           const fallbackReasoningField = cleanModelText(
             data?.choices?.[0]?.message?.reasoning_content ||
@@ -3307,6 +4263,12 @@
           answerText,
           reasoningText,
         });
+        logAiDebug('AI Response', {
+          turnId: turnData.id,
+          rawResponseBody: rawResponseBody.trim(),
+          answerText,
+          reasoningText,
+        });
         const playedText = await playbackDone;
         const finalText = playedText || cleanModelText(answerText).trim() || '我已经完成处理，但模型没有返回可显示的正文。';
         turnData.aiReasoningText = reasoningText.trim();
@@ -3354,7 +4316,7 @@
       if (turnData.activeCmd) {
         const cmdTag = document.createElement('div');
         cmdTag.className = 'ask-msg-cmd-tag';
-        cmdTag.innerHTML = '<span>◔</span><span>' + turnData.activeCmd + '</span>';
+        cmdTag.innerHTML = '<span>◔</span><span>/' + turnData.activeCmd + '</span>';
         body.appendChild(cmdTag);
       }
       turnData.sequenceParts.forEach((part) => {
@@ -3394,7 +4356,7 @@
       copyBtn.title = '复制消息';
       copyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="10" height="10" rx="2"/><path d="M5 15V7a2 2 0 0 1 2-2h8"/></svg>';
       copyBtn.addEventListener('click', () => {
-        copyTextToClipboard(turnData.serialized);
+        copyTextToClipboard(turnData.visibleText || '');
       });
       const editBtn = document.createElement('button');
       editBtn.type = 'button';
@@ -3500,6 +4462,18 @@
       syncReferenceStrip();
     }
 
+    function addReferences(items) {
+      let inserted = 0;
+      (items || []).forEach((item) => {
+        if (!item || isSuggestionAlreadySelected(item)) {
+          return;
+        }
+        addReference(item);
+        inserted += 1;
+      });
+      return inserted;
+    }
+
     function removeReference(refId) {
       state.refs = state.refs.filter((item) => item.id !== refId);
       const composerToken = findComposerTokenNode('ref:' + refId);
@@ -3510,6 +4484,19 @@
       if (state.focusedComposerTokenKey === 'ref:' + refId) {
         clearFocusedComposerToken();
       }
+      state.inputField.focus();
+    }
+
+    function removeCapability(capabilityInstanceId) {
+      state.capabilities = state.capabilities.filter((item) => item.id !== capabilityInstanceId);
+      const composerToken = findComposerTokenNode('cap:' + capabilityInstanceId);
+      if (composerToken) {
+        composerToken.remove();
+      }
+      if (state.focusedComposerTokenKey === 'cap:' + capabilityInstanceId) {
+        clearFocusedComposerToken();
+      }
+      syncReferenceStrip();
       state.inputField.focus();
     }
 
@@ -3534,6 +4521,30 @@
         iconText: ref.kind === 'file' ? 'D' : ref.iconText,
         title: ref.title,
         refId: ref.id,
+      }));
+      syncReferenceStrip();
+    }
+
+    function addCapability(item) {
+      const capability = {
+        id: 'cap-' + state.nextCapabilityId++,
+        type: item.capabilityType || item.capabilityId || item.id || '',
+        category: item.capabilityCategory || item.category || 'format',
+        title: item.title,
+        iconText: item.iconText || item.title.slice(0, 1).toUpperCase(),
+        content: item.capabilityContent || item.content || '',
+      };
+      state.capabilities.push(capability);
+      insertNodeAtComposerCaret(createComposerTokenElement({
+        key: 'cap:' + capability.id,
+        kind: 'capability',
+        title: capability.title,
+        iconText: capability.iconText,
+        tokenRole: 'capability',
+        capabilityId: capability.id,
+        capabilityType: capability.type,
+        capabilityCategory: capability.category,
+        capabilityContent: capability.content,
       }));
       syncReferenceStrip();
     }
@@ -3577,6 +4588,7 @@
         return null;
       }
       const beforeCaret = node.textContent.slice(0, offset);
+      const afterCaret = node.textContent.slice(offset);
       const triggerIndex = beforeCaret.lastIndexOf(trigger);
       if (triggerIndex < 0) {
         return null;
@@ -3591,6 +4603,10 @@
           return null;
         }
       }
+      const nextChar = afterCaret[0];
+      if (nextChar && !/\s/.test(nextChar)) {
+        return null;
+      }
       if (token[0] !== trigger) {
         return null;
       }
@@ -3604,6 +4620,22 @@
     }
 
     function renderSuggestionItem(item, index) {
+      if (item.kind === 'divider') {
+        return '<div class="ask-suggestion-divider" role="separator"></div>';
+      }
+      if (item.kind === 'action') {
+        return [
+          '<button class="ask-suggestion-item ask-suggestion-item-action" type="button" data-action="' + escapeHtml(item.action || '') + '">',
+          '<span class="ask-suggestion-icon" style="background:' + escapeHtml(item.color || '#2D3139') + ';">',
+          '<span>' + escapeHtml(item.iconText || '+') + '</span>',
+          '</span>',
+          '<span class="ask-suggestion-text">',
+          '<span class="ask-suggestion-title">' + escapeHtml(item.title) + '</span>',
+          '<span class="ask-suggestion-subtitle">' + escapeHtml(item.subtitle || '') + '</span>',
+          '</span>',
+          '</button>',
+        ].join('');
+      }
       const icon = item.iconUrl
         ? '<img src="' + escapeHtml(item.iconUrl) + '" alt="">'
         : '<span>' + escapeHtml(item.iconText || item.title.slice(0, 1).toUpperCase()) + '</span>';
@@ -3620,22 +4652,23 @@
     }
 
     function renderSuggestions() {
-      if (!state.suggestionItems.length) {
-        state.suggestionBody.innerHTML = '<div class="ask-suggestion-empty">没有匹配的标签页或文件。</div>';
+      if (!state.suggestionSections.length) {
+        state.suggestionBody.innerHTML = '<div class="ask-suggestion-empty">没有匹配的建议项。</div>';
         return;
       }
-      const groups = state.suggestionMode === 'slash' ? ['Commands'] : ['Tabs', 'Files'];
-      const sections = groups.map((group) => {
-        const items = state.suggestionItems
-          .map((item, index) => ({ item, index }))
-          .filter((entry) => entry.item.group === group);
-        if (!items.length) {
+      const sections = state.suggestionSections.map((section) => {
+        if (!section.items?.length) {
           return '';
         }
         return [
           '<div class="ask-suggestion-section">',
-          '<div class="ask-suggestion-section-title">' + group + '</div>',
-          items.map((entry) => renderSuggestionItem(entry.item, entry.index)).join(''),
+          section.title ? ('<div class="ask-suggestion-section-title">' + escapeHtml(section.title) + '</div>') : '',
+          section.items.map((entry) => {
+            if (entry.selectable) {
+              return renderSuggestionItem(entry.item, entry.index);
+            }
+            return renderSuggestionItem(entry.item, -1);
+          }).join(''),
           '</div>',
         ].join('');
       }).filter(Boolean);
@@ -3656,6 +4689,11 @@
       hideSuggestions();
       if (item.kind === 'command') {
         selectCommand(item.commandName);
+        state.inputField.focus();
+        return;
+      }
+      if (item.kind === 'capability') {
+        addCapability(item);
         state.inputField.focus();
         return;
       }
@@ -3688,8 +4726,133 @@
         });
         return;
       }
+      if (item.kind === 'tab-group') {
+        addReferences(item.tabs || []);
+        state.inputField.focus();
+        return;
+      }
       addReference(item);
       state.inputField.focus();
+    }
+
+    function buildTabGroupSuggestions(tabItems) {
+      const allTabs = tabItems.filter((item) => item.kind === 'tab');
+      if (!allTabs.length) {
+        return [];
+      }
+      const groups = [];
+      groups.push({
+        id: 'tab-group-all',
+        kind: 'tab-group',
+        title: tf('allOpenTabsTitle', { count: allTabs.length }),
+        subtitle: t('allOpenTabsSubtitle'),
+        iconText: '◎',
+        color: '#295B63',
+        meta: '',
+        tabs: allTabs,
+      });
+      const hostMap = new Map();
+      allTabs.forEach((item) => {
+        const host = String(item.subtitle || '').trim();
+        if (!host) {
+          return;
+        }
+        if (!hostMap.has(host)) {
+          hostMap.set(host, []);
+        }
+        hostMap.get(host).push(item);
+      });
+      Array.from(hostMap.entries())
+        .filter(([, items]) => items.length > 1)
+        .sort((a, b) => {
+          if (b[1].length !== a[1].length) {
+            return b[1].length - a[1].length;
+          }
+          return a[0].localeCompare(b[0]);
+        })
+        .forEach(([host, items]) => {
+          groups.push({
+            id: 'tab-group-' + host,
+            kind: 'tab-group',
+            title: tf('domainTabsTitle', { host, count: items.length }),
+            subtitle: t('domainTabsSubtitle'),
+            iconText: '◌',
+            color: '#2C4E63',
+            meta: '',
+            tabs: items,
+          });
+        });
+      return groups;
+    }
+
+    function setAtSuggestionState({ tabItems, fileItems, formatItems }) {
+      const visibleTabItems = tabItems.slice(0, state.atTabsExpanded ? TAB_SUGGESTION_LIMITS.expanded : TAB_SUGGESTION_LIMITS.collapsed);
+      const moreCount = Math.max(0, Math.min(tabItems.length, TAB_SUGGESTION_LIMITS.expanded) - visibleTabItems.length);
+      const tabGroupItems = buildTabGroupSuggestions(tabItems);
+      const sections = [];
+      const tabSectionItems = visibleTabItems.map((item) => ({ selectable: true, item }));
+      if (moreCount > 0) {
+        tabSectionItems.push({
+          selectable: false,
+          item: {
+            kind: 'action',
+            action: 'expand-tabs',
+            title: t('showMoreTabs'),
+            subtitle: tf('showMoreTabsSubtitle', { count: moreCount }),
+            iconText: '+',
+            color: '#2D3139',
+          },
+        });
+      }
+      if (tabGroupItems.length) {
+        if (tabSectionItems.length) {
+          tabSectionItems.push({
+            selectable: false,
+            item: {
+              kind: 'divider',
+            },
+          });
+        }
+        tabGroupItems.forEach((item) => {
+          tabSectionItems.push({ selectable: true, item });
+        });
+      }
+      if (tabSectionItems.length) {
+        sections.push({
+          title: t('tabsSection'),
+          items: tabSectionItems,
+        });
+      }
+      if (fileItems.length) {
+        sections.push({
+          title: t('filesSection'),
+          items: fileItems.map((item) => ({ selectable: true, item })),
+        });
+      }
+      if (formatItems.length) {
+        sections.push({
+          title: t('formatsSection'),
+          items: formatItems.map((item) => ({ selectable: true, item })),
+        });
+      }
+      const selectableItems = [];
+      let selectableIndex = 0;
+      sections.forEach((section) => {
+        section.items.forEach((entry) => {
+          if (!entry.selectable) {
+            return;
+          }
+          entry.index = selectableIndex++;
+          selectableItems.push(entry.item);
+        });
+      });
+      state.suggestionItems = selectableItems;
+      state.suggestionSections = sections;
+      if (!state.suggestionItems.length && !sections.length) {
+        state.suggestionSelectedIndex = 0;
+        return;
+      }
+      state.suggestionSelectedIndex = Math.min(state.suggestionSelectedIndex, Math.max(0, state.suggestionItems.length - 1));
     }
 
     async function loadAtSuggestions(query) {
@@ -3703,6 +4866,30 @@
         const files = filesResult.status === 'fulfilled' ? (filesResult.value || []) : [];
         const clipboardFiles = clipboardResult.status === 'fulfilled' ? (clipboardResult.value || []) : [];
         const lowerQuery = query.trim().toLowerCase();
+        const formatItems = formatCapabilityDefinitions
+          .filter((item) => {
+            if (isSuggestionAlreadySelected({ kind: 'capability', capabilityType: item.id, title: item.title })) {
+              return false;
+            }
+            if (!lowerQuery) {
+              return true;
+            }
+            return [item.title, item.subtitle]
+              .concat(item.aliases || [])
+              .some((token) => String(token || '').toLowerCase().includes(lowerQuery));
+          })
+          .map((item) => ({
+            id: 'capability-' + item.id,
+            kind: 'capability',
+            group: 'Formats',
+            title: item.title,
+            subtitle: item.subtitle,
+            iconText: item.iconText,
+            color: '#2D3139',
+            capabilityType: item.id,
+            capabilityCategory: 'format',
+            capabilityContent: item.content,
+          }));
         const tabItems = ((tabs || []).map(normalizeTab))
           .filter((item, index, arr) => {
             const unique = arr.findIndex((candidate) => candidate.id === item.id) === index;
@@ -3737,20 +4924,30 @@
           id: 'files-action-open',
           kind: 'files-action',
           group: 'Files',
-          title: 'Choose a File...',
-          subtitle: '从系统选择文件',
+          title: t('chooseFileTitle'),
+          subtitle: t('chooseFileSubtitle'),
           iconText: '+',
           color: '#2D3139',
         };
-        state.suggestionItems = tabItems.concat(fileItems, openFolderItem);
-        state.suggestionSelectedIndex = 0;
-        if (!state.suggestionItems.length) {
+        const finalFileItems = fileItems.concat(openFolderItem);
+        state.atSuggestionData = {
+          tabItems,
+          fileItems: finalFileItems,
+          formatItems,
+        };
+        setAtSuggestionState({
+          tabItems,
+          fileItems: finalFileItems,
+          formatItems,
+        });
+        if (!state.suggestionItems.length && !state.suggestionSections.length) {
           state.suggestionBody.innerHTML = '<div class="ask-suggestion-empty">没有可用的标签页或下载文件。</div>';
           return;
         }
         renderSuggestions();
       } catch (error) {
         state.suggestionItems = [];
+        state.suggestionSections = [];
         state.suggestionBody.innerHTML = '<div class="ask-suggestion-empty">读取 Tabs / Files 失败，请稍后重试。</div>';
       }
     }
@@ -3779,6 +4976,10 @@
           commandName: command.name,
           commandPrompt: command.prompt,
         }));
+      state.suggestionSections = state.suggestionItems.length ? [{
+        title: t('commandsSection'),
+        items: state.suggestionItems.map((item) => ({ selectable: true, item })),
+      }] : [];
       state.suggestionSelectedIndex = 0;
       showSuggestions();
       if (!state.suggestionItems.length) {
@@ -3822,6 +5023,8 @@
       state.pendingAiTasks.forEach((task, turnId) => clearPendingAiTask(turnId));
       state.pendingAiTasks.clear();
       state.currentStreamingTurnId = null;
+      state.conversationMemory.summary = '';
+      state.conversationMemory.summarizedTurnCount = 0;
       syncBusyState();
       state.messages.innerHTML = '';
       state.empty.style.display = '';
@@ -3842,11 +5045,8 @@
       openReferenceSuggestions();
     });
     state.inputField.addEventListener('focus', () => {
-      if (state.isBusy) {
-        state.inputField.blur();
-        return;
-      }
       state.inputBox.classList.add('focused');
+      state.autoScrollPinned = isNearBottom();
       if (state.focusedComposerTokenKey) {
         clearFocusedComposerToken();
       }
@@ -3855,9 +5055,6 @@
       state.inputBox.classList.remove('focused');
     });
     state.inputField.addEventListener('input', () => {
-      if (state.isBusy) {
-        return;
-      }
       syncStateFromComposerDom();
       if (state.focusedComposerTokenKey) {
         clearFocusedComposerToken();
@@ -3883,11 +5080,16 @@
       }
       const fragment = selection.getRangeAt(0).cloneContents();
       const serialized = serializeComposerFragment(fragment);
-      if (!serialized) {
+      const visibleText = getVisibleTextFromFragment(fragment);
+      if (!serialized && !visibleText) {
         return;
       }
       event.preventDefault();
-      event.clipboardData.setData('text/plain', serialized);
+      event.clipboardData.setData('text/plain', visibleText);
+      if (serialized) {
+        event.clipboardData.setData(INTERNAL_CLIPBOARD_MIME, serialized);
+        event.clipboardData.setData('text/html', buildClipboardHtmlFromFragment(fragment));
+      }
     });
     state.inputField.addEventListener('cut', (event) => {
       const selection = window.getSelection();
@@ -3897,15 +5099,34 @@
       const range = selection.getRangeAt(0);
       const fragment = range.cloneContents();
       const serialized = serializeComposerFragment(fragment);
-      if (!serialized) {
+      const visibleText = getVisibleTextFromFragment(fragment);
+      if (!serialized && !visibleText) {
         return;
       }
       event.preventDefault();
-      event.clipboardData.setData('text/plain', serialized);
+      event.clipboardData.setData('text/plain', visibleText);
+      if (serialized) {
+        event.clipboardData.setData(INTERNAL_CLIPBOARD_MIME, serialized);
+        event.clipboardData.setData('text/html', buildClipboardHtmlFromFragment(fragment));
+      }
       range.deleteContents();
       syncStateFromComposerDom();
     });
     state.inputField.addEventListener('paste', (event) => {
+      const internal = event.clipboardData?.getData(INTERNAL_CLIPBOARD_MIME) || '';
+      if (internal) {
+        event.preventDefault();
+        insertSerializedComposerText(internal);
+        syncStateFromComposerDom();
+        return;
+      }
+      const html = event.clipboardData?.getData('text/html') || '';
+      if (html.includes('data-aip-payload=')) {
+        event.preventDefault();
+        insertClipboardHtmlWithTokens(html);
+        syncStateFromComposerDom();
+        return;
+      }
       const text = event.clipboardData?.getData('text/plain') || '';
       if (!text.includes('[[aip:')) {
         return;
@@ -3915,37 +5136,34 @@
       syncStateFromComposerDom();
     });
       state.inputField.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && !event.shiftKey && state.isBusy) {
+        event.preventDefault();
+        stopStreamingOutput();
+        return;
+      }
       if (event.key === '@') {
-        if (state.isBusy) {
-          event.preventDefault();
-          return;
-        }
         requestAnimationFrame(() => {
-          state.suggestionToken = detectTriggerToken('@') || {
-            startOffset: getCaretOffset(state.inputField),
-            endOffset: getCaretOffset(state.inputField),
-            query: '',
-            trigger: '@',
-          };
-          openAtSuggestions(state.suggestionToken.query || '');
+          const token = detectTriggerToken('@');
+          if (!token) {
+            hideSuggestions();
+            return;
+          }
+          state.suggestionToken = token;
+          openAtSuggestions(token.query || '');
         });
       }
       if (event.key === '/') {
-        if (state.isBusy) {
-          event.preventDefault();
-          return;
-        }
         requestAnimationFrame(() => {
-          state.suggestionToken = detectTriggerToken('/') || {
-            startOffset: getCaretOffset(state.inputField),
-            endOffset: getCaretOffset(state.inputField),
-            query: '',
-            trigger: '/',
-          };
+          const token = detectTriggerToken('/');
+          if (!token) {
+            hideSuggestions();
+            return;
+          }
+          state.suggestionToken = token;
           state.suggestionSearchText.textContent = '/';
           state.suggestionBody.innerHTML = '<div class="ask-suggestion-empty">正在准备命令...</div>';
           showSuggestions();
-          loadCommandSuggestions(state.suggestionToken.query || '');
+          loadCommandSuggestions(token.query || '');
         });
       }
       if (state.suggestionDropdown.classList.contains('visible')) {
@@ -4044,6 +5262,23 @@
     state.suggestionBody.addEventListener('mousedown', (event) => {
       event.preventDefault();
       event.stopPropagation();
+      const actionButton = event.target.closest('[data-action]');
+      if (actionButton?.dataset.action === 'expand-tabs') {
+        const previousScrollTop = state.suggestionBody.scrollTop;
+        state.atTabsExpanded = true;
+        if (state.atSuggestionData) {
+          setAtSuggestionState(state.atSuggestionData);
+          renderSuggestions();
+          state.suggestionBody.scrollTop = previousScrollTop;
+          return;
+        }
+        const atToken = state.suggestionToken?.trigger === '@' ? state.suggestionToken : detectTriggerToken('@');
+        if (atToken) {
+          state.suggestionToken = atToken;
+        }
+        loadAtSuggestions(state.suggestionToken?.query || '');
+        return;
+      }
       const button = event.target.closest('.ask-suggestion-item');
       if (!button) {
         return;
@@ -4051,6 +5286,22 @@
       const item = state.suggestionItems[Number(button.dataset.index)];
       if (item) {
         selectSuggestion(item);
+      }
+    });
+    state.messages.addEventListener('pointerdown', () => {
+      state.userScrollingMessages = true;
+    });
+    state.messages.addEventListener('scroll', () => {
+      if (isNearBottom()) {
+        state.autoScrollPinned = true;
+      } else if (state.userScrollingMessages || state.isBusy) {
+        state.autoScrollPinned = false;
+      }
+    }, { passive: true });
+    window.addEventListener('pointerup', () => {
+      state.userScrollingMessages = false;
+      if (isNearBottom()) {
+        state.autoScrollPinned = true;
       }
     });
     ['pointerdown', 'mousedown', 'click'].forEach((eventName) => {
@@ -4238,42 +5489,21 @@
 
     chrome.tabs?.onActivated?.addListener(() => {
       if (panelState) {
-        getCurrentTab().then((tab) => {
-          if (tab) {
-            panelState.currentContext = normalizeTab(tab);
-            panelState.ctxFavicon.textContent = panelState.currentContext.iconText;
-            panelState.ctxTitle.textContent = panelState.currentContext.title;
-            panelState.ctxUrl.textContent = panelState.currentContext.subtitle;
-          }
-        }).catch(() => {});
-        getCurrentTabSelection().then((text) => {
-          if (panelState) {
-            panelState.selectedText = String(text || '').replace(/\s+/g, ' ').trim().slice(0, 140);
-            panelState.selectionTitle.textContent = panelState.selectedText;
-            panelState.selectionCard.classList.toggle('hidden', !panelState.selectedText);
-            panelState.inputContext.classList.toggle('hidden', !panelState.contextCardVisible && !panelState.refs.length && !panelState.selectedText);
-          }
-        }).catch(() => {});
+        panelState.syncContext?.();
+        panelState.syncSelectedText?.();
       }
     });
 
     chrome.tabs?.onUpdated?.addListener((tabId, changeInfo, tab) => {
+      if (changeInfo.status === 'complete' && tab) {
+        prefetchLightTabSnapshot(tab).catch(() => {});
+      }
       if (!panelState || !tab?.active) {
         return;
       }
       if (changeInfo.title || changeInfo.url || changeInfo.status === 'complete') {
-        panelState.currentContext = normalizeTab(tab);
-        panelState.ctxFavicon.textContent = panelState.currentContext.iconText;
-        panelState.ctxTitle.textContent = panelState.currentContext.title;
-        panelState.ctxUrl.textContent = panelState.currentContext.subtitle;
-        getCurrentTabSelection().then((text) => {
-          if (panelState) {
-            panelState.selectedText = String(text || '').replace(/\s+/g, ' ').trim().slice(0, 140);
-            panelState.selectionTitle.textContent = panelState.selectedText;
-            panelState.selectionCard.classList.toggle('hidden', !panelState.selectedText);
-            panelState.inputContext.classList.toggle('hidden', !panelState.contextCardVisible && !panelState.refs.length && !panelState.selectedText);
-          }
-        }).catch(() => {});
+        panelState.syncContext?.();
+        panelState.syncSelectedText?.();
       }
     });
   });
