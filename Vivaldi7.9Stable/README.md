@@ -39,7 +39,7 @@
 - [How to install](#how-to-install)
   - [CSS Mods](#to-install-css-mods)
   - [Javascripts Mods](#to-install-javascripts-mods)
-
+- [Frequently Asked Questions](#Frequently Asked Questions)
 ## Latest Update
 
 | Demo                                                | Mods                                                              |
@@ -144,7 +144,9 @@ To install, Just copy all the content under ./Javascripts/ to your `<YOURVIVALDI
 1. All the javascripts mods is copied to `<YOURVIVALDIDIRECTORY>`\Application\<VERSI0N>\resources\vivaldi.
 2. Under the same folder, a window.html has been modified,which injected javascripts mods to your browser.
 3. Restart to see the effect
-
+4. You can confirm your installation at vivaldi:inspect/#apps.
+ a. Click on the blue inspect button of window.HTML and open a console windlw
+ b. Check the elements tab. If you see the js mods list. It's installed.
 `Modified window.html` looks like this.
 
 ```html
@@ -177,3 +179,21 @@ To install, Just copy all the content under ./Javascripts/ to your `<YOURVIVALDI
 3. That's it! Restart browser to see the effect. If any other issues please report it at [Issues · PaRr0tBoY/Awesome-Vivaldi](https://github.com/PaRr0tBoY/Awesome-Vivaldi/issues?q=sort%3Aupdated-desc+is%3Aissue+is%3Aopen) and I'll ~~probably~~ fix it at weekend.
 
 > Optionally, get an glm api key here for AI features [here](https://open.bigmodel.cn/usercenter/proj-mgmt/apikeys). FYI, It's experimental and not stable though. You can use other AI providers' api as well as long as it's compatible with OpenAI api.
+
+# Frequently Asked Questions 
+> I've Installed all the mod correctly but I didn't see the infect?
+Have you installed correctly?
+Check
+- [ ] Css Customization Allowed at vivaldi:flags
+- [ ] Set the folder to Awesome-Vivaldi-main\Vivaldi7.9Stable in vivaldi's settings > appearance > custom ui modifications
+- [ ] Replace all the files from ./Javascripts in "C:\Users\{username}\AppData\Local\Vivaldi\AApplication\{version}\resources\vivaldi"
+
+If you confirmed you installed it right:
+- Missing AI features?:
+All the AI-related mods require your own [OpenAI Compatible](https://developers.openai.com/api/reference/overview) API configured at first few lines of codes.
+- Missing FavouriteTabs?:
+Only first 9 pinned tabs/stacks is turned into grid.
+Others:
+- Turned on 2 level tab stacking under tabstacking.
+- Turned on Auto-hide under Appearance settings.
+- Read mod list to understand what these mods do. Most mods have a short description on top of file content.
