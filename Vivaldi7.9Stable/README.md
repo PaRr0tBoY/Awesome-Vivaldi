@@ -32,15 +32,18 @@
 
 ## Table of Contents
 
+- [Latest Updates](#latest-updates)
 - [Feature Showcase](#feature-showcase)
 - [Mod List](#mod-list)
   - [CSS](#css)
   - [Javascripts](#javascripts)
 - [How to install](#how-to-install)
+  - [Vivaldi Settings](#vivaldi-settings) 
   - [CSS Mods](#to-install-css-mods)
   - [Javascripts Mods](#to-install-javascripts-mods)
-- [Frequently Asked Questions](#FAQ)
-## Latest Update
+- [Frequently Asked Questions](#faq)
+
+## Latest Updates
 
 | Demo                                                | Mods                                                              |
 | --------------------------------------------------- | ----------------------------------------------------------------- |
@@ -100,9 +103,10 @@
 ## How to install
 
 ### Vivaldi Settings
-- Switch to two-level tab stacking under Tab Setting.
-- Turn on Auto-hide under Appearance Setting.
-- Turn on Open New Tabs in Tab Stack Under Tab setting.
+- Go to `vivaldi:settings/appearance/` -> `UI AUTO-HIDE`, Toggle `Enable UI Auto-hide` on.
+- Go to `vivaldi:settings/tabs/` -> `Tab Stacking`, Switch `Tab Stacking` to Two-Level . (Don't `Use Compact Display Style`)
+- Go to `vivaldi:settings/tabs/` -> `New Tab Position`, Toggle to `As Tab Stack with Related Tab`.
+- Go to `vivaldi:settings/qc/` -> `Quick Command Options`, Toggle `Open Links in New Tab` on.
 
 ### To Install CSS Mods
 
@@ -183,24 +187,28 @@ To install, Just copy all the content under ./Javascripts/ to your `<YOURVIVALDI
 
 3. That's it! Restart browser to see the effect. If any other issues please report it at [Issues · PaRr0tBoY/Awesome-Vivaldi](https://github.com/PaRr0tBoY/Awesome-Vivaldi/issues?q=sort%3Aupdated-desc+is%3Aissue+is%3Aopen) and I'll ~~probably~~ fix it at weekend.
 
-> Optionally, get an glm api key here for AI features [here](https://open.bigmodel.cn/usercenter/proj-mgmt/apikeys). FYI, It's experimental and not stable though. You can use other AI providers' api as well as long as it's compatible with OpenAI api.
+> Optionally, get an free OpenAI-Compatible Api Key here for AI features [here]([cheahjs/free-llm-api-resources](https://github.com/cheahjs/free-llm-api-resources?tab=readme-ov-file#opencode-zen)).
 
-# FAQ
+## FAQ
 
-## ❓ I installed everything, but nothing changed
+### ❓ What is OpenAI-compatible API?
+
+[See the explanation here](https://bentoml.com/llm/llm-inference-basics/openai-compatible-api#:~:text=What%20is%20an,across%20various%20industries.)
+
+### ❓ I installed everything, but nothing changed
 
 **Check these first:**
 - [ ] Enable **CSS Customization** at `vivaldi://flags`
 - [ ] Set correct folder path  
   → `Settings > Appearance > Custom UI Modifications`  
   → `Awesome-Vivaldi-main\Vivaldi7.9Stable`
-- [ ] Copied all the **contents** under ./Javascripts/ to your `<YOURVIVALDIDIRECTORY>`\Application\<VERSI0N>\resources\vivaldi\
+- [ ] Copied all the **contents** under [./Javascripts](./Javascripts/) to your `<YOURVIVALDIDIRECTORY>\Application\<VERSI0N>\resources\vivaldi\`
 
 ---
 
-## ❓ Why are some features missing?
+### ❓ Why are some features missing?
 
-### 🤖 AI features not working
+#### 🤖 AI features not working
 These mods **do NOT work out of the box**.
 
 You must configure your own **OpenAI-compatible API**  
@@ -208,13 +216,14 @@ You must configure your own **OpenAI-compatible API**
 
 ---
 
-### ⭐ FavouriteTabs not showing
-- Only **first 9 pinned tabs / tab stacks** are supported
-- Anything beyond that won’t appear in grid view
+#### ⭐ FavouriteTabs not showing
+- Only **first 9 pinned tabs / tab stacks** are turned into grids.
+- Which you need to pin tabs to see it take effect.
+- This mods often caused side effect, for instance, break location of tabs' popup thumbnails.
 
 ---
 
-## ❓ I installed it correctly, but still don’t see changes
+### ❓ I installed it correctly, but still don’t see changes
 
 That’s normal.
 
@@ -225,7 +234,7 @@ That’s normal.
 
 ---
 
-## ❓ Some features seem disabled
+### ❓ Some features seem disabled
 
 Some mods are intentionally turned off (buggy / unfinished)
 
@@ -235,7 +244,7 @@ Some mods are intentionally turned off (buggy / unfinished)
 
 ---
 
-## ❓ Still not working?
+### ❓ Still not working?
 
 - Restart Vivaldi
 - Double-check file paths (most common issue)
