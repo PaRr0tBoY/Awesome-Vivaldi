@@ -240,7 +240,7 @@ Some mods are intentionally turned off (buggy / unfinished)
 
 **Enable them manually:**
 - CSS mods → [Import.css](./Import.css)
-- JS mods → [window.html](./Javascripts/winodws.html)
+- JS mods → [window.html](./Javascripts/window.html)
 
 ---
 
