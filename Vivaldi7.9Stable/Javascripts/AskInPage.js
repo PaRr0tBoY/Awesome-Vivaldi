@@ -8,6 +8,26 @@
 (() => {
   'use strict';
 
+  // ==================== AI Configuration ====================
+  // 1. Fill in apiKey.
+  // 2. Set apiEndpoint to the full chat completions URL.
+  // 3. Adjust model / timeout / maxTokens if needed.
+  // 4. If apiKey is empty, chat requests will stop with a config warning.
+  //
+  // Common examples:
+  // GLM: https://open.bigmodel.cn/api/paas/v4/chat/completions
+  // Groq: https://api.groq.com/openai/v1/chat/completions
+  // OpenRouter: https://openrouter.ai/api/v1/chat/completions
+  // DeepSeek: https://api.deepseek.com/chat/completions
+  const AI_CONFIG = {
+    apiEndpoint: 'https://api.groq.com/openai/v1/chat/completions',
+    apiKey: '',
+    model: 'groq/compound',
+    timeout: 90000,
+    temperature: 0.5,
+    maxTokens: 4096,
+  };
+
   const name = 'Ask in Page';
   const nameAttribute = 'ask-in-page';
   const webPanelId = 'WEBPANEL_ask-in-page-a1b2c3d4e5f6';
@@ -83,26 +103,6 @@
       aliases: ['list', 'bullet'],
     },
   ];
-  const AI_CONFIG = {
-    // apiEndpoint: 'https://open.bigmodel.cn/api/paas/v4',
-    // apiKey: '',
-    // model: 'glm-4.7-flash',
-    // apiEndpoint: 'https://api.minimaxi.com/v1',
-    // apiKey: '',
-    // model: 'MiniMax-M2.5',
-    apiEndpoint: 'https://api.groq.com/openai/v1',
-    apiKey: '',
-    model: 'groq/compound',
-    // apiEndpoint: 'https://openrouter.ai/api/v1',
-    // apiKey: '',
-    // model: 'openrouter/free',
-    //apiEndpoint: 'https://integrate.api.nvidia.com/v1',
-    //apiKey: '',
-    //model: 'google/gemma-4-31b-it',
-    timeout: 90000,
-    temperature: 0.5,
-    maxTokens: 4096,
-  };
   const CONTEXT_LIMITS = {
     pageContentChars: 18000,
     filePreviewChars: 18000,
@@ -670,7 +670,7 @@
   function extractThinkingSegments(text) {
     const raw = String(text || '').replace(/\r/g, '');
     let reasoning = '';
-    const visible = raw.replace(/<\s*(?:think|thinking)\s*>([\s\S]*?)<\s*\/\s*(?:think|thinking)\s*>/gi, (_, captured) => {
+    const visible = raw.replace(/<\s*(?:think|thinking|thought|reasoning)\b[^>]*>([\s\S]*?)<\s*\/\s*(?:think|thinking|thought|reasoning)\s*>/gi, (_, captured) => {
       const normalized = String(captured || '').trim();
       if (normalized) {
         reasoning += (reasoning ? '\n' : '') + normalized;
@@ -683,70 +683,171 @@
     };
   }
 
-  function createThinkingStreamState() {
+  function createResponseNormalizationState() {
     return {
-      inside: false,
-      buffer: '',
+      rawTranscript: '',
+      visibleChunks: [],
+      reasoningChunks: [],
+      unknownChunks: [],
+      diagnostics: [],
+      providerSignals: {
+        visibleChunkCount: 0,
+        reasoningChunkCount: 0,
+        unknownChunkCount: 0,
+      },
     };
   }
 
-  function consumeThinkingStreamChunk(streamState, chunkText) {
-    streamState.buffer += String(chunkText || '');
-    let visible = '';
-    let reasoning = '';
-
-    while (streamState.buffer) {
-      if (streamState.inside) {
-        const closeMatch = streamState.buffer.match(/<\s*\/\s*(?:think|thinking)\s*>/i);
-        if (!closeMatch) {
-          break;
-        }
-        reasoning += streamState.buffer.slice(0, closeMatch.index);
-        streamState.buffer = streamState.buffer.slice(closeMatch.index + closeMatch[0].length);
-        streamState.inside = false;
-        continue;
-      }
-
-      const openMatch = streamState.buffer.match(/<\s*(?:think|thinking)\s*>/i);
-      if (!openMatch) {
-        const partialTag = streamState.buffer.match(/<\s*\/?\s*(?:think|thinking)?\s*$/i);
-        if (partialTag) {
-          visible += streamState.buffer.slice(0, partialTag.index);
-          streamState.buffer = streamState.buffer.slice(partialTag.index);
-        } else {
-          visible += streamState.buffer;
-          streamState.buffer = '';
-        }
-        break;
-      }
-
-      visible += streamState.buffer.slice(0, openMatch.index);
-      streamState.buffer = streamState.buffer.slice(openMatch.index + openMatch[0].length);
-      streamState.inside = true;
+  function appendNormalizedChunk(state, channel, text) {
+    const normalizedChannel = channel === 'visible' || channel === 'reasoning' ? channel : 'unknown';
+    const chunk = String(text || '');
+    if (!chunk) {
+      return;
     }
-
-    return {
-      reasoning: reasoning,
-      content: visible,
-    };
+    if (normalizedChannel === 'visible') {
+      state.visibleChunks.push(chunk);
+      state.providerSignals.visibleChunkCount += 1;
+      return;
+    }
+    if (normalizedChannel === 'reasoning') {
+      state.reasoningChunks.push(chunk);
+      state.providerSignals.reasoningChunkCount += 1;
+      return;
+    }
+    state.unknownChunks.push(chunk);
+    state.providerSignals.unknownChunkCount += 1;
   }
 
-  function flushThinkingStreamState(streamState) {
-    const remaining = String(streamState.buffer || '');
-    streamState.buffer = '';
-    if (!remaining) {
-      return { reasoning: '', content: '' };
+  function addNormalizationDiagnostic(state, code, detail) {
+    state.diagnostics.push({
+      code,
+      detail: detail || '',
+    });
+  }
+
+  function looksLikeStructuredVisibleContent(text) {
+    const value = String(text || '').trim();
+    if (!value) {
+      return false;
     }
-    if (streamState.inside) {
-      streamState.inside = false;
+    if (/<\s*table\b[\s\S]*?>/i.test(value)) {
+      return true;
+    }
+    if (/^```[\s\S]*```$/m.test(value)) {
+      return true;
+    }
+    if (/^\s*\|.+\|\s*$/m.test(value) && /^\s*\|?(?:\s*:?-{3,}:?\s*\|)+\s*(?:\s*:?-{3,}:?\s*)?\|?\s*$/m.test(value)) {
+      return true;
+    }
+    if (/^(?:#{1,4}\s+.+|\d+\.\s+.+|[-*]\s+.+)$/m.test(value) && value.length > 40) {
+      return true;
+    }
+    return false;
+  }
+
+  function findVisibleStructureStart(text) {
+    const value = String(text || '');
+    const patterns = [
+      /<\s*table\b/i,
+      /```/,
+      /^\s*\|.+\|\s*$/m,
+      /(?:^|\n)\s*#{1,4}\s+\S/m,
+    ];
+    const indexes = patterns
+      .map((pattern) => {
+        const match = value.match(pattern);
+        return match?.index ?? -1;
+      })
+      .filter((index) => index >= 0);
+    if (!indexes.length) {
+      return -1;
+    }
+    return Math.min(...indexes);
+  }
+
+  function splitTaggedThinkingContent(text) {
+    const raw = String(text || '').replace(/\r/g, '');
+    if (!raw) {
       return {
-        reasoning: remaining.replace(/<\s*\/?\s*(?:think|thinking)\s*>/gi, ''),
-        content: '',
+        thinking: '',
+        visible: '',
       };
     }
+    let thinking = '';
+    const visible = raw.replace(/<\s*(?:think|thinking|thought|reasoning)\b[^>]*>([\s\S]*?)<\s*\/\s*(?:think|thinking|thought|reasoning)\s*>/gi, (_, captured) => {
+      const normalized = String(captured || '').trim();
+      if (normalized) {
+        thinking += (thinking ? '\n' : '') + normalized;
+      }
+      return '';
+    });
     return {
-      reasoning: '',
-      content: remaining.replace(/<\s*\/?\s*(?:think|thinking)\s*>/gi, ''),
+      thinking: thinking.trim(),
+      visible: visible.trim(),
+    };
+  }
+
+  function finalizeNormalizedResponse(state) {
+    const visibleRaw = state.visibleChunks.join('');
+    const reasoningRaw = state.reasoningChunks.join('');
+    const unknownRaw = state.unknownChunks.join('');
+
+    const visibleSplit = splitTaggedThinkingContent(visibleRaw);
+    let finalVisible = cleanModelText([visibleSplit.visible, unknownRaw].filter(Boolean).join('')).trim();
+    let finalThinking = [visibleSplit.thinking, reasoningRaw].filter(Boolean).join('\n').trim();
+    let confidence = 'high';
+    let fallbackMode = 'none';
+
+    const reasoningSplit = splitTaggedThinkingContent(finalThinking);
+    finalThinking = reasoningSplit.thinking || finalThinking;
+
+    if (reasoningSplit.visible) {
+      finalVisible = [finalVisible, reasoningSplit.visible].filter(Boolean).join('\n').trim();
+      fallbackMode = 'promoted_reasoning_trailing_visible';
+      confidence = 'medium';
+      addNormalizationDiagnostic(state, 'promoted_reasoning_trailing_visible', 'Detected visible content outside tagged think blocks inside reasoning channel.');
+    }
+
+    if (!finalVisible && finalThinking) {
+      const structureStart = findVisibleStructureStart(finalThinking);
+      if (structureStart >= 0) {
+        const before = finalThinking.slice(0, structureStart).trim();
+        const after = finalThinking.slice(structureStart).trim();
+        if (after) {
+          finalVisible = after;
+          finalThinking = before;
+          fallbackMode = 'promoted_reasoning_structured_suffix';
+          confidence = 'medium';
+          addNormalizationDiagnostic(state, 'promoted_reasoning_structured_suffix', 'Detected structured visible content inside reasoning channel.');
+        }
+      }
+    }
+
+    if (!finalVisible && finalThinking && looksLikeStructuredVisibleContent(finalThinking)) {
+      finalVisible = finalThinking;
+      finalThinking = '';
+      fallbackMode = 'reasoning_only_structured_visible';
+      confidence = 'low';
+      addNormalizationDiagnostic(state, 'reasoning_only_structured_visible', 'Reasoning channel looked like final answer, promoted whole content.');
+    }
+
+    if (!finalVisible && !finalThinking && unknownRaw.trim()) {
+      finalVisible = cleanModelText(unknownRaw).trim();
+      fallbackMode = 'unknown_channel_visible';
+      confidence = 'low';
+      addNormalizationDiagnostic(state, 'unknown_channel_visible', 'Used unknown channel content as visible fallback.');
+    }
+
+    return {
+      visibleText: finalVisible,
+      thinkingText: finalThinking.trim(),
+      rawVisibleText: visibleRaw,
+      rawReasoningText: reasoningRaw,
+      rawUnknownText: unknownRaw,
+      fallbackMode,
+      confidence,
+      diagnostics: state.diagnostics.slice(),
+      providerSignals: Object.assign({}, state.providerSignals),
     };
   }
 
@@ -759,7 +860,7 @@
   }
 
   function maskApiEndpoint(endpoint) {
-    return String(endpoint || '').replace(/\/$/, '') + '/chat/completions';
+    return String(endpoint || '').trim();
   }
 
   function logAiCompose(groupTitle, payload) {
@@ -4056,7 +4157,7 @@
       let answerText = '';
       let reasoningText = '';
       let rawResponseBody = '';
-      const thinkingStreamState = createThinkingStreamState();
+      const normalizationState = createResponseNormalizationState();
       let displayedLength = 0;
       let playbackCarry = 0;
       let playbackLastTick = 0;
@@ -4144,7 +4245,7 @@
       }
 
       try {
-        const response = await fetch(AI_CONFIG.apiEndpoint.replace(/\/$/, '') + '/chat/completions', {
+        const response = await fetch(AI_CONFIG.apiEndpoint, {
           method: 'POST',
           headers: {
             Authorization: 'Bearer ' + AI_CONFIG.apiKey,
@@ -4176,22 +4277,36 @@
             answerText: data?.choices?.[0]?.message?.content || '',
             reasoningText: data?.choices?.[0]?.message?.reasoning_content || data?.choices?.[0]?.message?.reasoning || '',
           });
-          const fallbackReasoningField = cleanModelText(
+          appendNormalizedChunk(
+            normalizationState,
+            'reasoning',
             data?.choices?.[0]?.message?.reasoning_content ||
             data?.choices?.[0]?.message?.reasoning ||
+            data?.choices?.[0]?.message?.thinking ||
             ''
           );
-          const fallbackContentSegments = extractThinkingSegments(data?.choices?.[0]?.message?.content || '');
-          const fallbackReasoningCombined = [fallbackReasoningField, fallbackContentSegments.reasoning].filter(Boolean).join('');
-          if (fallbackReasoningCombined) {
-            reasoningText = appendReasoningText(reasoningText, fallbackReasoningCombined);
-          }
-          answerText += cleanModelText(fallbackContentSegments.content);
+          appendNormalizedChunk(
+            normalizationState,
+            'visible',
+            data?.choices?.[0]?.message?.content || ''
+          );
+          const normalizedResult = finalizeNormalizedResponse(normalizationState);
+          reasoningText = normalizedResult.thinkingText;
+          answerText = normalizedResult.visibleText;
           scheduleAnswerPlayback();
           streamCompleted = true;
           finalizeThoughtUi(scaffold, reasoningText, Math.round((Date.now() - startedAt) / 1000));
           const playedText = await playbackDone;
           const finalText = playedText || cleanModelText(answerText).trim() || '我已经完成处理，但模型没有返回可显示的正文。';
+          logAiDebug('AI Response Normalized', {
+            turnId: turnData.id,
+            visibleText: normalizedResult.visibleText,
+            thinkingText: normalizedResult.thinkingText,
+            fallbackMode: normalizedResult.fallbackMode,
+            confidence: normalizedResult.confidence,
+            diagnostics: normalizedResult.diagnostics,
+            providerSignals: normalizedResult.providerSignals,
+          });
           turnData.aiReasoningText = reasoningText.trim();
           turnData.aiReplyText = finalText;
           if (!(state.pendingAiTasks.get(turnData.id)?.stoppedByUser)) {
@@ -4223,37 +4338,26 @@
               continue;
             }
             const delta = parsed.choices?.[0]?.delta || {};
-            const reasoningFieldDelta = cleanModelText(
+            const reasoningFieldDelta =
               delta.reasoning_content ||
               delta.reasoning ||
               delta.thinking ||
               parsed.choices?.[0]?.message?.reasoning_content ||
-              ''
-            );
-            const contentSegments = consumeThinkingStreamChunk(
-              thinkingStreamState,
-              delta.content || parsed.choices?.[0]?.message?.content || ''
-            );
-            const reasoningDelta = [reasoningFieldDelta, contentSegments.reasoning].filter(Boolean).join('');
-            const contentDelta = cleanModelText(contentSegments.content);
-            if (reasoningDelta) {
-              reasoningText = appendReasoningText(reasoningText, reasoningDelta);
-            }
+              '';
+            const contentDelta = delta.content || parsed.choices?.[0]?.message?.content || '';
+            appendNormalizedChunk(normalizationState, 'reasoning', reasoningFieldDelta);
+            appendNormalizedChunk(normalizationState, 'visible', contentDelta);
             if (contentDelta) {
-              answerText += contentDelta;
+              const normalizedResult = finalizeNormalizedResponse(normalizationState);
+              answerText = normalizedResult.visibleText;
+              reasoningText = normalizedResult.thinkingText;
               scheduleAnswerPlayback();
             }
           }
         }
-        const trailingSegments = flushThinkingStreamState(thinkingStreamState);
-        const trailingReasoning = cleanModelText(trailingSegments.reasoning);
-        const trailingContent = cleanModelText(trailingSegments.content);
-        if (trailingReasoning) {
-          reasoningText = appendReasoningText(reasoningText, trailingReasoning);
-        }
-        if (trailingContent) {
-          answerText += trailingContent;
-        }
+        const normalizedResult = finalizeNormalizedResponse(normalizationState);
+        reasoningText = normalizedResult.thinkingText;
+        answerText = normalizedResult.visibleText;
         scheduleAnswerPlayback();
         streamCompleted = true;
         finalizeThoughtUi(scaffold, reasoningText, Math.round((Date.now() - startedAt) / 1000));
@@ -4268,6 +4372,15 @@
           rawResponseBody: rawResponseBody.trim(),
           answerText,
           reasoningText,
+        });
+        logAiDebug('AI Response Normalized', {
+          turnId: turnData.id,
+          visibleText: normalizedResult.visibleText,
+          thinkingText: normalizedResult.thinkingText,
+          fallbackMode: normalizedResult.fallbackMode,
+          confidence: normalizedResult.confidence,
+          diagnostics: normalizedResult.diagnostics,
+          providerSignals: normalizedResult.providerSignals,
         });
         const playedText = await playbackDone;
         const finalText = playedText || cleanModelText(answerText).trim() || '我已经完成处理，但模型没有返回可显示的正文。';
