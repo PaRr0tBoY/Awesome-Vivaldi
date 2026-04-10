@@ -1,0 +1,404 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/omniboxPrivate.html#top)
+
+## vivaldi.omniboxPrivate Modders API Reference
+
+Use the `vivaldi.omniboxPrivate` API to start queries with the address field omnibox..
+
+## Navigation
+
+### Types
+
+-   [OmniboxItemCategory](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/omniboxPrivate.html#OmniboxItemCategory)
+-   [OmniboxProviderName](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/omniboxPrivate.html#OmniboxProviderName)
+-   [OmniboxFocusType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/omniboxPrivate.html#OmniboxFocusType)
+-   [PageClassification](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/omniboxPrivate.html#PageClassification)
+-   [OmniboxItem](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/omniboxPrivate.html#OmniboxItem)
+
+### Listeners
+
+-   [onOmniboxResultChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/omniboxPrivate.html#onOmniboxResultChanged)
+
+### Methods
+
+-   [startOmnibox](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/omniboxPrivate.html#startOmnibox)
+-   [addOrUpdateShortcut](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/omniboxPrivate.html#addOrUpdateShortcut)
+-   [deleteShortcut](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/omniboxPrivate.html#deleteShortcut)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/omniboxPrivate.html#OmniboxItemCategory)OmniboxItemCategory
+
+`ENUM`
+
+The category in which the item belong.
+
+-   search
+-   history
+-   search-suggestion
+-   url-suggestion
+-   direct-match
+-   bookmark
+-   nickname
+-   open-tab
+-   top-sites
+-   clipboard
+-   calculator
+-   internal-message
+-   other
+-   recent-typed-history
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/omniboxPrivate.html#OmniboxProviderName)OmniboxProviderName
+
+`ENUM`
+
+⚠ NO DESCRIPTION PROVIDED
+
+-   Bookmark
+-   Builtin
+-   Clipboard
+-   Document
+-   HistoryQuick
+-   HistoryURL
+-   Keyword
+-   OnDeviceHead
+-   Search
+-   Shortcuts
+-   ZeroSuggest
+-   LocalHistoryZeroSuggest
+-   QueryTile
+-   MostVisitedSites
+-   VerbatimMatch
+-   VoiceSuggest
+-   HistoryFuzzy
+-   OpenTab
+-   HistoryCluster
+-   Calculator
+-   FeaturedSearch
+-   HistoryEmbeddings
+-   BookmarkNickname
+-   DirectMatch
+-   RecentTypedHistory
+-   Unknown
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/omniboxPrivate.html#OmniboxFocusType)OmniboxFocusType
+
+`ENUM`
+
+⚠ NO DESCRIPTION PROVIDED
+
+-   INTERACTION\_DEFAULT
+-   INTERACTION\_FOCUS
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/omniboxPrivate.html#PageClassification)PageClassification
+
+`ENUM`
+
+⚠ NO DESCRIPTION PROVIDED
+
+-   NTP
+-   BLANK
+-   OTHER
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/omniboxPrivate.html#OmniboxItem)OmniboxItem
+
+An object encapsulating one result of a omnibox query.
+
+Properties:
+
+allowedToBeDefaultMatch
+
+```
+boolean
+```
+
+Is allowed to be default match.
+
+contents
+
+```
+string
+```
+
+The main text displayed in the address bar dropdown.
+
+destinationUrl
+
+```
+string
+```
+
+The destination url
+
+fillIntoEdit
+
+```
+string
+```
+
+The text to fill into edit.
+
+hasTabMatch
+
+```
+boolean
+```
+
+Matches open tab.
+
+relevance
+
+```
+integer
+```
+
+The relevance score.
+
+providerName
+
+```
+OmniboxProviderName
+```
+
+The provider name.
+
+transition
+
+```
+historyPrivate.TransitionType
+```
+
+The transition type to use when the user opens this match.
+
+description
+
+```
+string
+```
+
+Helper text, such as a title, description or search.
+
+inlineAutocompletion
+
+```
+string
+```
+
+The inline autocompletion to display after the user's input in the omnibox, if this match becomes the default match. It may be empty.
+
+category
+
+```
+OmniboxItemCategory
+```
+
+The category in which the item belong.
+
+deletable
+
+```
+boolean
+```
+
+Should the user be able to delete this match.
+
+type
+
+```
+integer
+```
+
+Same as AutocompleteMatch::Type. Used by AddOrUpdateShortcut.
+
+folderId
+
+```
+integer
+```
+
+Folder id. Set for bookmark folders that match a nickname, otherwise 0.
+
+faviconUrl
+
+```
+string
+```
+
+The url of the favicon.
+
+faviconType
+
+```
+string
+```
+
+How to load the favicon. This is used by Favicon component.
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/omniboxPrivate.html#onOmniboxResultChanged)onOmniboxResultChanged
+
+Fired when omnibox results are ready.
+
+Parameters:
+
+results
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+combinedResults
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   OmniboxItem
+
+inputText
+
+```
+string
+```
+
+User-provided text to be completed.
+
+done
+
+```
+boolean
+```
+
+No more events for query will follow.
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/omniboxPrivate.html#startOmnibox)startOmnibox
+
+Parameters:
+
+parameters
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+query
+
+```
+string
+```
+
+A piece of text entered in Omnibox
+
+preventInlineAutocomplete
+
+```
+boolean
+```
+
+Prevent inline autocomplete
+
+clearStateBeforeSearching
+
+```
+boolean
+```
+
+Don't reuse previous results from slow providers while waiting for their new results.
+
+fromSearchField
+
+```
+boolean
+```
+
+If true, the query originated from search field. Limiting the number of providers run
+
+searchEngineGUID
+
+```
+string
+```
+
+Contains the GUID of the search engine. If no search engine was specified, string will be empty
+
+focusType
+
+```
+OmniboxFocusType
+```
+
+Specify the UI interaction that started autocomplete. ZeroSuggestion is only activated on specific focus
+
+pageClassification
+
+```
+PageClassification
+```
+
+The type of page the user was on when they used the omnibox. Or the type of page for which suggestions were prefetched from the server
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/omniboxPrivate.html#addOrUpdateShortcut)addOrUpdateShortcut
+
+Parameters:
+
+text
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+item
+
+```
+OmniboxItem
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/omniboxPrivate.html#deleteShortcut)deleteShortcut
+
+Parameters:
+
+url
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED

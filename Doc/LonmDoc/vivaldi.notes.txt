@@ -1,0 +1,628 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#top)
+
+## vivaldi.notes Modders API Reference
+
+Use the `chrome.notes` API to manipulate notes.
+
+## Navigation
+
+### Types
+
+-   [NodeType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#NodeType)
+-   [NoteTreeNode](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#NoteTreeNode)
+-   [CreateDetails](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#CreateDetails)
+
+### Listeners
+
+-   [onCreated](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#onCreated)
+-   [onRemoved](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#onRemoved)
+-   [onChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#onChanged)
+-   [onMoved](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#onMoved)
+-   [onImportBegan](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#onImportBegan)
+-   [onImportEnded](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#onImportEnded)
+
+### Methods
+
+-   [get](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#get)
+-   [getTree](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#getTree)
+-   [create](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#create)
+-   [update](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#update)
+-   [remove](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#remove)
+-   [search](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#search)
+-   [move](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#move)
+-   [emptyTrash](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#emptyTrash)
+-   [beginImport](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#beginImport)
+-   [endImport](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#endImport)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#NodeType)NodeType
+
+`ENUM`
+
+The kind of the node.
+
+-   note: A regular note. May have attachments as children.
+-   separator: A separator
+-   attachment: An attachment. Content is the attachment checksum.
+-   folder: A folder. May have notes and separators as children.
+-   main: The main notes folder.
+-   other: The other notes folder.
+-   trash: The trash.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#NoteTreeNode)NoteTreeNode
+
+A node (either a note-entry or a folder) in the notes tree. Child nodes are ordered within their parent folder.
+
+Properties:
+
+id
+
+```
+string
+```
+
+The unique identifier for the node. IDs are unique within the current profile, and they remain valid even after the browser is restarted.
+
+parentId
+
+(optional)
+
+```
+string
+```
+
+The `id` of the parent folder. Omitted for the root node.
+
+index
+
+(optional)
+
+```
+integer
+```
+
+The 0-based position of this node within its parent folder. Omitted for the root node.
+
+title
+
+```
+string
+```
+
+Title/subject of note.
+
+content
+
+(optional)
+
+```
+string
+```
+
+The content of the note. Omitted for separators and folders. For attachments, this contains the attachment checksum.
+
+url
+
+(optional)
+
+```
+string
+```
+
+A URL associated with the note. Omitted for separators and folders.
+
+dateAdded
+
+(optional)
+
+```
+number
+```
+
+When this node was created, in milliseconds since the epoch (`new Date(dateAdded)`).
+
+dateModified
+
+(optional)
+
+```
+number
+```
+
+When this node was last modified, in milliseconds since the epoch (`new Date(dateModified)`).
+
+children
+
+(optional)
+
+An ordered list of children of this node. Only present for folders
+
+`Array` of:
+
+-   NoteTreeNode
+
+type
+
+```
+NodeType
+```
+
+Which kind of node this is.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#CreateDetails)CreateDetails
+
+Object passed to the create() function.
+
+Properties:
+
+parentId
+
+(optional)
+
+```
+string
+```
+
+Defaults to the root folder.
+
+index
+
+(optional)
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+type
+
+```
+NodeType
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+title
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+url
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+content
+
+(optional)
+
+```
+string
+```
+
+The content of the node. For attachments, this is either a known attachment checksum copied from another attachment or a new base64-encoded attachment content
+
+date
+
+(optional)
+
+```
+number
+```
+
+A timestamp of the node's creation.
+
+lastmod
+
+(optional)
+
+```
+number
+```
+
+A timestamp of the node's last modification date.
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#onCreated)onCreated
+
+Fired when a bookmark or folder is created.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+note
+
+```
+NoteTreeNode
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#onRemoved)onRemoved
+
+Fired when a note or folder is removed. When a folder is removed recursively, a single notification is fired for the folder, and none for its contents.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+removeInfo
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+parentId
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+index
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#onChanged)onChanged
+
+Fired when a note or folder changes.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+noteAfterChange
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+title
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+content
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+url
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+dateModified
+
+(optional)
+
+```
+number
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#onMoved)onMoved
+
+Fired when a note or folder is moved.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+The id of the moved note
+
+moveInfo
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+parentId
+
+```
+string
+```
+
+The id of the parent folder
+
+index
+
+```
+integer
+```
+
+The index inside the parent folder
+
+oldParentId
+
+```
+string
+```
+
+Previous parent id
+
+oldIndex
+
+```
+integer
+```
+
+Previous index inside the parent folder
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#onImportBegan)onImportBegan
+
+Fired when a notes import session is begun. Expensive observers should ignore onCreated updates until onImportEnded is fired. Observers should still handle other notifications immediately.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#onImportEnded)onImportEnded
+
+Fired when a notes import session is ended.
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#get)get
+
+Retrieves the specified NoteTreeNode(s).
+
+Parameters:
+
+idOrIdList (overloaded)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+idOrIdList (overloaded)
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   string
+-   int64Minimum items: 1
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#getTree)getTree
+
+Retrieves the entire Notes hierarchy.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#create)create
+
+Creates a bookmark or folder under the specified parentId.
+
+Parameters:
+
+note
+
+```
+CreateDetails
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#update)update
+
+Updates the properties of a note or folder. Specify only the properties that you want to change; unspecified properties will be left unchanged. **Note:** Currently, only 'title' and 'url' are supported.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+changes
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+title
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+content
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+url
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#remove)remove
+
+Removes a note or an empty folder.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#search)search
+
+Parameters:
+
+query
+
+```
+string
+```
+
+A string of words matched agains note contents.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#move)move
+
+Moves the specified node to the provided location.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+The id to be moved
+
+destination
+
+```
+object
+```
+
+Object describing the target location
+
+Object Properties:
+
+parentId
+
+(optional)
+
+```
+string
+```
+
+Id of target folder
+
+index
+
+(optional)
+
+```
+integer
+```
+
+The index inside the target folder
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#emptyTrash)emptyTrash
+
+Empty the notes trash folder.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#beginImport)beginImport
+
+Signal that import has been started.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/notes.html#endImport)endImport
+
+Signal that import has been finished.

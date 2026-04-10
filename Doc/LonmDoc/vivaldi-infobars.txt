@@ -1,0 +1,228 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/infobars.html#top)
+
+## vivaldi.infobars Modders API Reference
+
+Use the `vivaldi.infobars` API to interact with infobars.
+
+## Navigation
+
+### Types
+
+-   [ButtonAction](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/infobars.html#ButtonAction)
+-   [InfobarButton](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/infobars.html#InfobarButton)
+-   [Infobar](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/infobars.html#Infobar)
+
+### Listeners
+
+-   [onInfobarCreated](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/infobars.html#onInfobarCreated)
+-   [onInfobarRemoved](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/infobars.html#onInfobarRemoved)
+
+### Methods
+
+-   [sendButtonAction](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/infobars.html#sendButtonAction)
+-   [showInfobar](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/infobars.html#showInfobar)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/infobars.html#ButtonAction)ButtonAction
+
+`ENUM`
+
+⚠ NO DESCRIPTION PROVIDED
+
+-   accept
+-   cancel
+-   link
+-   dismiss
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/infobars.html#InfobarButton)InfobarButton
+
+Button to be shown in the infobar.
+
+Properties:
+
+text
+
+```
+string
+```
+
+Text to be shown in the button.
+
+action
+
+```
+ButtonAction
+```
+
+The action to be performed when clicking this button.
+
+prominent
+
+```
+boolean
+```
+
+This is the prominent button and should receive styling accordingly.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/infobars.html#Infobar)Infobar
+
+Object passed to the onInfobarCreated event.
+
+Properties:
+
+tabId
+
+```
+integer
+```
+
+The tabId this infobar is associated with.
+
+identifier
+
+```
+integer
+```
+
+The identifier used to identify this infobar. It is only unique in combination with |tabId|.
+
+messageText
+
+```
+string
+```
+
+The message text to be shown in the infobar.
+
+buttons
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   InfobarButton
+
+linkText
+
+```
+string
+```
+
+The text associated with a link to be shown in the infobar.
+
+isCloseable
+
+```
+boolean
+```
+
+Should we have a dismiss button or not.
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/infobars.html#onInfobarCreated)onInfobarCreated
+
+Fired when a infobar has been created and should be shown.
+
+Parameters:
+
+params
+
+```
+Infobar
+```
+
+Information about the infobar.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/infobars.html#onInfobarRemoved)onInfobarRemoved
+
+Fired when a infobar has been removed and should no longer be visible.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+The tabId this infobar is associated with.
+
+identifier
+
+```
+integer
+```
+
+The identifier used to identify this infobar. It is only unique in combination with |tabId|.
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/infobars.html#sendButtonAction)sendButtonAction
+
+Send the action defined on the clicked button.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+The tabId this infobar is associated with.
+
+identifier
+
+```
+integer
+```
+
+The identifier used to identify this infobar. It is only unique in combination with |tabId|.
+
+action
+
+```
+string
+```
+
+The click action for this button. This must be the same as defined in the |InfoBarButton| type for this button.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/infobars.html#showInfobar)showInfobar
+
+Invokes an infobar in the specified tab.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+The tabId of the tab where the infobar will appear.

@@ -1,0 +1,534 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#top)
+
+## vivaldi.searchEngines Modders API Reference
+
+API for accessing Chromium's TemplateURLService.
+
+## Navigation
+
+### Types
+
+-   [DefaultType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#DefaultType)
+-   [TemplateURL](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#TemplateURL)
+-   [AllTemplateURLs](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#AllTemplateURLs)
+-   [SearchRequest](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#SearchRequest)
+-   [SwitchPromptData](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#SwitchPromptData)
+
+### Listeners
+
+-   [onTemplateUrlsChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#onTemplateUrlsChanged)
+
+### Methods
+
+-   [getKeywordForUrl](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#getKeywordForUrl)
+-   [getTemplateUrls](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#getTemplateUrls)
+-   [addTemplateUrl](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#addTemplateUrl)
+-   [removeTemplateUrl](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#removeTemplateUrl)
+-   [updateTemplateUrl](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#updateTemplateUrl)
+-   [moveTemplateUrl](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#moveTemplateUrl)
+-   [setDefault](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#setDefault)
+-   [getSearchRequest](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#getSearchRequest)
+-   [repairPrepopulatedTemplateUrls](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#repairPrepopulatedTemplateUrls)
+-   [getSwitchPromptData](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#getSwitchPromptData)
+-   [acknowledgeSwitchPrompt](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#acknowledgeSwitchPrompt)
+-   [setIsActive](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#setIsActive)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#DefaultType)DefaultType
+
+`ENUM`
+
+⚠ NO DESCRIPTION PROVIDED
+
+-   defaultSearch
+-   defaultPrivate
+-   defaultSearchField
+-   defaultSearchFieldPrivate
+-   defaultSpeeddials
+-   defaultSpeeddialsPrivate
+-   defaultImage
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#TemplateURL)TemplateURL
+
+Represents a specific search engine. Urls and post params should only be used when editing the properties of a TemplateURL
+
+Properties:
+
+guid
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+readOnly
+
+```
+boolean
+```
+
+Search engines are marked as read only if they are provided by extensions, or early on if they come from the set available before the service is fully loaded
+
+extensionId
+
+```
+string
+```
+
+For regular search engines, this string is empty. Otherwise it contains the id of the extension that provided the search.
+
+name
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+keyword
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+faviconUrl
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+url
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+postParams
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+suggestUrl
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+suggestPostParams
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+imageUrl
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+imagePostParams
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+prepopulateId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+starterPackId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+isActive
+
+```
+integer
+```
+
+0 is unspecified, 1 is active, 2 is inactive.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#AllTemplateURLs)AllTemplateURLs
+
+⚠ NO DESCRIPTION PROVIDED
+
+Properties:
+
+templateUrls
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   TemplateURL
+
+starterPackEngines
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   TemplateURL
+
+defaultSearch
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+defaultPrivate
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+defaultSearchField
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+defaultSearchFieldPrivate
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+defaultSpeeddials
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+defaultSpeeddialsPrivate
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+defaultImage
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+systemDefaultSearchChanged
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#SearchRequest)SearchRequest
+
+⚠ NO DESCRIPTION PROVIDED
+
+Properties:
+
+url
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+contentType
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+postParams
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#SwitchPromptData)SwitchPromptData
+
+⚠ NO DESCRIPTION PROVIDED
+
+Properties:
+
+shouldPrompt
+
+```
+boolean
+```
+
+True if the user should be prompted to switch search engines.
+
+promptType
+
+```
+string
+```
+
+Type of the dialog that should be displayed.
+
+currentSearchEngine
+
+```
+TemplateURL
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+partnerSearchEngines
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   TemplateURL
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#onTemplateUrlsChanged)onTemplateUrlsChanged
+
+Informs that template URLs have changed
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#getKeywordForUrl)getKeywordForUrl
+
+Obtains the default keyword for a given search URL
+
+Parameters:
+
+url
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#getTemplateUrls)getTemplateUrls
+
+Retrieves data about all template URLS.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#addTemplateUrl)addTemplateUrl
+
+Adds a template url.
+
+Parameters:
+
+templateUrl
+
+```
+TemplateURL
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#removeTemplateUrl)removeTemplateUrl
+
+Removes a template url.
+
+Parameters:
+
+guid
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#updateTemplateUrl)updateTemplateUrl
+
+Changes a template url.
+
+Parameters:
+
+templateUrl
+
+```
+TemplateURL
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#moveTemplateUrl)moveTemplateUrl
+
+reorders by moving a search engine before another one
+
+Parameters:
+
+guid
+
+```
+string
+```
+
+The search engine to move
+
+successor\_guid
+
+(optional)
+
+```
+string
+```
+
+The search engine will be moved before the one with this guid or to the end if omitted. Must be different from guid.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#setDefault)setDefault
+
+Sets a default template url.
+
+Parameters:
+
+defaultType
+
+```
+DefaultType
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+guid
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#getSearchRequest)getSearchRequest
+
+Provides the request info to use for performing a search
+
+Parameters:
+
+guid
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+searchTerms
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#repairPrepopulatedTemplateUrls)repairPrepopulatedTemplateUrls
+
+resets the prepopulated template urls and the default search
+
+Parameters:
+
+onlyKeepPrepopulated
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#getSwitchPromptData)getSwitchPromptData
+
+Gathers and returns the needed info for partner search engine switch dialog.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#acknowledgeSwitchPrompt)acknowledgeSwitchPrompt
+
+Mark current switch prompt as seen.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/searchEngines.html#setIsActive)setIsActive
+
+Used to enable or disable a starter pack engine.
+
+Parameters:
+
+guid
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+isActive
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED

@@ -1,0 +1,793 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#top)
+
+## vivaldi.menubarMenu Modders API Reference
+
+Use the `vivaldi.menubarMenu` API to show a menubar menu for windows and linux.
+
+## Navigation
+
+### Types
+
+-   [ContainerType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#ContainerType)
+-   [SortOrder](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#SortOrder)
+-   [SortField](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#SortField)
+-   [Edge](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#Edge)
+-   [ItemType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#ItemType)
+-   [Rect](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#Rect)
+-   [Icons](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#Icons)
+-   [Item](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#Item)
+-   [Separator](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#Separator)
+-   [Container](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#Container)
+-   [Element](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#Element)
+-   [Menu](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#Menu)
+-   [EventState](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#EventState)
+-   [Disposition](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#Disposition)
+-   [BookmarkCommand](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#BookmarkCommand)
+-   [BookmarkAction](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#BookmarkAction)
+-   [Action](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#Action)
+-   [Update](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#Update)
+
+### Listeners
+
+-   [onOpen](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#onOpen)
+-   [onClose](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#onClose)
+-   [onAction](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#onAction)
+-   [onOpenBookmark](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#onOpenBookmark)
+-   [onBookmarkAction](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#onBookmarkAction)
+-   [onHover](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#onHover)
+-   [onError](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#onError)
+
+### Methods
+
+-   [show](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#show)
+-   [getMaxId](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#getMaxId)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#ContainerType)ContainerType
+
+`ENUM`
+
+Defines content of a container.
+
+-   bookmarks
+-   history
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#SortOrder)SortOrder
+
+`ENUM`
+
+Defines how to sort container items.
+
+-   ascending
+-   descending
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#SortField)SortField
+
+`ENUM`
+
+Defines what element to use as sort key.
+
+-   title
+-   url
+-   nickname
+-   description
+-   dateAdded
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#Edge)Edge
+
+`ENUM`
+
+Defines position of menu items added in chrome code wrt container items.
+
+-   above
+-   below
+-   off
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#ItemType)ItemType
+
+`ENUM`
+
+What kind of item.
+
+-   command
+-   checkbox
+-   radio
+-   folder
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#Rect)Rect
+
+Position and size of element in menu bar.
+
+Properties:
+
+x
+
+```
+integer
+```
+
+Left position of item that opens menu, screen coordinates.
+
+y
+
+```
+integer
+```
+
+Top position of item that opens menu, screen coordinates.
+
+width
+
+```
+integer
+```
+
+Width of item that opens menu.
+
+height
+
+```
+integer
+```
+
+Height of item that opens menu.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#Icons)Icons
+
+Icons
+
+Icons encoded as base64.
+
+`Array` of:
+
+-   string
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#Item)Item
+
+One menu item.
+
+Properties:
+
+id
+
+```
+integer
+```
+
+The unique id of item.
+
+name
+
+```
+string
+```
+
+Text in item.
+
+type
+
+```
+ItemType
+```
+
+Defaults to 'normal'.
+
+selected
+
+(optional)
+
+```
+boolean
+```
+
+Whether item is initially selected. Default to false.
+
+enabled
+
+(optional)
+
+```
+boolean
+```
+
+Whether item is enabled or not (grayed out) . Defaults to true.
+
+visible
+
+(optional)
+
+```
+boolean
+```
+
+Whether item is visible or not. Defaults to true.
+
+checked
+
+(optional)
+
+```
+boolean
+```
+
+true if the checkbox is checked. Ignored unless type is 'checkbox' or 'radiobutton'.
+
+radiogroup
+
+(optional)
+
+```
+integer
+```
+
+The radiobutton group this item belongs to. Must be present for a radio button.
+
+persistent
+
+(optional)
+
+```
+boolean
+```
+
+If true the menu item will remain open after menu item is clicked with mouse.
+
+shortcut
+
+(optional)
+
+```
+string
+```
+
+Shortcut to be displayed next to label.
+
+url
+
+(optional)
+
+```
+string
+```
+
+Url that can be used to determine a corresponding icon.
+
+icons
+
+(optional)
+
+```
+Icons
+```
+
+Icons for light and dark menus. There must be two icons and the last shall be for menus with a dark background.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#Separator)Separator
+
+One separator
+
+Properties:
+
+label
+
+(optional)
+
+```
+string
+```
+
+Text in item.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#Container)Container
+
+A collection of items set up and expanded from chrome.
+
+Properties:
+
+id
+
+```
+string
+```
+
+Parent id of data to display.
+
+type
+
+```
+ContainerType
+```
+
+What kind of data to expand in this container.
+
+offset
+
+```
+integer
+```
+
+Offset into folder/parent data.
+
+groupFolders
+
+```
+boolean
+```
+
+If sorted, this flag will group any subfolders together.
+
+edge
+
+```
+Edge
+```
+
+Where to place extra menu items
+
+sortField
+
+(optional)
+
+```
+SortField
+```
+
+Sort key for elements.
+
+sortOrder
+
+(optional)
+
+```
+SortOrder
+```
+
+Sort order for elements.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#Element)Element
+
+One element in menu. All optional, but one and only one of 'item', 'separator' or 'container' should be set. 'children' is only considered when 'item' is set.
+
+Properties:
+
+item
+
+(optional)
+
+```
+Item
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+separator
+
+(optional)
+
+```
+Separator
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+container
+
+(optional)
+
+```
+Container
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+children
+
+(optional)
+
+Child menu items.
+
+`Array` of:
+
+-   Element
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#Menu)Menu
+
+One menu with origin rect and a list if children.
+
+Properties:
+
+id
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+rect
+
+```
+Rect
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+children
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   Element
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#EventState)EventState
+
+Describes keyboard modifiers and mouse button state.
+
+Properties:
+
+ctrl
+
+```
+boolean
+```
+
+true if the Ctrl key is pressed when activating the menu.
+
+shift
+
+```
+boolean
+```
+
+true if the Shift key is pressed when activating the menu.
+
+alt
+
+```
+boolean
+```
+
+true if the Alt key is pressed when activating the menu.
+
+command
+
+```
+boolean
+```
+
+true if the Command key (Mac) is pressed when activating the menu.
+
+left
+
+```
+boolean
+```
+
+true if the left mouse button activated the menu.
+
+right
+
+```
+boolean
+```
+
+true if the right mouse button activated the menu.
+
+center
+
+```
+boolean
+```
+
+true if the center mouse button activated the menu.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#Disposition)Disposition
+
+`ENUM`
+
+Defines where a bookmark should be opened.
+
+-   setting
+-   current
+-   new-tab
+-   new-window
+-   new-private-window
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#BookmarkCommand)BookmarkCommand
+
+`ENUM`
+
+Defines a non-navigation bookmark action.
+
+-   edit
+-   addactivetab
+-   addfolder
+-   addbookmark
+-   addseparator
+-   cut
+-   copy
+-   paste
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#BookmarkAction)BookmarkAction
+
+Passed with bookmark activation
+
+Properties:
+
+id
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+command
+
+```
+BookmarkCommand
+```
+
+If set, disposition and background is ignored.
+
+disposition
+
+```
+Disposition
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+background
+
+```
+boolean
+```
+
+Extends disposition with a background option.
+
+state
+
+```
+EventState
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#Action)Action
+
+Passed with menu activation.
+
+Properties:
+
+id
+
+```
+integer
+```
+
+Command id.
+
+state
+
+```
+EventState
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+persistent
+
+```
+boolean
+```
+
+Menu not closing if true, update item.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#Update)Update
+
+Passed with menu update request.
+
+Properties:
+
+id
+
+```
+integer
+```
+
+Command id.
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#onOpen)onOpen
+
+Fires before menu opens.
+
+Parameters:
+
+id
+
+```
+integer
+```
+
+Menu id of the menu that opens.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#onClose)onClose
+
+Fires before menu closes.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#onAction)onAction
+
+Fired when menu item is activated.
+
+Parameters:
+
+action
+
+```
+Action
+```
+
+What action to execute.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#onOpenBookmark)onOpenBookmark
+
+Fired when bookmark menu item is activated.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+Window where action occurs.
+
+action
+
+```
+BookmarkAction
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#onBookmarkAction)onBookmarkAction
+
+Fired when bookmark command is activated.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+Window where action occurs.
+
+action
+
+```
+BookmarkAction
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#onHover)onHover
+
+Fired when a menu item with a url is highlighted.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+Window where hover occurs.
+
+url
+
+```
+string
+```
+
+Url in menu item.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#onError)onError
+
+Fired if an error condtion occurs that can not be routed with a callback.
+
+Parameters:
+
+text
+
+```
+string
+```
+
+Error message for logging purposes.
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#show)show
+
+Shows a context menu.
+
+Parameters:
+
+properties
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+id
+
+```
+integer
+```
+
+Id of the menu in the 'siblings' list to open.
+
+siblings
+
+List of menu entries.
+
+`Array` of:
+
+-   Menu
+
+icons
+
+```
+Icons
+```
+
+Default and folder icons.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubarMenu.html#getMaxId)getMaxId
+
+Returns the maximium id (elements) a menu can use.

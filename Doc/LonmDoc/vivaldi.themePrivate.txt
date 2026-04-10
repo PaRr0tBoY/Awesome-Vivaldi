@@ -1,0 +1,410 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#top)
+
+## vivaldi.themePrivate Modders API Reference
+
+Use the `vivaldi.themePrivate` to access the API.
+
+## Navigation
+
+### Types
+
+-   [BackgroundPosition](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#BackgroundPosition)
+-   [ThemeData](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#ThemeData)
+-   [ThemeObject](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#ThemeObject)
+-   [ExportOptions](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#ExportOptions)
+-   [ExportResult](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#ExportResult)
+-   [ImportOptions](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#ImportOptions)
+-   [ImportErrorKind](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#ImportErrorKind)
+-   [ImportError](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#ImportError)
+-   [ImportResult](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#ImportResult)
+
+### Listeners
+
+-   [onThemeDownloadStarted](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#onThemeDownloadStarted)
+-   [onThemeDownloadProgress](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#onThemeDownloadProgress)
+-   [onThemeDownloadCompleted](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#onThemeDownloadCompleted)
+-   [onThemesUpdated](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#onThemesUpdated)
+
+### Methods
+
+-   [export](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#export)
+-   [import](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#import)
+-   [download](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#download)
+-   [getThemeData](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#getThemeData)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#BackgroundPosition)BackgroundPosition
+
+`ENUM`
+
+⚠ NO DESCRIPTION PROVIDED
+
+-   stretch
+-   center
+-   repeat
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#ThemeData)ThemeData
+
+Basic typesafe theme data.
+
+Properties:
+
+id
+
+```
+string
+```
+
+The id of the queried theme. This is always set.
+
+isInstalled
+
+```
+boolean
+```
+
+Is the theme installed or not.
+
+version
+
+```
+number
+```
+
+If the theme is installed, this is the version of the installed theme.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#ThemeObject)ThemeObject
+
+ThemeObject
+
+```
+object
+```
+
+The theme object.
+
+Object Properties:
+
+type
+
+```
+any
+```
+
+preserveNull
+
+```
+True
+```
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#ExportOptions)ExportOptions
+
+⚠ NO DESCRIPTION PROVIDED
+
+Properties:
+
+returnBlob
+
+(optional)
+
+```
+boolean
+```
+
+When true, the theme archive is returned as a memory blob instead of asking the user to select the file.
+
+windowId
+
+(optional)
+
+```
+number
+```
+
+Window to show the file selection dialog to select the output file. Must not be given when |returnBlob| is true.
+
+dialogTitle
+
+(optional)
+
+```
+string
+```
+
+The title of the file selection dialog to select the output file. Must not be given when |returnBlob| is true.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#ExportResult)ExportResult
+
+⚠ NO DESCRIPTION PROVIDED
+
+Properties:
+
+success
+
+```
+boolean
+```
+
+True if the theme was successfully exported. False on errors or if the user cancelled operation.
+
+dataBlob
+
+(optional)
+
+```
+binary
+```
+
+The exported archive as binary blob. This is given only on success and ony when |returnBlob| is true in |ExportOptions|.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#ImportOptions)ImportOptions
+
+⚠ NO DESCRIPTION PROVIDED
+
+Properties:
+
+dataBlob
+
+```
+binary
+```
+
+The archive to import the theme from.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#ImportErrorKind)ImportErrorKind
+
+`ENUM`
+
+⚠ NO DESCRIPTION PROVIDED
+
+-   io
+-   badArchive
+-   badSettings
+-   network
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#ImportError)ImportError
+
+⚠ NO DESCRIPTION PROVIDED
+
+Properties:
+
+kind
+
+```
+ImportErrorKind
+```
+
+Generic error kind
+
+details
+
+```
+string
+```
+
+low-level error message in English
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#ImportResult)ImportResult
+
+⚠ NO DESCRIPTION PROVIDED
+
+Properties:
+
+error
+
+(optional)
+
+```
+ImportError
+```
+
+Error if any during the operation.
+
+themeID
+
+```
+string
+```
+
+The id of the imported theme or an empty string if the user cancels the import or on errors.
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#onThemeDownloadStarted)onThemeDownloadStarted
+
+Fired when the theme download is starting.
+
+Parameters:
+
+themeId
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#onThemeDownloadProgress)onThemeDownloadProgress
+
+Fired on download progress.
+
+Parameters:
+
+themeId
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+currentValue
+
+```
+integer
+```
+
+Fired on download progress with the current progress value.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#onThemeDownloadCompleted)onThemeDownloadCompleted
+
+Fired on download and install completion.
+
+Parameters:
+
+themeId
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+success
+
+```
+boolean
+```
+
+true on successful theme install.
+
+error
+
+```
+string
+```
+
+if success is false, provides an error description.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#onThemesUpdated)onThemesUpdated
+
+Fired if the preview or permanent theme collection has changed.
+
+Parameters:
+
+preview
+
+```
+boolean
+```
+
+true if preview has changed, otherwise false.
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#export)export
+
+Export the theme into a zip file
+
+Parameters:
+
+theme
+
+```
+ThemeObject
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+options
+
+```
+ExportOptions
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#import)import
+
+Import and install theme archive.
+
+Parameters:
+
+options
+
+```
+ImportOptions
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#download)download
+
+Download and install theme.
+
+Parameters:
+
+themeId
+
+```
+string
+```
+
+Theme ID of the theme to download and install. This parameter is primarily used for status events.
+
+url
+
+```
+string
+```
+
+URL to the theme to download and install.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/themePrivate.html#getThemeData)getThemeData
+
+Get some information about the given theme id.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+Theme ID of the theme to return data about.
