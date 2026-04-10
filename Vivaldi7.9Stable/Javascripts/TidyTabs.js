@@ -1,32 +1,29 @@
 (function () {
   "use strict";
 
-  // ==================== Configuration ====================
+  // ==================== AI Configuration ====================
+  // 1. Fill in apiKey.
+  // 2. Set apiEndpoint to the full chat completions URL.
+  // 3. Adjust model / timeout / maxTokens if needed.
+  // 4. If apiKey is empty, AI grouping will be skipped.
+  //
+  // Common examples:
+  // GLM: https://open.bigmodel.cn/api/paas/v4/chat/completions
+  // Mimo: https://api.xiaomimimo.com/v1/chat/completions
+  // OpenRouter: https://openrouter.ai/api/v1/chat/completions
+  // DeepSeek: https://api.deepseek.com/chat/completions
+  const AI_CONFIG = {
+    apiEndpoint: "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+    apiKey: "",
+    model: "glm-4-flash",
+    timeout: 0,
+    temperature: 0,
+    maxTokens: 2048,
+  };
+
+  // ==================== Script Configuration ====================
 
   const CONFIG = {
-    glm: {
-      // === GLM(free) ===
-      url: "https://open.bigmodel.cn/api/paas/v4/chat/completions",
-      key: "",
-      model: "glm-4.7-flash",
-
-      // === Mimo ===
-      // url: "https://api.xiaomimimo.com/v1/chat/completions",
-      // key: "",
-      // model: "mimo-v2-flash",
-
-      // === Openrouter/Free Quite Buggy===
-      // url: "https://openrouter.ai/api/v1/chat/completions",
-      // key: "",
-      // model: "openrouter/free",
-
-      // === Deepseek ===
-      // url: 'https://api.deepseek.com/v1/chat/completions',
-      // key: "",
-      // model: 'deepseek-chat',
-      temperature: 0,
-      maxTokens: 2048,
-    },
     autoStackWorkspaces: [],
     enableAIGrouping: true,
     maxTabsForAI: 50,
@@ -49,12 +46,15 @@
     STACK_COUNTER: ".stack-counter",
     TAB_STACK: ".svg-tab-stack",
     SUBSTACK: ".tab-position.is-substack, .tab-position.is-stack",
+    ACTIVE: ".active",
   };
 
   const CLASSES = {
-    BUTTON: "tidy-tabs-below-button",
+    TIDY_BUTTON: "tidy-tabs-below-button",
+    CLEAR_BUTTON: "clear-tabs-below-button",
     LOADING: "tidy-loading",
     PINNED: "is-pinned",
+    SUBSTACK: "is-substack",
   };
 
   const LANGUAGE_MAP = {
@@ -89,6 +89,7 @@
   ];
 
   let debounceTimer = null;
+  const processingSeparators = new Set();
 
   // ==================== Utility Functions ====================
 
@@ -129,6 +130,49 @@
   };
 
   const getHostname = (url) => getUrlFragments(url).hostForSecurityDisplay;
+
+  const getTabStrip = () => document.querySelector(SELECTORS.TAB_STRIP);
+
+  const getSeparatorIndex = (separator) => {
+    const tabStrip = separator?.closest(SELECTORS.TAB_STRIP);
+    if (!tabStrip) return -1;
+    return Array.from(tabStrip.querySelectorAll(":scope > .separator")).indexOf(
+      separator
+    );
+  };
+
+  const getSeparatorKey = (separator) => {
+    const tabStrip = separator?.closest(SELECTORS.TAB_STRIP);
+    const index = getSeparatorIndex(separator);
+    if (!tabStrip || index < 0) return null;
+    return `${tabStrip.getAttribute("aria-owns") || ""}::${index}`;
+  };
+
+  const findLiveSeparatorByKey = (key) => {
+    const [owned = "", indexRaw = "-1"] = String(key || "").split("::");
+    const index = Number.parseInt(indexRaw, 10);
+    if (!Number.isInteger(index) || index < 0) return null;
+
+    const tabStrip = getTabStrip();
+    if (!tabStrip) return null;
+    const currentOwned = tabStrip.getAttribute("aria-owns") || "";
+    if (owned && currentOwned && owned !== currentOwned) return null;
+
+    return tabStrip.querySelectorAll(":scope > .separator")[index] || null;
+  };
+
+  const setSeparatorLoadingState = (key, loading) => {
+    if (!key) return;
+    const separator = findLiveSeparatorByKey(key);
+    if (!separator) return;
+    separator.classList.toggle(CLASSES.LOADING, loading);
+  };
+
+  const reapplyLoadingStates = () => {
+    for (const key of processingSeparators) {
+      setSeparatorLoadingState(key, true);
+    }
+  };
 
   const getTab = (tabId) =>
     new Promise((resolve) => {
@@ -347,8 +391,8 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
   };
 
   const getAIGrouping = async (tabs, existingStacks = []) => {
-    if (!CONFIG.glm.key) {
-      showNotification("GLM API Key not configured");
+    if (!AI_CONFIG.apiKey) {
+      showNotification("AI API key not configured");
       return null;
     }
     if (tabs.length > CONFIG.maxTabsForAI)
@@ -356,27 +400,39 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
 
     const languageName = getLanguageName(getBrowserLanguage());
 
+    let timeoutId = null;
+
     try {
-      const response = await fetch(CONFIG.glm.url, {
+      const controller =
+        AI_CONFIG.timeout > 0 ? new AbortController() : null;
+      timeoutId =
+        AI_CONFIG.timeout > 0
+          ? setTimeout(() => controller.abort(), AI_CONFIG.timeout)
+          : null;
+
+      const response = await fetch(AI_CONFIG.apiEndpoint, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${CONFIG.glm.key}`,
+          Authorization: `Bearer ${AI_CONFIG.apiKey}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: CONFIG.glm.model,
+          model: AI_CONFIG.model,
           messages: [
             {
               role: "user",
               content: buildAIPrompt(tabs, existingStacks, languageName),
             },
           ],
-          temperature: CONFIG.glm.temperature,
-          max_tokens: CONFIG.glm.maxTokens,
+          temperature: AI_CONFIG.temperature,
+          max_tokens: AI_CONFIG.maxTokens,
           response_format: { type: "text" },
           stream_options: { include_usage: true },
         }),
+        signal: controller?.signal,
       });
+
+      if (timeoutId) clearTimeout(timeoutId);
 
       if (!response.ok) throw new Error(`API error: ${response.status}`);
 
@@ -391,6 +447,8 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
       console.error("[TidyTabs] AI error:", error.message);
       showNotification(`AI call failed: ${error.message}`);
       return null;
+    } finally {
+      if (timeoutId) clearTimeout(timeoutId);
     }
   };
 
@@ -501,19 +559,84 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
     return tabs;
   };
 
+  const isTabStack = (element) => {
+    const tabPosition = element.querySelector(SELECTORS.TAB_POSITION);
+    return (
+      tabPosition?.classList.contains(CLASSES.SUBSTACK) ||
+      element.querySelector(SELECTORS.TAB_STACK) !== null
+    );
+  };
+
+  const isTabActive = (tabPosition) =>
+    tabPosition.querySelector(SELECTORS.ACTIVE) !== null;
+
+  const extractTabId = (tabWrapper) => {
+    if (!tabWrapper) return null;
+    const dataId = tabWrapper.getAttribute("data-id");
+    if (!dataId) return null;
+    const numericId = Number.parseInt(dataId.replace("tab-", ""), 10);
+    return Number.isNaN(numericId) ? null : numericId;
+  };
+
+  const collectTabsToClose = (separator) => {
+    const tabIds = [];
+    let element = separator.nextElementSibling;
+
+    while (element) {
+      if (element.tagName === "SPAN") {
+        if (isTabStack(element)) {
+          element = element.nextElementSibling;
+          continue;
+        }
+
+        const tabPosition = element.querySelector(SELECTORS.TAB_POSITION);
+        if (
+          tabPosition &&
+          !tabPosition.classList.contains(CLASSES.PINNED) &&
+          !isTabActive(tabPosition)
+        ) {
+          const tabId = extractTabId(
+            element.querySelector(SELECTORS.TAB_WRAPPER)
+          );
+          if (tabId !== null) {
+            tabIds.push(tabId);
+          }
+        }
+      }
+      element = element.nextElementSibling;
+    }
+
+    return tabIds;
+  };
+
+  const closeTabsBelow = (separator) => {
+    const tabIds = collectTabsToClose(separator);
+    if (tabIds.length === 0) return;
+
+    chrome.tabs.remove(tabIds, () => {
+      if (chrome.runtime.lastError) {
+        console.error("[TidyTabs]", chrome.runtime.lastError.message);
+        return;
+      }
+      scheduleAttachButtons(CONFIG.delays.reattach);
+    });
+  };
+
   // ==================== UI Components ====================
 
   const createTidyButton = () => {
     const btn = document.createElement("div");
-    btn.className = CLASSES.BUTTON;
+    btn.className = CLASSES.TIDY_BUTTON;
     btn.textContent = "Tidy";
     return btn;
   };
 
-  // Loading state: add class to separator, CSS implements wave animation
-  const showLoading = (separator) => separator.classList.add(CLASSES.LOADING);
-  const hideLoading = (separator) =>
-    separator.classList.remove(CLASSES.LOADING);
+  const createClearButton = () => {
+    const btn = document.createElement("div");
+    btn.className = CLASSES.CLEAR_BUTTON;
+    btn.textContent = "Clear";
+    return btn;
+  };
 
   const scheduleAttachButtons = (delay = CONFIG.delays.debounce) => {
     if (debounceTimer !== null) clearTimeout(debounceTimer);
@@ -523,15 +646,38 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
     }, delay);
   };
 
+  const ensureSeparatorButton = (separator, className, factory, onClick) => {
+    let button = separator.querySelector(`.${className}`);
+    if (button) return button;
+    button = factory();
+    separator.appendChild(button);
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      onClick(separator);
+    });
+    return button;
+  };
+
+  const decorateSeparator = (separator) => {
+    ensureSeparatorButton(
+      separator,
+      CLASSES.TIDY_BUTTON,
+      createTidyButton,
+      tidyTabsBelow
+    );
+    ensureSeparatorButton(
+      separator,
+      CLASSES.CLEAR_BUTTON,
+      createClearButton,
+      closeTabsBelow
+    );
+    const key = getSeparatorKey(separator);
+    separator.classList.toggle(CLASSES.LOADING, Boolean(key && processingSeparators.has(key)));
+  };
+
   const attachButtons = () => {
     document.querySelectorAll(SELECTORS.SEPARATOR).forEach((separator) => {
-      if (separator.querySelector(`.${CLASSES.BUTTON}`)) return;
-      const btn = createTidyButton();
-      separator.appendChild(btn);
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        tidyTabsBelow(separator);
-      });
+      decorateSeparator(separator);
     });
   };
 
@@ -543,7 +689,7 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
     if (tabs.length < 2) return;
 
     let groups =
-      CONFIG.enableAIGrouping && CONFIG.glm.key
+      CONFIG.enableAIGrouping && AI_CONFIG.apiKey
         ? (await getAIGrouping(tabs)) || groupByDomain(tabs)
         : groupByDomain(tabs);
 
@@ -551,6 +697,7 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
   };
 
   const tidyTabsBelow = async (separator) => {
+    const separatorKey = getSeparatorKey(separator);
     const existingStacks = await detectExistingStacks(
       separator.nextElementSibling
     );
@@ -558,7 +705,12 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
 
     if (tabsInfo.length < 2 && existingStacks.length === 0) return;
 
-    showLoading(separator);
+    if (separatorKey) {
+      processingSeparators.add(separatorKey);
+      setSeparatorLoadingState(separatorKey, true);
+    } else {
+      separator.classList.add(CLASSES.LOADING);
+    }
 
     try {
       const tabs = (
@@ -567,16 +719,19 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
       if (tabs.length < 1 && existingStacks.length === 0) return;
 
       let groups =
-        CONFIG.enableAIGrouping && CONFIG.glm.key
+        CONFIG.enableAIGrouping && AI_CONFIG.apiKey
           ? (await getAIGrouping(tabs, existingStacks)) || groupByDomain(tabs)
           : groupByDomain(tabs);
 
       if (groups.length > 0) await createTabStacks(groups);
     } finally {
-      hideLoading(separator);
+      if (separatorKey) {
+        processingSeparators.delete(separatorKey);
+        setSeparatorLoadingState(separatorKey, false);
+      } else {
+        separator.classList.remove(CLASSES.LOADING);
+      }
       scheduleAttachButtons(CONFIG.delays.reattach);
-      // Notify other scripts (like ClearTabs.js) to reattach buttons
-      document.dispatchEvent(new CustomEvent("separator-buttons-reattach"));
     }
   };
 
@@ -621,19 +776,35 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
         }
         if (m.type === "attributes" && m.attributeName === "aria-owns")
           wsSwitch = true;
+        if (
+          m.type === "attributes" &&
+          m.attributeName === "class" &&
+          m.target?.classList?.contains("separator")
+        ) {
+          const key = getSeparatorKey(m.target);
+          if (
+            key &&
+            processingSeparators.has(key) &&
+            !m.target.classList.contains(CLASSES.LOADING)
+          ) {
+            m.target.classList.add(CLASSES.LOADING);
+          }
+        }
         if (changed && wsSwitch) break;
       }
-      if (changed || wsSwitch)
+      if (changed || wsSwitch) {
         scheduleAttachButtons(
           wsSwitch ? CONFIG.delays.workspaceSwitch : CONFIG.delays.mutation
         );
+      }
     });
 
     tabStripObserver.observe(tabStrip, {
       childList: true,
       subtree: true,
       attributes: true,
-      attributeFilter: ["aria-owns"],
+      attributeFilter: ["aria-owns", "class"],
+      attributeOldValue: true,
     });
   };
 
@@ -650,13 +821,18 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
         console.log("[TidyTabs] .tab-strip rebuilt, reattaching");
         observeTabStripInner(tabStrip);
         scheduleAttachButtons(CONFIG.delays.init);
+        reapplyLoadingStates();
         return;
       }
 
       // Buttons lost, reattach
       const seps = tabStrip.querySelectorAll(".separator");
-      const btns = tabStrip.querySelectorAll(`.${CLASSES.BUTTON}`);
-      if (seps.length > 0 && btns.length === 0) {
+      const tidyButtons = tabStrip.querySelectorAll(`.${CLASSES.TIDY_BUTTON}`);
+      const clearButtons = tabStrip.querySelectorAll(`.${CLASSES.CLEAR_BUTTON}`);
+      if (
+        seps.length > 0 &&
+        (tidyButtons.length < seps.length || clearButtons.length < seps.length)
+      ) {
         scheduleAttachButtons(200);
       }
     }).observe(root, { childList: true, subtree: true });

@@ -4,7 +4,7 @@ version 2025.04.03
 Author PaRr0tBoY
 https://github.com/PaRr0tBoY/Awesome-Vivaldi
 
-Requires: TidyTabs.js + ClearTabs.js
+Requires: TidyTabs.js
 */
 
 /* ============================================ */
@@ -119,19 +119,37 @@ Requires: TidyTabs.js + ClearTabs.js
   M0,4 Q10,0 20,4 Q30,8 40,4
 */
 
-/* Higher specificity to override FavouriteTabs' separator hr styles when grid is active */
+#tabs-container .tab-strip .separator.tidy-loading {
+  color: var(--colorFg, currentColor);
+}
+
+/*
+  Use an overlay instead of mutating hr itself.
+  FavouriteTabs.css controls separator layout and line position through hr.
+  The overlay keeps that layout intact and only adds the animated wave layer.
+*/
 #tabs-container .tab-strip .separator.tidy-loading hr {
-  border-color: transparent !important;
-  height: 8px !important;
-  background: currentColor !important;
+  opacity: 0 !important;
+}
+
+#tabs-container .tab-strip .separator.tidy-loading::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 8px;
+  transform: translateY(-50%);
+  background: currentColor;
   opacity: 0.6;
+  pointer-events: none;
+  z-index: 2;
 
-  /* Wave line mask: white stroke = visible area */
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='8'%3E%3Cpath d='M0,4 Q10,0 20,4 Q30,8 40,4' stroke='white' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") !important;
-  -webkit-mask-repeat: repeat-x !important;
-  -webkit-mask-size: 40px 8px !important;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='8'%3E%3Cpath d='M0,4 Q10,0 20,4 Q30,8 40,4' stroke='white' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+  -webkit-mask-repeat: repeat-x;
+  -webkit-mask-size: 40px 8px;
 
-  animation: tidyWaveScroll 0.8s linear infinite !important;
+  animation: tidyWaveScroll 0.8s linear infinite;
 }
 
 @keyframes tidyWaveScroll {
