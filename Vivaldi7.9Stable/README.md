@@ -187,7 +187,7 @@ To install, Just copy all the content under ./Javascripts/ to your `<YOURVIVALDI
 
 3. That's it! Restart browser to see the effect. If any other issues please report it at [Issues · PaRr0tBoY/Awesome-Vivaldi](https://github.com/PaRr0tBoY/Awesome-Vivaldi/issues?q=sort%3Aupdated-desc+is%3Aissue+is%3Aopen) and I'll ~~probably~~ fix it at weekend.
 
-> Optionally, get an free OpenAI-Compatible Api Key here for AI features [here]([cheahjs/free-llm-api-resources](https://github.com/cheahjs/free-llm-api-resources?tab=readme-ov-file#opencode-zen)).
+> Optionally, get an free OpenAI-Compatible Api Key here for AI features [cheahjs/free-llm-api-resources](https://github.com/cheahjs/free-llm-api-resources?tab=readme-ov-file#opencode-zen).
 
 ## FAQ
 
