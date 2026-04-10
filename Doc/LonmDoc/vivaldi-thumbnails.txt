@@ -1,0 +1,348 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/thumbnails.html#top)
+
+## vivaldi.thumbnails Modders API Reference
+
+Thumbnail capture support api.
+
+## Navigation
+
+### Types
+
+-   [CaptureBookmarkParams](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/thumbnails.html#CaptureBookmarkParams)
+-   [CaptureUIParams](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/thumbnails.html#CaptureUIParams)
+-   [CaptureRect](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/thumbnails.html#CaptureRect)
+-   [CaptureTabParams](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/thumbnails.html#CaptureTabParams)
+
+### Listeners
+
+### Methods
+
+-   [captureUI](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/thumbnails.html#captureUI)
+-   [captureTab](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/thumbnails.html#captureTab)
+-   [captureBookmark](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/thumbnails.html#captureBookmark)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/thumbnails.html#CaptureBookmarkParams)CaptureBookmarkParams
+
+A structure containing parameters for the captureUrl call.
+
+Properties:
+
+bookmarkId
+
+```
+string
+```
+
+Bookmark id to associate the captured thumbnail with.
+
+url
+
+```
+string
+```
+
+url to load and generate thumbnail for.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/thumbnails.html#CaptureUIParams)CaptureUIParams
+
+A structure containing parameters for the captureUI call.
+
+Properties:
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+posX
+
+```
+number
+```
+
+X offset inside the given app window in the UI coordinates.
+
+posY
+
+```
+number
+```
+
+Y offset inside the given app window in the UI coordinates.
+
+width
+
+```
+number
+```
+
+Width of the capture in the UI coordinates.
+
+height
+
+```
+number
+```
+
+Height of the capture in the UI coordinates.
+
+encodeFormat
+
+(optional)
+
+```
+string
+```
+
+The encoding format. 'jpg' or 'png'. Defaults to 'png'.
+
+encodeQuality
+
+(optional)
+
+```
+integer
+```
+
+The jpg encoding quality if format is 'jpg', otherwise ignored. Default is 90, which is very high quality.
+
+saveToDisk
+
+(optional)
+
+```
+boolean
+```
+
+The resulting image is saved under the configurable directory. Default is false.
+
+showFileInPath
+
+(optional)
+
+```
+boolean
+```
+
+If |saveToBasePath| is provided, setting this to true will open the folder with the file selected after capture has completed. Default is false.
+
+copyToClipboard
+
+(optional)
+
+```
+boolean
+```
+
+If true, will copy the image to clipboard in a raw and uncompressed format. This will override any file path arguments. Default is false.
+
+saveFilePattern
+
+(optional)
+
+```
+string
+```
+
+If set, will use this pattern to contruct the filename. Note that the file name is still guaranteed to be unique, and (1), (2) etc might be appended if needed.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/thumbnails.html#CaptureRect)CaptureRect
+
+Rect struct for capture actions where the result wanted is a cut-out of the full tab.
+
+Properties:
+
+left
+
+```
+integer
+```
+
+x
+
+top
+
+```
+integer
+```
+
+y
+
+width
+
+```
+integer
+```
+
+width
+
+height
+
+```
+integer
+```
+
+height
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/thumbnails.html#CaptureTabParams)CaptureTabParams
+
+A structure containing parameters for the captureTab call.
+
+Properties:
+
+encodeFormat
+
+(optional)
+
+```
+string
+```
+
+The encoding format. 'jpg' or 'png'. Defaults to 'png'.
+
+encodeQuality
+
+(optional)
+
+```
+integer
+```
+
+The jpg encoding quality if format is 'jpg', otherwise ignored. Default is 90, which is very high quality.
+
+fullPage
+
+(optional)
+
+```
+boolean
+```
+
+true to capture the full height of the page, restricted to 20000 pixels height. Default is false.
+
+rect
+
+(optional)
+
+```
+CaptureRect
+```
+
+Wanted rect, output is not scaled.
+
+width
+
+(optional)
+
+```
+integer
+```
+
+The resulting width of the capture after scaling. Ignored if |fullPage| is true.
+
+height
+
+(optional)
+
+```
+integer
+```
+
+The resulting height of the capture after scaling or if onlyVisible is false, the maximum number of pixels to capture in height.
+
+saveToDisk
+
+(optional)
+
+```
+boolean
+```
+
+The resulting image is saved under the configurable directory. Default is false.
+
+showFileInPath
+
+(optional)
+
+```
+boolean
+```
+
+If |saveToBasePath| is provided, setting this to true will open the folder with the file selected after capture has completed. Default is false.
+
+copyToClipboard
+
+(optional)
+
+```
+boolean
+```
+
+If true, will copy the image to clipboard in a raw and uncompressed format. This will override any file path arguments. Default is false.
+
+saveFilePattern
+
+(optional)
+
+```
+string
+```
+
+If set, will use this pattern to contruct the filename. Note that the file name is still guaranteed to be unique, and (1), (2) etc might be appended if needed.
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/thumbnails.html#captureUI)captureUI
+
+Captures a part of the visible UI for the given app window.
+
+Parameters:
+
+params
+
+```
+CaptureUIParams
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/thumbnails.html#captureTab)captureTab
+
+Captures the contents of a tab.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+The tab id to capture. 0 to capture the current active tab.
+
+params
+
+```
+CaptureTabParams
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/thumbnails.html#captureBookmark)captureBookmark
+
+Loads a url then captures the contents of it and attached it to a bookmark.
+
+Parameters:
+
+params
+
+```
+CaptureBookmarkParams
+```
+
+⚠ NO DESCRIPTION PROVIDED

@@ -1,0 +1,181 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/directMatch.html#top)
+
+## vivaldi.directMatch Modders API Reference
+
+Use the `vivaldi.directMatch` API to call direct match service functions..
+
+## Navigation
+
+### Types
+
+-   [Item](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/directMatch.html#Item)
+-   [Items](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/directMatch.html#Items)
+
+### Listeners
+
+-   [onPopularSitesReady](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/directMatch.html#onPopularSitesReady)
+
+### Methods
+
+-   [hide](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/directMatch.html#hide)
+-   [getPopularSites](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/directMatch.html#getPopularSites)
+-   [getForCategory](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/directMatch.html#getForCategory)
+-   [resetHidden](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/directMatch.html#resetHidden)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/directMatch.html#Item)Item
+
+A Direct match item
+
+Properties:
+
+name
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+title
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+image\_url
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+image\_path
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+category
+
+```
+number
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+display\_location\_address\_bar
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+display\_location\_sd\_dialog
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+redirect\_url
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+allowed\_to\_be\_default\_match
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/directMatch.html#Items)Items
+
+Items
+
+A Direct match items array
+
+`Array` of:
+
+-   Item
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/directMatch.html#onPopularSitesReady)onPopularSitesReady
+
+Fires when data has become available in backend.
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/directMatch.html#hide)hide
+
+Hides direct match so it will not show up in omnibox.
+
+Parameters:
+
+url
+
+```
+string
+```
+
+The url of a direct match provider to hide.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/directMatch.html#getPopularSites)getPopularSites
+
+Fetch popular sites from DM units sorted asc by \`position\` where sd\_dialog=true
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/directMatch.html#getForCategory)getForCategory
+
+Returns direct match items for provided \`category\_id\` sorted asc by \`position\` and filtered by \`display\_locations\`
+
+Parameters:
+
+categoryId
+
+```
+number
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/directMatch.html#resetHidden)resetHidden
+
+Reset all previously hidden direct match providers.

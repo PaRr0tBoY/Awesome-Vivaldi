@@ -1,0 +1,527 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#top)
+
+## vivaldi.menuContent Modders API Reference
+
+Use the `vivaldi.menuContent` API to configure menus.
+
+## Navigation
+
+### Types
+
+-   [NodeType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#NodeType)
+-   [Role](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#Role)
+-   [ContainerMode](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#ContainerMode)
+-   [ContainerEdge](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#ContainerEdge)
+-   [MenuTreeNode](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#MenuTreeNode)
+
+### Listeners
+
+-   [onChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#onChanged)
+-   [onResetAll](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#onResetAll)
+
+### Methods
+
+-   [get](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#get)
+-   [move](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#move)
+-   [create](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#create)
+-   [remove](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#remove)
+-   [removeAction](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#removeAction)
+-   [update](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#update)
+-   [reset](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#reset)
+-   [resetAll](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#resetAll)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#NodeType)NodeType
+
+`ENUM`
+
+Defines supported nodes
+
+-   menu
+-   command
+-   checkbox
+-   radio
+-   folder
+-   separator
+-   container
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#Role)Role
+
+`ENUM`
+
+Defines menu type.
+
+-   horizontal
+-   vertical
+-   mac
+-   context
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#ContainerMode)ContainerMode
+
+`ENUM`
+
+Defines container layouts.
+
+-   inline
+-   folder
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#ContainerEdge)ContainerEdge
+
+`ENUM`
+
+Defines on what edge of a container additional items can be added.
+
+-   above
+-   below
+-   off
+
+A node (folder or menu entry) in the menu tree. Child nodes are ordered within their parent folder.
+
+Properties:
+
+id
+
+```
+string
+```
+
+Unique identifier.
+
+type
+
+```
+NodeType
+```
+
+The kind of node.
+
+action
+
+```
+string
+```
+
+A command or a menu identifier. It does not have to be unique. Can be empty for separators.
+
+custom
+
+(optional)
+
+```
+boolean
+```
+
+When true, the item has been added by the user.
+
+title
+
+(optional)
+
+```
+string
+```
+
+Node title. If not present the title is determined using the action.
+
+showshortcut
+
+(optional)
+
+```
+boolean
+```
+
+Show shortcut string.
+
+radiogroup
+
+(optional)
+
+```
+string
+```
+
+Mandatory for radio elements.
+
+containermode
+
+(optional)
+
+```
+ContainerMode
+```
+
+Mandatory for container elements.
+
+containeredge
+
+(optional)
+
+```
+ContainerEdge
+```
+
+Mandatory for container elements.
+
+parameter
+
+(optional)
+
+```
+string
+```
+
+Free form parameter. Format varies with action.
+
+children
+
+(optional)
+
+An ordered list of children of this node.
+
+`Array` of:
+
+-   MenuTreeNode
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#onChanged)onChanged
+
+Fires when the content of a menu has changed.
+
+Parameters:
+
+menu
+
+```
+string
+```
+
+Menu resource name.
+
+id
+
+```
+string
+```
+
+Unique identifier for menu.
+
+role
+
+```
+Role
+```
+
+Describes the role of menu.
+
+selectId
+
+```
+string
+```
+
+If non-negative this id can be used to set selected element.
+
+items
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   MenuTreeNode
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#onResetAll)onResetAll
+
+Fires when the entire menu tree is reset.
+
+Parameters:
+
+isContext
+
+```
+boolean
+```
+
+True for a context menu tree, false for a main menu tree.
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#get)get
+
+Retrieves content of a menu.
+
+Parameters:
+
+menu
+
+```
+string
+```
+
+Menu resource name.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#move)move
+
+Moves one or more items within a menu.
+
+Parameters:
+
+menu
+
+```
+string
+```
+
+Menu resource name.
+
+ids
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   string
+
+parentId
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+index
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#create)create
+
+Add one or more items within a menu.
+
+Parameters:
+
+menu
+
+```
+string
+```
+
+Menu resource name.
+
+parentId
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+index
+
+```
+integer
+```
+
+Where to add elements. A negative value means at end.
+
+items
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   MenuTreeNode
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#remove)remove
+
+Deletes one or more items within a menu.
+
+Parameters:
+
+menu
+
+```
+string
+```
+
+Menu resource name.
+
+ids
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   string
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#removeAction)removeAction
+
+Deletes one or more actions from all models
+
+Parameters:
+
+actions
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   string
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#update)update
+
+Updates the properties of a node.
+
+Parameters:
+
+menu
+
+```
+string
+```
+
+Menu resource name.
+
+id
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+changes
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+title
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+parameter
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+showshortcut
+
+(optional)
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+containerMode
+
+(optional)
+
+```
+ContainerMode
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+containerEdge
+
+(optional)
+
+```
+ContainerEdge
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#reset)reset
+
+Restores default content within a menu or in a submenu of that menu.
+
+Parameters:
+
+menu
+
+```
+string
+```
+
+Menu resource name.
+
+isContext
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+ids
+
+(optional)
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   string
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menuContent.html#resetAll)resetAll
+
+Restores default content for all menus (either context or main menus).
+
+Parameters:
+
+isContext
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED

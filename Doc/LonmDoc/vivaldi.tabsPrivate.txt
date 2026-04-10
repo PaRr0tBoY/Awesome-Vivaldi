@@ -1,0 +1,1614 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#top)
+
+## vivaldi.tabsPrivate Modders API Reference
+
+Use the `vivaldi.tabsPrivate` API to update tabs
+
+## Navigation
+
+### Types
+
+-   [TabAlertState](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#TabAlertState)
+-   [TranslateStep](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#TranslateStep)
+-   [TranslateError](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#TranslateError)
+-   [UpdateTabInfo](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#UpdateTabInfo)
+-   [DragData](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#DragData)
+-   [DragEndState](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#DragEndState)
+-   [NavigationRect](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#NavigationRect)
+-   [NavigationDirection](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#NavigationDirection)
+-   [LanguageDetectionDetails](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#LanguageDetectionDetails)
+-   [CloseSpatnavParams](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#CloseSpatnavParams)
+-   [TabPerformanceData](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#TabPerformanceData)
+-   [SendTabToSelfAction](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#SendTabToSelfAction)
+-   [SendTabToSelfTargetType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#SendTabToSelfTargetType)
+-   [SendTabToSelfTarget](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#SendTabToSelfTarget)
+-   [SendTabToSelfTargets](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#SendTabToSelfTargets)
+-   [SendTabToSelfEntry](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#SendTabToSelfEntry)
+
+### Listeners
+
+-   [onSendTabToSelfAdded](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onSendTabToSelfAdded)
+-   [onSendTabToSelfDismissed](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onSendTabToSelfDismissed)
+-   [onMediaStateChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onMediaStateChanged)
+-   [onThemeColorChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onThemeColorChanged)
+-   [onTabUpdated](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onTabUpdated)
+-   [onDragEnd](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onDragEnd)
+-   [onPermissionAccessed](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onPermissionAccessed)
+-   [onKeyboardChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onKeyboardChanged)
+-   [onMouseChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onMouseChanged)
+-   [onKeyboardShortcut](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onKeyboardShortcut)
+-   [onMouseGestureDetection](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onMouseGestureDetection)
+-   [onMouseGesture](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onMouseGesture)
+-   [onTabSwitchEnd](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onTabSwitchEnd)
+-   [onRockerGesture](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onRockerGesture)
+-   [onWebviewClickCheck](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onWebviewClickCheck)
+-   [onPageZoom](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onPageZoom)
+-   [onBeforeUnloadDialogClosed](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onBeforeUnloadDialogClosed)
+-   [onLanguageDetermined](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onLanguageDetermined)
+-   [onShowTranslationUI](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onShowTranslationUI)
+-   [onPageTranslated](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onPageTranslated)
+-   [onIsPageTranslatedChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onIsPageTranslatedChanged)
+-   [onTabResourceMetricsRefreshed](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onTabResourceMetricsRefreshed)
+
+### Methods
+
+-   [update](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#update)
+-   [get](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#get)
+-   [insertText](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#insertText)
+-   [startDrag](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#startDrag)
+-   [scrollPage](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#scrollPage)
+-   [moveSpatnavRect](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#moveSpatnavRect)
+-   [activateSpatnavElement](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#activateSpatnavElement)
+-   [closeSpatnavOrCurrentOpenMenu](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#closeSpatnavOrCurrentOpenMenu)
+-   [hasBeforeUnloadOrUnload](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#hasBeforeUnloadOrUnload)
+-   [translatePage](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#translatePage)
+-   [revertTranslatePage](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#revertTranslatePage)
+-   [determineTextLanguage](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#determineTextLanguage)
+-   [loadViaLifeCycleUnit](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#loadViaLifeCycleUnit)
+-   [getTabPerformanceData](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#getTabPerformanceData)
+-   [getSendTabToSelfTargets](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#getSendTabToSelfTargets)
+-   [sendSendTabToSelfTarget](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#sendSendTabToSelfTarget)
+-   [getSendTabToSelfEntries](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#getSendTabToSelfEntries)
+-   [execSendTabToSelfAction](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#execSendTabToSelfAction)
+-   [dismissSendTabToSelfEntries](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#dismissSendTabToSelfEntries)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#TabAlertState)TabAlertState
+
+`ENUM`
+
+The active media type.
+
+-   recording
+-   capturing
+-   playing
+-   muting
+-   bluetooth
+-   usb
+-   pip
+-   desktop\_capturing
+-   vr\_presenting\_in\_headset
+-   serial\_connected
+-   bluetooth\_scan
+-   hid\_connected
+-   audio\_recording
+-   video\_recording
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#TranslateStep)TranslateStep
+
+`ENUM`
+
+Denotes which state the page is in with respect to translate.
+
+-   idle
+-   before\_translate
+-   translating
+-   after\_translate
+-   translate\_error
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#TranslateError)TranslateError
+
+`ENUM`
+
+Signals translation errors.
+
+-   no\_error
+-   network
+-   init\_error
+-   unknown\_language
+-   unsupported\_language
+-   identical\_languages
+-   translation\_error
+-   translation\_timeout
+-   unexpected\_script\_error
+-   bad\_origin
+-   script\_load\_error
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#UpdateTabInfo)UpdateTabInfo
+
+Object passed to the update and returned in the get function function.
+
+Properties:
+
+showImages
+
+(optional)
+
+```
+boolean
+```
+
+Show images for all pages loaded in this tab. Default is true.
+
+loadFromCacheOnly
+
+(optional)
+
+```
+boolean
+```
+
+Only load the page from cache. Default is false.
+
+mimeType
+
+(optional)
+
+```
+string
+```
+
+The current documents mimetype.
+
+muteTab
+
+(optional)
+
+```
+boolean
+```
+
+If the tab should be quiet.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#DragData)DragData
+
+Provides custom drag data.
+
+Properties:
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+mimeType
+
+```
+string
+```
+
+The mime type to use for the custom data.
+
+customData
+
+```
+string
+```
+
+The custom data.
+
+url
+
+```
+string
+```
+
+The url for the data. Needed for the html5 drag and drop engine. Not set in the onDropEnd event.
+
+title
+
+```
+string
+```
+
+The title for the data. Needed for the html5 drag and drop engine. Not set in the onDropEnd event.
+
+imageData
+
+(optional)
+
+```
+binary
+```
+
+The raw image data in RGBA format for the image to use during drag drop instead of a tab capture.
+
+posX
+
+(optional)
+
+```
+number
+```
+
+X offset inside the given app window in the UI coordinates.
+
+posY
+
+(optional)
+
+```
+number
+```
+
+Y offset inside the given app window in the UI coordinates.
+
+width
+
+```
+number
+```
+
+Width of the capture in the UI coordinates.
+
+height
+
+```
+number
+```
+
+Height of the capture in the UI coordinates.
+
+cursorX
+
+```
+integer
+```
+
+X offset into the image for the cursor during drag.
+
+cursorY
+
+```
+integer
+```
+
+Y offset into the image for the cursor during drag.
+
+isFromTouch
+
+(optional)
+
+```
+boolean
+```
+
+True if the drag was initiated from touch. Default is false.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#DragEndState)DragEndState
+
+`ENUM`
+
+Tells if drag was aborted (using ESC or similar), or if the drop was valid outside or inside the app window.
+
+-   aborted
+-   outsideOrWebviewInSameWindow
+-   insideOrWebviewInOtherWindow
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#NavigationRect)NavigationRect
+
+Rect struct for spatial navigation.
+
+Properties:
+
+left
+
+```
+integer
+```
+
+left
+
+top
+
+```
+integer
+```
+
+top
+
+width
+
+```
+integer
+```
+
+width
+
+height
+
+```
+integer
+```
+
+height
+
+right
+
+```
+integer
+```
+
+right
+
+bottom
+
+```
+integer
+```
+
+bottom
+
+href
+
+```
+string
+```
+
+Url of focused element in case it's a link.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#NavigationDirection)NavigationDirection
+
+`ENUM`
+
+Which direction to move the current spatnav rect.
+
+-   left
+-   right
+-   up
+-   down
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#LanguageDetectionDetails)LanguageDetectionDetails
+
+Details the language detection for the current page. Corresponds to LanguageDetectionDetails in C++.
+
+Properties:
+
+url
+
+```
+string
+```
+
+The url of the page detected was done on.
+
+contentLanguage
+
+```
+string
+```
+
+The language detected by the content (Content-Language).
+
+cldLanguage
+
+```
+string
+```
+
+The language detected by CLD (Chromium's Compact Language Detector library).
+
+isCldReliable
+
+```
+boolean
+```
+
+true if the CLD detection is reliable, otherwise false.
+
+hasNoTranslate
+
+```
+boolean
+```
+
+Whether the notranslate is specified in head tag as a meta; or
+
+htmlRootLanguage
+
+```
+string
+```
+
+The language written in the lang attribute of the html element.
+
+adoptedLanguage
+
+```
+string
+```
+
+The adopted language, usually a authoritive decision on the different language tags in a document.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#CloseSpatnavParams)CloseSpatnavParams
+
+Reports layout change and element null check
+
+Properties:
+
+layout\_changed
+
+```
+boolean
+```
+
+True if layout changed
+
+current\_element\_valid
+
+```
+boolean
+```
+
+True is current element is not null. Currently used to see if previous escape closed a menu that made our current element disappear.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#TabPerformanceData)TabPerformanceData
+
+Memory information about a tab.
+
+Properties:
+
+tabId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+memoryUsage
+
+```
+integer
+```
+
+Memory usage of tab in bytes.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#SendTabToSelfAction)SendTabToSelfAction
+
+`ENUM`
+
+⚠ NO DESCRIPTION PROVIDED
+
+-   delete
+-   dismiss
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#SendTabToSelfTargetType)SendTabToSelfTargetType
+
+`ENUM`
+
+⚠ NO DESCRIPTION PROVIDED
+
+-   phone
+-   tablet
+-   desktop
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#SendTabToSelfTarget)SendTabToSelfTarget
+
+Information of a target device (another Vivaldi instance).
+
+Properties:
+
+guid
+
+```
+string
+```
+
+Unique identifier.
+
+name
+
+```
+string
+```
+
+Name of the device
+
+type
+
+```
+SendTabToSelfTargetType
+```
+
+The device type. Can be used to pick a proper icon.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#SendTabToSelfTargets)SendTabToSelfTargets
+
+Information of all target devices
+
+Properties:
+
+valid
+
+```
+boolean
+```
+
+Tells if sub system is ready or not.
+
+entries
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   SendTabToSelfTarget
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#SendTabToSelfEntry)SendTabToSelfEntry
+
+Url received from another Vivaldi instance.
+
+Properties:
+
+guid
+
+```
+string
+```
+
+Unique identifier.
+
+url
+
+```
+string
+```
+
+The url.
+
+title
+
+```
+string
+```
+
+The url's title.
+
+deviceName
+
+```
+string
+```
+
+Sharing device name.
+
+sharedTime
+
+```
+number
+```
+
+Sharing time.
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onSendTabToSelfAdded)onSendTabToSelfAdded
+
+Fired when one or more urls are received from a remote instance.
+
+Parameters:
+
+entries
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   SendTabToSelfEntry
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onSendTabToSelfDismissed)onSendTabToSelfDismissed
+
+Fired when one or more entries not to be used anymore.
+
+Parameters:
+
+guids
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   string
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onMediaStateChanged)onMediaStateChanged
+
+Fired when the media state changes on the tab.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+tabState
+
+All the active media states for this tab.
+
+`Array` of:
+
+-   TabAlertState
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onThemeColorChanged)onThemeColorChanged
+
+Fired when a meta theme-color has a value from the web page.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+rgb
+
+```
+string
+```
+
+Fired when the theme-color in the meta header field has changed. Format is #rrggbb and provided in css hex.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onTabUpdated)onTabUpdated
+
+Fires when a |WebContent| is changed in some way.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+tabInfo
+
+```
+UpdateTabInfo
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onDragEnd)onDragEnd
+
+Fires when tab dragging ends.
+
+Parameters:
+
+dragEndState
+
+```
+DragEndState
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+posX
+
+```
+integer
+```
+
+X position of the drop relative to drag source client.
+
+posY
+
+```
+integer
+```
+
+Y position of the drop relative to drag source client.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onPermissionAccessed)onPermissionAccessed
+
+Fires when a |permission| is accessed.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+permission
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+origin
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+blocked
+
+```
+string
+```
+
+Current permission setting. 'allow', 'block', 'ask' or 'default'
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onKeyboardChanged)onKeyboardChanged
+
+Fires for all keyboard changes that have not been consumed by the browser
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+Id of the browser window this keyboard event originates from.
+
+down
+
+```
+boolean
+```
+
+True when pressed, false when released
+
+modifiers
+
+```
+integer
+```
+
+Modifier state when change occured
+
+windowsKeyCode
+
+```
+integer
+```
+
+Value of key that changed
+
+afterGesture
+
+```
+boolean
+```
+
+True when the keyboard event completed a mouse or wheel gesture
+
+autoRepeat
+
+```
+boolean
+```
+
+True if the event is a result of automatic keyboard repeat.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onMouseChanged)onMouseChanged
+
+Fires when mouse state has changed.
+
+Parameters:
+
+motion
+
+```
+boolean
+```
+
+True when mouse has moved, false when mouse is pressed/released.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onKeyboardShortcut)onKeyboardShortcut
+
+Fires when on a keystroke that hasn't been consumed by the browser
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+Id of the browser window this keyboard event originates from.
+
+shortcutText
+
+```
+string
+```
+
+String representation of a keyboard shortcut
+
+autoRepeat
+
+```
+boolean
+```
+
+True if the shortcut is generated as a result of automatic keyboard repeat
+
+fromDevtools
+
+```
+boolean
+```
+
+True if the shortcut comes from a devtools window
+
+forcedBrowserPriority
+
+```
+boolean
+```
+
+True if shortcut forced browser priority.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onMouseGestureDetection)onMouseGestureDetection
+
+Fires when we detect a possible start of a mouse-gesture related event
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+Id of the Vivaldi window where the event was originated
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onMouseGesture)onMouseGesture
+
+Fires when the user triggered a mouse gesture
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+Id of the Vivaldi window where the event was originated
+
+clientX
+
+```
+number
+```
+
+X-coordinate of the gesture start point
+
+clientY
+
+```
+number
+```
+
+Y-coordinate of the gesture start point
+
+gestureDirections
+
+```
+string
+```
+
+Sequence of gesture directions
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onTabSwitchEnd)onTabSwitchEnd
+
+Fires when the tab switch using mouse wheel terminates
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+Id of the Vivaldi window where the event was originated
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onRockerGesture)onRockerGesture
+
+Fires when the user triggered a rocker gesture
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+Id of the Vivaldi window where the event was originated
+
+isLeft
+
+```
+boolean
+```
+
+True if this is the left rocker gesture
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onWebviewClickCheck)onWebviewClickCheck
+
+Fires to check if the user clicks on a webview.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+Id of the Vivaldi window where the event was originated
+
+mousedown
+
+```
+boolean
+```
+
+true if this is a mousedown event, false for mouseup
+
+button
+
+```
+integer
+```
+
+the mouse button that was pressed, the values match DOM's MouseEvent.button
+
+clientX
+
+```
+number
+```
+
+X-coordinates of the click
+
+clientY
+
+```
+number
+```
+
+Y-coordinates of the click
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onPageZoom)onPageZoom
+
+Fires on page zoom events
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+Id of the Vivaldi window where the event was originated
+
+steps
+
+```
+number
+```
+
+Number of basic steps to increase or decrease zoom.
+
+clientX
+
+```
+number
+```
+
+X-coordinates of the pointer position
+
+clientY
+
+```
+number
+```
+
+Y-coordinates of the pointer position
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onBeforeUnloadDialogClosed)onBeforeUnloadDialogClosed
+
+Fired when a beforeunload dialog has been closed.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+Window Id containg the tab Id.
+
+tabId
+
+```
+integer
+```
+
+Tab id for the beforeunload dialog.
+
+proceed
+
+```
+boolean
+```
+
+If true, the tab operation that triggered the dialog has been allowed to proceed.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onLanguageDetermined)onLanguageDetermined
+
+Fired when the language of the current page has been determined.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+The tab Id.
+
+details
+
+```
+LanguageDetectionDetails
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onShowTranslationUI)onShowTranslationUI
+
+Fired when we should show translation UI. The status decides what UI we should show.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+The tab Id.
+
+step
+
+```
+TranslateStep
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+error
+
+```
+TranslateError
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+automaticTranslation
+
+```
+boolean
+```
+
+true if this was triggered by an automatic translation.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onPageTranslated)onPageTranslated
+
+Fired when a translation has been completed on a page.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+The tab Id.
+
+srcLang
+
+```
+string
+```
+
+Source language code it was translated from.
+
+destLang
+
+```
+string
+```
+
+Destination language code it was translated to.
+
+error
+
+```
+TranslateError
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onIsPageTranslatedChanged)onIsPageTranslatedChanged
+
+Fired when a translation state has changed on a page, eg. revert has been used.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+The tab Id.
+
+isTranslated
+
+```
+boolean
+```
+
+The translation state has changed. For eg. revert, it will be false after revert has been invoked.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#onTabResourceMetricsRefreshed)onTabResourceMetricsRefreshed
+
+Fired when resource metrics are updated.
+
+Parameters:
+
+info
+
+```
+TabPerformanceData
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#update)update
+
+Update the given tab with Vivaldi-specific properties.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+tabInfo
+
+```
+UpdateTabInfo
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#get)get
+
+Get Vivaldi-specific properties from the tab.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#insertText)insertText
+
+Insert text into editable fields.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+text
+
+```
+string
+```
+
+The text to insert
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#startDrag)startDrag
+
+Starts the HTML5 drag of the given tabs.
+
+Parameters:
+
+dragData
+
+```
+DragData
+```
+
+The drag data to be transported in the dataobject.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#scrollPage)scrollPage
+
+Scrolls the page up or down, depending on a parameter
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+scrollType
+
+```
+string
+```
+
+Whether to scroll up or down, and by how much
+
+scrollAmount
+
+(optional)
+
+```
+integer
+```
+
+The amount to scroll by
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#moveSpatnavRect)moveSpatnavRect
+
+Move current spatnav rect in |direction|
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+direction
+
+```
+NavigationDirection
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#activateSpatnavElement)activateSpatnavElement
+
+Activate currently focused spatnav element
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+modifiers
+
+```
+integer
+```
+
+Keyboard modifiers to simulate shift or ctrl-clicking
+
+Returns true if layout changes by un-hovering the current spatnav element.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#hasBeforeUnloadOrUnload)hasBeforeUnloadOrUnload
+
+Check if a page contains a beforeunload or unload handler.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#translatePage)translatePage
+
+Attempts to translate the given page.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+srcLang
+
+```
+string
+```
+
+Source language code to translate from. May be omitted.
+
+destLang
+
+```
+string
+```
+
+Destination language code to translate to. Must be present.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#revertTranslatePage)revertTranslatePage
+
+Attempts to revert the translating of the given page.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#determineTextLanguage)determineTextLanguage
+
+Attempts to determined the language of the given text.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+Any valid tabId can be used here, it is only used to determine which renderer to use.
+
+text
+
+```
+string
+```
+
+String to determine the language for. If the string is too short, this operation might not yield a language code.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#loadViaLifeCycleUnit)loadViaLifeCycleUnit
+
+Calls TabLifecycleUnitSource::TabLifecycleUnit::Load if there is a TLU associated with the webcontents for the tab.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#getTabPerformanceData)getTabPerformanceData
+
+Look up performance data about tab. We might migrate to TabRendererData instead.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+Id for tab we want info about.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#getSendTabToSelfTargets)getSendTabToSelfTargets
+
+Fetch current targets with information that can be used to make a menu.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#sendSendTabToSelfTarget)sendSendTabToSelfTarget
+
+Send url and title to target that matches with the guid.
+
+Parameters:
+
+url
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+title
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+guid
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#getSendTabToSelfEntries)getSendTabToSelfEntries
+
+Fetch current entries that have been shared to us.
+
+Parameters:
+
+silent
+
+```
+boolean
+```
+
+Allow operation to mute error message if it is called too early on startup.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#execSendTabToSelfAction)execSendTabToSelfAction
+
+Delete entries from the model.
+
+Parameters:
+
+action
+
+```
+SendTabToSelfAction
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+guids
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   string
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/tabsPrivate.html#dismissSendTabToSelfEntries)dismissSendTabToSelfEntries
+
+Dismiss entries from the model.
+
+Parameters:
+
+guids
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   string

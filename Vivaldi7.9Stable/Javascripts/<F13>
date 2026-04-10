@@ -8,30 +8,10 @@
 (() => {
   'use strict';
 
-  // ==================== AI Configuration ====================
-  // 1. Fill in apiKey.
-  // 2. Set apiEndpoint to the full chat completions URL.
-  // 3. Adjust model / timeout / maxTokens if needed.
-  // 4. If apiKey is empty, chat requests will stop with a config warning.
-  //
-  // Common examples:
-  // GLM: https://open.bigmodel.cn/api/paas/v4/chat/completions
-  // Groq: https://api.groq.com/openai/v1/chat/completions
-  // OpenRouter: https://openrouter.ai/api/v1/chat/completions
-  // DeepSeek: https://api.deepseek.com/chat/completions
-  const AI_CONFIG = {
-    apiEndpoint: 'https://api.groq.com/openai/v1/chat/completions',
-    apiKey: '',
-    model: 'groq/compound',
-    timeout: 90000,
-    temperature: 0.5,
-    maxTokens: 4096,
-  };
-
   const name = 'Ask in Page';
   const nameAttribute = 'ask-in-page';
   const webPanelId = 'WEBPANEL_ask-in-page-a1b2c3d4e5f6';
-  const uiVersion = 'v73';
+  const uiVersion = 'v72';
   const code = 'data:text/html,' + encodeURIComponent('<title>' + name + '</title>');
   const panelIconSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><path d="M13.5 2.5 7.5 12h4l-1 9.5 6-9.5h-4l1-9.5Z" stroke="#8B949E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   const panelIcon = 'data:image/svg+xml,' + encodeURIComponent(panelIconSvg);
@@ -68,51 +48,6 @@
       iconText: '◔',
       subtitle: 'Clear explanation with examples',
     },
-    {
-      id: 'rewrite',
-      name: 'Rewrite',
-      trigger: 'rewrite',
-      aliases: ['reword', 'polish', 'revise'],
-      prompt: "Rewrite the content to improve clarity, flow, and natural phrasing while preserving the original meaning. Keep the tone aligned with the source unless I ask for a different tone.",
-      iconText: '↺',
-      subtitle: 'Rewrite for clarity and flow',
-    },
-    {
-      id: 'shorter',
-      name: 'Shorter',
-      trigger: 'shorter',
-      aliases: ['short', 'trim', 'compress'],
-      prompt: "Make the content shorter and tighter without losing the key meaning. Prefer concise sentences and remove repetition.",
-      iconText: '⇣',
-      subtitle: 'Compress without losing meaning',
-    },
-    {
-      id: 'translate',
-      name: 'Translate',
-      trigger: 'translate',
-      aliases: ['translation', 'tl'],
-      prompt: "Translate the content into the user's preferred language unless they specify a target language. Preserve meaning, tone, names, and formatting.",
-      iconText: '文',
-      subtitle: 'Translate while preserving meaning',
-    },
-    {
-      id: 'make-table',
-      name: 'Make table',
-      trigger: 'maketable',
-      aliases: ['table', 'tabulate', 'grid'],
-      prompt: "Convert the response into a concise markdown table when the content fits naturally. Keep columns useful, short, and easy to scan.",
-      iconText: '▦',
-      subtitle: 'Restructure as a compact table',
-    },
-    {
-      id: 'extract-action-items',
-      name: 'Extract action items',
-      trigger: 'extractactionitems',
-      aliases: ['actions', 'todo', 'nextsteps'],
-      prompt: "Extract the concrete action items, next steps, owners if inferable, and dependencies. Present them as a concise actionable list.",
-      iconText: '✓',
-      subtitle: 'Pull out concrete next steps',
-    },
   ];
   const formatCapabilityDefinitions = [
     {
@@ -148,6 +83,26 @@
       aliases: ['list', 'bullet'],
     },
   ];
+  const AI_CONFIG = {
+    // apiEndpoint: 'https://open.bigmodel.cn/api/paas/v4',
+    // apiKey: '',
+    // model: 'glm-4.7-flash',
+    // apiEndpoint: 'https://api.minimaxi.com/v1',
+    // apiKey: '',
+    // model: 'MiniMax-M2.5',
+    apiEndpoint: 'https://api.groq.com/openai/v1',
+    apiKey: '',
+    model: 'groq/compound',
+    // apiEndpoint: 'https://openrouter.ai/api/v1',
+    // apiKey: '',
+    // model: 'openrouter/free',
+    //apiEndpoint: 'https://integrate.api.nvidia.com/v1',
+    //apiKey: '',
+    //model: 'google/gemma-4-31b-it',
+    timeout: 90000,
+    temperature: 0.5,
+    maxTokens: 4096,
+  };
   const CONTEXT_LIMITS = {
     pageContentChars: 18000,
     filePreviewChars: 18000,
@@ -155,7 +110,7 @@
   const ASK_IN_PAGE_DEBUG = false;
   const ASK_IN_PAGE_CONSOLE_DEBUG = true;
   const PERFORMANCE_CONFIG = {
-    selectionPollIntervalMs: 4000,
+    selectionPollIntervalMs: 1500,
     tabSnapshotCacheTtlMs: 15000,
   };
   const TAB_SUGGESTION_LIMITS = {
@@ -182,7 +137,6 @@
     newlinePause: 0,
     ghostTailChars: 14,
     minCharsPerFrame: 1,
-    stableTailCommitChars: 180,
   };
   const LANGUAGE_MAP = {
     zh: 'Chinese',
@@ -234,26 +188,6 @@
       allOpenTabsSubtitle: 'Add all open tabs in this window',
       domainTabsTitle: 'All open {host} tabs ({count})',
       domainTabsSubtitle: 'Add all tabs from this domain',
-      chooseFileTitle: 'Choose a File...',
-      chooseFileSubtitle: 'Choose a file from your system',
-      untitledTab: 'Untitled tab',
-      untitledFile: 'Untitled file',
-      preparingSuggestions: 'Preparing suggestions...',
-      preparingCommands: 'Preparing commands...',
-      loadingTabsFilesTitle: 'Loading tabs and downloaded files...',
-      loadingTabsFilesSubtitle: 'If you can see this row, the dropdown UI is rendering correctly',
-      noMatchingSuggestions: 'No matching suggestions.',
-      noTabsOrFiles: 'No tabs or files available.',
-      tabsFilesReadFailed: 'Failed to read tabs / files. Please try again.',
-      noMatchingCommands: 'No matching commands.',
-      apiKeyMissing: 'AI API key is not configured. Fill in apiKey in AI_CONFIG inside AskInPage.js.',
-      noDisplayBody: 'The model finished, but returned no displayable answer.',
-      aiRequestFailed: 'AI request failed: {message}',
-      unknownError: 'Unknown error',
-      copyMessage: 'Copy message',
-      editMessage: 'Edit message',
-      copyReply: 'Copy reply',
-      retryReply: 'Retry reply',
     },
     'zh-CN': {
       newChat: '新建对话',
@@ -284,8 +218,6 @@
       allOpenTabsSubtitle: '一次性加入当前窗口中的全部标签页',
       domainTabsTitle: '全部打开的 {host} 标签页 ({count})',
       domainTabsSubtitle: '加入该域名下的全部标签页',
-      chooseFileTitle: '选择文件...',
-      chooseFileSubtitle: '从系统选择文件',
     },
     'zh-TW': {
       newChat: '新增對話',
@@ -316,8 +248,6 @@
       allOpenTabsSubtitle: '一次加入目前視窗中的全部分頁',
       domainTabsTitle: '全部已開啟的 {host} 分頁 ({count})',
       domainTabsSubtitle: '加入這個網域下的全部分頁',
-      chooseFileTitle: '選擇檔案...',
-      chooseFileSubtitle: '從系統選擇檔案',
     },
     ja: {
       newChat: '新しいチャット',
@@ -348,8 +278,6 @@
       allOpenTabsSubtitle: 'このウィンドウの全タブをまとめて追加',
       domainTabsTitle: '{host} の開いているタブをすべて追加 ({count})',
       domainTabsSubtitle: 'このドメインのタブをまとめて追加',
-      chooseFileTitle: 'ファイルを選択...',
-      chooseFileSubtitle: 'システムからファイルを選択',
     },
     ko: {
       newChat: '새 채팅',
@@ -380,8 +308,6 @@
       allOpenTabsSubtitle: '이 창의 모든 탭을 한 번에 추가',
       domainTabsTitle: '열린 {host} 탭 전체 ({count})',
       domainTabsSubtitle: '이 도메인의 탭을 한 번에 추가',
-      chooseFileTitle: '파일 선택...',
-      chooseFileSubtitle: '시스템에서 파일 선택',
     },
     es: {
       newChat: 'Nuevo chat',
@@ -412,8 +338,6 @@
       allOpenTabsSubtitle: 'Añadir todas las pestañas abiertas de esta ventana',
       domainTabsTitle: 'Todas las pestañas abiertas de {host} ({count})',
       domainTabsSubtitle: 'Añadir todas las pestañas de este dominio',
-      chooseFileTitle: 'Elegir archivo...',
-      chooseFileSubtitle: 'Elegir un archivo del sistema',
     },
     fr: {
       newChat: 'Nouvelle discussion',
@@ -444,8 +368,6 @@
       allOpenTabsSubtitle: 'Ajouter tous les onglets ouverts de cette fenêtre',
       domainTabsTitle: 'Tous les onglets ouverts de {host} ({count})',
       domainTabsSubtitle: 'Ajouter tous les onglets de ce domaine',
-      chooseFileTitle: 'Choisir un fichier...',
-      chooseFileSubtitle: 'Choisir un fichier depuis le système',
     },
     de: {
       newChat: 'Neuer Chat',
@@ -476,8 +398,6 @@
       allOpenTabsSubtitle: 'Alle offenen Tabs dieses Fensters hinzufügen',
       domainTabsTitle: 'Alle offenen {host}-Tabs ({count})',
       domainTabsSubtitle: 'Alle Tabs dieser Domain hinzufügen',
-      chooseFileTitle: 'Datei auswählen...',
-      chooseFileSubtitle: 'Eine Datei aus dem System auswählen',
     },
     pt: {
       newChat: 'Novo chat',
@@ -508,8 +428,6 @@
       allOpenTabsSubtitle: 'Adicionar todas as abas abertas desta janela',
       domainTabsTitle: 'Todas as abas abertas de {host} ({count})',
       domainTabsSubtitle: 'Adicionar todas as abas deste domínio',
-      chooseFileTitle: 'Escolher arquivo...',
-      chooseFileSubtitle: 'Escolher um arquivo do sistema',
     },
     ru: {
       newChat: 'Новый чат',
@@ -540,8 +458,6 @@
       allOpenTabsSubtitle: 'Добавить все открытые вкладки этого окна',
       domainTabsTitle: 'Все открытые вкладки {host} ({count})',
       domainTabsSubtitle: 'Добавить все вкладки этого домена',
-      chooseFileTitle: 'Выбрать файл...',
-      chooseFileSubtitle: 'Выбрать файл из системы',
     },
   };
 
@@ -661,29 +577,6 @@
     return commandDefinitions.find((item) => item.name === name) || null;
   }
 
-  function getCommandIconSvg(commandName) {
-    switch (String(commandName || '')) {
-      case 'Analyze':
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
-      case 'Summarize':
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>';
-      case 'Explain':
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.75c.62.46 1 1.17 1 1.93V17h6v-.32c0-.76.38-1.47 1-1.93A7 7 0 0 0 12 2z"/></svg>';
-      case 'Rewrite':
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7v5h-5"/><path d="M4 17v-5h5"/><path d="M7 7a7 7 0 0 1 11.2 1.5L20 12"/><path d="M17 17A7 7 0 0 1 5.8 15.5L4 12"/></svg>';
-      case 'Shorter':
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12"/><path d="M9 12h6"/><path d="M11 17h2"/></svg>';
-      case 'Translate':
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h9"/><path d="M9.5 4v3c0 4-1.8 7.5-5.5 10"/><path d="M7 11c1.3 2.1 3 3.8 5 5"/><path d="M14 10h6"/><path d="M17 7v3.5c0 2.8-1.1 5.5-3.2 7.5"/><path d="M15 15h4"/></svg>';
-      case 'Make table':
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/><path d="M9 5v14"/><path d="M15 5v14"/></svg>';
-      case 'Extract action items':
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>';
-      default:
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/></svg>';
-    }
-  }
-
   function getFormatCapabilityDefinition(id) {
     return formatCapabilityDefinitions.find((item) => item.id === id) || null;
   }
@@ -731,7 +624,7 @@
   }
 
   function buildVisibleTextFromSequence(parts, activeCmd) {
-    const prefix = activeCmd ? (activeCmd + ' ') : '';
+    const prefix = activeCmd ? ('/' + activeCmd + ' ') : '';
     return prefix + parts.map((part) => {
       if (part.type === 'text') {
         return part.text || '';
@@ -757,7 +650,7 @@
   function extractThinkingSegments(text) {
     const raw = String(text || '').replace(/\r/g, '');
     let reasoning = '';
-    const visible = raw.replace(/<\s*(?:think|thinking|thought|reasoning)\b[^>]*>([\s\S]*?)<\s*\/\s*(?:think|thinking|thought|reasoning)\s*>/gi, (_, captured) => {
+    const visible = raw.replace(/<\s*(?:think|thinking)\s*>([\s\S]*?)<\s*\/\s*(?:think|thinking)\s*>/gi, (_, captured) => {
       const normalized = String(captured || '').trim();
       if (normalized) {
         reasoning += (reasoning ? '\n' : '') + normalized;
@@ -770,171 +663,70 @@
     };
   }
 
-  function createResponseNormalizationState() {
+  function createThinkingStreamState() {
     return {
-      rawTranscript: '',
-      visibleChunks: [],
-      reasoningChunks: [],
-      unknownChunks: [],
-      diagnostics: [],
-      providerSignals: {
-        visibleChunkCount: 0,
-        reasoningChunkCount: 0,
-        unknownChunkCount: 0,
-      },
+      inside: false,
+      buffer: '',
     };
   }
 
-  function appendNormalizedChunk(state, channel, text) {
-    const normalizedChannel = channel === 'visible' || channel === 'reasoning' ? channel : 'unknown';
-    const chunk = String(text || '');
-    if (!chunk) {
-      return;
+  function consumeThinkingStreamChunk(streamState, chunkText) {
+    streamState.buffer += String(chunkText || '');
+    let visible = '';
+    let reasoning = '';
+
+    while (streamState.buffer) {
+      if (streamState.inside) {
+        const closeMatch = streamState.buffer.match(/<\s*\/\s*(?:think|thinking)\s*>/i);
+        if (!closeMatch) {
+          break;
+        }
+        reasoning += streamState.buffer.slice(0, closeMatch.index);
+        streamState.buffer = streamState.buffer.slice(closeMatch.index + closeMatch[0].length);
+        streamState.inside = false;
+        continue;
+      }
+
+      const openMatch = streamState.buffer.match(/<\s*(?:think|thinking)\s*>/i);
+      if (!openMatch) {
+        const partialTag = streamState.buffer.match(/<\s*\/?\s*(?:think|thinking)?\s*$/i);
+        if (partialTag) {
+          visible += streamState.buffer.slice(0, partialTag.index);
+          streamState.buffer = streamState.buffer.slice(partialTag.index);
+        } else {
+          visible += streamState.buffer;
+          streamState.buffer = '';
+        }
+        break;
+      }
+
+      visible += streamState.buffer.slice(0, openMatch.index);
+      streamState.buffer = streamState.buffer.slice(openMatch.index + openMatch[0].length);
+      streamState.inside = true;
     }
-    if (normalizedChannel === 'visible') {
-      state.visibleChunks.push(chunk);
-      state.providerSignals.visibleChunkCount += 1;
-      return;
-    }
-    if (normalizedChannel === 'reasoning') {
-      state.reasoningChunks.push(chunk);
-      state.providerSignals.reasoningChunkCount += 1;
-      return;
-    }
-    state.unknownChunks.push(chunk);
-    state.providerSignals.unknownChunkCount += 1;
+
+    return {
+      reasoning: reasoning,
+      content: visible,
+    };
   }
 
-  function addNormalizationDiagnostic(state, code, detail) {
-    state.diagnostics.push({
-      code,
-      detail: detail || '',
-    });
-  }
-
-  function looksLikeStructuredVisibleContent(text) {
-    const value = String(text || '').trim();
-    if (!value) {
-      return false;
+  function flushThinkingStreamState(streamState) {
+    const remaining = String(streamState.buffer || '');
+    streamState.buffer = '';
+    if (!remaining) {
+      return { reasoning: '', content: '' };
     }
-    if (/<\s*table\b[\s\S]*?>/i.test(value)) {
-      return true;
-    }
-    if (/^```[\s\S]*```$/m.test(value)) {
-      return true;
-    }
-    if (/^\s*\|.+\|\s*$/m.test(value) && /^\s*\|?(?:\s*:?-{3,}:?\s*\|)+\s*(?:\s*:?-{3,}:?\s*)?\|?\s*$/m.test(value)) {
-      return true;
-    }
-    if (/^(?:#{1,4}\s+.+|\d+\.\s+.+|[-*]\s+.+)$/m.test(value) && value.length > 40) {
-      return true;
-    }
-    return false;
-  }
-
-  function findVisibleStructureStart(text) {
-    const value = String(text || '');
-    const patterns = [
-      /<\s*table\b/i,
-      /```/,
-      /^\s*\|.+\|\s*$/m,
-      /(?:^|\n)\s*#{1,4}\s+\S/m,
-    ];
-    const indexes = patterns
-      .map((pattern) => {
-        const match = value.match(pattern);
-        return match?.index ?? -1;
-      })
-      .filter((index) => index >= 0);
-    if (!indexes.length) {
-      return -1;
-    }
-    return Math.min(...indexes);
-  }
-
-  function splitTaggedThinkingContent(text) {
-    const raw = String(text || '').replace(/\r/g, '');
-    if (!raw) {
+    if (streamState.inside) {
+      streamState.inside = false;
       return {
-        thinking: '',
-        visible: '',
+        reasoning: remaining.replace(/<\s*\/?\s*(?:think|thinking)\s*>/gi, ''),
+        content: '',
       };
     }
-    let thinking = '';
-    const visible = raw.replace(/<\s*(?:think|thinking|thought|reasoning)\b[^>]*>([\s\S]*?)<\s*\/\s*(?:think|thinking|thought|reasoning)\s*>/gi, (_, captured) => {
-      const normalized = String(captured || '').trim();
-      if (normalized) {
-        thinking += (thinking ? '\n' : '') + normalized;
-      }
-      return '';
-    });
     return {
-      thinking: thinking.trim(),
-      visible: visible.trim(),
-    };
-  }
-
-  function finalizeNormalizedResponse(state) {
-    const visibleRaw = state.visibleChunks.join('');
-    const reasoningRaw = state.reasoningChunks.join('');
-    const unknownRaw = state.unknownChunks.join('');
-
-    const visibleSplit = splitTaggedThinkingContent(visibleRaw);
-    let finalVisible = cleanModelText([visibleSplit.visible, unknownRaw].filter(Boolean).join('')).trim();
-    let finalThinking = [visibleSplit.thinking, reasoningRaw].filter(Boolean).join('\n').trim();
-    let confidence = 'high';
-    let fallbackMode = 'none';
-
-    const reasoningSplit = splitTaggedThinkingContent(finalThinking);
-    finalThinking = reasoningSplit.thinking || finalThinking;
-
-    if (reasoningSplit.visible) {
-      finalVisible = [finalVisible, reasoningSplit.visible].filter(Boolean).join('\n').trim();
-      fallbackMode = 'promoted_reasoning_trailing_visible';
-      confidence = 'medium';
-      addNormalizationDiagnostic(state, 'promoted_reasoning_trailing_visible', 'Detected visible content outside tagged think blocks inside reasoning channel.');
-    }
-
-    if (!finalVisible && finalThinking) {
-      const structureStart = findVisibleStructureStart(finalThinking);
-      if (structureStart >= 0) {
-        const before = finalThinking.slice(0, structureStart).trim();
-        const after = finalThinking.slice(structureStart).trim();
-        if (after) {
-          finalVisible = after;
-          finalThinking = before;
-          fallbackMode = 'promoted_reasoning_structured_suffix';
-          confidence = 'medium';
-          addNormalizationDiagnostic(state, 'promoted_reasoning_structured_suffix', 'Detected structured visible content inside reasoning channel.');
-        }
-      }
-    }
-
-    if (!finalVisible && finalThinking && looksLikeStructuredVisibleContent(finalThinking)) {
-      finalVisible = finalThinking;
-      finalThinking = '';
-      fallbackMode = 'reasoning_only_structured_visible';
-      confidence = 'low';
-      addNormalizationDiagnostic(state, 'reasoning_only_structured_visible', 'Reasoning channel looked like final answer, promoted whole content.');
-    }
-
-    if (!finalVisible && !finalThinking && unknownRaw.trim()) {
-      finalVisible = cleanModelText(unknownRaw).trim();
-      fallbackMode = 'unknown_channel_visible';
-      confidence = 'low';
-      addNormalizationDiagnostic(state, 'unknown_channel_visible', 'Used unknown channel content as visible fallback.');
-    }
-
-    return {
-      visibleText: finalVisible,
-      thinkingText: finalThinking.trim(),
-      rawVisibleText: visibleRaw,
-      rawReasoningText: reasoningRaw,
-      rawUnknownText: unknownRaw,
-      fallbackMode,
-      confidence,
-      diagnostics: state.diagnostics.slice(),
-      providerSignals: Object.assign({}, state.providerSignals),
+      reasoning: '',
+      content: remaining.replace(/<\s*\/?\s*(?:think|thinking)\s*>/gi, ''),
     };
   }
 
@@ -947,7 +739,7 @@
   }
 
   function maskApiEndpoint(endpoint) {
-    return String(endpoint || '').trim();
+    return String(endpoint || '').replace(/\/$/, '') + '/chat/completions';
   }
 
   function logAiCompose(groupTitle, payload) {
@@ -1268,17 +1060,6 @@
     enhanceRenderedAnswer(container);
   }
 
-  async function settleStreamingAnswer(container, text, options) {
-    const raw = cleanModelText(String(text || '')).trim();
-    const isError = Boolean(options && options.isError);
-    container.classList.toggle('ask-msg-ai-error', isError);
-    if (!raw) {
-      container.textContent = String((options && options.fallbackText) || '');
-      return;
-    }
-    await renderRichAnswer(container, raw);
-  }
-
   function ensureLiveAnswerNodes(answerNode) {
     let live = answerNode.querySelector('.ask-msg-ai-answer-live');
     let committed = live?.querySelector('.ask-msg-ai-answer-committed');
@@ -1302,54 +1083,6 @@
       answerNode.appendChild(live);
     }
     return { live, committed, preview, tailCurrent, tailGhost };
-  }
-
-  function renderAnimatedTail(container, text, className) {
-    const normalized = String(text || '');
-    const previous = container.dataset.src || '';
-    if (normalized === previous) {
-      return;
-    }
-    if (!normalized) {
-      container.innerHTML = '';
-      container.dataset.src = '';
-      return;
-    }
-    if (!previous || !normalized.startsWith(previous)) {
-      container.innerHTML = '';
-      const parts = normalized.match(/\S+\s*|\s+/g) || [normalized];
-      parts.forEach((part) => {
-        const span = document.createElement('span');
-        span.className = className;
-        span.textContent = part;
-        container.appendChild(span);
-      });
-      container.dataset.src = normalized;
-      return;
-    }
-    const delta = normalized.slice(previous.length);
-    const parts = delta.match(/\S+\s*|\s+/g) || [delta];
-    parts.forEach((part) => {
-      const span = document.createElement('span');
-      span.className = className;
-      span.textContent = part;
-      container.appendChild(span);
-    });
-    container.dataset.src = normalized;
-  }
-
-  function renderGhostTail(container, text) {
-    const normalized = String(text || '');
-    if (!normalized) {
-      container.textContent = '';
-      container.dataset.src = '';
-      return;
-    }
-    if ((container.dataset.src || '') === normalized) {
-      return;
-    }
-    container.textContent = normalized;
-    container.dataset.src = normalized;
   }
 
   function splitStableMarkdown(markdown) {
@@ -1409,25 +1142,10 @@
       cursor = paragraphBoundary;
     }
 
-    let committed = source.slice(0, committedEnd);
-    let preview = source.slice(committedEnd);
-    const previewTrimmed = preview.trimStart();
-    const hasComplexPreview = /(^|\n)(#{1,4}\s|>\s|[-*+]\s|\d+\.\s|\|)|```/.test(previewTrimmed);
-    if (!hasComplexPreview && preview.length >= STREAM_UI_CONFIG.stableTailCommitChars) {
-      const sentenceMatches = Array.from(preview.matchAll(/[\s\S]*?[。！？.!?](?=\s|$)/g));
-      const lastSentence = sentenceMatches.length ? sentenceMatches[sentenceMatches.length - 1][0] : '';
-      if (lastSentence && lastSentence.length >= 60) {
-        committed += lastSentence;
-        preview = preview.slice(lastSentence.length);
-      } else {
-        const breakIndex = Math.max(preview.lastIndexOf('\n'), preview.lastIndexOf('  '));
-        if (breakIndex >= 80) {
-          committed += preview.slice(0, breakIndex + 1);
-          preview = preview.slice(breakIndex + 1);
-        }
-      }
-    }
-    return { committed, preview };
+    return {
+      committed: source.slice(0, committedEnd),
+      preview: source.slice(committedEnd),
+    };
   }
 
   function renderStreamingMarkdown(answerNode, displayedText, fullText) {
@@ -1444,8 +1162,8 @@
       liveNodes.committed.dataset.srcHash = parts.committed;
       enhanceRenderedAnswer(liveNodes.committed);
     }
-    renderAnimatedTail(liveNodes.tailCurrent, parts.preview || '', 'ask-msg-ai-tail-token');
-    renderGhostTail(liveNodes.tailGhost, ghostTail || '');
+    liveNodes.tailCurrent.textContent = parts.preview || '';
+    liveNodes.tailGhost.textContent = ghostTail || '';
     liveNodes.preview.classList.toggle('has-tail', Boolean(parts.preview || ghostTail));
   }
 
@@ -2055,7 +1773,26 @@
             <span class="ask-empty-subtext">${t('emptySubhint')}</span>
           </div>
         </div>
-        <nav class="ask-commands-row" id="askCommandsRow" aria-label="${t('commandShortcuts')}"></nav>
+        <nav class="ask-commands-row" id="askCommandsRow" aria-label="${t('commandShortcuts')}">
+          <button class="ask-btn-cmd" type="button" data-cmd="Analyze">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            Analyze
+          </button>
+          <button class="ask-btn-cmd" type="button" data-cmd="Summarize">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
+            </svg>
+            Summarize
+          </button>
+          <button class="ask-btn-cmd" type="button" data-cmd="Explain">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.75c.62.46 1 1.17 1 1.93V17h6v-.32c0-.76.38-1.47 1-1.93A7 7 0 0 0 12 2z"/>
+            </svg>
+            Explain
+          </button>
+        </nav>
         <div class="ask-input-area">
           <div class="ask-suggestion-dropdown" id="askSuggestionDropdown" aria-hidden="true">
             <div class="ask-suggestion-search">
@@ -2106,16 +1843,9 @@
                 </svg>
               </button>
               <button class="ask-btn-send" id="askBtnSend" type="button" title="${t('send')}" aria-label="${t('sendMessage')}">
-                <span class="ask-btn-send-icon ask-btn-send-icon-send">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>
-                  </svg>
-                </span>
-                <span class="ask-btn-send-icon ask-btn-send-icon-stop">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-                    <rect x="6" y="6" width="12" height="12" rx="2.5" fill="#000000"/>
-                  </svg>
-                </span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>
+                </svg>
               </button>
             </div>
           </div>
@@ -2134,7 +1864,7 @@
       'button[data-name="' + webPanelId + '"] { position:relative; display:flex; align-items:center; justify-content:center; padding:0 !important; }',
       'button[data-name="' + webPanelId + '"] > img, button[data-name="' + webPanelId + '"] .button-badge, button[data-name="' + webPanelId + '"] .ToolbarButton-Button-SVG { opacity:0 !important; }',
       'button[data-name="' + webPanelId + '"]:before { position:absolute; left:50%; top:50%; width:18px; height:18px; margin:0; content:""; background-color:var(--colorFg); transform:translate(-50%,-50%); -webkit-mask-image:url(' + JSON.stringify(panelIconMask) + '); -webkit-mask-repeat:no-repeat; -webkit-mask-position:center; -webkit-mask-size:contain; mask-image:url(' + JSON.stringify(panelIconMask) + '); mask-repeat:no-repeat; mask-position:center; mask-size:contain; }',
-      '.ask-in-page-content { --aip-bg:var(--colorBg); --aip-surface:color-mix(in srgb, var(--colorBgLight) 82%, transparent); --aip-surface-strong:color-mix(in srgb, var(--colorBgLighter) 88%, transparent); --aip-elevated:color-mix(in srgb, var(--colorBgLightIntense) 92%, var(--colorAccentBgAlpha)); --aip-border:var(--colorBorderSubtle); --aip-border-hover:var(--colorBorderIntense); --aip-accent:var(--colorHighlightBg); --aip-accent-dim:var(--colorHighlightBgAlpha); --aip-text-primary:var(--colorFg); --aip-text-secondary:var(--colorFgFaded); --aip-text-muted:var(--colorFgFadedMost); --aip-chip-bg:color-mix(in srgb, var(--colorAccentBgAlphaHeavy) 68%, var(--colorBgLight)); --aip-r-xs:var(--radiusRounded); --aip-r-sm:var(--radiusHalf); --aip-r-md:var(--radiusCap); --aip-r-lg:var(--radius); --aip-r-pill:var(--radiusRound); --aip-r-full:50%; --radius:var(--aip-r-sm); --aip-shadow-base:0 8px 18px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.02); --aip-shadow-mid:0 14px 28px rgba(0,0,0,0.17), inset 0 1px 0 rgba(255,255,255,0.03); --aip-shadow-strong:0 18px 40px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.04); width:100%; height:100%; min-height:0; background:linear-gradient(180deg, color-mix(in srgb, var(--colorBgLight) 90%, transparent) 0%, var(--aip-bg) 18%, var(--colorBgDark) 100%); color:var(--aip-text-primary); font-family:var(--sansSerifFont), sans-serif; -webkit-font-smoothing:antialiased; }',
+      '.ask-in-page-content { --aip-bg:var(--colorBg); --aip-surface:color-mix(in srgb, var(--colorBgLight) 82%, transparent); --aip-surface-strong:color-mix(in srgb, var(--colorBgLighter) 88%, transparent); --aip-elevated:color-mix(in srgb, var(--colorBgLightIntense) 92%, var(--colorAccentBgAlpha)); --aip-border:var(--colorBorderSubtle); --aip-border-hover:var(--colorBorderIntense); --aip-accent:var(--colorHighlightBg); --aip-accent-dim:var(--colorHighlightBgAlpha); --aip-text-primary:var(--colorFg); --aip-text-secondary:var(--colorFgFaded); --aip-text-muted:var(--colorFgFadedMost); --aip-chip-bg:color-mix(in srgb, var(--colorAccentBgAlphaHeavy) 68%, var(--colorBgLight)); --aip-r-xs:var(--radiusRounded); --aip-r-sm:var(--radiusHalf); --aip-r-md:var(--radiusCap); --aip-r-lg:var(--radius); --aip-r-pill:var(--radiusRound); --aip-r-full:50%; --radius:var(--aip-r-sm); width:100%; height:100%; min-height:0; background:linear-gradient(180deg, color-mix(in srgb, var(--colorBgLight) 90%, transparent) 0%, var(--aip-bg) 18%, var(--colorBgDark) 100%); color:var(--aip-text-primary); font-family:var(--sansSerifFont), sans-serif; -webkit-font-smoothing:antialiased; }',
       '.ask-in-page-content *, .ask-in-page-content *::before, .ask-in-page-content *::after { box-sizing:border-box; }',
       '.ask-in-page-shell { width:100%; height:100%; display:flex; flex:1; flex-direction:column; min-height:0; background:transparent; position:relative; }',
       '.ask-in-page-shell::before { content:""; position:absolute; inset:0 0 auto; height:92px; background:linear-gradient(180deg, color-mix(in srgb, var(--colorAccentBgAlpha) 42%, transparent) 0%, transparent 100%); opacity:.75; pointer-events:none; }',
@@ -2144,7 +1874,7 @@
       '.ask-btn-new:hover, .ask-btn-tool:hover { color:var(--aip-text-primary); background:color-mix(in srgb, var(--colorBgLight) 80%, transparent); border-color:var(--aip-border); }',
       '.ask-btn-new:active, .ask-btn-tool:active { transform:scale(.96); }',
       '.ask-btn-new svg, .ask-btn-tool svg { width:18px; height:18px; }',
-      '.ask-messages { display:flex !important; flex-direction:column !important; flex:1 1 auto !important; min-height:0 !important; overflow-y:auto !important; overflow-x:hidden !important; overflow-anchor:auto; padding:10px 12px 156px; position:relative; z-index:1; }',
+      '.ask-messages { display:flex !important; flex-direction:column !important; flex:1 1 auto !important; min-height:0 !important; overflow-y:auto !important; overflow-x:hidden !important; padding:10px 12px 0; position:relative; z-index:1; }',
       '.ask-messages::-webkit-scrollbar, .ask-suggestion-body::-webkit-scrollbar { width:var(--scrollbarWidth); }',
       '.ask-messages::-webkit-scrollbar-thumb, .ask-suggestion-body::-webkit-scrollbar-thumb { background:color-mix(in srgb, var(--colorFgAlpha) 70%, transparent); border:4px solid transparent; border-radius:999px; background-clip:padding-box; }',
       '.ask-empty { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:24px 0; text-align:center; }',
@@ -2157,19 +1887,19 @@
       '.ask-btn-cmd:active { transform:scale(.96); }',
       '.ask-btn-cmd svg { width:13px; height:13px; flex-shrink:0; }',
       '.ask-input-area { display:block !important; flex:0 0 auto !important; flex-shrink:0 !important; margin-top:auto; padding:0 12px 14px; position:relative; z-index:20; overflow:visible !important; }',
-      '.ask-input-box { background:linear-gradient(180deg, color-mix(in srgb, var(--colorBgLight) 94%, transparent) 0%, color-mix(in srgb, var(--colorBgLightIntense) 96%, transparent) 100%); border:1px solid var(--aip-border); border-radius:calc(var(--aip-r-lg) + 2px); display:flex; flex-direction:column; overflow:hidden; box-shadow:var(--aip-shadow-mid); backdrop-filter:var(--backgroundBlur); transition:border-color .2s, box-shadow .2s, background .2s; }',
-      '.ask-input-box.focused { border-color:var(--colorHighlightBg); box-shadow:0 0 0 1px var(--colorHighlightBgAlpha), var(--aip-shadow-mid); }',
-      '.ask-edit-banner { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 10px; margin:8px 8px 0; border-radius:calc(var(--aip-r-md) + 2px); background:color-mix(in srgb, var(--colorBgLighter) 84%, transparent); border:1px solid color-mix(in srgb, var(--colorHighlightBgAlpha) 32%, var(--aip-border)); box-shadow:var(--aip-shadow-base); }',
+      '.ask-input-box { background:linear-gradient(180deg, color-mix(in srgb, var(--colorBgLight) 94%, transparent) 0%, color-mix(in srgb, var(--colorBgLightIntense) 96%, transparent) 100%); border:1px solid var(--aip-border); border-radius:calc(var(--aip-r-lg) + 2px); display:flex; flex-direction:column; overflow:hidden; box-shadow:0 14px 32px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.02); backdrop-filter:var(--backgroundBlur); transition:border-color .2s, box-shadow .2s, background .2s; }',
+      '.ask-input-box.focused { border-color:var(--colorHighlightBg); box-shadow:0 0 0 1px var(--colorHighlightBgAlpha), 0 18px 34px rgba(0,0,0,0.22); }',
+      '.ask-edit-banner { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:12px 14px 10px; background:rgba(255,255,255,0.06); border-bottom:1px solid rgba(255,255,255,0.06); }',
       '.ask-edit-banner.hidden { display:none; }',
       '.ask-edit-copy { min-width:0; }',
-      '.ask-edit-title { color:var(--aip-text-primary); font-size:12px; font-weight:700; line-height:1.15; }',
-      '.ask-edit-subtitle { color:var(--aip-text-secondary); font-size:11px; line-height:1.2; margin-top:2px; }',
-      '.ask-edit-close { width:22px; height:22px; border:none; background:transparent; color:var(--aip-text-secondary); border-radius:999px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:15px; line-height:1; flex-shrink:0; }',
+      '.ask-edit-title { color:var(--aip-text-primary); font-size:13px; font-weight:700; line-height:1.3; }',
+      '.ask-edit-subtitle { color:var(--aip-text-secondary); font-size:12px; line-height:1.35; margin-top:2px; }',
+      '.ask-edit-close { width:24px; height:24px; border:none; background:transparent; color:var(--aip-text-secondary); border-radius:999px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; line-height:1; flex-shrink:0; }',
       '.ask-edit-close:hover { color:var(--aip-text-primary); background:rgba(255,255,255,0.08); }',
       '.ask-input-context { padding:8px 8px 0 12px; overflow:hidden; }',
       '.ask-input-context.hidden { display:none; }',
       '.ask-context-track { display:flex; align-items:center; gap:8px; width:100%; padding:4px 4px 0 0; overflow:hidden; white-space:nowrap; }',
-      '.ask-context-card, .ask-ref-chip { position:relative; display:flex; align-items:center; gap:10px; min-width:180px; width:180px; max-width:180px; height:52px; padding:0 18px 0 12px; border-radius:calc(var(--aip-r-md) + 2px); background:color-mix(in srgb, var(--colorBgLighter) 84%, transparent); border:1px solid var(--aip-border); box-shadow:var(--aip-shadow-base); overflow:visible; flex:0 0 180px; }',
+      '.ask-context-card, .ask-ref-chip { position:relative; display:flex; align-items:center; gap:10px; min-width:180px; width:180px; max-width:180px; height:52px; padding:0 18px 0 12px; border-radius:calc(var(--aip-r-md) + 2px); background:color-mix(in srgb, var(--colorBgLighter) 84%, transparent); border:1px solid var(--aip-border); box-shadow:inset 0 1px 0 rgba(255,255,255,0.03); overflow:visible; flex:0 0 180px; }',
       '.ask-context-card.hidden { display:none; }',
       '.ask-context-card-selection { background:color-mix(in srgb, var(--colorAccentBgAlpha) 55%, var(--colorBgLight)); }',
       '.ask-ref-chip-icon { width:32px; height:32px; border-radius:var(--aip-r-md); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:14px; font-weight:700; color:var(--colorAccentFg); background:linear-gradient(180deg, var(--colorAccentBgFadedMore) 0%, var(--colorAccentBg) 100%); }',
@@ -2193,29 +1923,25 @@
       '.ask-input-field { flex:1; min-width:0; background:transparent; border:none; outline:none; color:var(--aip-text-primary); font-size:14px; line-height:1.5; caret-color:var(--aip-accent); word-break:break-word; max-height:100px; overflow-y:auto; position:relative; }',
       '.ask-input-field.disabled { opacity:.55; pointer-events:none; }',
       '.ask-input-field:empty::before { content:attr(data-placeholder); color:var(--aip-text-muted); pointer-events:none; }',
-      '.ask-cmd-chip { position:relative; display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; user-select:none; animation:askChipPop .22s cubic-bezier(.22,1,.36,1); overflow:hidden; padding:6px 12px; background:color-mix(in srgb, var(--colorHighlightBgAlpha) 72%, transparent); border:1px solid color-mix(in srgb, var(--colorHighlightBgAlpha) 92%, transparent); border-radius:999px; color:var(--aip-text-primary); }',
+      '.ask-cmd-chip { position:relative; display:inline-flex; align-items:center; font-size:12px; font-weight:500; user-select:none; animation:askChipPop .22s cubic-bezier(.22,1,.36,1); overflow:hidden; }',
       '.ask-ref-chip { position:relative; display:flex; align-items:center; font-size:13px; font-weight:500; user-select:none; animation:askChipPop .22s cubic-bezier(.22,1,.36,1); overflow:visible; }',
-      '.ask-cmd-chip.is-removing, .ask-ref-chip.is-removing, .ask-composer-token.is-removing { animation:askChipRemove .16s ease forwards; pointer-events:none; }',
-      '.ask-cmd-chip.focused { box-shadow:0 0 0 1px var(--aip-accent), 0 6px 16px color-mix(in srgb, var(--colorHighlightBgAlpha) 40%, transparent); }',
+      'span.ask-cmd-chip { padding:4px 10px; background:var(--aip-chip-bg); color:var(--aip-text-secondary); border-radius:var(--radius); border:1px solid var(--aip-border); }',
+      '.ask-cmd-chip.focused { background:var(--aip-accent-dim); box-shadow:0 0 0 1px var(--aip-accent); color:var(--aip-accent); }',
       '.ask-ref-row-inline { display:flex; align-items:center; gap:8px; min-width:0; padding:4px 4px 0 0; overflow:hidden; flex:0 1 auto; }',
       '.ask-cmd-chip::after, .ask-ref-chip::after { content:""; position:absolute; top:0; right:0; width:28px; height:100%; opacity:0; transition:opacity .15s; pointer-events:none; }',
-      '.ask-cmd-chip::after { background:linear-gradient(to right, rgba(91,130,180,0), rgba(91,130,180,0.12) 42%, rgba(91,130,180,0.22) 100%); }',
+      '.ask-cmd-chip::after { background:linear-gradient(to right, rgba(58,63,71,0), rgba(58,63,71,0.82) 42%, rgba(58,63,71,1) 100%); }',
       '.ask-ref-chip::after, .ask-context-card::after { background:linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,0.04) 42%, rgba(255,255,255,0.08) 100%); }',
       '.ask-chip-close { position:absolute; top:50%; right:4px; z-index:2; width:18px; height:18px; margin-top:-9px; border-radius:var(--aip-r-xs); display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--aip-text-muted); font-size:15px; line-height:1; opacity:0; pointer-events:auto; transition:opacity .15s, color .12s, background .12s; }',
       '.ask-cmd-chip:hover::after, .ask-ref-chip:hover::after { opacity:1; }',
       '.ask-cmd-chip:hover .ask-chip-close { opacity:1; }',
       '.ask-chip-close:hover { color:var(--aip-text-primary); background:color-mix(in srgb, var(--colorBgLighter) 78%, transparent); }',
       '.ask-input-toolbar { display:flex; align-items:center; justify-content:space-between; padding:8px 10px 10px; }',
-      '.ask-btn-send { width:32px; height:32px; border-radius:var(--aip-r-pill); border:1px solid color-mix(in srgb, var(--colorHighlightBgDark) 70%, transparent); background:linear-gradient(180deg, var(--colorHighlightBg) 0%, var(--colorHighlightBgDark) 100%); cursor:pointer; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; transition:filter .15s, transform .1s, box-shadow .15s; box-shadow:inset 0 1px 0 rgba(255,255,255,0.18); }',
+      '.ask-btn-send { width:32px; height:32px; border-radius:var(--aip-r-pill); border:1px solid color-mix(in srgb, var(--colorHighlightBgDark) 70%, transparent); background:linear-gradient(180deg, var(--colorHighlightBg) 0%, var(--colorHighlightBgDark) 100%); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:filter .15s, transform .1s, box-shadow .15s; box-shadow:inset 0 1px 0 rgba(255,255,255,0.18); }',
       '.ask-btn-send:hover { filter:brightness(1.06); box-shadow:inset 0 1px 0 rgba(255,255,255,0.22), 0 6px 16px color-mix(in srgb, var(--colorHighlightBgAlpha) 70%, transparent); }',
       '.ask-btn-send:active { transform:scale(.9); }',
       '.ask-btn-send svg { width:14px; height:14px; }',
-      '.ask-btn-send-icon { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; transition:opacity .16s ease, transform .18s cubic-bezier(.22,1,.36,1); }',
-      '.ask-btn-send-icon-stop { opacity:0; transform:scale(.78) rotate(-18deg); }',
-      '.ask-btn-send.is-stop .ask-btn-send-icon-send { opacity:0; transform:scale(.78) rotate(18deg); }',
-      '.ask-btn-send.is-stop .ask-btn-send-icon-stop { opacity:1; transform:scale(1) rotate(0); }',
       '.ask-hidden-file-input { position:fixed; left:-9999px; top:-9999px; width:1px; height:1px; opacity:0; pointer-events:none; }',
-      '.ask-suggestion-dropdown { position:absolute; left:12px; right:12px; bottom:calc(100% + 8px); display:none; flex-direction:column; background:color-mix(in srgb, var(--colorBgAlphaBlur) 90%, transparent); color:var(--aip-text-primary); border:1px solid var(--aip-border-hover); border-radius:calc(var(--aip-r-lg) + 2px); box-shadow:var(--aip-shadow-strong); backdrop-filter:var(--backgroundBlur); overflow:hidden; z-index:9999; opacity:0; transform:translateY(8px); pointer-events:none; transition:opacity .18s, transform .18s; }',
+      '.ask-suggestion-dropdown { position:absolute; left:12px; right:12px; bottom:calc(100% + 8px); display:none; flex-direction:column; background:color-mix(in srgb, var(--colorBgAlphaBlur) 90%, transparent); color:var(--aip-text-primary); border:1px solid var(--aip-border-hover); border-radius:calc(var(--aip-r-lg) + 2px); box-shadow:0 16px 36px rgba(0,0,0,.28); backdrop-filter:var(--backgroundBlur); overflow:hidden; z-index:9999; opacity:0; transform:translateY(8px); pointer-events:none; transition:opacity .18s, transform .18s; }',
       '.ask-suggestion-dropdown.visible { opacity:1; transform:translateY(0); pointer-events:auto; }',
       '.ask-suggestion-search { display:flex; align-items:center; gap:8px; padding:12px 14px; border-bottom:1px solid var(--aip-border); color:var(--aip-text-secondary); font-size:13px; }',
       '.ask-suggestion-search svg { width:14px; height:14px; flex-shrink:0; }',
@@ -2224,14 +1950,10 @@
       '.ask-suggestion-section { display:block !important; flex:none !important; position:static !important; overflow:visible !important; }',
       '.ask-suggestion-section + .ask-suggestion-section { margin-top:4px; border-top:1px solid color-mix(in srgb, var(--colorFgAlpha) 22%, transparent); padding-top:4px; }',
       '.ask-suggestion-section-title { padding:6px 14px; color:var(--aip-text-secondary); font-size:11px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; }',
-      '.ask-suggestion-item { width:100%; border:none; background:transparent; color:inherit; display:flex; align-items:center; gap:10px; padding:10px 14px 10px 18px; cursor:pointer; text-align:left; position:relative; transition:background .12s, transform .12s; }',
-      '.ask-suggestion-item::before { content:""; position:absolute; left:8px; top:8px; bottom:8px; width:3px; border-radius:999px; background:var(--aip-accent); opacity:0; transform:scaleY(.7); transition:opacity .14s ease, transform .14s ease; }',
+      '.ask-suggestion-item { width:100%; border:none; background:transparent; color:inherit; display:flex; align-items:center; gap:10px; padding:10px 14px; cursor:pointer; text-align:left; transition:background .12s; }',
       '.ask-suggestion-item:hover, .ask-suggestion-item.active { background:color-mix(in srgb, var(--colorBgLighter) 82%, var(--colorAccentBgAlphaHeavy)); }',
-      '.ask-suggestion-item.active { box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--colorHighlightBgAlpha) 90%, transparent); }',
-      '.ask-suggestion-item.active::before { opacity:1; transform:scaleY(1); }',
       '.ask-suggestion-item-action { border-top:1px solid color-mix(in srgb, var(--colorFgAlpha) 22%, transparent); }',
-      '.ask-suggestion-icon { width:28px; height:28px; border-radius:var(--aip-r-md); display:flex; align-items:center; justify-content:center; flex-shrink:0; overflow:hidden; background:color-mix(in srgb, var(--colorBgLighter) 88%, transparent); color:var(--aip-text-primary); font-size:12px; font-weight:700; transition:transform .14s ease, box-shadow .14s ease; }',
-      '.ask-suggestion-item.active .ask-suggestion-icon { transform:translateX(1px) scale(1.04); box-shadow:0 6px 16px color-mix(in srgb, var(--colorHighlightBgAlpha) 55%, transparent); }',
+      '.ask-suggestion-icon { width:28px; height:28px; border-radius:var(--aip-r-md); display:flex; align-items:center; justify-content:center; flex-shrink:0; overflow:hidden; background:color-mix(in srgb, var(--colorBgLighter) 88%, transparent); color:var(--aip-text-primary); font-size:12px; font-weight:700; }',
       '.ask-suggestion-icon img { width:100%; height:100%; object-fit:cover; }',
       '.ask-suggestion-text { flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }',
       '.ask-suggestion-title { display:block; color:var(--aip-text-primary); font-size:13px; line-height:1.35; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }',
@@ -2241,63 +1963,40 @@
       '.ask-suggestion-empty { padding:18px 14px; color:var(--aip-text-secondary); font-size:12px; }',
       '.ask-messages, .ask-messages * { -webkit-user-select:text !important; user-select:text !important; }',
       '.ask-msg { max-width:92%; font-size:13px; line-height:1.55; margin-bottom:12px; animation:askMsgIn .3s cubic-bezier(.22,1,.36,1); cursor:text; }',
-      '.ask-send-flight-ghost { position:fixed; z-index:10000; pointer-events:none; margin:0; transform-origin:right center; box-shadow:0 16px 36px rgba(0,0,0,.22); overflow:hidden; will-change:transform, opacity, left, top, width, background, border-color; }',
-      '.ask-send-flight-ghost .ask-msg-text, .ask-send-flight-ghost .ask-msg-inline-ref, .ask-send-flight-ghost .ask-msg-cmd-tag { transition:opacity .18s ease, transform .22s cubic-bezier(.22,1,.36,1); }',
-      '.ask-msg.is-send-arriving { visibility:hidden; }',
-      '.ask-turn { display:flex; flex-direction:column; align-items:flex-end; margin-bottom:16px; cursor:text; }',
-      '.ask-turn-ai-slot { width:100%; min-height:156px; display:flex; flex-direction:column; justify-content:flex-start; cursor:text; overflow-anchor:none; }',
+      '.ask-turn { display:flex; flex-direction:column; align-items:flex-end; margin-bottom:12px; cursor:text; }',
+      '.ask-turn-ai-slot { width:100%; display:flex; flex-direction:column; cursor:text; }',
       '.ask-turn-meta { display:flex; align-items:center; justify-content:flex-end; gap:10px; margin:4px 6px 0; min-height:18px; }',
       '.ask-turn-time { color:var(--aip-text-muted); font-size:12px; line-height:1; opacity:0; transition:opacity .14s ease; }',
-      '.ask-turn-actions, .ask-turn-ai-actions { display:inline-flex; align-items:center; gap:6px; padding:4px; border-radius:999px; background:color-mix(in srgb, var(--colorBgAlphaBlur) 88%, transparent); border:1px solid color-mix(in srgb, var(--colorFgAlpha) 16%, transparent); box-shadow:var(--aip-shadow-base); opacity:0; transition:opacity .14s ease; }',
+      '.ask-turn-actions, .ask-turn-ai-actions { display:inline-flex; align-items:center; gap:8px; opacity:0; transition:opacity .14s ease; }',
       '.ask-turn:has(.ask-msg-user:hover, .ask-turn-meta:hover) .ask-turn-actions { opacity:1; }',
       '.ask-turn:has(.ask-msg-user:hover, .ask-turn-meta:hover) .ask-turn-time { opacity:1; }',
-      '.ask-turn.is-ai-complete:has(.ask-msg-ai:hover, .ask-turn-ai-meta:hover) .ask-turn-ai-actions { opacity:1; }',
-      '.ask-turn:not(.is-ai-complete) .ask-turn-ai-actions { opacity:0 !important; pointer-events:none; }',
-      '.ask-turn-action { width:24px; height:24px; border:none; background:transparent; color:var(--aip-text-muted); cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; border-radius:999px; position:relative; transition:background .12s ease, color .12s ease, transform .12s ease; }',
-      '.ask-turn-action-icon { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }',
-      '.ask-turn-action:hover, .ask-turn-action:focus-visible { color:var(--aip-text-primary); background:color-mix(in srgb, var(--colorBgLighter) 88%, transparent); outline:none; }',
-      '.ask-turn-action:active { transform:scale(.94); }',
-      '.ask-turn-action svg { width:14px; height:14px; stroke:currentColor; transition:opacity .14s ease, transform .14s ease; }',
-      '.ask-turn-action .ask-turn-action-icon-success, .ask-turn-action .ask-turn-action-icon-fail { position:absolute; opacity:0; transform:scale(.7); }',
-      '.ask-turn-action.is-success { color:var(--aip-accent); }',
-      '.ask-turn-action.is-success .ask-turn-action-icon-main { opacity:0; transform:scale(.7); }',
-      '.ask-turn-action.is-success .ask-turn-action-icon-success { opacity:1; transform:scale(1); }',
-      '.ask-turn-action.is-fail { color:var(--colorErrorBg); }',
-      '.ask-turn-action.is-fail .ask-turn-action-icon-main { opacity:0; transform:scale(.7); }',
-      '.ask-turn-action.is-fail .ask-turn-action-icon-fail { opacity:1; transform:scale(1); }',
+      '.ask-turn:has(.ask-msg-ai:hover, .ask-turn-ai-meta:hover) .ask-turn-ai-actions { opacity:1; }',
+      '.ask-turn-action { width:18px; height:18px; border:none; background:transparent; color:var(--aip-text-muted); cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; }',
+      '.ask-turn-action:hover { color:var(--aip-text-primary); }',
+      '.ask-turn-action svg { width:14px; height:14px; stroke:currentColor; }',
       '.ask-msg-user { align-self:flex-end; background:linear-gradient(180deg, color-mix(in srgb, var(--colorAccentBgFadedMore) 72%, var(--colorBgLight)) 0%, color-mix(in srgb, var(--colorAccentBg) 88%, var(--colorBgLight)) 100%); color:var(--colorAccentFg); border:1px solid color-mix(in srgb, var(--colorAccentBorder) 80%, transparent); border-radius:18px 18px 6px 18px; padding:10px 14px 12px; box-shadow:inset 0 1px 0 rgba(255,255,255,0.05); cursor:text; }',
-      '.ask-msg-user.ask-msg-user-command-only { background:transparent; border:none; box-shadow:none; padding:0; }',
       '.ask-msg-ref-group { display:flex; justify-content:flex-end; margin:0 0 8px; }',
-      '.ask-msg-ref-group, .ask-msg-ref-group * { -webkit-user-select:none !important; user-select:none !important; }',
       '.ask-msg-ref-stack { position:relative; display:flex; justify-content:flex-end; align-items:flex-end; width:min(100%, 520px); cursor:pointer; user-select:none; }',
       '.ask-msg-ref-stack:focus-visible { outline:none; box-shadow:0 0 0 2px var(--colorHighlightBgAlpha); border-radius:16px; }',
-      '.ask-msg-ref-stack { --aip-ref-card-gap:60px; position:relative; }',
-      '.ask-msg-ref-stack[aria-expanded="false"] { min-height:92px; }',
-      '.ask-msg-ref-stack[aria-expanded="true"] { min-height:calc(52px + (var(--aip-ref-card-gap) * (var(--aip-ref-expanded-count, 1) - 1))); }',
-      '.ask-msg-ref-stack[aria-expanded="false"] .ask-msg-ref-card, .ask-msg-ref-stack[aria-expanded="true"] .ask-msg-ref-card { position:absolute; right:0; width:180px; pointer-events:auto; transition:transform .24s cubic-bezier(.22,1,.36,1), box-shadow .18s ease, filter .18s ease, opacity .16s ease; }',
-      '.ask-msg-ref-stack[aria-expanded="false"] .ask-msg-ref-card { bottom:0; transform-origin:right bottom; }',
-      '.ask-msg-ref-stack[aria-expanded="true"] .ask-msg-ref-card { top:0; transform-origin:right top; }',
-      '.ask-msg-ref-stack[aria-expanded="false"] .ask-msg-ref-card[data-stack-index="0"] { transform:translate(-10px, -34px) scale(.84) rotate(12deg); z-index:1; }',
-      '.ask-msg-ref-stack[aria-expanded="false"] .ask-msg-ref-card[data-stack-index="1"] { transform:translate(-5px, -17px) scale(.92) rotate(6deg); z-index:2; }',
+      '.ask-msg-ref-stack[aria-expanded="false"] { min-height:80px; }',
+      '.ask-msg-ref-stack[aria-expanded="true"] { display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:10px; width:min(100%, 560px); }',
+      '.ask-msg-ref-stack[aria-expanded="false"] .ask-msg-ref-card { position:absolute; right:0; bottom:0; width:180px; pointer-events:auto; transform-origin:right bottom; transition:transform .18s ease, box-shadow .18s ease; }',
+      '.ask-msg-ref-stack[aria-expanded="false"] .ask-msg-ref-card[data-stack-index="0"] { transform:translate(-8px, -22px) scale(.84) rotate(12deg); z-index:1; }',
+      '.ask-msg-ref-stack[aria-expanded="false"] .ask-msg-ref-card[data-stack-index="1"] { transform:translate(-4px, -11px) scale(.92) rotate(6deg); z-index:2; }',
       '.ask-msg-ref-stack[aria-expanded="false"] .ask-msg-ref-card[data-stack-index="2"] { transform:translate(0, 0) scale(1) rotate(0deg); z-index:3; }',
-      '.ask-msg-ref-stack[aria-expanded="false"] .ask-msg-ref-card[data-stack-index]:nth-of-type(n+4) { transform:translate(0, 0) scale(1) rotate(0deg); opacity:0; pointer-events:none; z-index:0; }',
       '.ask-msg-ref-stack[aria-expanded="false"][data-card-count="1"] { min-height:52px; }',
-      '.ask-msg-ref-stack[aria-expanded="false"][data-card-count="1"] .ask-msg-ref-card[data-stack-index="0"] { transform:none; }',
-      '.ask-msg-ref-stack[aria-expanded="false"][data-card-count="1"]:hover .ask-msg-ref-card[data-stack-index="0"] { transform:none; filter:none; }',
-      '.ask-msg-ref-stack[aria-expanded="false"][data-card-count="2"] { min-height:82px; }',
-      '.ask-msg-ref-stack[aria-expanded="false"][data-card-count="2"] .ask-msg-ref-card[data-stack-index="0"] { transform:translate(-4px, -24px) scale(.9) rotate(5deg); z-index:1; }',
+      '.ask-msg-ref-stack[aria-expanded="false"][data-card-count="1"] .ask-msg-ref-card[data-stack-index="0"] { position:relative; width:180px; transform:none; }',
+      '.ask-msg-ref-stack[aria-expanded="false"][data-card-count="2"] { min-height:70px; }',
+      '.ask-msg-ref-stack[aria-expanded="false"][data-card-count="2"] .ask-msg-ref-card[data-stack-index="0"] { transform:translate(-4px, -18px) scale(.9) rotate(5deg); z-index:1; }',
       '.ask-msg-ref-stack[aria-expanded="false"][data-card-count="2"] .ask-msg-ref-card[data-stack-index="1"] { transform:translate(0, 0) scale(1) rotate(0deg); z-index:2; }',
-      '.ask-msg-ref-stack[aria-expanded="true"] .ask-msg-ref-card { transform:translateY(calc(var(--aip-ref-card-gap) * var(--aip-stack-order, 0))) scale(1) rotate(0deg); opacity:1; pointer-events:auto; max-width:none; }',
-      '.ask-msg-ref-stack[aria-expanded="true"] .ask-msg-ref-card[data-stack-index] { z-index:1; }',
-      '.ask-msg-ref-stack:hover .ask-msg-ref-card { box-shadow:inset 0 1px 0 rgba(255,255,255,0.03), 0 10px 26px rgba(0,0,0,0.22); }',
-      '.ask-msg-ref-stack[data-hovered-index="0"][aria-expanded="false"] .ask-msg-ref-card[data-stack-index="0"], .ask-msg-ref-stack[data-hovered-index="1"][aria-expanded="false"] .ask-msg-ref-card[data-stack-index="1"], .ask-msg-ref-stack[data-hovered-index="2"][aria-expanded="false"] .ask-msg-ref-card[data-stack-index="2"] { filter:brightness(1.05); }',
-      '.ask-msg-ref-stack[data-hovered-index="0"][aria-expanded="false"] .ask-msg-ref-card[data-stack-index="0"] { transform:translate(-4px, -38px) scale(.855) rotate(15deg); }',
-      '.ask-msg-ref-stack[data-hovered-index="1"][aria-expanded="false"] .ask-msg-ref-card[data-stack-index="1"] { transform:translate(0, -20px) scale(.935) rotate(9deg); }',
-      '.ask-msg-ref-stack[data-hovered-index="2"][aria-expanded="false"] .ask-msg-ref-card[data-stack-index="2"] { transform:translate(0, 0) scale(1) rotate(0deg); }',
-      '.ask-msg-ref-stack[aria-expanded="false"][data-card-count="2"][data-hovered-index="0"] .ask-msg-ref-card[data-stack-index="0"] { transform:translate(-2px, -27px) scale(.91) rotate(9deg); }',
-      '.ask-msg-ref-stack[aria-expanded="false"][data-card-count="2"][data-hovered-index="1"] .ask-msg-ref-card[data-stack-index="1"] { transform:translate(0, 0) scale(1) rotate(0deg); }',
-      '.ask-msg-ref-stack[aria-expanded="false"][data-card-count="1"][data-hovered-index="0"] .ask-msg-ref-card[data-stack-index="0"] { transform:none; filter:none; }',
-      '.ask-msg-ref-card { position:relative; display:flex; align-items:center; gap:10px; min-width:0; width:180px; max-width:180px; height:52px; padding:0 12px; border-radius:calc(var(--aip-r-md) + 2px); background:linear-gradient(180deg, color-mix(in srgb, var(--colorBgLighter) 86%, transparent) 0%, color-mix(in srgb, var(--colorBgLight) 94%, transparent) 100%); border:1px solid var(--aip-border); box-shadow:var(--aip-shadow-base); overflow:hidden; opacity:1; }',
+      '.ask-msg-ref-stack[aria-expanded="true"] .ask-msg-ref-card { position:relative; width:100%; }',
+      '.ask-msg-ref-stack[aria-expanded="true"] .ask-msg-ref-card { max-width:none; }',
+      '.ask-msg-ref-stack:hover .ask-msg-ref-card[data-stack-index="0"] { transform:translate(-8px, -22px) scale(.84) rotate(16deg); }',
+      '.ask-msg-ref-stack:hover .ask-msg-ref-card[data-stack-index="1"] { transform:translate(-4px, -11px) scale(.92) rotate(9deg); }',
+      '.ask-msg-ref-stack[aria-expanded="false"][data-card-count="2"]:hover .ask-msg-ref-card[data-stack-index="0"] { transform:translate(-4px, -18px) scale(.9) rotate(9deg); }',
+      '.ask-msg-ref-stack[aria-expanded="false"][data-card-count="2"]:hover .ask-msg-ref-card[data-stack-index="1"] { transform:translate(0, 0) scale(1) rotate(0deg); }',
+      '.ask-msg-ref-stack[aria-expanded="true"]:hover .ask-msg-ref-card { transform:none; }',
+      '.ask-msg-ref-card { position:relative; display:flex; align-items:center; gap:10px; min-width:0; width:180px; max-width:180px; height:52px; padding:0 12px; border-radius:calc(var(--aip-r-md) + 2px); background:linear-gradient(180deg, color-mix(in srgb, var(--colorBgLighter) 86%, transparent) 0%, color-mix(in srgb, var(--colorBgLight) 94%, transparent) 100%); border:1px solid var(--aip-border); box-shadow:inset 0 1px 0 rgba(255,255,255,0.03), 0 8px 20px rgba(0,0,0,0.18); overflow:hidden; opacity:1; }',
       '.ask-msg-ref-card-icon { width:32px; height:32px; border-radius:var(--aip-r-md); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:14px; font-weight:700; color:var(--colorAccentFg); background:linear-gradient(180deg, var(--colorAccentBgFadedMore) 0%, var(--colorAccentBg) 100%); }',
       '.ask-msg-ref-card-info { flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:2px; }',
       '.ask-msg-ref-card-title { color:var(--aip-text-primary); font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.25; }',
@@ -2310,7 +2009,6 @@
       '.ask-msg-inline-ref-icon { width:14px; height:14px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--aip-accent); font-size:12px; line-height:1; }',
       '.ask-msg-inline-ref-label { min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }',
       '.ask-msg-user-body { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }',
-      '.ask-msg-user-body.ask-msg-user-body-command-only { gap:0; }',
       '.ask-msg-text { color:var(--aip-text-primary); font-size:13px; cursor:text; white-space:pre-wrap; }',
       '.ask-msg-ai { align-self:stretch; width:100%; max-width:none; color:var(--aip-text-primary); cursor:text; }',
       '.ask-msg-ai-processing { display:flex; flex-direction:column; gap:10px; margin:6px 0 10px; }',
@@ -2318,11 +2016,7 @@
       '.ask-msg-ai-thinking { color:var(--aip-text-secondary); font-weight:600; background:linear-gradient(90deg, currentColor 0%, currentColor 42%, rgba(0,0,0,0.08) 46.5%, rgba(0,0,0,0.30) 50%, rgba(0,0,0,0.08) 53.5%, currentColor 58%, currentColor 100%); background-size:185% 100%; -webkit-background-clip:text; -webkit-text-fill-color:transparent; animation:askThinkingShimmer 2s infinite linear; }',
       '.ask-msg-ai-reading { display:flex; align-items:center; gap:8px; color:var(--aip-text-secondary); font-weight:600; }',
       '.ask-msg-ai-reading-list { display:flex; flex-direction:column; gap:8px; margin:0 0 12px; }',
-      '.ask-msg-ai-processing, .ask-msg-ai-processing * { -webkit-user-select:none !important; user-select:none !important; }',
-      '.ask-msg-ai-reading-pill { display:flex; align-items:center; gap:8px; max-width:240px; padding:8px 12px; border-radius:999px; background:color-mix(in srgb, var(--colorBgLighter) 85%, transparent); border:1px solid var(--aip-border); color:var(--aip-text-secondary); position:relative; overflow:hidden; box-shadow:var(--aip-shadow-base); }',
-      '.ask-msg-ai-reading-pill::after { content:""; position:absolute; inset:0; background:linear-gradient(100deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.03) 35%, rgba(255,255,255,0.22) 50%, rgba(255,255,255,0.03) 65%, rgba(255,255,255,0) 100%); transform:translateX(-130%); opacity:0; transition:opacity .16s ease; }',
-      '.ask-msg-ai-reading-pill.is-active { border-color:color-mix(in srgb, var(--colorHighlightBgAlpha) 96%, transparent); color:var(--aip-text-primary); }',
-      '.ask-msg-ai-reading-pill.is-active::after { opacity:1; animation:askReadingSweep .92s cubic-bezier(.22,1,.36,1); }',
+      '.ask-msg-ai-reading-pill { display:flex; align-items:center; gap:8px; max-width:240px; padding:8px 12px; border-radius:999px; background:color-mix(in srgb, var(--colorBgLighter) 85%, transparent); border:1px solid var(--aip-border); color:var(--aip-text-secondary); }',
       '.ask-msg-ai-reading-pill-icon { color:var(--aip-accent); font-size:14px; line-height:1; flex-shrink:0; }',
       '.ask-msg-ai-reading-pill-text { min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:12px; }',
       '.ask-msg-ai-thought-wrap { display:none; margin:0 0 10px; }',
@@ -2330,21 +2024,18 @@
       '.ask-msg-ai-thought { display:inline-flex; align-items:center; gap:8px; padding:2px 6px; border:none; border-radius:8px; background:transparent; color:rgba(255,255,255,0.62); font-weight:600; margin:0; cursor:default; transition:background .14s ease, color .14s ease; }',
       '.ask-msg-ai-thought.has-content { cursor:pointer; }',
       '.ask-msg-ai-thought.has-content:hover { background:color-mix(in srgb, var(--colorBgLighter) 84%, transparent); color:var(--aip-text-primary); }',
-      '.ask-msg-ai-thought, .ask-msg-ai-thought * { -webkit-user-select:none !important; user-select:none !important; }',
-      '.ask-msg-ai-thought-panel { display:none; margin-top:8px; padding:10px 12px; border-radius:var(--aip-r-lg); background:color-mix(in srgb, var(--colorBgLight) 90%, transparent); border:1px solid var(--aip-border); box-shadow:var(--aip-shadow-base); color:var(--aip-text-secondary); white-space:pre-wrap; line-height:1.6; font-size:13px; cursor:text; }',
+      '.ask-msg-ai-thought-panel { display:none; margin-top:8px; padding:10px 12px; border-radius:var(--aip-r-lg); background:color-mix(in srgb, var(--colorBgLight) 90%, transparent); border:1px solid var(--aip-border); color:var(--aip-text-secondary); white-space:pre-wrap; line-height:1.6; font-size:13px; cursor:text; }',
       '.ask-msg-ai-thought-wrap[aria-expanded="true"] .ask-msg-ai-thought-panel { display:block; }',
       '.ask-msg-ai-thought-arrow { color:var(--aip-text-secondary); display:inline-flex; align-items:center; justify-content:center; transition:transform .18s ease, color .14s ease; transform-origin:center; }',
       '.ask-msg-ai-thought-wrap[aria-expanded="true"] .ask-msg-ai-thought-arrow { transform:rotate(90deg); }',
       '.ask-msg-ai-answer { font-size:15px; line-height:1.75; color:var(--aip-text-primary); }',
-      '.ask-msg-ai-answer-live { white-space:pre-wrap; word-break:break-word; overflow-anchor:auto; }',
-      '.ask-msg-ai-answer-committed { color:var(--aip-text-primary); overflow-anchor:auto; }',
+      '.ask-msg-ai-answer-live { white-space:pre-wrap; word-break:break-word; }',
+      '.ask-msg-ai-answer-committed { color:var(--aip-text-primary); }',
       '.ask-msg-ai-answer-committed > :first-child { margin-top:0; }',
       '.ask-msg-ai-answer-committed > :last-child { margin-bottom:0; }',
       '.ask-msg-ai-answer-preview { display:block; position:relative; white-space:pre-wrap; word-break:break-word; transition:opacity .08s linear; }',
-      '.ask-msg-ai-tail-token { display:inline-block; opacity:0; transform:translateY(4px) scale(.985); animation:askTokenIn .16s cubic-bezier(.22,1,.36,1) forwards; will-change:opacity, transform; }',
-      '.ask-msg-ai-answer-tail-ghost { opacity:.34; }',
       '.ask-msg-ai-answer-preview:not(.has-tail) { display:none; }',
-      '.ask-msg-ai-answer-preview.has-tail { min-height:2.4em; }',
+      '.ask-msg-ai-answer-preview.has-tail { min-height:2.4em; -webkit-mask-image:linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 40%, rgba(0,0,0,0.55) 68%, rgba(0,0,0,0) 100%); mask-image:linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 40%, rgba(0,0,0,0.55) 68%, rgba(0,0,0,0) 100%); }',
       '.ask-msg-ai-answer-tail-current { color:var(--aip-text-primary); }',
       '.ask-msg-ai-answer-tail-ghost { color:var(--aip-text-primary); opacity:.38; transition:opacity .08s linear; }',
       '.ask-msg-ai-answer > :first-child { margin-top:0; }',
@@ -2388,10 +2079,7 @@
       '.ask-msg-ai-error { color:var(--colorErrorBg); font-size:14px; line-height:1.6; }',
       '.ask-turn-ai-meta { display:flex; align-items:center; justify-content:flex-start; gap:10px; margin:4px 0 0; min-height:18px; width:100%; }',
       '@keyframes askChipPop { from { opacity:0; transform:scale(.8); } to { opacity:1; transform:scale(1); } }',
-      '@keyframes askChipRemove { from { opacity:1; transform:scale(1); } to { opacity:0; transform:scale(.82); } }',
       '@keyframes askMsgIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }',
-      '@keyframes askTokenIn { from { opacity:0; transform:translateY(4px) scale(.985); } to { opacity:1; transform:translateY(0) scale(1); } }',
-      '@keyframes askReadingSweep { from { transform:translateX(-130%); } to { transform:translateX(130%); } }',
       '@keyframes askThinkingShimmer { 0% { background-position:120% 0; } 100% { background-position:-18% 0; } }',
     ], 'ask-in-page-styles');
   }
@@ -2437,7 +2125,7 @@
   }
 
   function normalizeTab(tab) {
-    const title = tab.title || tab.pendingUrl || tab.url || t('untitledTab');
+    const title = tab.title || tab.pendingUrl || tab.url || '未命名标签页';
     const url = tab.url || tab.pendingUrl || '';
     const host = getHostFromUrl(url);
     return {
@@ -2454,7 +2142,7 @@
   }
 
   function normalizeFile(file) {
-    const fileName = (file.filename || '').split(/[\\/]/).pop() || t('untitledFile');
+    const fileName = (file.filename || '').split(/[\\/]/).pop() || '未命名文件';
     return {
       id: 'file-' + file.id,
       kind: 'file',
@@ -2525,25 +2213,22 @@
       pendingAiTasks: new Map(),
       currentStreamingTurnId: null,
       isBusy: false,
-      commandUsage: new Map(),
       scrollAnimationFrame: null,
       autoScrollPinned: true,
       userScrollingMessages: false,
       lastSummaryDebug: null,
-      readingQueueTimer: null,
-      readingQueueIndex: 0,
-      selectionEventHandlersBound: false,
     };
 
     function setSendButtonMode(mode) {
-      state.btnSend.classList.toggle('is-stop', mode === 'stop');
       if (mode === 'stop') {
         state.btnSend.title = t('stopOutput');
         state.btnSend.setAttribute('aria-label', t('stopOutputMessage'));
+        state.btnSend.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><rect x="6" y="6" width="12" height="12" rx="2.5" fill="#000000"/></svg>';
         return;
       }
       state.btnSend.title = t('send');
       state.btnSend.setAttribute('aria-label', t('sendMessage'));
+      state.btnSend.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>';
     }
 
     function syncBusyState() {
@@ -2621,34 +2306,7 @@
       return cmd + serializeSequenceParts(parts);
     }
 
-    function getTopCommandNames() {
-      const ranked = commandDefinitions
-        .slice()
-        .sort((a, b) => {
-          const usageDiff = (state.commandUsage.get(b.name) || 0) - (state.commandUsage.get(a.name) || 0);
-          if (usageDiff !== 0) {
-            return usageDiff;
-          }
-          return commandDefinitions.findIndex((item) => item.name === a.name) - commandDefinitions.findIndex((item) => item.name === b.name);
-        });
-      return ranked.slice(0, 3).map((item) => item.name);
-    }
-
-    function renderCommandButtons() {
-      const topCommands = getTopCommandNames();
-      state.commandsRow.innerHTML = topCommands.map((name) => (
-        '<button class="ask-btn-cmd" type="button" data-cmd="' + escapeHtml(name) + '">' +
-          getCommandIconSvg(name) +
-          escapeHtml(name) +
-        '</button>'
-      )).join('');
-      state.commandsRow.querySelectorAll('.ask-btn-cmd').forEach((button) => {
-        button.addEventListener('click', () => selectCommand(button.dataset.cmd));
-      });
-    }
-
     function syncCommandsRow() {
-      renderCommandButtons();
       state.commandsRow.classList.toggle('hidden', Boolean(state.activeCmd));
     }
 
@@ -2840,83 +2498,7 @@
     async function copyTextToClipboard(text) {
       try {
         await navigator.clipboard.writeText(text);
-        return true;
       } catch (error) {}
-      try {
-        const selection = window.getSelection();
-        const previousRanges = [];
-        if (selection) {
-          for (let index = 0; index < selection.rangeCount; index += 1) {
-            previousRanges.push(selection.getRangeAt(index).cloneRange());
-          }
-        }
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.setAttribute('readonly', 'true');
-        textarea.style.position = 'fixed';
-        textarea.style.left = '-9999px';
-        textarea.style.top = '-9999px';
-        document.body.appendChild(textarea);
-        textarea.select();
-        const copied = document.execCommand('copy');
-        textarea.remove();
-        if (selection) {
-          selection.removeAllRanges();
-          previousRanges.forEach((range) => selection.addRange(range));
-        }
-        return copied;
-      } catch (fallbackError) {}
-      return false;
-    }
-
-    function setActionButtonState(button, status) {
-      if (!button) {
-        return;
-      }
-      button.classList.remove('is-success', 'is-fail');
-      if (!status) {
-        return;
-      }
-      button.classList.add(status === 'success' ? 'is-success' : 'is-fail');
-      if (button._askStateResetTimer) {
-        clearTimeout(button._askStateResetTimer);
-      }
-      button._askStateResetTimer = window.setTimeout(() => {
-        button.classList.remove('is-success', 'is-fail');
-      }, 1200);
-    }
-
-    async function copyTextWithFeedback(button, text) {
-      const ok = await copyTextToClipboard(text);
-      setActionButtonState(button, ok ? 'success' : 'fail');
-    }
-
-    function animateNodeRemoval(node, callback) {
-      if (!node) {
-        callback?.();
-        return;
-      }
-      node.classList.add('is-removing');
-      window.setTimeout(() => {
-        callback?.();
-      }, 170);
-    }
-
-    function isPanelVisible() {
-      return Boolean(panelRoot?.isConnected && panelRoot.offsetParent !== null && !document.hidden);
-    }
-
-    function syncSelectedTextSoon() {
-      if (!isPanelVisible()) {
-        return;
-      }
-      if (state._selectionSyncFrame) {
-        cancelAnimationFrame(state._selectionSyncFrame);
-      }
-      state._selectionSyncFrame = requestAnimationFrame(() => {
-        state._selectionSyncFrame = null;
-        syncSelectedText();
-      });
     }
 
     function focusComposerTokenByIndex(index) {
@@ -3497,27 +3079,11 @@
         clearInterval(state.selectionPollId);
       }
       state.selectionPollId = window.setInterval(() => {
-        if (!isPanelVisible() || state.isBusy) {
+        if (document.hidden || state.isBusy || !panelRoot?.isConnected) {
           return;
         }
         syncSelectedText();
       }, PERFORMANCE_CONFIG.selectionPollIntervalMs);
-      if (state.selectionEventHandlersBound) {
-        return;
-      }
-      state.selectionEventHandlersBound = true;
-      document.addEventListener('selectionchange', syncSelectedTextSoon, { passive: true });
-      window.addEventListener('mouseup', syncSelectedTextSoon, { passive: true });
-      window.addEventListener('keyup', (event) => {
-        if (event.key.startsWith('Arrow') || event.key === 'Shift') {
-          syncSelectedTextSoon();
-        }
-      }, { passive: true });
-      document.addEventListener('visibilitychange', () => {
-        if (!document.hidden) {
-          syncSelectedTextSoon();
-        }
-      }, { passive: true });
     }
 
     function isInputEmpty() {
@@ -3551,12 +3117,19 @@
       if (!cards.length) {
         return null;
       }
-      const createRefCard = (card, index) => {
+      const group = document.createElement('div');
+      group.className = 'ask-msg-ref-group';
+      const stack = document.createElement('div');
+      stack.className = 'ask-msg-ref-stack';
+      stack.setAttribute('role', 'button');
+      stack.setAttribute('tabindex', '0');
+      stack.setAttribute('aria-expanded', 'false');
+      stack.dataset.cardCount = String(cards.length);
+      const collapsedCards = cards.slice(0, Math.min(cards.length, 3));
+      collapsedCards.forEach((card, index) => {
         const cardEl = document.createElement('div');
         cardEl.className = 'ask-msg-ref-card';
-        if (index !== undefined && index !== null) {
-          cardEl.dataset.stackIndex = String(index);
-        }
+        cardEl.dataset.stackIndex = String(index);
         const icon = document.createElement('div');
         icon.className = 'ask-msg-ref-card-icon';
         icon.textContent = card.iconText;
@@ -3570,59 +3143,69 @@
         subtitle.textContent = card.subtitle;
         info.append(title, subtitle);
         cardEl.append(icon, info);
-        return cardEl;
-      };
-      const group = document.createElement('div');
-      group.className = 'ask-msg-ref-group';
-      const stack = document.createElement('div');
-      stack.className = 'ask-msg-ref-stack';
-      stack.setAttribute('role', 'button');
-      stack.setAttribute('tabindex', '0');
-      stack.setAttribute('aria-expanded', 'false');
-      stack.dataset.cardCount = String(cards.length);
-      stack.style.setProperty('--aip-ref-expanded-count', String(Math.max(cards.length, 1)));
-      const renderStack = () => {
-        stack.innerHTML = '';
-        cards.forEach((card, index) => {
-          const cardEl = createRefCard(card, index);
-          cardEl.style.setProperty('--aip-stack-order', String(index));
-          stack.appendChild(cardEl);
-        });
-        if (cards.length > 3) {
-          const more = document.createElement('div');
-          more.className = 'ask-msg-ref-more';
-          more.textContent = '+' + (cards.length - 3);
-          stack.appendChild(more);
-        }
-      };
-      renderStack();
-      const clearHoveredCard = () => {
-        stack.dataset.hoveredIndex = '';
-      };
+        stack.appendChild(cardEl);
+      });
+      if (cards.length > 3) {
+        const more = document.createElement('div');
+        more.className = 'ask-msg-ref-more';
+        more.textContent = '+' + (cards.length - 3);
+        stack.appendChild(more);
+      }
       const setExpanded = (expanded) => {
-        clearHoveredCard();
         stack.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        if (expanded) {
+          stack.innerHTML = '';
+          cards.forEach((card) => {
+            const cardEl = document.createElement('div');
+            cardEl.className = 'ask-msg-ref-card';
+            const icon = document.createElement('div');
+            icon.className = 'ask-msg-ref-card-icon';
+            icon.textContent = card.iconText;
+            const info = document.createElement('div');
+            info.className = 'ask-msg-ref-card-info';
+            const title = document.createElement('div');
+            title.className = 'ask-msg-ref-card-title';
+            title.textContent = card.title;
+            const subtitle = document.createElement('div');
+            subtitle.className = 'ask-msg-ref-card-subtitle';
+            subtitle.textContent = card.subtitle;
+            info.append(title, subtitle);
+            cardEl.append(icon, info);
+            stack.appendChild(cardEl);
+          });
+        } else {
+          stack.innerHTML = '';
+          collapsedCards.forEach((card, index) => {
+            const cardEl = document.createElement('div');
+            cardEl.className = 'ask-msg-ref-card';
+            cardEl.dataset.stackIndex = String(index);
+            const icon = document.createElement('div');
+            icon.className = 'ask-msg-ref-card-icon';
+            icon.textContent = card.iconText;
+            const info = document.createElement('div');
+            info.className = 'ask-msg-ref-card-info';
+            const title = document.createElement('div');
+            title.className = 'ask-msg-ref-card-title';
+            title.textContent = card.title;
+            const subtitle = document.createElement('div');
+            subtitle.className = 'ask-msg-ref-card-subtitle';
+            subtitle.textContent = card.subtitle;
+            info.append(title, subtitle);
+            cardEl.append(icon, info);
+            stack.appendChild(cardEl);
+          });
+          if (cards.length > 3) {
+            const more = document.createElement('div');
+            more.className = 'ask-msg-ref-more';
+            more.textContent = '+' + (cards.length - 3);
+            stack.appendChild(more);
+          }
+        }
       };
       const toggleExpanded = () => {
         const nextExpanded = stack.getAttribute('aria-expanded') !== 'true';
         setExpanded(nextExpanded);
       };
-      stack.addEventListener('pointerover', (event) => {
-        if (stack.getAttribute('aria-expanded') === 'true') {
-          return;
-        }
-        const target = event.target instanceof Element ? event.target : null;
-        const cardEl = target?.closest('.ask-msg-ref-card');
-        if (!cardEl) {
-          return;
-        }
-        stack.dataset.hoveredIndex = cardEl.dataset.stackIndex || '';
-      });
-      stack.addEventListener('pointerout', (event) => {
-        if (!stack.contains(event.relatedTarget)) {
-          clearHoveredCard();
-        }
-      });
       stack.addEventListener('click', toggleExpanded);
       stack.addEventListener('keydown', (event) => {
         if (event.key === 'Enter' || event.key === ' ') {
@@ -3750,86 +3333,6 @@
       return state.messages.querySelector('.ask-turn[data-turn-id="' + turnId + '"]');
     }
 
-    function animateTurnSendFlight(turnNode) {
-      const userMsg = turnNode?.querySelector('.ask-msg-user');
-      if (!userMsg || !panelRoot?.isConnected) {
-        return;
-      }
-      const sourceNode = state.inputBox;
-      const sourceRect = sourceNode?.getBoundingClientRect?.();
-      const targetRect = userMsg.getBoundingClientRect();
-      if (!sourceRect || !targetRect || targetRect.width <= 0 || targetRect.height <= 0) {
-        return;
-      }
-      const ghost = userMsg.cloneNode(true);
-      ghost.classList.add('ask-send-flight-ghost');
-      const targetStyle = window.getComputedStyle(userMsg);
-      const sourceStyle = window.getComputedStyle(state.inputBox);
-      const startWidth = Math.max(Math.min(sourceRect.width - 22, 360), Math.min(targetRect.width + 120, sourceRect.width - 22));
-      const startHeight = Math.max(40, Math.min(sourceRect.height - 18, 72));
-      const startLeft = sourceRect.right - startWidth - 10;
-      const startTop = sourceRect.bottom - startHeight - 10;
-      ghost.style.width = startWidth + 'px';
-      ghost.style.height = startHeight + 'px';
-      ghost.style.left = startLeft + 'px';
-      ghost.style.top = startTop + 'px';
-      ghost.style.padding = '10px 14px 12px';
-      ghost.style.borderRadius = window.getComputedStyle(state.inputBox).borderRadius;
-      ghost.style.background = sourceStyle.background;
-      ghost.style.border = sourceStyle.border;
-      ghost.style.color = targetStyle.color;
-      ghost.style.opacity = '0.98';
-      ghost.style.boxShadow = window.getComputedStyle(state.inputBox).boxShadow;
-      ghost.querySelectorAll('.ask-msg-text, .ask-msg-inline-ref, .ask-msg-cmd-tag').forEach((node) => {
-        node.style.opacity = '0';
-        node.style.transform = 'translateY(6px) scale(.985)';
-      });
-      userMsg.classList.add('is-send-arriving');
-      document.body.appendChild(ghost);
-      const duration = 230;
-      const easeOut = (t) => 1 - Math.pow(1 - t, 3);
-      const startState = {
-        left: startLeft,
-        top: startTop,
-        width: startWidth,
-        height: startHeight,
-      };
-      const revealNodes = Array.from(ghost.querySelectorAll('.ask-msg-text, .ask-msg-inline-ref, .ask-msg-cmd-tag'));
-      let startTime = 0;
-      const step = (timestamp) => {
-        if (!startTime) {
-          startTime = timestamp;
-        }
-        const progress = Math.min(1, (timestamp - startTime) / duration);
-        const eased = easeOut(progress);
-        const liveTargetRect = userMsg.getBoundingClientRect();
-        const currentLeft = startState.left + ((liveTargetRect.left) - startState.left) * eased;
-        const currentTop = startState.top + ((liveTargetRect.top) - startState.top) * eased;
-        const currentWidth = startState.width + (liveTargetRect.width - startState.width) * eased;
-        const currentHeight = startState.height + (liveTargetRect.height - startState.height) * eased;
-        ghost.style.left = currentLeft + 'px';
-        ghost.style.top = currentTop + 'px';
-        ghost.style.width = currentWidth + 'px';
-        ghost.style.height = currentHeight + 'px';
-        ghost.style.borderRadius = progress < 0.7 ? window.getComputedStyle(state.inputBox).borderRadius : targetStyle.borderRadius;
-        ghost.style.background = progress < 0.42 ? sourceStyle.background : targetStyle.background;
-        ghost.style.border = progress < 0.42 ? sourceStyle.border : targetStyle.border;
-        ghost.style.boxShadow = progress < 0.42 ? window.getComputedStyle(state.inputBox).boxShadow : targetStyle.boxShadow;
-        revealNodes.forEach((node) => {
-          const revealProgress = Math.max(0, Math.min(1, (progress - 0.18) / 0.55));
-          node.style.opacity = String(revealProgress);
-          node.style.transform = 'translateY(' + ((1 - revealProgress) * 6) + 'px) scale(' + (0.985 + (0.015 * revealProgress)) + ')';
-        });
-        if (progress < 1) {
-          requestAnimationFrame(step);
-          return;
-        }
-        userMsg.classList.remove('is-send-arriving');
-        ghost.remove();
-      };
-      requestAnimationFrame(step);
-    }
-
     function clearPendingAiTask(turnId) {
       const task = state.pendingAiTasks.get(turnId);
       if (!task) {
@@ -3883,7 +3386,6 @@
         turnData.aiReadItems.forEach((ref) => {
           const pill = document.createElement('div');
           pill.className = 'ask-msg-ai-reading-pill';
-          pill.dataset.readingIndex = String(list.childElementCount);
           const icon = document.createElement('span');
           icon.className = 'ask-msg-ai-reading-pill-icon';
           icon.textContent = ref.kind === 'file' ? 'D' : (ref.kind === 'selection' ? 'AI' : '◦');
@@ -3918,7 +3420,6 @@
         aiMsg,
         processing,
         thinking,
-        readingList: processing.querySelector('.ask-msg-ai-reading-list'),
         thoughtWrap,
         thoughtButton,
         thoughtPanel,
@@ -4164,80 +3665,7 @@
       return score;
     }
 
-    function normalizeAttachmentIdentityParts(parts) {
-      return parts
-        .map((part) => String(part || '').trim().toLowerCase())
-        .filter(Boolean);
-    }
-
-    function getAttachmentIdentityKeys(item) {
-      if (!item) {
-        return [];
-      }
-      const keys = new Set();
-      const addKey = (...parts) => {
-        const normalized = normalizeAttachmentIdentityParts(parts);
-        if (normalized.length) {
-          keys.add(normalized.join('::'));
-        }
-      };
-
-      const rawUrl = item.url || item.raw?.url || item.raw?.pendingUrl || '';
-      const rawId = item.raw?.id || item.id || '';
-      const title = item.title || '';
-      const subtitle = item.subtitle || item.meta || '';
-      const rawName = item.rawFile?.name || item.rawBlob?.name || item.raw?.name || '';
-
-      if (item.kind === 'current-page' || item.kind === 'referenced-page' || item.kind === 'context' || item.kind === 'tab') {
-        addKey('page-url', rawUrl);
-        addKey('page-id', rawId);
-        addKey('page-title-subtitle', title, subtitle);
-        return Array.from(keys);
-      }
-      if (item.kind === 'file' || item.kind === 'referenced-file') {
-        addKey('file-id', rawId);
-        addKey('file-name', rawName || title);
-        addKey('file-title-subtitle', title, subtitle);
-        return Array.from(keys);
-      }
-      if (item.kind === 'selected-text' || item.kind === 'selection') {
-        addKey('selection', title || item.content || '');
-        return Array.from(keys);
-      }
-      addKey(item.kind || 'attachment', rawUrl, rawId, title, subtitle);
-      return Array.from(keys);
-    }
-
-    function buildExplicitAttachmentKeySet(turnData, attachments) {
-      const keys = new Set();
-      const addItem = (item) => {
-        getAttachmentIdentityKeys(item).forEach((key) => keys.add(key));
-      };
-      if (turnData?.contextSnapshot) {
-        addItem(turnData.contextSnapshot);
-      }
-      if (turnData?.selectedTextSnapshot) {
-        addItem(turnData.selectedTextSnapshot);
-      }
-      (turnData?.refSnapshots || []).forEach(addItem);
-      (attachments || []).forEach(addItem);
-      return keys;
-    }
-
-    function dedupeAttachments(items) {
-      const seen = new Set();
-      return (items || []).filter((item) => {
-        const keys = getAttachmentIdentityKeys(item);
-        const duplicate = keys.some((key) => seen.has(key));
-        if (duplicate) {
-          return false;
-        }
-        keys.forEach((key) => seen.add(key));
-        return true;
-      });
-    }
-
-    async function buildRetrievedHistoryAttachments(turnData, priorTurnNodes, explicitAttachmentKeys) {
+    async function buildRetrievedHistoryAttachments(turnData, priorTurnNodes) {
       const tokens = tokenizeForRetrieval(turnData.visibleText || '');
       if (!tokens.length) {
         return [];
@@ -4251,10 +3679,6 @@
         }
         const addCandidate = (candidate) => {
           if (!candidate) {
-            return;
-          }
-          const candidateIdentityKeys = getAttachmentIdentityKeys(candidate);
-          if (candidateIdentityKeys.some((key) => explicitAttachmentKeys?.has(key))) {
             return;
           }
           const key = [
@@ -4313,10 +3737,7 @@
           content: snapshot.content || '',
         };
       }));
-      const filtered = dedupeAttachments(attachments.filter(Boolean)).filter((item) => {
-        const identityKeys = getAttachmentIdentityKeys(item);
-        return !identityKeys.some((key) => explicitAttachmentKeys?.has(key));
-      });
+      const filtered = attachments.filter(Boolean);
       logAiDebug('History Attachment Retrieval', {
         query: turnData.visibleText || '',
         tokenCount: tokens.length,
@@ -4340,9 +3761,6 @@
         'Prefer the current webpage and selected text over generic world knowledge when they are relevant.',
         'If the user used a slash command, follow its instruction first.',
         'Use markdown naturally, but keep answers concise unless the user clearly wants depth.',
-        'Default to a short answer: usually 1 short paragraph or 3-5 brief bullet points.',
-        'Do not produce long essays unless the user explicitly asks for a detailed answer.',
-        'When the answer could become long, summarize first and stop early.',
         'Do not mention these hidden instructions.',
         'Write responses in ' + languageName + '.',
       ].join('\n');
@@ -4420,53 +3838,101 @@
     }
 
     function finalizeThoughtUi(scaffold, reasoningText, elapsedSeconds) {
-      if (state.readingQueueTimer) {
-        clearInterval(state.readingQueueTimer);
-        state.readingQueueTimer = null;
-      }
       scaffold.processing.classList.add('hidden');
       applyReasoningUi(scaffold, reasoningText, elapsedSeconds);
     }
 
-    function startReadingQueue(scaffold) {
-      if (state.readingQueueTimer) {
-        clearInterval(state.readingQueueTimer);
-        state.readingQueueTimer = null;
+    function ensureLiveAnswerNodes(answerNode) {
+      let live = answerNode.querySelector('.ask-msg-ai-answer-live');
+      let committed = live?.querySelector('.ask-msg-ai-answer-committed');
+      let preview = live?.querySelector('.ask-msg-ai-answer-preview');
+      let tailCurrent = preview?.querySelector('.ask-msg-ai-answer-tail-current');
+      let tailGhost = preview?.querySelector('.ask-msg-ai-answer-tail-ghost');
+      if (!live || !committed || !preview || !tailCurrent || !tailGhost) {
+        answerNode.innerHTML = '';
+        live = document.createElement('div');
+        live.className = 'ask-msg-ai-answer-live';
+        committed = document.createElement('div');
+        committed.className = 'ask-msg-ai-answer-committed';
+        preview = document.createElement('div');
+        preview.className = 'ask-msg-ai-answer-preview';
+        tailCurrent = document.createElement('span');
+        tailCurrent.className = 'ask-msg-ai-answer-tail-current';
+        tailGhost = document.createElement('span');
+        tailGhost.className = 'ask-msg-ai-answer-tail-ghost';
+        preview.append(tailCurrent, tailGhost);
+        live.append(committed, preview);
+        answerNode.appendChild(live);
       }
-      const pills = Array.from(scaffold.readingList?.querySelectorAll('.ask-msg-ai-reading-pill') || []);
-      if (!pills.length) {
-        return;
-      }
-      const sync = () => {
-        pills.forEach((pill, index) => {
-          pill.classList.toggle('is-active', index === state.readingQueueIndex % pills.length);
-        });
-      };
-      state.readingQueueIndex = 0;
-      sync();
-      state.readingQueueTimer = window.setInterval(() => {
-        state.readingQueueIndex += 1;
-        sync();
-      }, 820);
+      return { live, committed, preview, tailCurrent, tailGhost };
     }
 
-    function getNextRevealLength(text, startIndex) {
-      if (startIndex >= text.length) {
-        return startIndex;
+    function wait(ms) {
+      return new Promise((resolve) => window.setTimeout(resolve, ms));
+    }
+
+    async function playAnswerText(scaffold, turnId, fullText) {
+      const normalized = cleanModelText(fullText).trim();
+      scaffold.answer.innerHTML = '';
+      if (!normalized) {
+        return '';
       }
-      const maxChunkLength = 14;
-      let index = startIndex;
-      let lastBoundary = startIndex;
-      while (index < text.length && (index - startIndex) < maxChunkLength) {
-        index += 1;
-        if (/[,\s.!?;:，。！？；：\n]/.test(text[index - 1] || '')) {
-          lastBoundary = index;
-          if (index - startIndex >= 4) {
-            break;
+      const liveNodes = ensureLiveAnswerNodes(scaffold.answer);
+      const charsPerSecond = 118;
+      const previewLength = 10;
+      const statefulTask = state.pendingAiTasks.get(turnId);
+      let visibleLength = 0;
+      let carry = 0;
+      let lastTick = 0;
+      let lastScrollAt = 0;
+      await wait(220);
+      if (state.pendingAiTasks.get(turnId)?.stoppedByUser || statefulTask?.stoppedByUser) {
+        return '';
+      }
+      return await new Promise((resolve) => {
+        const step = (timestamp) => {
+          const task = state.pendingAiTasks.get(turnId) || statefulTask;
+          if (task?.stoppedByUser) {
+            liveNodes.preview.textContent = '';
+            resolve(normalized.slice(0, visibleLength).trim());
+            return;
           }
-        }
-      }
-      return Math.min(text.length, lastBoundary > startIndex ? lastBoundary : index);
+          if (!lastTick) {
+            lastTick = timestamp;
+          }
+          const elapsed = timestamp - lastTick;
+          lastTick = timestamp;
+          carry += (elapsed / 1000) * charsPerSecond;
+          let nextLength = visibleLength;
+          while (carry >= 1 && nextLength < normalized.length) {
+            carry -= 1;
+            nextLength += 1;
+            const currentChar = normalized[nextLength - 1];
+            if (/[，。！？；：,.!?;:]\s*$/.test(currentChar || '')) {
+              carry = Math.max(carry - 0.05, 0);
+            } else if (currentChar === '\n') {
+              carry = Math.max(carry - 0.03, 0);
+            }
+          }
+          if (nextLength !== visibleLength) {
+            visibleLength = nextLength;
+            liveNodes.committed.textContent = normalized.slice(0, visibleLength);
+            liveNodes.preview.textContent = normalized.slice(visibleLength, Math.min(normalized.length, visibleLength + previewLength));
+            if (timestamp - lastScrollAt > 90 || visibleLength === normalized.length) {
+              lastScrollAt = timestamp;
+              scrollToBottom();
+            }
+          }
+          if (visibleLength >= normalized.length) {
+            liveNodes.committed.textContent = normalized;
+            liveNodes.preview.textContent = '';
+            resolve(normalized);
+            return;
+          }
+          requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      });
     }
 
     function stopStreamingOutput() {
@@ -4481,10 +3947,6 @@
           task.abortController?.abort?.();
         } catch (error) {}
       }
-      if (state.readingQueueTimer) {
-        clearInterval(state.readingQueueTimer);
-        state.readingQueueTimer = null;
-      }
       turnNode?.querySelector('.ask-msg-ai-processing')?.classList.add('hidden');
       const answerNode = turnNode?.querySelector('.ask-msg-ai-answer');
       if (answerNode && !answerNode.textContent.trim()) {
@@ -4497,7 +3959,7 @@
       state.atTabsExpanded = false;
       state.atSuggestionData = null;
       state.suggestionSearchText.textContent = '@' + safeQuery;
-      state.suggestionBody.innerHTML = '<div class="ask-suggestion-empty">' + escapeHtml(t('preparingSuggestions')) + '</div>';
+      state.suggestionBody.innerHTML = '<div class="ask-suggestion-empty">正在准备建议项...</div>';
       showSuggestions();
       loadAtSuggestions(safeQuery);
       state.inputField.focus();
@@ -4511,7 +3973,6 @@
     async function streamAiForTurn(turnNode, turnData) {
       clearPendingAiTask(turnData.id);
       state.currentStreamingTurnId = turnData.id;
-      turnNode.classList.remove('is-ai-complete');
       const aiSlot = turnNode.querySelector('.ask-turn-ai-slot');
       aiSlot.innerHTML = '';
       const scaffold = createAiMessageScaffold(turnData);
@@ -4522,19 +3983,16 @@
       if (!AI_CONFIG.apiKey) {
         scaffold.processing.classList.add('hidden');
         scaffold.answer.classList.add('ask-msg-ai-error');
-        scaffold.answer.textContent = t('apiKeyMissing');
-        turnNode.classList.add('is-ai-complete');
+        scaffold.answer.textContent = 'AI API key 尚未配置，请先在 AskInPage.js 的 AI_CONFIG 中填写 apiKey。';
         return;
       }
 
       const attachments = await buildTurnAttachments(turnData);
-      const explicitAttachmentKeys = buildExplicitAttachmentKeySet(turnData, attachments);
       const allTurnNodes = Array.from(state.messages.querySelectorAll('.ask-turn'));
       const turnIndex = allTurnNodes.indexOf(turnNode);
       const priorTurnNodes = turnIndex >= 0 ? allTurnNodes.slice(0, turnIndex) : [];
-      const retrievedHistoryAttachments = await buildRetrievedHistoryAttachments(turnData, priorTurnNodes, explicitAttachmentKeys);
-      const finalAttachments = dedupeAttachments(attachments.concat(retrievedHistoryAttachments));
-      const currentUserMessages = buildUserTurnPayload(turnData, finalAttachments);
+      const retrievedHistoryAttachments = await buildRetrievedHistoryAttachments(turnData, priorTurnNodes);
+      const currentUserMessages = buildUserTurnPayload(turnData, attachments.concat(retrievedHistoryAttachments));
       turnData.apiUserMessages = currentUserMessages.slice();
       turnData.apiUserMessage = currentUserMessages.join('\n\n');
       turnNode._askTurnData = turnData;
@@ -4578,8 +4036,9 @@
       let answerText = '';
       let reasoningText = '';
       let rawResponseBody = '';
-      const normalizationState = createResponseNormalizationState();
+      const thinkingStreamState = createThinkingStreamState();
       let displayedLength = 0;
+      let playbackCarry = 0;
       let playbackLastTick = 0;
       let playbackLastScrollAt = 0;
       let playbackFrameId = 0;
@@ -4590,17 +4049,13 @@
       const playbackDone = new Promise((resolve) => {
         resolvePlaybackDone = resolve;
       });
-      startReadingQueue(scaffold);
 
       function finishPlaybackWithCurrentText() {
         if (playbackFinished) {
           return;
         }
         playbackFinished = true;
-        if (playbackFrameId) {
-          cancelAnimationFrame(playbackFrameId);
-          playbackFrameId = 0;
-        }
+        playbackFrameId = 0;
         displayedLength = answerText.length;
         renderStreamingMarkdown(scaffold.answer, answerText, answerText);
         resolvePlaybackDone?.(cleanModelText(answerText).trim());
@@ -4633,16 +4088,24 @@
           }
           const elapsed = timestamp - playbackLastTick;
           playbackLastTick = timestamp;
-          const chunkBudget = Math.max(1, Math.floor((elapsed / 1000) * STREAM_UI_CONFIG.charsPerSecond));
+          playbackCarry += (elapsed / 1000) * STREAM_UI_CONFIG.charsPerSecond;
           let nextLength = displayedLength;
-          let remainingBudget = chunkBudget;
-          while (remainingBudget > 0 && nextLength < answerText.length) {
-            const nextBoundary = getNextRevealLength(answerText, nextLength);
-            remainingBudget -= Math.max(1, nextBoundary - nextLength);
-            nextLength = nextBoundary;
+          const guaranteedAdvance = Math.min(
+            answerText.length,
+            displayedLength + STREAM_UI_CONFIG.minCharsPerFrame
+          );
+          while (playbackCarry >= 1 && nextLength < answerText.length) {
+            playbackCarry -= 1;
+            nextLength += 1;
+            const currentChar = answerText[nextLength - 1];
+            if (/[，。！？；：,.!?;:]/.test(currentChar || '')) {
+              playbackCarry = Math.max(playbackCarry - STREAM_UI_CONFIG.punctuationPause, 0);
+            } else if (currentChar === '\n') {
+              playbackCarry = Math.max(playbackCarry - STREAM_UI_CONFIG.newlinePause, 0);
+            }
           }
-          if (nextLength === displayedLength && answerText.length > displayedLength) {
-            nextLength = getNextRevealLength(answerText, displayedLength);
+          if (nextLength < guaranteedAdvance && answerText.length > displayedLength) {
+            nextLength = guaranteedAdvance;
           }
           if (nextLength !== displayedLength) {
             displayedLength = nextLength;
@@ -4661,7 +4124,7 @@
       }
 
       try {
-        const response = await fetch(AI_CONFIG.apiEndpoint, {
+        const response = await fetch(AI_CONFIG.apiEndpoint.replace(/\/$/, '') + '/chat/completions', {
           method: 'POST',
           headers: {
             Authorization: 'Bearer ' + AI_CONFIG.apiKey,
@@ -4693,36 +4156,22 @@
             answerText: data?.choices?.[0]?.message?.content || '',
             reasoningText: data?.choices?.[0]?.message?.reasoning_content || data?.choices?.[0]?.message?.reasoning || '',
           });
-          appendNormalizedChunk(
-            normalizationState,
-            'reasoning',
+          const fallbackReasoningField = cleanModelText(
             data?.choices?.[0]?.message?.reasoning_content ||
             data?.choices?.[0]?.message?.reasoning ||
-            data?.choices?.[0]?.message?.thinking ||
             ''
           );
-          appendNormalizedChunk(
-            normalizationState,
-            'visible',
-            data?.choices?.[0]?.message?.content || ''
-          );
-          const normalizedResult = finalizeNormalizedResponse(normalizationState);
-          reasoningText = normalizedResult.thinkingText;
-          answerText = normalizedResult.visibleText;
+          const fallbackContentSegments = extractThinkingSegments(data?.choices?.[0]?.message?.content || '');
+          const fallbackReasoningCombined = [fallbackReasoningField, fallbackContentSegments.reasoning].filter(Boolean).join('');
+          if (fallbackReasoningCombined) {
+            reasoningText = appendReasoningText(reasoningText, fallbackReasoningCombined);
+          }
+          answerText += cleanModelText(fallbackContentSegments.content);
           scheduleAnswerPlayback();
           streamCompleted = true;
           finalizeThoughtUi(scaffold, reasoningText, Math.round((Date.now() - startedAt) / 1000));
           const playedText = await playbackDone;
-          const finalText = playedText || cleanModelText(answerText).trim() || t('noDisplayBody');
-          logAiDebug('AI Response Normalized', {
-            turnId: turnData.id,
-            visibleText: normalizedResult.visibleText,
-            thinkingText: normalizedResult.thinkingText,
-            fallbackMode: normalizedResult.fallbackMode,
-            confidence: normalizedResult.confidence,
-            diagnostics: normalizedResult.diagnostics,
-            providerSignals: normalizedResult.providerSignals,
-          });
+          const finalText = playedText || cleanModelText(answerText).trim() || '我已经完成处理，但模型没有返回可显示的正文。';
           turnData.aiReasoningText = reasoningText.trim();
           turnData.aiReplyText = finalText;
           if (!(state.pendingAiTasks.get(turnData.id)?.stoppedByUser)) {
@@ -4754,26 +4203,37 @@
               continue;
             }
             const delta = parsed.choices?.[0]?.delta || {};
-            const reasoningFieldDelta =
+            const reasoningFieldDelta = cleanModelText(
               delta.reasoning_content ||
               delta.reasoning ||
               delta.thinking ||
               parsed.choices?.[0]?.message?.reasoning_content ||
-              '';
-            const contentDelta = delta.content || parsed.choices?.[0]?.message?.content || '';
-            appendNormalizedChunk(normalizationState, 'reasoning', reasoningFieldDelta);
-            appendNormalizedChunk(normalizationState, 'visible', contentDelta);
+              ''
+            );
+            const contentSegments = consumeThinkingStreamChunk(
+              thinkingStreamState,
+              delta.content || parsed.choices?.[0]?.message?.content || ''
+            );
+            const reasoningDelta = [reasoningFieldDelta, contentSegments.reasoning].filter(Boolean).join('');
+            const contentDelta = cleanModelText(contentSegments.content);
+            if (reasoningDelta) {
+              reasoningText = appendReasoningText(reasoningText, reasoningDelta);
+            }
             if (contentDelta) {
-              const normalizedResult = finalizeNormalizedResponse(normalizationState);
-              answerText = normalizedResult.visibleText;
-              reasoningText = normalizedResult.thinkingText;
+              answerText += contentDelta;
               scheduleAnswerPlayback();
             }
           }
         }
-        const normalizedResult = finalizeNormalizedResponse(normalizationState);
-        reasoningText = normalizedResult.thinkingText;
-        answerText = normalizedResult.visibleText;
+        const trailingSegments = flushThinkingStreamState(thinkingStreamState);
+        const trailingReasoning = cleanModelText(trailingSegments.reasoning);
+        const trailingContent = cleanModelText(trailingSegments.content);
+        if (trailingReasoning) {
+          reasoningText = appendReasoningText(reasoningText, trailingReasoning);
+        }
+        if (trailingContent) {
+          answerText += trailingContent;
+        }
         scheduleAnswerPlayback();
         streamCompleted = true;
         finalizeThoughtUi(scaffold, reasoningText, Math.round((Date.now() - startedAt) / 1000));
@@ -4789,64 +4249,27 @@
           answerText,
           reasoningText,
         });
-        logAiDebug('AI Response Normalized', {
-          turnId: turnData.id,
-          visibleText: normalizedResult.visibleText,
-          thinkingText: normalizedResult.thinkingText,
-          fallbackMode: normalizedResult.fallbackMode,
-          confidence: normalizedResult.confidence,
-          diagnostics: normalizedResult.diagnostics,
-          providerSignals: normalizedResult.providerSignals,
-        });
         const playedText = await playbackDone;
-        const finalText = playedText || cleanModelText(answerText).trim() || t('noDisplayBody');
+        const finalText = playedText || cleanModelText(answerText).trim() || '我已经完成处理，但模型没有返回可显示的正文。';
         turnData.aiReasoningText = reasoningText.trim();
         turnData.aiReplyText = finalText;
         if (!(state.pendingAiTasks.get(turnData.id)?.stoppedByUser)) {
           await renderRichAnswer(scaffold.answer, turnData.aiReplyText);
         }
-        turnNode.classList.add('is-ai-complete');
       } catch (error) {
         const activeTask = state.pendingAiTasks.get(turnData.id);
         if (error.name === 'AbortError' || activeTask?.stoppedByUser) {
           finishPlaybackWithCurrentText();
-          if (state.readingQueueTimer) {
-            clearInterval(state.readingQueueTimer);
-            state.readingQueueTimer = null;
-          }
           scaffold.processing.classList.add('hidden');
-          const partialText = cleanModelText(answerText).trim();
-          if (partialText) {
-            turnData.aiReplyText = partialText;
-            await settleStreamingAnswer(scaffold.answer, partialText, { isError: false });
-          } else {
-            turnData.aiReplyText = '';
-            await settleStreamingAnswer(scaffold.answer, '', { fallbackText: 'Stopped.', isError: false });
+          if (!scaffold.answer.textContent.trim()) {
+            scaffold.answer.textContent = 'Stopped.';
           }
         } else {
           finishPlaybackWithCurrentText();
-          if (state.readingQueueTimer) {
-            clearInterval(state.readingQueueTimer);
-            state.readingQueueTimer = null;
-          }
           scaffold.processing.classList.add('hidden');
-          const partialText = cleanModelText(answerText).trim();
-          if (partialText) {
-            turnData.aiReplyText = partialText;
-            await settleStreamingAnswer(scaffold.answer, partialText, { isError: false });
-          } else {
-            turnData.aiReplyText = '';
-            await settleStreamingAnswer(
-              scaffold.answer,
-              '',
-              {
-                fallbackText: tf('aiRequestFailed', { message: cleanModelText(error.message || t('unknownError')) }),
-                isError: true,
-              }
-            );
-          }
+          scaffold.answer.classList.add('ask-msg-ai-error');
+          scaffold.answer.textContent = 'AI 请求失败：' + cleanModelText(error.message || '未知错误');
         }
-        turnNode.classList.add('is-ai-complete');
       } finally {
         clearPendingAiTask(turnData.id);
         turnNode._askTurnData = turnData;
@@ -4870,17 +4293,10 @@
       userMsg.className = 'ask-msg ask-msg-user';
       const body = document.createElement('div');
       body.className = 'ask-msg-user-body';
-      const hasBodyText = turnData.sequenceParts.some((part) => part.type === 'text' && String(part.text || '').trim());
-      const hasInlineRefs = turnData.sequenceParts.some((part) => part.type === 'ref');
-      const isCommandOnlyTurn = Boolean(turnData.activeCmd && !hasBodyText && !hasInlineRefs);
-      if (isCommandOnlyTurn) {
-        userMsg.classList.add('ask-msg-user-command-only');
-        body.classList.add('ask-msg-user-body-command-only');
-      }
       if (turnData.activeCmd) {
         const cmdTag = document.createElement('div');
         cmdTag.className = 'ask-msg-cmd-tag';
-        cmdTag.innerHTML = '<span>◔</span><span>' + turnData.activeCmd + '</span>';
+        cmdTag.innerHTML = '<span>◔</span><span>/' + turnData.activeCmd + '</span>';
         body.appendChild(cmdTag);
       }
       turnData.sequenceParts.forEach((part) => {
@@ -4914,24 +4330,19 @@
       time.textContent = turnData.timestamp;
       const actions = document.createElement('div');
       actions.className = 'ask-turn-actions';
-      const createActionIconMarkup = (mainSvg) => (
-        '<span class="ask-turn-action-icon ask-turn-action-icon-main">' + mainSvg + '</span>' +
-        '<span class="ask-turn-action-icon ask-turn-action-icon-success"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span>' +
-        '<span class="ask-turn-action-icon ask-turn-action-icon-fail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5"/><path d="M12 16h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.72 3h16.92a2 2 0 0 0 1.72-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/></svg></span>'
-      );
       const copyBtn = document.createElement('button');
       copyBtn.type = 'button';
       copyBtn.className = 'ask-turn-action';
-      copyBtn.title = t('copyMessage');
-      copyBtn.innerHTML = createActionIconMarkup('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="10" height="10" rx="2"/><path d="M5 15V7a2 2 0 0 1 2-2h8"/></svg>');
+      copyBtn.title = '复制消息';
+      copyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="10" height="10" rx="2"/><path d="M5 15V7a2 2 0 0 1 2-2h8"/></svg>';
       copyBtn.addEventListener('click', () => {
-        copyTextWithFeedback(copyBtn, turnData.visibleText || '');
+        copyTextToClipboard(turnData.visibleText || '');
       });
       const editBtn = document.createElement('button');
       editBtn.type = 'button';
       editBtn.className = 'ask-turn-action';
-      editBtn.title = t('editMessage');
-      editBtn.innerHTML = createActionIconMarkup('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>');
+      editBtn.title = '编辑消息';
+      editBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>';
       editBtn.addEventListener('click', () => {
         state.editingTurnId = turnData.id;
         syncEditingBanner();
@@ -4951,16 +4362,16 @@
       const aiCopyBtn = document.createElement('button');
       aiCopyBtn.type = 'button';
       aiCopyBtn.className = 'ask-turn-action';
-      aiCopyBtn.title = t('copyReply');
-      aiCopyBtn.innerHTML = createActionIconMarkup('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="10" height="10" rx="2"/><path d="M5 15V7a2 2 0 0 1 2-2h8"/></svg>');
+      aiCopyBtn.title = '复制回复';
+      aiCopyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="10" height="10" rx="2"/><path d="M5 15V7a2 2 0 0 1 2-2h8"/></svg>';
       aiCopyBtn.addEventListener('click', () => {
-        copyTextWithFeedback(aiCopyBtn, turnNode._askTurnData?.aiReplyText || '');
+        copyTextToClipboard(turnNode._askTurnData?.aiReplyText || '');
       });
       const aiRetryBtn = document.createElement('button');
       aiRetryBtn.type = 'button';
       aiRetryBtn.className = 'ask-turn-action';
-      aiRetryBtn.title = t('retryReply');
-      aiRetryBtn.innerHTML = createActionIconMarkup('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15.55-6.36L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15.55 6.36L3 16"/></svg>');
+      aiRetryBtn.title = '重新回复';
+      aiRetryBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15.55-6.36L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15.55 6.36L3 16"/></svg>';
       aiRetryBtn.addEventListener('click', () => {
         const latestTurnData = turnNode._askTurnData;
         if (!latestTurnData) {
@@ -4984,13 +4395,12 @@
       if (state.focusedComposerTokenKey === 'cmd') {
         state.focusedComposerTokenKey = null;
       }
-      const chip = state.cmdChipEl;
+      if (state.cmdChipEl?.parentNode) {
+        state.cmdChipEl.remove();
+      }
       state.cmdChipEl = null;
-      animateNodeRemoval(chip, () => {
-        chip?.remove();
-        syncCommandsRow();
-        state.inputField.focus();
-      });
+      syncCommandsRow();
+      state.inputField.focus();
     }
 
     function selectCommand(cmdName) {
@@ -5045,12 +4455,12 @@
     }
 
     function removeReference(refId) {
-      const composerToken = findComposerTokenNode('ref:' + refId);
       state.refs = state.refs.filter((item) => item.id !== refId);
-      animateNodeRemoval(composerToken, () => {
-        composerToken?.remove();
-        syncReferenceStrip();
-      });
+      const composerToken = findComposerTokenNode('ref:' + refId);
+      if (composerToken) {
+        composerToken.remove();
+      }
+      syncReferenceStrip();
       if (state.focusedComposerTokenKey === 'ref:' + refId) {
         clearFocusedComposerToken();
       }
@@ -5058,15 +4468,15 @@
     }
 
     function removeCapability(capabilityInstanceId) {
-      const composerToken = findComposerTokenNode('cap:' + capabilityInstanceId);
       state.capabilities = state.capabilities.filter((item) => item.id !== capabilityInstanceId);
+      const composerToken = findComposerTokenNode('cap:' + capabilityInstanceId);
+      if (composerToken) {
+        composerToken.remove();
+      }
       if (state.focusedComposerTokenKey === 'cap:' + capabilityInstanceId) {
         clearFocusedComposerToken();
       }
-      animateNodeRemoval(composerToken, () => {
-        composerToken?.remove();
-        syncReferenceStrip();
-      });
+      syncReferenceStrip();
       state.inputField.focus();
     }
 
@@ -5223,7 +4633,7 @@
 
     function renderSuggestions() {
       if (!state.suggestionSections.length) {
-        state.suggestionBody.innerHTML = '<div class="ask-suggestion-empty">' + escapeHtml(t('noMatchingSuggestions')) + '</div>';
+        state.suggestionBody.innerHTML = '<div class="ask-suggestion-empty">没有匹配的建议项。</div>';
         return;
       }
       const sections = state.suggestionSections.map((section) => {
@@ -5245,25 +4655,13 @@
       state.suggestionBody.innerHTML = sections.join('');
     }
 
-    function syncSuggestionActiveItem(previousIndex) {
-      if (typeof previousIndex === 'number' && previousIndex >= 0) {
-        state.suggestionBody.querySelector('.ask-suggestion-item[data-index="' + previousIndex + '"]')?.classList.remove('active');
-      }
-      const active = state.suggestionBody.querySelector('.ask-suggestion-item[data-index="' + state.suggestionSelectedIndex + '"]');
-      if (!active) {
-        return;
-      }
-      active.classList.add('active');
-      active.scrollIntoView({ block: 'nearest' });
-    }
-
     function moveSuggestionSelection(step) {
       if (!state.suggestionItems.length) {
         return;
       }
-      const previousIndex = state.suggestionSelectedIndex;
       state.suggestionSelectedIndex = (state.suggestionSelectedIndex + step + state.suggestionItems.length) % state.suggestionItems.length;
-      syncSuggestionActiveItem(previousIndex);
+      renderSuggestions();
+      state.suggestionBody.querySelector('.ask-suggestion-item.active')?.scrollIntoView({ block: 'nearest' });
     }
 
     function selectSuggestion(item) {
@@ -5440,7 +4838,7 @@
     async function loadAtSuggestions(query) {
       state.suggestionMode = 'at';
       state.suggestionSearchText.textContent = '@' + query;
-      state.suggestionBody.innerHTML = '<div class="ask-suggestion-section"><div class="ask-suggestion-section-title">Loading</div><button class="ask-suggestion-item active" type="button"><span class="ask-suggestion-icon"><span>@</span></span><span class="ask-suggestion-text"><span class="ask-suggestion-title">' + escapeHtml(t('loadingTabsFilesTitle')) + '</span><span class="ask-suggestion-subtitle">' + escapeHtml(t('loadingTabsFilesSubtitle')) + '</span></span></button></div>';
+      state.suggestionBody.innerHTML = '<div class="ask-suggestion-section"><div class="ask-suggestion-section-title">Loading</div><button class="ask-suggestion-item active" type="button"><span class="ask-suggestion-icon"><span>@</span></span><span class="ask-suggestion-text"><span class="ask-suggestion-title">正在加载标签页和下载文件...</span><span class="ask-suggestion-subtitle">如果你能看到这一项，说明 dropdown UI 已经显示</span></span></button></div>';
       showSuggestions();
       try {
         const [tabsResult, filesResult, clipboardResult] = await Promise.allSettled([getPanelTabs(), getDownloadedFiles(query), getClipboardFiles()]);
@@ -5506,8 +4904,8 @@
           id: 'files-action-open',
           kind: 'files-action',
           group: 'Files',
-          title: t('chooseFileTitle'),
-          subtitle: t('chooseFileSubtitle'),
+          title: 'Choose a File...',
+          subtitle: '从系统选择文件',
           iconText: '+',
           color: '#2D3139',
         };
@@ -5523,14 +4921,14 @@
           formatItems,
         });
         if (!state.suggestionItems.length && !state.suggestionSections.length) {
-          state.suggestionBody.innerHTML = '<div class="ask-suggestion-empty">' + escapeHtml(t('noTabsOrFiles')) + '</div>';
+          state.suggestionBody.innerHTML = '<div class="ask-suggestion-empty">没有可用的标签页或下载文件。</div>';
           return;
         }
         renderSuggestions();
       } catch (error) {
         state.suggestionItems = [];
         state.suggestionSections = [];
-        state.suggestionBody.innerHTML = '<div class="ask-suggestion-empty">' + escapeHtml(t('tabsFilesReadFailed')) + '</div>';
+        state.suggestionBody.innerHTML = '<div class="ask-suggestion-empty">读取 Tabs / Files 失败，请稍后重试。</div>';
       }
     }
 
@@ -5560,12 +4958,12 @@
         }));
       state.suggestionSections = state.suggestionItems.length ? [{
         title: t('commandsSection'),
-        items: state.suggestionItems.map((item, index) => ({ selectable: true, item, index })),
+        items: state.suggestionItems.map((item) => ({ selectable: true, item })),
       }] : [];
       state.suggestionSelectedIndex = 0;
       showSuggestions();
       if (!state.suggestionItems.length) {
-        state.suggestionBody.innerHTML = '<div class="ask-suggestion-empty">' + escapeHtml(t('noMatchingCommands')) + '</div>';
+        state.suggestionBody.innerHTML = '<div class="ask-suggestion-empty">没有匹配的命令。</div>';
         return;
       }
       renderSuggestions();
@@ -5581,9 +4979,6 @@
       if (!text && !state.activeCmd && !state.refs.length && !state.selectedText) {
         return;
       }
-      if (state.activeCmd) {
-        state.commandUsage.set(state.activeCmd, (state.commandUsage.get(state.activeCmd) || 0) + 1);
-      }
       hideSuggestions();
       state.empty.style.display = 'none';
       const turnData = createTurnData();
@@ -5598,11 +4993,11 @@
       clearComposer({ showDefaultContext: false });
       streamAiForTurn(turnNode, turnData);
       scrollToBottom({ smooth: true });
-      requestAnimationFrame(() => {
-        animateTurnSendFlight(turnNode);
-      });
     }
 
+    state.commandsRow.querySelectorAll('.ask-btn-cmd').forEach((button) => {
+      button.addEventListener('click', () => selectCommand(button.dataset.cmd));
+    });
     state.btnSend.addEventListener('click', handleSend);
     state.btnNew.addEventListener('click', () => {
       state.pendingAiTasks.forEach((task, turnId) => clearPendingAiTask(turnId));
@@ -5746,7 +5141,7 @@
           }
           state.suggestionToken = token;
           state.suggestionSearchText.textContent = '/';
-          state.suggestionBody.innerHTML = '<div class="ask-suggestion-empty">' + escapeHtml(t('preparingCommands')) + '</div>';
+          state.suggestionBody.innerHTML = '<div class="ask-suggestion-empty">正在准备命令...</div>';
           showSuggestions();
           loadCommandSuggestions(token.query || '');
         });
@@ -6067,8 +5462,7 @@
     const observer = new MutationObserver(() => {
       scheduleUpdatePanel();
     });
-    const observerRoot = document.querySelector('#panels .webpanel-stack') || document.querySelector('#panels') || document.body;
-    observer.observe(observerRoot, {
+    observer.observe(document.body, {
       childList: true,
       subtree: true,
     });

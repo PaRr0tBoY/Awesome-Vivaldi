@@ -1,0 +1,826 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#top)
+
+## vivaldi.contacts Modders API Reference
+
+Use the `vivaldi.contacts` API to manipulate contacts.
+
+## Navigation
+
+### Types
+
+-   [ContactPropertyName](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#ContactPropertyName)
+-   [EmailAddress](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#EmailAddress)
+-   [Phonenumber](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#Phonenumber)
+-   [PostalAddress](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#PostalAddress)
+-   [Contact](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#Contact)
+-   [CreateUpdateDetails](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#CreateUpdateDetails)
+-   [AddPropertyDetails](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#AddPropertyDetails)
+-   [EmailAddressAddUpdate](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#EmailAddressAddUpdate)
+-   [RemovePropertyDetails](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#RemovePropertyDetails)
+-   [UpdatePropertyDetails](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#UpdatePropertyDetails)
+-   [CreateManyContactsResults](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#CreateManyContactsResults)
+
+### Listeners
+
+-   [onContactCreated](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#onContactCreated)
+-   [onContactRemoved](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#onContactRemoved)
+-   [onContactChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#onContactChanged)
+
+### Methods
+
+-   [getAll](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#getAll)
+-   [getAllEmailAddresses](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#getAllEmailAddresses)
+-   [create](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#create)
+-   [createMany](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#createMany)
+-   [update](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#update)
+-   [delete](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#delete)
+-   [addPropertyItem](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#addPropertyItem)
+-   [addEmailAddress](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#addEmailAddress)
+-   [updateEmailAddress](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#updateEmailAddress)
+-   [removeEmailAddress](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#removeEmailAddress)
+-   [updatePropertyItem](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#updatePropertyItem)
+-   [removePropertyItem](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#removePropertyItem)
+-   [readThunderbirdContacts](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#readThunderbirdContacts)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#ContactPropertyName)ContactPropertyName
+
+`ENUM`
+
+Property types for adding, updating and removing postal address and phonenumbers for contacts.
+
+-   postalAddress
+-   phoneNumber
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#EmailAddress)EmailAddress
+
+An email address object
+
+Properties:
+
+id
+
+```
+string
+```
+
+The unique identifier for the email address. IDs are unique within the current profile, and they remain valid even after the browser is restarted.
+
+emailAddress
+
+(optional)
+
+```
+string
+```
+
+The email address of the contact.
+
+type
+
+(optional)
+
+```
+string
+```
+
+The type of email address. WORK, HOME etc
+
+favorite
+
+(optional)
+
+```
+boolean
+```
+
+Is this email address favorite for user.
+
+obsolete
+
+(optional)
+
+```
+boolean
+```
+
+Is this email address obsolete. If true it should not show up in autocomplete when composing email
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#Phonenumber)Phonenumber
+
+A phonenumber object
+
+Properties:
+
+id
+
+```
+string
+```
+
+The unique identifier for the phonenumber. IDs are unique within the current profile, and they remain valid even after the browser is restarted.
+
+phoneNumber
+
+(optional)
+
+```
+string
+```
+
+The phonenumber.
+
+type
+
+(optional)
+
+```
+string
+```
+
+The type of phonenumber. WORK, HOME etc
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#PostalAddress)PostalAddress
+
+A postal address object
+
+Properties:
+
+id
+
+```
+string
+```
+
+The unique identifier for the postal address. IDs are unique within the current profile, and they remain valid even after the browser is restarted.
+
+postalAddress
+
+(optional)
+
+```
+string
+```
+
+The postal address.
+
+type
+
+(optional)
+
+```
+string
+```
+
+The type of postal address. WORK, HOME etc
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#Contact)Contact
+
+A contact object
+
+Properties:
+
+id
+
+```
+string
+```
+
+The unique identifier for the contact. IDs are unique within the current profile, and they remain valid even after the browser is restarted.
+
+name
+
+(optional)
+
+```
+string
+```
+
+The name id of the contact.
+
+birthday
+
+(optional)
+
+```
+number
+```
+
+The birthday of the contact.
+
+note
+
+(optional)
+
+```
+string
+```
+
+A note for the contact.
+
+emailAddresses
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   EmailAddress
+
+phoneNumbers
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   Phonenumber
+
+postalAddresses
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   PostalAddress
+
+avatarUrl
+
+(optional)
+
+```
+string
+```
+
+A url for the contact avatar url.
+
+separator
+
+```
+boolean
+```
+
+Is this contact a dummy separator.
+
+generatedFromSentMail
+
+```
+boolean
+```
+
+Is this contact generated by sent mail.
+
+trusted
+
+(optional)
+
+```
+boolean
+```
+
+Can this contact load external content
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#CreateUpdateDetails)CreateUpdateDetails
+
+Object passed to the create and update contact function.
+
+Properties:
+
+name
+
+(optional)
+
+```
+string
+```
+
+The name of the contact.
+
+birthday
+
+(optional)
+
+```
+number
+```
+
+The birthday of the contact. In milliseconds since epoch
+
+note
+
+(optional)
+
+```
+string
+```
+
+The note for the contact.
+
+generatedFromSentMail
+
+(optional)
+
+```
+boolean
+```
+
+Was this contact generated by sent mail.
+
+avatarUrl
+
+(optional)
+
+```
+string
+```
+
+A url for the contact avatar url.
+
+separator
+
+(optional)
+
+```
+boolean
+```
+
+Is this contact a dummy separator.
+
+trusted
+
+(optional)
+
+```
+boolean
+```
+
+Can this contact load external content
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#AddPropertyDetails)AddPropertyDetails
+
+Object passed to the addPropertyItem() function.
+
+Properties:
+
+propertyName
+
+```
+ContactPropertyName
+```
+
+The type to add (postal address, phone).
+
+contactId
+
+```
+string
+```
+
+The id of the contact.
+
+propertyValue
+
+```
+string
+```
+
+The email address or phonenumber of the contact.
+
+type
+
+```
+string
+```
+
+The type of email address. Example: WORK, HOME. Note type=INTERNET is default.
+
+asDefault
+
+(optional)
+
+```
+boolean
+```
+
+Should the email address be default for the contact
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#EmailAddressAddUpdate)EmailAddressAddUpdate
+
+Object passed to the addPropertyItem() function.
+
+Properties:
+
+contactId
+
+```
+string
+```
+
+The id of the contact.
+
+emailAddress
+
+(optional)
+
+```
+string
+```
+
+The email address of the contact.
+
+type
+
+(optional)
+
+```
+string
+```
+
+The type of email address. WORK, HOME etc
+
+favorite
+
+(optional)
+
+```
+boolean
+```
+
+Is this email address favorite for user.
+
+obsolete
+
+(optional)
+
+```
+boolean
+```
+
+Is this email address obsolete. If true it should not show up in autocomplete when composing email
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#RemovePropertyDetails)RemovePropertyDetails
+
+Object passed to the removeProperty() function.
+
+Properties:
+
+propertyName
+
+```
+ContactPropertyName
+```
+
+The property name to remove (postal address, phone).
+
+contactId
+
+```
+string
+```
+
+The id of the contact.
+
+propertyId
+
+```
+string
+```
+
+The email address of the contact.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#UpdatePropertyDetails)UpdatePropertyDetails
+
+Object passed to the updateProperty() function.
+
+Properties:
+
+propertyName
+
+```
+ContactPropertyName
+```
+
+The property name to be updated (address, phone).
+
+contactId
+
+```
+string
+```
+
+The id of the contact.
+
+propertyId
+
+```
+string
+```
+
+The id of the property to be updated.
+
+propertyValue
+
+```
+string
+```
+
+The email address or phonenumber value to update for the given contact.
+
+type
+
+```
+string
+```
+
+The type of address, phone. WORK, HOME etc
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#CreateManyContactsResults)CreateManyContactsResults
+
+Object stating how many contacts were created successfully and how many creations resulted in errors
+
+Properties:
+
+created\_count
+
+(optional)
+
+```
+integer
+```
+
+Number of contacts created
+
+failed\_count
+
+(optional)
+
+```
+integer
+```
+
+Number of failed contacts creation attempts
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#onContactCreated)onContactCreated
+
+Fired when a contact is created.
+
+Parameters:
+
+createdContact
+
+```
+Contact
+```
+
+The created contact
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#onContactRemoved)onContactRemoved
+
+Fired when contact is deleted.
+
+Parameters:
+
+removedContact
+
+```
+Contact
+```
+
+The deleted contact
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#onContactChanged)onContactChanged
+
+Fired when contact is updated.
+
+Parameters:
+
+changedContact
+
+```
+Contact
+```
+
+The changed contact
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#getAll)getAll
+
+Retrieves all contacts
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#getAllEmailAddresses)getAllEmailAddresses
+
+Retrieves all email addresses for all contacts
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#create)create
+
+Creates a contact.
+
+Parameters:
+
+contact
+
+```
+CreateUpdateDetails
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#createMany)createMany
+
+Creates / imports multiple contacts.
+
+Parameters:
+
+contactList
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   CreateUpdateDetailsMinimum items: 1
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#update)update
+
+Updates the properties of a contact. Specify only the properties that you want to change. Unspecified properties will be left unchanged.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+The contact id to be updated
+
+changes
+
+```
+CreateUpdateDetails
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#delete)delete
+
+Deletes a contact.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#addPropertyItem)addPropertyItem
+
+Adds a property to a contact.
+
+Parameters:
+
+propertyToAdd
+
+```
+AddPropertyDetails
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#addEmailAddress)addEmailAddress
+
+Adds an email address to a contact.
+
+Parameters:
+
+emailToAdd
+
+```
+EmailAddressAddUpdate
+```
+
+Object holding the fields for the email address to create
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#updateEmailAddress)updateEmailAddress
+
+Updates an email address for a contact.
+
+Parameters:
+
+emailAddressId
+
+```
+string
+```
+
+The id of email address to update
+
+emailToUpdate
+
+```
+EmailAddressAddUpdate
+```
+
+Object holding the fields for the email address to update
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#removeEmailAddress)removeEmailAddress
+
+Removes an email address for a contact.
+
+Parameters:
+
+removeEmail
+
+```
+object
+```
+
+An object specifying properties to remove email address.
+
+Object Properties:
+
+contactId
+
+```
+string
+```
+
+The contact id of which email address to remove.
+
+emailAddressId
+
+```
+string
+```
+
+The id of email address to remove
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#updatePropertyItem)updatePropertyItem
+
+Updates a property for a contact.
+
+Parameters:
+
+propertyToUpdate
+
+```
+UpdatePropertyDetails
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#removePropertyItem)removePropertyItem
+
+Removes a property from a contact.
+
+Parameters:
+
+propertyToRemove
+
+```
+RemovePropertyDetails
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contacts.html#readThunderbirdContacts)readThunderbirdContacts
+
+Read thunderbird contacts from db files.
+
+Parameters:
+
+path
+
+```
+string
+```
+
+Profile Path to thunderbird directory, containing: abook.sqlite and history.sqlite files.

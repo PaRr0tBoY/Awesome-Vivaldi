@@ -1,0 +1,387 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#top)
+
+## vivaldi.runtimePrivate Modders API Reference
+
+Use the `vivaldi.runtimePrivate` API to access.
+
+## Navigation
+
+### Types
+
+-   [FeatureFlagInfo](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#FeatureFlagInfo)
+-   [UserProfile](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#UserProfile)
+-   [UserProfileImage](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#UserProfileImage)
+-   [ProfileStatEntry](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#ProfileStatEntry)
+
+### Listeners
+
+-   [onProfilesUpdated](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#onProfilesUpdated)
+
+### Methods
+
+-   [exit](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#exit)
+-   [restart](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#restart)
+-   [getAllFeatureFlags](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#getAllFeatureFlags)
+-   [isGuestSession](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#isGuestSession)
+-   [hasGuestSession](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#hasGuestSession)
+-   [switchToGuestSession](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#switchToGuestSession)
+-   [closeGuestSession](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#closeGuestSession)
+-   [openProfileSelectionWindow](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#openProfileSelectionWindow)
+-   [getUserProfiles](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#getUserProfiles)
+-   [openNamedProfile](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#openNamedProfile)
+-   [closeActiveProfile](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#closeActiveProfile)
+-   [getUserProfileImages](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#getUserProfileImages)
+-   [updateActiveProfile](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#updateActiveProfile)
+-   [hasDesktopShortcut](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#hasDesktopShortcut)
+-   [getProfileDefaults](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#getProfileDefaults)
+-   [createProfile](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#createProfile)
+-   [getProfileStatistics](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#getProfileStatistics)
+-   [deleteProfile](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#deleteProfile)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#FeatureFlagInfo)FeatureFlagInfo
+
+Object returned from the getAllFeatureFlags function.
+
+Properties:
+
+name
+
+```
+string
+```
+
+Name of this feature flag. This is the key used to look up the name.
+
+enabled
+
+```
+boolean
+```
+
+Enabled state of the feature
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#UserProfile)UserProfile
+
+Object returned from the getUserProfiles function.
+
+Properties:
+
+name
+
+```
+string
+```
+
+Name of this user profile. For a guest profile, this should be ignored and translated string used instead.
+
+active
+
+```
+boolean
+```
+
+true if this is the active profile, otherwise false.
+
+path
+
+```
+string
+```
+
+Path of this user profile. This is used when opening and deleting profiles as it's unique.
+
+image
+
+```
+string
+```
+
+base64 encoded data url with the image to use for this profile. Empty for Guest profile.
+
+imageIndex
+
+```
+integer
+```
+
+The index into our array of default images this user is using. Corrensponds to |UserProfileImage| index value. Not valid for guest profiles.
+
+guest
+
+```
+boolean
+```
+
+true if this is the guest profile, otherwise false.
+
+customAvatar
+
+```
+string
+```
+
+Link to a HTTP-loadble custom avatar, if available.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#UserProfileImage)UserProfileImage
+
+Object returned from the |getUserProfileImages|.
+
+Properties:
+
+index
+
+```
+integer
+```
+
+Index of this user profile image in the table of available images.
+
+name
+
+```
+string
+```
+
+Name of this user profile image.
+
+image
+
+```
+string
+```
+
+base64 encoded data url with the image.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#ProfileStatEntry)ProfileStatEntry
+
+Object returned from the |getProfileStatistics|.
+
+Properties:
+
+category
+
+```
+string
+```
+
+Category of the count, 'History', 'Passwords' etc..
+
+count
+
+```
+integer
+```
+
+Number of data entries for this category.
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#onProfilesUpdated)onProfilesUpdated
+
+Fired when profiles have changed and the UI must be updated to reflect it.
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#exit)exit
+
+Close all browsers and exit the application.
+
+Parameters:
+
+prompt
+
+```
+boolean
+```
+
+Show exit confirmation when true.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#restart)restart
+
+Close all browsers and restart the application.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#getAllFeatureFlags)getAllFeatureFlags
+
+Gets all the registered Vivaldi feature flags.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#isGuestSession)isGuestSession
+
+Checks whether the current profile is running as a guest session or not.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#hasGuestSession)hasGuestSession
+
+Checks whether any guest session is open.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#switchToGuestSession)switchToGuestSession
+
+Switch to a guest session.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#closeGuestSession)closeGuestSession
+
+Close all guest session windows.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#openProfileSelectionWindow)openProfileSelectionWindow
+
+Open window for profile management.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#getUserProfiles)getUserProfiles
+
+Get all or just the active registered user profile(s).
+
+Parameters:
+
+activeOnly
+
+(optional)
+
+```
+boolean
+```
+
+If true, only return the active profile.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#openNamedProfile)openNamedProfile
+
+Open a new window using the given named profile.
+
+Parameters:
+
+profilePath
+
+```
+string
+```
+
+Path of the profile to open.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#closeActiveProfile)closeActiveProfile
+
+Close all windows for the active profile in this window.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#getUserProfileImages)getUserProfileImages
+
+Get all available user profiles images.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#updateActiveProfile)updateActiveProfile
+
+Updates the name and icon index for the active profile.
+
+Parameters:
+
+name
+
+```
+string
+```
+
+New name for the profile.
+
+avatarIndex
+
+```
+integer
+```
+
+Index into the avatar table for the new avatar.
+
+createDesktopIcon
+
+(optional)
+
+```
+boolean
+```
+
+Create desktop icon if true, otherwise removes any created profile icon for this profile. Windows only.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#hasDesktopShortcut)hasDesktopShortcut
+
+Checks whether the active profile has a generated desktop shortcut. Windows only, other platforms will return false.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#getProfileDefaults)getProfileDefaults
+
+Returns defaults for a new profile.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#createProfile)createProfile
+
+Creates a new profile with the given name and icon.
+
+Parameters:
+
+name
+
+```
+string
+```
+
+Name for the profile.
+
+avatarIndex
+
+```
+integer
+```
+
+Index into the avatar table for the avatar for the new profile.
+
+createDesktopIcon
+
+```
+boolean
+```
+
+Create desktop icon.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#getProfileStatistics)getProfileStatistics
+
+Returns statistics for the profile associated with the given profile path.
+
+Parameters:
+
+profilePath
+
+```
+string
+```
+
+Path of the profile, unique per profile.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/runtimePrivate.html#deleteProfile)deleteProfile
+
+Deletes a profile after closing all open windows for that profile.
+
+Parameters:
+
+profilePath
+
+```
+string
+```
+
+Path of the profile, unique per profile.

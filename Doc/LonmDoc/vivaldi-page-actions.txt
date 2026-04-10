@@ -1,0 +1,151 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/pageActions.html#top)
+
+## vivaldi.pageActions Modders API Reference
+
+Controls the content injections provided by the page actions service
+
+## Navigation
+
+### Types
+
+-   [ScriptOverride](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/pageActions.html#ScriptOverride)
+-   [OverridenScript](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/pageActions.html#OverridenScript)
+
+### Listeners
+
+-   [onScriptsChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/pageActions.html#onScriptsChanged)
+-   [onOverridesChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/pageActions.html#onOverridesChanged)
+
+### Methods
+
+-   [getScripts](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/pageActions.html#getScripts)
+-   [setScriptOverrideForTab](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/pageActions.html#setScriptOverrideForTab)
+-   [getScriptOverridesForTab](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/pageActions.html#getScriptOverridesForTab)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/pageActions.html#ScriptOverride)ScriptOverride
+
+`ENUM`
+
+Whether a script should be always enabled or disabled.
+
+-   no\_override
+-   enabled
+-   disabled
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/pageActions.html#OverridenScript)OverridenScript
+
+Used to report that a script is always enabled or disabled
+
+Properties:
+
+script
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+override
+
+```
+ScriptOverride
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/pageActions.html#onScriptsChanged)onScriptsChanged
+
+Fired when new scripts have been found in a page action directory or when some scripts were modified or deleted
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/pageActions.html#onOverridesChanged)onOverridesChanged
+
+Fired when something (usually a call to setScriptOverrideForTab) caused script overrides to change
+
+Parameters:
+
+tab\_id
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/pageActions.html#getScripts)getScripts
+
+Returns the full path to all known page action scripts.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/pageActions.html#setScriptOverrideForTab)setScriptOverrideForTab
+
+Permanently enables or disables a script for a given tab, or cancels the override
+
+Parameters:
+
+script
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+tab\_id
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+override
+
+```
+ScriptOverride
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/pageActions.html#getScriptOverridesForTab)getScriptOverridesForTab
+
+Get which scripts have been permanently enabled or disabled for a given tab
+
+Parameters:
+
+tab\_id
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
