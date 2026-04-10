@@ -1,0 +1,456 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#top)
+
+## vivaldi.sync Modders API Reference
+
+Use `vivaldi.sync` for sync messages.
+
+## Navigation
+
+### Types
+
+-   [SyncNotificationClientStatus](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#SyncNotificationClientStatus)
+-   [EngineState](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#EngineState)
+-   [DisableReason](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#DisableReason)
+-   [CycleStatus](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#CycleStatus)
+-   [ProtocolErrorType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#ProtocolErrorType)
+-   [ClientAction](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#ClientAction)
+-   [DataType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#DataType)
+-   [DataTypeSelection](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#DataTypeSelection)
+-   [EngineData](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#EngineData)
+-   [CycleData](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#CycleData)
+
+### Listeners
+
+-   [onEngineStateChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#onEngineStateChanged)
+-   [onCycleCompleted](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#onCycleCompleted)
+
+### Methods
+
+-   [setEncryptionPassword](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#setEncryptionPassword)
+-   [backupEncryptionToken](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#backupEncryptionToken)
+-   [restoreEncryptionToken](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#restoreEncryptionToken)
+-   [getDefaultSessionName](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#getDefaultSessionName)
+-   [setTypes](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#setTypes)
+-   [getEngineState](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#getEngineState)
+-   [getLastCycleState](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#getLastCycleState)
+-   [setupComplete](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#setupComplete)
+-   [clearData](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#clearData)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#SyncNotificationClientStatus)SyncNotificationClientStatus
+
+`ENUM`
+
+Used to report whether we have a connection to the notification server.
+
+-   connected
+-   disconnected
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#EngineState)EngineState
+
+`ENUM`
+
+The state of the sync engine.
+
+-   stopped: Sync has not been requested by the user
+-   starting: Sync has been requested but the engine is not done starting
+-   starting\_server\_error: Sync has been requested but the engine is not done starting and can't do so because of a server issue
+-   started: The sync engine is running normally
+-   clearing\_data: The sync engine is running, but it is in the process of requesting server data to be cleared.
+-   configuration\_pending: The sync engine is running, but it is waiting for the current setup to be complete before actually syncing anything
+-   failed: The sync engine encountered an error that forced it to stop.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#DisableReason)DisableReason
+
+`ENUM`
+
+The reason why the sync engine is in a failed state. This should be kept in sync with SyncService::DisableReason (chromium/components/sync/driver/sync\_service.h)
+
+-   enterprise\_policy
+-   not\_signed\_in
+-   unrecoverable\_error
+-   flag
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#CycleStatus)CycleStatus
+
+`ENUM`
+
+Error occuring as part of the sync cycle. This should be kept in sync with VivaldiSyncUIHelper::CycleStatus (sync/vivaldi\_sync\_ui\_helper.h)
+
+-   not\_synced
+-   success
+-   auth\_error
+-   server\_error
+-   network\_error
+-   conflict
+-   throttled
+-   other\_error
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#ProtocolErrorType)ProtocolErrorType
+
+`ENUM`
+
+Possible error types for errors returned as part of sync server responses. This should be kept in sync with syncer::SyncProtocolErrorType (chromium/components/sync/protocol/sync\_protocol\_error.h)
+
+-   success
+-   not\_my\_birthday
+-   throttled
+-   transient\_error
+-   migration\_done
+-   disabled\_by\_admin
+-   partial\_failure
+-   client\_data\_obsolete
+-   encryption\_obsolete
+-   conflict
+-   invalid\_message
+-   unknown
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#ClientAction)ClientAction
+
+`ENUM`
+
+Possible action that the client can take to fix the last server-returned error. This should be kept in sync with syncer::ClientAction (chromium/components/sync/protocol/sync\_protocol\_error.h)
+
+-   upgrade\_client
+-   disable\_sync\_on\_client
+-   stop\_sync\_for\_disabled\_account
+-   reset\_local\_sync\_data
+-   unknown
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#DataType)DataType
+
+`ENUM`
+
+User selectable data types that we support
+
+-   bookmarks
+-   preferences
+-   passwords
+-   autofill
+-   history
+-   extensions
+-   apps
+-   reading\_list
+-   tabs
+-   notes
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#DataTypeSelection)DataTypeSelection
+
+A structure containing the system status of a data type.
+
+Properties:
+
+dataType
+
+```
+DataType
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+enabled
+
+```
+boolean
+```
+
+true if we want to sync this data type, otherwise false.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#EngineData)EngineData
+
+Contains information about the state of the sync engine.
+
+Properties:
+
+engineState
+
+```
+EngineState
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+disableReasons
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   DisableReason
+
+protocolErrorType
+
+```
+ProtocolErrorType
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+protocolErrorDescription
+
+```
+string
+```
+
+Plain english description of the error as sent by the server
+
+protocolErrorClientAction
+
+```
+ClientAction
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+usesEncryptionPassword
+
+```
+boolean
+```
+
+Whether encryption has been set up
+
+needsDecryptionPassword
+
+```
+boolean
+```
+
+Whether a password is needed to decrypt the sync data
+
+isEncryptingEverything
+
+```
+boolean
+```
+
+Wheter the engine is encrypting all data types
+
+isSetupInProgress
+
+```
+boolean
+```
+
+Whether the sync service is being configured.
+
+isFirstSetupComplete
+
+```
+boolean
+```
+
+Whether the sync service has been configured and started before.
+
+syncEverything
+
+```
+boolean
+```
+
+Indicates that all datatypes will always be synced.
+
+dataTypes
+
+List of available data types and whether the user chose to sync them.
+
+`Array` of:
+
+-   DataTypeSelection
+
+isReady
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#CycleData)CycleData
+
+Contains information about the last sync cycle.
+
+Properties:
+
+cycleStartTime
+
+```
+number
+```
+
+The last time a sync cycle started.
+
+downloadUpdatesStatus
+
+```
+CycleStatus
+```
+
+Whether the download updates part of the last sync cycle was successful
+
+commitStatus
+
+```
+CycleStatus
+```
+
+Whether the commit part of the last sync cycle was successful
+
+nextRetryTime
+
+```
+number
+```
+
+The time at which the next sync attempt will be made, if the last one failed
+
+isReady
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#onEngineStateChanged)onEngineStateChanged
+
+Fired when the sync engine state has changed.
+
+Parameters:
+
+data
+
+```
+EngineData
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#onCycleCompleted)onCycleCompleted
+
+Fired when a sync cycle completed.
+
+Parameters:
+
+data
+
+```
+CycleData
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#setEncryptionPassword)setEncryptionPassword
+
+Sets the password to use for encryption/decryption of Sync data. If an empty password is supplied, the password supplied when logging in will be used.
+
+Parameters:
+
+password
+
+(optional)
+
+```
+string
+```
+
+The encryption password to use. If not specified, We will attempt to use the currently stored login password instead.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#backupEncryptionToken)backupEncryptionToken
+
+Saves the token derived from the encryption password to a file
+
+Parameters:
+
+target\_file
+
+```
+string
+```
+
+The file to which the token should be saved
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#restoreEncryptionToken)restoreEncryptionToken
+
+Uses a previously backed-up token to set up encryption
+
+Parameters:
+
+source\_file
+
+```
+string
+```
+
+The file from which the token should be recovered
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#getDefaultSessionName)getDefaultSessionName
+
+Returns the device name as determined by the OS.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#setTypes)setTypes
+
+Sets which data types should be synced
+
+Parameters:
+
+syncEverything
+
+```
+boolean
+```
+
+Sets which datatypes sould be synced.
+
+types
+
+List of data types to be enabled
+
+`Array` of:
+
+-   DataTypeSelection
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#getEngineState)getEngineState
+
+Returns informations about the status of the sync engine.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#getLastCycleState)getLastCycleState
+
+Returns informations about the status of the last sync cycle.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#setupComplete)setupComplete
+
+Informs the backend that the user is done configuring sync types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sync.html#clearData)clearData
+
+Clear all the user's data on the server side and logs them out

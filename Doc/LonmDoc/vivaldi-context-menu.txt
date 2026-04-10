@@ -1,0 +1,923 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#top)
+
+## vivaldi.contextMenu Modders API Reference
+
+Use the `vivaldi.contextMenu` API to show a popup-menu.
+
+## Navigation
+
+### Types
+
+-   [Rect](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#Rect)
+-   [Origin](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#Origin)
+-   [ItemType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#ItemType)
+-   [Icons](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#Icons)
+-   [ContainerMode](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#ContainerMode)
+-   [ContainerContent](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#ContainerContent)
+-   [Item](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#Item)
+-   [Container](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#Container)
+-   [Separator](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#Separator)
+-   [Element](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#Element)
+-   [UpdateItem](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#UpdateItem)
+-   [DocumentType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#DocumentType)
+-   [TextfieldType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#TextfieldType)
+-   [DocumentSupport](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#DocumentSupport)
+-   [DocumentArea](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#DocumentArea)
+-   [DocumentParams](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#DocumentParams)
+
+### Listeners
+
+-   [onDocumentMenu](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#onDocumentMenu)
+
+### Methods
+
+-   [show](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#show)
+-   [update](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#update)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#Rect)Rect
+
+Position and size of item that opens menu
+
+Properties:
+
+x
+
+```
+number
+```
+
+Left position of item that opens menu, screen coordinates.
+
+y
+
+```
+number
+```
+
+Top position of item that opens menu, screen coordinates.
+
+width
+
+```
+number
+```
+
+Width of item that opens menu.
+
+height
+
+```
+number
+```
+
+Height of item that opens menu.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#Origin)Origin
+
+`ENUM`
+
+Menu location with respect to rectangle. With pointer the size and height is ignored.
+
+-   pointer
+-   topLeft
+-   bottomLeft
+-   topRight
+-   bottomRight
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#ItemType)ItemType
+
+`ENUM`
+
+What kind of item.
+
+-   command
+-   checkbox
+-   radio
+-   folder
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#Icons)Icons
+
+Icons
+
+Icons encoded as base64.
+
+`Array` of:
+
+-   string
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#ContainerMode)ContainerMode
+
+`ENUM`
+
+Defines container layouts.
+
+-   inline
+-   folder
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#ContainerContent)ContainerContent
+
+`ENUM`
+
+Defines functionality to set up on the C++ side. One or more menu items may be created.
+
+-   extensions
+-   imageinprofile
+-   linkinprofile
+-   linktohighlight
+-   notes
+-   pwa
+-   linkinpwa
+-   sendlinktodevices
+-   sendpagetodevices
+-   sendimagetodevices
+-   spellcheck
+-   spellcheckoptions
+-   speech
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#Item)Item
+
+One menu item.
+
+Properties:
+
+name
+
+```
+string
+```
+
+Text in item.
+
+id
+
+```
+integer
+```
+
+The unique id of item.
+
+type
+
+```
+ItemType
+```
+
+The kind of menu element
+
+action
+
+(optional)
+
+```
+string
+```
+
+Action to execute. This is used for actions that needs to execute in C++. The value must be well defined
+
+radiogroup
+
+(optional)
+
+```
+integer
+```
+
+The radiobutton group this item belongs to.
+
+checked
+
+(optional)
+
+```
+boolean
+```
+
+true if the checkbox is checked, otherwise false. Only applies for type='checkbox'.
+
+enabled
+
+(optional)
+
+```
+boolean
+```
+
+true if the item is enabled.
+
+url
+
+(optional)
+
+```
+string
+```
+
+Url that can be used to determine a corresponding icon.
+
+shortcut
+
+(optional)
+
+```
+string
+```
+
+A shortcut displayed next to the name. No binding is added.
+
+showshortcut
+
+(optional)
+
+```
+boolean
+```
+
+Controls if a shortcut shall be shown. Needed for elements where shortcut is set up in C++ code
+
+persistent
+
+(optional)
+
+```
+boolean
+```
+
+If true the menu item will remain open after menu item is clicked with mouse.
+
+icons
+
+(optional)
+
+```
+Icons
+```
+
+Icon in PNG format encoded as base64.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#Container)Container
+
+Container to expand
+
+Properties:
+
+id
+
+```
+integer
+```
+
+The unique id of item.
+
+name
+
+```
+string
+```
+
+Text in item when mode is folder
+
+content
+
+```
+ContainerContent
+```
+
+Specifies an element to expand in C++ to one or more elements. How it is expanded is implementation specific.
+
+mode
+
+```
+ContainerMode
+```
+
+Container content format
+
+icons
+
+(optional)
+
+```
+Icons
+```
+
+Icon in PNG format encoded as base64.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#Separator)Separator
+
+One separator
+
+Properties:
+
+label
+
+(optional)
+
+```
+string
+```
+
+Text in item.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#Element)Element
+
+One element in menu. All optional, but one and only one of 'item', 'separator' or 'container' should be set. 'children' is only considered when 'item' is set.
+
+Properties:
+
+item
+
+(optional)
+
+```
+Item
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+container
+
+(optional)
+
+```
+Container
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+separator
+
+(optional)
+
+```
+Separator
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+children
+
+(optional)
+
+Child menu items.
+
+`Array` of:
+
+-   Element
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#UpdateItem)UpdateItem
+
+⚠ NO DESCRIPTION PROVIDED
+
+Properties:
+
+id
+
+```
+integer
+```
+
+The unique id of item.
+
+name
+
+(optional)
+
+```
+string
+```
+
+Text in item.
+
+checked
+
+(optional)
+
+```
+boolean
+```
+
+true if checkbox is checked, otherwise false. Only applies for type='checkbox'.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#DocumentType)DocumentType
+
+`ENUM`
+
+The kind of document menu.
+
+-   page
+-   link
+-   image
+-   selection
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#TextfieldType)TextfieldType
+
+`ENUM`
+
+Defines the type of textfield
+
+-   addressfield
+-   searchfield
+-   regular
+-   document
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#DocumentSupport)DocumentSupport
+
+⚠ NO DESCRIPTION PROVIDED
+
+Properties:
+
+copy
+
+```
+boolean
+```
+
+For elements outside editor
+
+audio
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+canvas
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+editoptions
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+emoji
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+extensions
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+highlight
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+pictureinpicture
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+password
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+passwordgeneration
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+passwordshowall
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+paste
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+plugin
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+qrcode
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+sendtodevices
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+video
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#DocumentArea)DocumentArea
+
+⚠ NO DESCRIPTION PROVIDED
+
+Properties:
+
+devtools
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+editor
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+image
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+frame
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+webpanel
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#DocumentParams)DocumentParams
+
+Properties of the document that requests a menu
+
+Properties:
+
+linkurl
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+linktitle
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+pageurl
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+pagetitle
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+srcurl
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+selection
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+printableselection
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+selectionurl
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+keywordurl
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+isdevtools
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+iseditable
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+isimage
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+isframe
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+ismailcontent
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+iswebpanel
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+ismailto
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+iswebpagewidget
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+isreader
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+isrichtexteditor
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+support
+
+```
+DocumentSupport
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+textfield
+
+(optional)
+
+```
+TextfieldType
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#onDocumentMenu)onDocumentMenu
+
+Fires when a document menu is requested.
+
+Parameters:
+
+window
+
+```
+integer
+```
+
+id of window where command occurred.
+
+document
+
+```
+integer
+```
+
+id of the document requesting this menu.
+
+state
+
+```
+DocumentParams
+```
+
+Document data for the given type of menu.
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#show)show
+
+Shows a new context menu.
+
+Parameters:
+
+properties
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+children
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   Element
+
+documentId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+icons
+
+```
+Icons
+```
+
+Default and folder icons.
+
+forceViews
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+origin
+
+```
+Origin
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+rect
+
+```
+Rect
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contextMenu.html#update)update
+
+Updates as context menu entry.
+
+Parameters:
+
+properties
+
+Updates for a persistent menu.
+
+`Array` of:
+
+-   UpdateItem

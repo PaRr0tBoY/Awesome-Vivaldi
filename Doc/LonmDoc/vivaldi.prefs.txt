@@ -1,0 +1,375 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#top)
+
+## vivaldi.prefs Modders API Reference
+
+Use the `vivaldi.prefs` to change preferences.
+
+## Navigation
+
+### Types
+
+-   [PreferenceValue](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#PreferenceValue)
+-   [TranslateLanguageSettings](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#TranslateLanguageSettings)
+
+### Listeners
+
+-   [onChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#onChanged)
+
+### Methods
+
+-   [get](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#get)
+-   [set](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#set)
+-   [getForCache](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#getForCache)
+-   [setLanguagePairToAlwaysTranslate](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#setLanguagePairToAlwaysTranslate)
+-   [setLanguageToNeverTranslate](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#setLanguageToNeverTranslate)
+-   [setSiteToNeverTranslate](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#setSiteToNeverTranslate)
+-   [getTranslateSettings](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#getTranslateSettings)
+-   [setTranslationDeclined](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#setTranslationDeclined)
+-   [resetTranslationPrefs](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#resetTranslationPrefs)
+-   [resetAllToDefault](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#resetAllToDefault)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#PreferenceValue)PreferenceValue
+
+Preference with its new desired value.
+
+Properties:
+
+path
+
+```
+string
+```
+
+The preference path
+
+value
+
+(optional)
+
+```
+any
+```
+
+Preference value. None indicate to use the default.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#TranslateLanguageSettings)TranslateLanguageSettings
+
+Current settings active for the given language pair or just the source language.
+
+Properties:
+
+isLanguagePairOnAlwaysTranslateList
+
+```
+boolean
+```
+
+Is the given language pair on the always translate list.
+
+isLanguageInNeverTranslateList
+
+```
+boolean
+```
+
+Is the given language source language on the never translate list.
+
+isSiteOnNeverTranslateList
+
+```
+boolean
+```
+
+Is the given site on the never translate list.
+
+shouldShowAlwaysTranslateShortcut
+
+```
+boolean
+```
+
+Should show always translate shortcut for this language.
+
+shouldShowNeverTranslateShortcut
+
+```
+boolean
+```
+
+Should show never translate shortcut for this language.
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#onChanged)onChanged
+
+Fired when a preference value has changed.
+
+Parameters:
+
+newValue
+
+```
+PreferenceValue
+```
+
+Information about the changed preference.
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#get)get
+
+Get a specific named preference value.
+
+Parameters:
+
+path
+
+```
+string
+```
+
+The preference path
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#set)set
+
+Set a specific preference.
+
+Parameters:
+
+newValue
+
+```
+PreferenceValue
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#getForCache)getForCache
+
+Get all preferences to be cached on the JS side with one call. Only changes to these will be reported by onChanged. The result type is optimized for bulk transfer of over 450 values
+
+Parameters:
+
+paths
+
+Which preferences are needed
+
+`Array` of:
+
+-   string
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#setLanguagePairToAlwaysTranslate)setLanguagePairToAlwaysTranslate
+
+Translate: Add or remove a pair of languages to the preference for automatic translation.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+The tab id used to look up the translate manager stored in the WebContents data. Not used for anything else.
+
+enable
+
+```
+boolean
+```
+
+true to add the language pair to the list, false to remove it from the list.
+
+original\_language
+
+```
+string
+```
+
+Original language to translate from.
+
+target\_language
+
+```
+string
+```
+
+Target language to translate to.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#setLanguageToNeverTranslate)setLanguageToNeverTranslate
+
+Translate: Add or remove a pair of languages to the preference for never doing automatic translation.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+The tab id used to look up the translate manager stored in the WebContents data. Not used for anything else.
+
+block
+
+```
+boolean
+```
+
+true to add the language to the blocked list, false to remove it from the list.
+
+original\_language
+
+```
+string
+```
+
+Original language to never translate from.
+
+target\_language
+
+```
+string
+```
+
+Target language to never translate to.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#setSiteToNeverTranslate)setSiteToNeverTranslate
+
+Translate: Add or remove a site to the preference for never doing automatic translation.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+The tab id used to look up the translate manager stored in the WebContents data and the site to block.
+
+block
+
+```
+boolean
+```
+
+true to add the language to the blocked list, false to remove it from the list.
+
+original\_language
+
+```
+string
+```
+
+Original language to never translate from.
+
+target\_language
+
+```
+string
+```
+
+Target language to never translate to.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#getTranslateSettings)getTranslateSettings
+
+Translate: Get settings for the given language pair.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+The tab id used to look up the translate manager stored in the WebContents data. Not used for anything else.
+
+original\_language
+
+```
+string
+```
+
+Original language to never translate from.
+
+target\_language
+
+```
+string
+```
+
+Target language to never translate to.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#setTranslationDeclined)setTranslationDeclined
+
+Translate: Translation dialog was closed without being used, record that fact.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+The tab id used to look up the translate manager stored in the WebContents data. Not used for anything else.
+
+explicitly\_closed
+
+```
+boolean
+```
+
+true if the dialog was closed explicitly (from close button), otherwise false if it was closed from clicking outside it or similar.
+
+original\_language
+
+```
+string
+```
+
+Original language of the page.
+
+target\_language
+
+```
+string
+```
+
+Target language selected.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/prefs.html#resetTranslationPrefs)resetTranslationPrefs
+
+Translate: Resets the translation preferences to defaults.
+
+api\['name'\]
+
+⚠ WARNING! Failed to get info as type not provided

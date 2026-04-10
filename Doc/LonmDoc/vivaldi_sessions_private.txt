@@ -1,0 +1,1256 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#top)
+
+## vivaldi.sessionsPrivate Modders API Reference
+
+Vivaldi sessions support api.
+
+## Navigation
+
+### Types
+
+-   [ContentType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#ContentType)
+-   [BackupType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#BackupType)
+-   [WorkspaceId](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#WorkspaceId)
+-   [ContentTarget](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#ContentTarget)
+-   [WorkspaceItem](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#WorkspaceItem)
+-   [TabContent](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#TabContent)
+-   [WindowContent](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#WindowContent)
+-   [WorkspaceContent](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#WorkspaceContent)
+-   [ContentModel](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#ContentModel)
+-   [GroupAlias](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#GroupAlias)
+-   [WorkspaceState](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#WorkspaceState)
+-   [ContentCommands](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#ContentCommands)
+-   [ItemType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#ItemType)
+-   [GroupName](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#GroupName)
+-   [SessionItem](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#SessionItem)
+-   [SessionIds](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#SessionIds)
+-   [SessionModel](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#SessionModel)
+-   [SessionOpenOptions](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#SessionOpenOptions)
+-   [SessionAddOptions](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#SessionAddOptions)
+-   [SessionChange](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#SessionChange)
+-   [SessionChangeData](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#SessionChangeData)
+
+### Listeners
+
+-   [onChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#onChanged)
+-   [onPersistentLoad](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#onPersistentLoad)
+
+### Methods
+
+-   [getAll](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#getAll)
+-   [add](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#add)
+-   [delete](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#delete)
+-   [emptyTrash](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#emptyTrash)
+-   [getAutosaveIds](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#getAutosaveIds)
+-   [getContent](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#getContent)
+-   [makeContainer](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#makeContainer)
+-   [modifyContent](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#modifyContent)
+-   [move](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#move)
+-   [open](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#open)
+-   [restoreSyncTabs](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#restoreSyncTabs)
+-   [rename](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#rename)
+-   [update](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#update)
+-   [restoreLastClosed](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#restoreLastClosed)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#ContentType)ContentType
+
+`ENUM`
+
+Defines role of a node in content. 'group' is the same as a stack.
+
+-   window
+-   workspace
+-   pinned
+-   group
+-   tab
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#BackupType)BackupType
+
+`ENUM`
+
+Defines how a backup should be made.
+
+-   backup
+-   autosave
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#WorkspaceId)WorkspaceId
+
+WorkspaceId
+
+```
+number
+```
+
+Unique identifier.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#ContentTarget)ContentTarget
+
+Settings used when moving an element in a saved session.
+
+Properties:
+
+beforeTabId
+
+```
+number
+```
+
+Target id. Move items before tab with this id. At end if negative.
+
+group
+
+(optional)
+
+```
+string
+```
+
+Target tab stack id. Remove id if empty.
+
+pinned
+
+(optional)
+
+```
+boolean
+```
+
+Target pinned state.
+
+windowId
+
+(optional)
+
+```
+number
+```
+
+Target window id. Not set when target is within a workspace.
+
+workspace
+
+(optional)
+
+```
+WorkspaceId
+```
+
+Target workspace id. Remove id if negative.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#WorkspaceItem)WorkspaceItem
+
+Holds information of a workspace. Not actual tabs, but the workspace itself.
+
+Properties:
+
+id
+
+```
+WorkspaceId
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+name
+
+```
+string
+```
+
+Name shown in UI.
+
+icon
+
+```
+string
+```
+
+Icon shown in UI.
+
+emoji
+
+```
+string
+```
+
+emoji shown in UI.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#TabContent)TabContent
+
+Holds information of a tab
+
+Properties:
+
+id
+
+```
+number
+```
+
+Unique identifier.
+
+index
+
+```
+number
+```
+
+Index as stored in database.
+
+name
+
+```
+string
+```
+
+Active page title. Can be empty.
+
+fixedName
+
+```
+string
+```
+
+Name provided by user. Overrides 'name'. Has not been set if string is empty.
+
+url
+
+```
+string
+```
+
+Url of active entry in navigation list.
+
+pinned
+
+```
+boolean
+```
+
+Pinned state of the tab.
+
+quarantine
+
+```
+boolean
+```
+
+Tab is not installed if true
+
+group
+
+```
+string
+```
+
+The group (stack) the tab belongs to. Can be empty which means no group.
+
+fixedGroupName
+
+```
+string
+```
+
+Name provided by user. Has not been set if string is empty.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#WindowContent)WindowContent
+
+Holds information of a window.
+
+Properties:
+
+id
+
+```
+number
+```
+
+Unique identifier.
+
+quarantine
+
+```
+boolean
+```
+
+Window is not installed if true.
+
+tabs
+
+Tabs in window.
+
+`Array` of:
+
+-   TabContent
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#WorkspaceContent)WorkspaceContent
+
+Holds information, including tabs of a workspace.
+
+Properties:
+
+id
+
+```
+WorkspaceId
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+quarantine
+
+```
+boolean
+```
+
+Workspace is not installed if true.
+
+tabs
+
+Tabs in workspace.
+
+`Array` of:
+
+-   TabContent
+
+name
+
+```
+string
+```
+
+Name shown in UI.
+
+icon
+
+```
+string
+```
+
+Icon shown in UI.
+
+emoji
+
+```
+string
+```
+
+emoji shown in UI.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#ContentModel)ContentModel
+
+⚠ NO DESCRIPTION PROVIDED
+
+Properties:
+
+id
+
+```
+number
+```
+
+Session identifier.
+
+windows
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   WindowContent
+
+workspaces
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   WorkspaceContent
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#GroupAlias)GroupAlias
+
+⚠ NO DESCRIPTION PROVIDED
+
+Properties:
+
+group
+
+```
+string
+```
+
+Existing group id.
+
+alias
+
+```
+string
+```
+
+A new unique id that can be used instead of the existing.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#WorkspaceState)WorkspaceState
+
+⚠ NO DESCRIPTION PROVIDED
+
+Properties:
+
+groups
+
+List of new group ids. There must be one entry for each affected group.
+
+`Array` of:
+
+-   GroupAlias
+
+item
+
+```
+WorkspaceItem
+```
+
+List of workspaces in session.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#ContentCommands)ContentCommands
+
+⚠ NO DESCRIPTION PROVIDED
+
+Properties:
+
+ids
+
+Tabs and windows in a session.
+
+`Array` of:
+
+-   number
+
+groupAliases
+
+(optional)
+
+A list of new group ids that must be supplied when creating a window. There must be one entry for each affected group.
+
+`Array` of:
+
+-   GroupAlias
+
+move
+
+(optional)
+
+```
+boolean
+```
+
+For moving tabs.
+
+pin
+
+(optional)
+
+```
+boolean
+```
+
+For setting pinned state.
+
+quarantine
+
+(optional)
+
+```
+boolean
+```
+
+For setting quarantine state.
+
+remove
+
+(optional)
+
+```
+boolean
+```
+
+For deleting a tab.
+
+tabstack
+
+(optional)
+
+```
+boolean
+```
+
+For creating a stack. There must be at least two tabs in the 'ids' list.
+
+title
+
+(optional)
+
+```
+string
+```
+
+For setting title. Ignored if number of ids is not 1.
+
+target
+
+(optional)
+
+```
+ContentTarget
+```
+
+Used for commands: \['move', 'tabstack'\].
+
+type
+
+(optional)
+
+```
+ContentType
+```
+
+Used for commands: \['title'\].
+
+window
+
+(optional)
+
+```
+boolean
+```
+
+For creating a window.
+
+workspace
+
+(optional)
+
+```
+boolean
+```
+
+For creating a workspace.
+
+workspaceState
+
+(optional)
+
+```
+WorkspaceState
+```
+
+Used for commands: \['workspace'\]
+
+workspaceId
+
+(optional)
+
+```
+WorkspaceId
+```
+
+Used for commands: \['workspace'\]
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#ItemType)ItemType
+
+`ENUM`
+
+Defines supported items
+
+-   folder
+-   node
+-   history
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#GroupName)GroupName
+
+Holds custom name for a group (tab stack).
+
+Properties:
+
+id
+
+```
+string
+```
+
+Group identifier.
+
+name
+
+```
+string
+```
+
+Visible name in UI.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#SessionItem)SessionItem
+
+Object that holds all information about a single session.
+
+Properties:
+
+id
+
+```
+number
+```
+
+Unique identifier.
+
+type
+
+```
+ItemType
+```
+
+Tells what kind of item. 'folder' or 'node'. A 'node' can have children (it is then a container).
+
+name
+
+```
+string
+```
+
+Session display name.
+
+createDateJS
+
+```
+number
+```
+
+Session save date in JS format.
+
+modifyDateJS
+
+```
+number
+```
+
+Session update date in JS format.
+
+windows
+
+```
+number
+```
+
+Number of windows in this session.
+
+tabs
+
+```
+number
+```
+
+Number of tabs in this session.
+
+quarantined
+
+```
+number
+```
+
+Number of quarantined (inactive) tabs in this session.
+
+workspaces
+
+List of workspaces in session.
+
+`Array` of:
+
+-   WorkspaceItem
+
+groupNames
+
+List of custom group names (tab stack names) in session. Can be empty.
+
+`Array` of:
+
+-   GroupName
+
+parentId
+
+```
+number
+```
+
+Unique identifier.
+
+containerId
+
+```
+number
+```
+
+Set for elements in a container or trash, -1 otherwise.
+
+content
+
+(optional)
+
+```
+ContentModel
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+children
+
+(optional)
+
+An ordered list of children of this node.
+
+`Array` of:
+
+-   SessionItem
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#SessionIds)SessionIds
+
+SessionIds
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   number
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#SessionModel)SessionModel
+
+⚠ NO DESCRIPTION PROVIDED
+
+Properties:
+
+items
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   SessionItem
+
+rootId
+
+```
+number
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+autosaveId
+
+```
+number
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+trashId
+
+```
+number
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+loadingFailed
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#SessionOpenOptions)SessionOpenOptions
+
+Options for opening the session.
+
+Properties:
+
+newWindow
+
+```
+boolean
+```
+
+The session will open in a new window.
+
+oneWindow
+
+```
+boolean
+```
+
+All tabs will open in one windows.
+
+withWorkspace
+
+```
+boolean
+```
+
+Open workspace tabs.
+
+tabIds
+
+Open given tabs only.
+
+`Array` of:
+
+-   number
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#SessionAddOptions)SessionAddOptions
+
+Options for adding a new session or updating an existing session.
+
+Properties:
+
+name
+
+```
+string
+```
+
+User friendly description of the session. \[add, duplicate\].
+
+filename
+
+```
+string
+```
+
+Filename without extension. Final name be extended with numbers (N) on collision. \[all\]
+
+parentId
+
+```
+number
+```
+
+Parent of new session node in the model. \[add, duplicate\].
+
+index
+
+```
+number
+```
+
+Where to insert among parent's siblings. \[add, duplicate\].
+
+owner
+
+```
+string
+```
+
+Free form token that is passed back with the event. Allows proper handling when data is added. \[add, duplicate\].
+
+fromId
+
+(optional)
+
+```
+number
+```
+
+If set, the new entry is copied from the given.
+
+windowId
+
+(optional)
+
+```
+integer
+```
+
+Save only the given window. 0 or not set means all windows. Ignored if 'fromId' is set. \[add, update\]
+
+ids
+
+(optional)
+
+List of tab identifiers to be saved. Ignored if 'fromId' is set. \[add, upddate\]
+
+`Array` of:
+
+-   integer
+
+backup
+
+(optional)
+
+```
+BackupType
+```
+
+Special flag for timed backups. No other options are then used.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#SessionChange)SessionChange
+
+`ENUM`
+
+Defines what has changed.
+
+-   added
+-   changed
+-   deleted
+-   moved
+-   content
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#SessionChangeData)SessionChangeData
+
+⚠ NO DESCRIPTION PROVIDED
+
+Properties:
+
+owner
+
+```
+string
+```
+
+Caller component (in UI) identifier.
+
+parentId
+
+```
+number
+```
+
+Set for 'added' and 'moved' events.
+
+index
+
+```
+number
+```
+
+Set for 'added' and 'moved' events.
+
+item
+
+(optional)
+
+```
+SessionItem
+```
+
+Set for 'added' and 'changed' event.
+
+content
+
+(optional)
+
+```
+ContentModel
+```
+
+Set for 'content' event.
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#onChanged)onChanged
+
+Fired when a session is added or removed.
+
+Parameters:
+
+id
+
+```
+number
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+change
+
+```
+SessionChange
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+data
+
+```
+SessionChangeData
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#onPersistentLoad)onPersistentLoad
+
+Fired when a persisted session is loaded.
+
+Parameters:
+
+state
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#getAll)getAll
+
+Returns all previously saved sessions stored on disk.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#add)add
+
+Saves all open tabs to the named session.
+
+Parameters:
+
+options
+
+```
+SessionAddOptions
+```
+
+Controls the adding behavior.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#delete)delete
+
+Deletes session. Items in the trash folder are permanently removed. Others are moved to trash.
+
+Parameters:
+
+id
+
+```
+number
+```
+
+Identifier of session to delete.
+
+index
+
+```
+number
+```
+
+Index to move to in trash folder.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#emptyTrash)emptyTrash
+
+Permanently deletes all trashed session.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#getAutosaveIds)getAutosaveIds
+
+Get ids for nodes that are older than 'days' old from the time the function was called
+
+Parameters:
+
+days
+
+```
+number
+```
+
+Number of days to go hack in history.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#getContent)getContent
+
+Returns contents of a session.
+
+Parameters:
+
+id
+
+```
+number
+```
+
+Identifier of session.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#makeContainer)makeContainer
+
+Turns a history session into the default entry of the container.
+
+Parameters:
+
+id
+
+```
+number
+```
+
+Session identifier.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#modifyContent)modifyContent
+
+Changes internal settings in a session
+
+Parameters:
+
+id
+
+```
+number
+```
+
+Session identifier.
+
+commands
+
+```
+ContentCommands
+```
+
+Describes changes to be made
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#move)move
+
+Moves session.
+
+Parameters:
+
+id
+
+```
+number
+```
+
+Identifier of session to move.
+
+parentId
+
+```
+number
+```
+
+New parent
+
+index
+
+```
+number
+```
+
+Position in new parent's child list.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#open)open
+
+Open a specific named session.
+
+Parameters:
+
+id
+
+```
+number
+```
+
+Identifier of session to open.
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+options
+
+```
+SessionOpenOptions
+```
+
+Session open options.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#restoreSyncTabs)restoreSyncTabs
+
+Opens synced tabs in the active window. Only the last tab is activated.
+
+Parameters:
+
+ids
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   string
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#rename)rename
+
+Renames the named session.
+
+Parameters:
+
+id
+
+```
+number
+```
+
+Identifier of session to rename.
+
+name
+
+```
+string
+```
+
+New name.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#update)update
+
+Updates a session with current open tabs.
+
+Parameters:
+
+id
+
+```
+number
+```
+
+Identifier of session to update.
+
+options
+
+```
+SessionAddOptions
+```
+
+Controls the update behavior.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sessionsPrivate.html#restoreLastClosed)restoreLastClosed
+
+Will restore the last session called from any profile. Returns true if a window was created.
