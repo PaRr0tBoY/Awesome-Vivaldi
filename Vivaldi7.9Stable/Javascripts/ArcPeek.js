@@ -41,8 +41,11 @@
       previewSwapDeadline: 100,
       openingPreviewRemoveLeadTime: 55,
       closingPreviewMountDelay: 75,
+      previewCacheLimit: 48,
     });
     webviews = new Map();
+    previewCache = new Map();
+    previewCaptureTasks = new Map();
     closeShortcutGuard = null;
     postClosePointerGuard = null;
     iconUtils = new IconUtils();
@@ -76,8 +79,13 @@
       if (navigationDetails.frameType !== "outermost_frame")
         return { webview: null, fromPanel: false };
 
+      const navigationTabId = Number(navigationDetails.tabId);
+      if (!Number.isFinite(navigationTabId) || navigationTabId <= 0) {
+        return { webview: null, fromPanel: false };
+      }
+
       let webview = document.querySelector(
-        `webview[tab_id="${navigationDetails.tabId}"]`
+        `webview[tab_id="${navigationTabId}"]`
       );
       if (webview?.closest?.(".peek-panel")) {
         return { webview: null, fromPanel: false };
@@ -85,21 +93,20 @@
       if (webview)
         return { webview, fromPanel: webview.name === "vivaldi-webpanel" };
 
-      webview = Array.from(this.webviews.values()).find(
-        (view) => view.fromPanel
-      )?.webview;
-      if (webview) return { webview, fromPanel: true };
+      const activeWebview = document.querySelector(".active.visible.webpageview webview");
+      const activeTabId = Number(activeWebview?.tab_id);
+      if (
+        activeWebview &&
+        activeTabId === navigationTabId &&
+        !activeWebview.closest?.(".peek-panel")
+      ) {
+        return {
+          webview: activeWebview,
+          fromPanel: activeWebview.name === "vivaldi-webpanel",
+        };
+      }
 
-      const activeTabId = Number(
-        document.querySelector(".active.visible.webpageview webview")?.tab_id
-      );
-      const lastWebviewId = Array.from(this.webviews.entries()).findLast(
-        ([_, data]) => !data.fromPanel && data.tabId === activeTabId
-      )?.[0];
-      return {
-        webview: this.webviews.get(lastWebviewId)?.webview,
-        fromPanel: false,
-      };
+      return { webview: null, fromPanel: false };
     }
 
     /**
@@ -157,6 +164,10 @@
       }
 
       const finishCleanup = async () => {
+        try {
+          data.webview?.stop?.();
+        } catch (_) {}
+
         if (closeRuntimeTab) {
           await this.closePeekRuntimeTab(webviewId);
         }
@@ -178,7 +189,12 @@
         return;
       }
 
-      this.hidePeekContent(panel);
+      const hasClosingPreview = !!data.sourcePreviewUrl;
+      if (hasClosingPreview) {
+        this.hidePeekContent(panel);
+      } else {
+        this.showPeekContent(panel);
+      }
       container.classList.remove("open");
       container.classList.add("closing");
       container.style.setProperty(
@@ -186,10 +202,21 @@
         `${this.getBackdropDuration("closing")}ms`
       );
 
-      data.timers.closingPreviewMount = window.setTimeout(() => {
-        if (!panel.isConnected || !container.classList.contains("closing")) return;
-        this.mountPreviewLayer(panel, data.sourcePreviewUrl, data.linkRect);
-      }, this.ARC_CONFIG.closingPreviewMountDelay);
+      if (hasClosingPreview) {
+        data.timers.closingPreviewMount = window.setTimeout(() => {
+          if (!panel.isConnected || !container.classList.contains("closing")) return;
+          this.mountPreviewLayer(panel, data.sourcePreviewUrl, data.linkRect);
+        }, this.ARC_CONFIG.closingPreviewMountDelay);
+      } else if (data.previewCapturePromise) {
+        data.previewCapturePromise
+          .then((latePreviewUrl) => {
+            if (!latePreviewUrl) return;
+            if (!panel.isConnected || !container.classList.contains("closing")) return;
+            data.sourcePreviewUrl = latePreviewUrl;
+            this.mountPreviewLayer(panel, latePreviewUrl, data.linkRect);
+          })
+          .catch(() => {});
+      }
 
       const sourceRect = data.sourceRect || this.resolveSourceRect(data.linkRect);
       
@@ -559,6 +586,8 @@
 
       const activeWebview = document.querySelector(".active.visible.webpageview webview");
       const tabId = !fromPanel && activeWebview ? Number(activeWebview.tab_id) : null;
+      const previewCacheKey = this.getPreviewCacheKey(linkUrl, linkRect);
+      const cachedPreviewUrl = this.getCachedPreviewUrl(previewCacheKey);
 
       this.webviews.set(webviewId, {
         divContainer: peekContainer,
@@ -566,13 +595,17 @@
         fromPanel: fromPanel,
         tabId: tabId,
         linkRect: linkRect,
-        sourcePreviewUrl: null,
+        sourcePreviewUrl: cachedPreviewUrl,
         sourceRect: null,
         isDisposing: false,
         timers: {},
         panelPointerBlocker: null,
         tabCloseListener: null,
-        backdropCleanup: null
+        backdropCleanup: null,
+        previewCacheKey: previewCacheKey,
+        previewCapturePromise: null,
+        openingCompleted: false,
+        openingContentRevealStarted: false,
       });
 
       if (!fromPanel) {
@@ -712,7 +745,11 @@
 
       const geometry = this.applyPeekAnimationGeometry(peekContainer, peekPanel, linkRect);
       this.webviews.get(webviewId).sourceRect = geometry?.sourceRect || null;
-      this.mountPreviewLayer(peekPanel, null, linkRect);
+      if (cachedPreviewUrl) {
+        this.mountPreviewLayer(peekPanel, cachedPreviewUrl, linkRect);
+      } else {
+        this.setPreviewPending(peekPanel, true);
+      }
       this.hidePeekContent(peekPanel);
       
       peekContainer.style.setProperty("--peek-backdrop-duration", `${this.getBackdropDuration("opening")}ms`);
@@ -726,16 +763,19 @@
       const openingStartedAt = performance.now();
       
       this.startPeekNavigation(webview, webviewId);
+
+      if (cachedPreviewUrl) {
+        this.webviews.get(webviewId).openingContentRevealStarted = true;
+        this.animatePeekContentIn(peekPanel);
+      }
       
       this.animatePeekMotion(peekPanel, "opening", sourceRect)
         .then(() => {
-          this.removePreviewLayer(peekPanel);
-          this.showPeekContent(peekPanel);
+          this.finalizePeekOpening(peekPanel, webviewId);
         })
         .catch((error) => {
           console.warn(DEBUG.prefix, "opening animation failed", error);
-          this.removePreviewLayer(peekPanel);
-          this.showPeekContent(peekPanel);
+          this.finalizePeekOpening(peekPanel, webviewId);
         });
         
       this.captureAndSwapPreview(peekPanel, webviewId, linkRect, fromPanel, openingStartedAt);
@@ -860,6 +900,63 @@
       return image.naturalWidth > 0 && image.naturalHeight > 0;
     }
 
+    getVivaldiWindowId() {
+      const windowId = Number(window.vivaldiWindowId);
+      return Number.isFinite(windowId) ? windowId : null;
+    }
+
+    buildUICaptureRect(linkRect) {
+      const sourceRect = this.resolveSourceRect(linkRect);
+      if (!sourceRect) return null;
+
+      return {
+        left: Math.max(0, Math.round(sourceRect.left)),
+        top: Math.max(0, Math.round(sourceRect.top)),
+        width: Math.max(1, Math.round(sourceRect.width)),
+        height: Math.max(1, Math.round(sourceRect.height)),
+      };
+    }
+
+    captureUIArea(rect) {
+      return new Promise((resolve, reject) => {
+        const windowId = this.getVivaldiWindowId();
+        if (!window.vivaldi || !vivaldi.thumbnails || typeof vivaldi.thumbnails.captureUI !== "function") {
+          reject(new Error("vivaldi.thumbnails.captureUI is unavailable"));
+          return;
+        }
+        if (windowId === null) {
+          reject(new Error("window.vivaldiWindowId is unavailable"));
+          return;
+        }
+        if (!rect) {
+          reject(new Error("captureUIArea requires a rect"));
+          return;
+        }
+
+        const params = {
+          windowId,
+          posX: rect.left,
+          posY: rect.top,
+          width: rect.width,
+          height: rect.height,
+          encodeFormat: "png",
+          saveToDisk: false,
+        };
+
+        vivaldi.thumbnails.captureUI(params, (success, url) => {
+          if (chrome.runtime.lastError) {
+            reject(new Error(chrome.runtime.lastError.message));
+            return;
+          }
+          if (!success) {
+            reject(new Error("captureUI returned false"));
+            return;
+          }
+          resolve(url || null);
+        });
+      });
+    }
+
     captureTabArea(rect) {
       return new Promise((resolve, reject) => {
         if (!window.vivaldi || !vivaldi.thumbnails || typeof vivaldi.thumbnails.captureTab !== "function") {
@@ -878,8 +975,57 @@
       });
     }
 
-    async captureSourcePreview(linkRect, fromPanel) {
+    getPreviewCacheKey(linkUrl, linkRect) {
+      const rawKey = typeof linkRect?.href === "string" && linkRect.href ? linkRect.href : linkUrl;
+      if (typeof rawKey !== "string" || !rawKey) return null;
+
+      try {
+        const url = new URL(rawKey, window.location.href);
+        url.hash = "";
+        return url.toString();
+      } catch (error) {
+        return rawKey;
+      }
+    }
+
+    getCachedPreviewUrl(cacheKey) {
+      if (!cacheKey || !this.previewCache.has(cacheKey)) return null;
+      const cachedPreviewUrl = this.previewCache.get(cacheKey);
+      this.previewCache.delete(cacheKey);
+      this.previewCache.set(cacheKey, cachedPreviewUrl);
+      return cachedPreviewUrl;
+    }
+
+    storePreviewUrl(cacheKey, sourcePreviewUrl) {
+      if (!cacheKey || !sourcePreviewUrl) return;
+      if (this.previewCache.has(cacheKey)) {
+        this.previewCache.delete(cacheKey);
+      }
+      this.previewCache.set(cacheKey, sourcePreviewUrl);
+
+      while (this.previewCache.size > this.ARC_CONFIG.previewCacheLimit) {
+        const oldestKey = this.previewCache.keys().next().value;
+        if (!oldestKey) break;
+        this.previewCache.delete(oldestKey);
+      }
+    }
+
+    async captureSourcePreview(linkRect, fromPanel, cacheKey = null) {
       if (fromPanel) return null;
+
+      const uiRect = this.buildUICaptureRect(linkRect);
+      if (uiRect) {
+        try {
+          const sourcePreviewUrl = await this.captureUIArea(uiRect);
+          const usable = await this.isUsablePreviewUrl(sourcePreviewUrl);
+          if (usable) {
+            this.storePreviewUrl(cacheKey, sourcePreviewUrl);
+            return sourcePreviewUrl;
+          }
+        } catch (error) {
+          debugLog("captureUI preview capture failed", error);
+        }
+      }
 
       const candidates = this.buildCaptureCandidates(linkRect);
       if (!candidates.length) return null;
@@ -888,10 +1034,35 @@
         try {
           const sourcePreviewUrl = await this.captureTabArea(candidate.rect);
           const usable = await this.isUsablePreviewUrl(sourcePreviewUrl);
-          if (usable) return sourcePreviewUrl;
+          if (usable) {
+            this.storePreviewUrl(cacheKey, sourcePreviewUrl);
+            return sourcePreviewUrl;
+          }
         } catch (error) {}
       }
       return null;
+    }
+
+    startPreviewCapture(cacheKey, linkRect, fromPanel) {
+      const cachedPreviewUrl = this.getCachedPreviewUrl(cacheKey);
+      if (cachedPreviewUrl) {
+        return Promise.resolve(cachedPreviewUrl);
+      }
+
+      if (cacheKey && this.previewCaptureTasks.has(cacheKey)) {
+        return this.previewCaptureTasks.get(cacheKey);
+      }
+
+      const previewTask = this.captureSourcePreview(linkRect, fromPanel, cacheKey)
+        .finally(() => {
+          if (cacheKey) this.previewCaptureTasks.delete(cacheKey);
+        });
+
+      if (cacheKey) {
+        this.previewCaptureTasks.set(cacheKey, previewTask);
+      }
+
+      return previewTask;
     }
 
     resolveSourceRect(linkRect) {
@@ -955,6 +1126,7 @@
       previewLayer.style.setProperty("--preview-border-color", preview.borderColor || "rgba(255,255,255,0.08)");
       previewLayer.style.setProperty("--preview-font-weight", preview.fontWeight || "600");
       previewLayer.classList.toggle("has-preview-image", hasPreview);
+      previewLayer.classList.toggle("is-placeholder", !hasPreview);
       
       if (hasPreview) {
         imageLayer.src = sourcePreviewUrl;
@@ -974,6 +1146,10 @@
       return previewLayer;
     }
 
+    setPreviewPending(peekPanel, isPending) {
+      peekPanel?.classList.toggle("preview-pending", !!isPending);
+    }
+
     mountPreviewLayer(peekPanel, sourcePreviewUrl, linkRect) {
       if (!peekPanel) return null;
       this.removePreviewLayer(peekPanel);
@@ -984,6 +1160,15 @@
 
     removePreviewLayer(peekPanel) {
       peekPanel?.querySelector(".peek-source-preview")?.remove();
+    }
+
+    finalizePeekOpening(peekPanel, webviewId) {
+      const data = this.webviews.get(webviewId);
+      if (data) {
+        data.openingCompleted = true;
+      }
+      this.removePreviewLayer(peekPanel);
+      this.showPeekContent(peekPanel);
     }
 
     scheduleOpeningPreviewRemoval(peekPanel, webviewId, openingStartedAt) {
@@ -1007,26 +1192,38 @@
     }
 
     async captureAndSwapPreview(peekPanel, webviewId, linkRect, fromPanel, openingStartedAt) {
-      const sourcePreviewUrl = await this.captureSourcePreview(linkRect, fromPanel);
-      if (!sourcePreviewUrl || !peekPanel?.isConnected) return;
+      const data = this.webviews.get(webviewId);
+      if (!data) return;
+
+      if (data.sourcePreviewUrl) return;
+
+      data.previewCapturePromise = this.startPreviewCapture(data.previewCacheKey, linkRect, fromPanel);
+      const sourcePreviewUrl = await data.previewCapturePromise;
+      if (!sourcePreviewUrl) return;
+
+      data.sourcePreviewUrl = sourcePreviewUrl;
+      if (!peekPanel?.isConnected) return;
+      if (data.openingCompleted) return;
 
       const elapsed = performance.now() - openingStartedAt;
       if (elapsed > this.ARC_CONFIG.previewSwapDeadline) return;
-
-      const data = this.webviews.get(webviewId);
       if (data?.isDisposing) return;
 
       const previewLayer = this.mountPreviewLayer(peekPanel, sourcePreviewUrl, linkRect);
       await this.waitForPreviewLayer(previewLayer);
       
       if (!peekPanel?.isConnected || data?.isDisposing) return;
+      if (data.openingCompleted) {
+        this.removePreviewLayer(peekPanel);
+        return;
+      }
 
       const elapsedAfterDecode = performance.now() - openingStartedAt;
       if (elapsedAfterDecode > this.ARC_CONFIG.previewSwapDeadline) return;
-
-      if (data) data.sourcePreviewUrl = sourcePreviewUrl;
-      this.animatePeekContentIn(peekPanel);
-      this.scheduleOpeningPreviewRemoval(peekPanel, webviewId, openingStartedAt);
+      if (!data.openingContentRevealStarted) {
+        data.openingContentRevealStarted = true;
+        this.animatePeekContentIn(peekPanel);
+      }
     }
 
     async waitForPreviewLayer(previewLayer) {
@@ -1064,6 +1261,7 @@
       peekContent.getAnimations?.().forEach((animation) => animation.cancel());
       peekContent.style.display = "";
       peekContent.style.opacity = "1";
+      this.setPreviewPending(peekPanel, false);
     }
 
     animatePeekContentIn(peekPanel) {
@@ -1076,6 +1274,7 @@
       peekContent.getAnimations().forEach((animation) => animation.cancel());
       peekContent.style.display = "";
       peekContent.style.opacity = "0";
+      this.setPreviewPending(peekPanel, false);
       const animation = peekContent.animate([{ opacity: 0 }, { opacity: 1 }], {
         duration: this.getGlanceDuration("opening") / 4,
         easing: "ease-in-out",
@@ -1395,15 +1594,16 @@
 
       const injectForNavigation = (navigationDetails) => {
         const { webview, fromPanel } = getWebviewConfig(navigationDetails);
-        webview && this.injectCode(webview, fromPanel);
+        if (webview && this.isInjectableWebview(webview)) {
+          this.injectCode(webview, fromPanel);
+        }
       };
 
-      chrome.webNavigation.onDOMContentLoaded.addListener(injectForNavigation);
       chrome.webNavigation.onCompleted.addListener(injectForNavigation);
 
       window.setTimeout(() => {
         const activeWebview = document.querySelector(".active.visible.webpageview webview");
-        if (activeWebview) {
+        if (activeWebview && this.isInjectableWebview(activeWebview)) {
           this.injectCode(activeWebview, activeWebview.name === "vivaldi-webpanel");
         }
       }, 350);
@@ -1415,6 +1615,20 @@
       });
     }
 
+    isInjectableWebview(webview) {
+      if (!webview?.isConnected) return false;
+      if (webview.closest?.(".peek-panel")) return false;
+
+      const rawTabId = webview.getAttribute("tab_id") || webview.tab_id;
+      const tabId = Number(rawTabId);
+      if (!Number.isFinite(tabId) || tabId <= 0) return false;
+
+      const src = webview.getAttribute("src") || webview.src || "";
+      if (!src || src === "about:blank" || src.startsWith("about:blank")) return false;
+
+      return true;
+    }
+
     injectCode(webview, fromPanel) {
       const handler = WebsiteLinkInteractionHandler.toString(),
         instantiationCode = `
@@ -1423,7 +1637,19 @@
                     this.peekEventListenerSet = true;
                 }
             `;
-      webview.executeScript({ code: instantiationCode });
+      try {
+        webview.executeScript({ code: instantiationCode }, () => {
+          if (chrome.runtime.lastError) {
+            debugLog("injectCode skipped", {
+              tabId: webview.getAttribute("tab_id") || webview.tab_id,
+              src: webview.getAttribute("src") || webview.src || "",
+              error: chrome.runtime.lastError.message,
+            });
+          }
+        });
+      } catch (error) {
+        debugLog("injectCode failed", error);
+      }
     }
   }
 
