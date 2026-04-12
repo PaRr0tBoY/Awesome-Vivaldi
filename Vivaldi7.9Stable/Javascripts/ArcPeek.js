@@ -42,6 +42,9 @@
       previewCacheTtlMs: 10 * 60 * 1000,
       lastRecordedLinkTtlMs: 2000,
       syncPreviewBeforeOpen: true,
+      lightweightPreviewMotionOnWindows: true,
+      lightweightPreviewHandoffDelayRatio: 0.68,
+      lightweightPreviewHandoffDurationRatio: 0.16,
     });
     webviews = new Map();
     previewCache = new Map();
@@ -55,6 +58,13 @@
 
     constructor() {
       this.hasPeekCSS = this.checkPeekCSSSupport();
+      this.useLightweightPreviewMotion =
+        this.ARC_CONFIG.lightweightPreviewMotionOnWindows &&
+        this.isWindowsPlatform();
+      document.body.classList.toggle(
+        "peek-lightweight",
+        this.useLightweightPreviewMotion
+      );
       this.registerPeekCloseShortcuts();
       this.registerPeekCloseGuard();
 
@@ -74,6 +84,12 @@
         console.warn("peek CSS support check failed:", e);
         return false;
       }
+    }
+
+    isWindowsPlatform() {
+      const browser = document.getElementById("browser");
+      if (browser?.classList?.contains("win")) return true;
+      return /Win/i.test(navigator.platform || "");
     }
 
     getWebviewConfig(navigationDetails) {
@@ -159,6 +175,9 @@
 
       const container = data.divContainer;
       const panel = container?.querySelector(".peek-panel");
+      const sourceRect = animated
+        ? await this.getPeekClosingSourceRect(data)
+        : null;
 
       if (this.webviews.size <= 1 && this.hasPeekCSS) {
         document.body.classList.remove("peek-open");
@@ -176,7 +195,8 @@
         
         container?.classList.remove("open", "closing", "pre-open");
         container?.remove();
-        
+
+        this.setPeekSourceLinkVisibility(data.sourceToken, false);
         this.webviews.delete(webviewId);
         this.clearCloseShortcutGuard();
 
@@ -185,7 +205,7 @@
         }
       };
 
-      if (!animated || !container || !panel) {
+      if (!animated || !container || !panel || !sourceRect) {
         await finishCleanup();
         return;
       }
@@ -216,8 +236,6 @@
         });
       }
 
-      const sourceRect = data.sourceRect || this.resolveSourceRect(data.linkRect);
-      
       try {
         await this.animatePeekMotion(panel, "closing", sourceRect);
       } catch (error) {
@@ -571,6 +589,7 @@
 
     showPeek(linkUrl, fromPanel, linkRect = undefined, meta = undefined) {
       this.buildPeek(linkUrl, fromPanel, linkRect, meta).catch((error) => {
+        this.setPeekSourceLinkVisibility(linkRect?.sourceToken, false);
         console.error(DEBUG.prefix, "showPeek failed", error);
       });
     }
@@ -603,6 +622,7 @@
       }
 
       const activeWebview = document.querySelector(".active.visible.webpageview webview");
+      const peekViewportRect = this.getPeekViewportRect(activeWebview);
       const tabId = !fromPanel && activeWebview ? Number(activeWebview.tab_id) : null;
 
       this.webviews.set(webviewId, {
@@ -612,6 +632,7 @@
         tabId: tabId,
         linkRect: effectiveLinkRect,
         previewAssetUrl: previewAsset?.dataUrl || null,
+        sourceToken: effectiveLinkRect?.sourceToken || null,
         sourceRect: null,
         isDisposing: false,
         timers: {},
@@ -623,6 +644,7 @@
         openingMode: previewAsset?.dataUrl ? "preview" : "live",
         openingState: "starting",
         closingMode: null,
+        disableSourceCloseAnimation: false,
       });
 
       if (!fromPanel) {
@@ -643,14 +665,26 @@
       peekPanel.removeAttribute("data-has-finished-animation");
       peekContent.setAttribute("class", "peek-content");
 
-      if (activeWebview) {
-        const rect = activeWebview.getBoundingClientRect();
-        const webviewContainerRect = document.getElementById("webview-container")?.getBoundingClientRect();
-        const targetWidth = rect.width * 0.8;
-        const targetHeight = webviewContainerRect?.height || rect.height;
+      if (peekViewportRect) {
+        const rect = activeWebview?.getBoundingClientRect?.() || peekViewportRect;
+        const targetWidth = peekViewportRect.width * 0.8;
+        const targetHeight = peekViewportRect.height;
+        const targetLeft =
+          peekViewportRect.left + (peekViewportRect.width - targetWidth) / 2;
+        const targetTop =
+          peekViewportRect.top + (peekViewportRect.height - targetHeight) / 2;
 
         peekPanel.style.width = targetWidth + "px";
         peekPanel.style.height = targetHeight + "px";
+        peekPanel.style.left = `${targetLeft}px`;
+        peekPanel.style.top = `${targetTop}px`;
+
+        peekContainer.style.left = `${peekViewportRect.left}px`;
+        peekContainer.style.top = `${peekViewportRect.top}px`;
+        peekContainer.style.width = `${peekViewportRect.width}px`;
+        peekContainer.style.height = `${peekViewportRect.height}px`;
+        peekContainer.style.right = "auto";
+        peekContainer.style.bottom = "auto";
 
         if (effectiveLinkRect) {
           const startX = rect.left + effectiveLinkRect.left + effectiveLinkRect.width / 2;
@@ -763,6 +797,7 @@
 
       const geometry = this.applyPeekAnimationGeometry(peekContainer, peekPanel, effectiveLinkRect);
       this.webviews.get(webviewId).sourceRect = geometry?.sourceRect || null;
+      this.setPeekSourceLinkVisibility(effectiveLinkRect?.sourceToken, true);
       if (previewAsset?.dataUrl) {
         this.mountPreviewLayer(peekPanel, previewAsset.dataUrl, effectiveLinkRect);
         this.setPreviewAnimationState(peekPanel, true);
@@ -783,8 +818,18 @@
       this.startPeekNavigation(webview, webviewId);
 
       if (previewAsset?.dataUrl) {
-        this.animatePeekContentIn(peekPanel);
-        this.animatePreviewLayerOut(peekPanel);
+        if (this.shouldUseTransformOnlyPreviewMotion(peekPanel)) {
+          this.hidePeekContent(peekPanel);
+          const handoffOptions = {
+            delayRatio: this.ARC_CONFIG.lightweightPreviewHandoffDelayRatio,
+            durationRatio: this.ARC_CONFIG.lightweightPreviewHandoffDurationRatio,
+          };
+          this.animatePeekContentIn(peekPanel, handoffOptions);
+          this.animatePreviewLayerOut(peekPanel, handoffOptions);
+        } else {
+          this.animatePeekContentIn(peekPanel);
+          this.animatePreviewLayerOut(peekPanel);
+        }
       }
       this.webviews.get(webviewId).openingState = "animating";
       
@@ -806,6 +851,86 @@
 
     getActivePageWebview() {
       return document.querySelector(".active.visible.webpageview webview");
+    }
+
+    getActivePageTabId() {
+      const tabId = Number(this.getActivePageWebview()?.tab_id);
+      if (!Number.isFinite(tabId) || tabId <= 0) return null;
+      return tabId;
+    }
+
+    isPeekOnOriginalSourceTab(data) {
+      if (data?.fromPanel) return true;
+      const sourceTabId = Number(data?.tabId);
+      if (!Number.isFinite(sourceTabId) || sourceTabId <= 0) return false;
+      return this.getActivePageTabId() === sourceTabId;
+    }
+
+    async getPeekClosingSourceRect(data) {
+      if (!data || data.disableSourceCloseAnimation) return null;
+      if (!this.isPeekOnOriginalSourceTab(data)) return null;
+      const liveLinkRect = await this.requestSourceLinkRect(data.sourceToken);
+      if (liveLinkRect) {
+        return this.resolveSourceRect(liveLinkRect);
+      }
+      return data.sourceRect || this.resolveSourceRect(data.linkRect);
+    }
+
+    setPeekSourceLinkVisibility(sourceToken, hidden) {
+      if (!sourceToken) return;
+      chrome.runtime.sendMessage({
+        type: "peek-source-link-state",
+        sourceToken,
+        hidden: !!hidden,
+      });
+    }
+
+    requestSourceLinkRect(sourceToken) {
+      if (!sourceToken) return Promise.resolve(null);
+
+      return new Promise((resolve) => {
+        chrome.runtime.sendMessage(
+          {
+            type: "peek-source-rect-request",
+            sourceToken,
+          },
+          (response) => {
+            if (chrome.runtime.lastError) {
+              resolve(null);
+              return;
+            }
+
+            const rect = response?.rect;
+            if (!rect?.width || !rect?.height) {
+              resolve(null);
+              return;
+            }
+
+            resolve({
+              ...rect,
+              sourceToken,
+            });
+          }
+        );
+      });
+    }
+
+    getPeekViewportRect(activeWebview = null) {
+      const webviewContainer = document.getElementById("webview-container");
+      const sourceRect =
+        webviewContainer?.getBoundingClientRect?.() ||
+        activeWebview?.getBoundingClientRect?.() ||
+        this.getActivePageWebview()?.getBoundingClientRect?.() ||
+        document.getElementById("browser")?.getBoundingClientRect?.();
+
+      if (!sourceRect?.width || !sourceRect?.height) return null;
+
+      return {
+        left: Math.round(sourceRect.left),
+        top: Math.round(sourceRect.top),
+        width: Math.max(1, Math.round(sourceRect.width)),
+        height: Math.max(1, Math.round(sourceRect.height)),
+      };
     }
 
     async isUsablePreviewUrl(url) {
@@ -1130,6 +1255,7 @@
       peekPanel?.setAttribute("data-has-finished-animation", "true");
       this.setPreviewAnimationState(peekPanel, false);
       this.setPreviewClosingState(peekPanel, false);
+      this.setTransformOnlyPreviewState(peekPanel, false);
       this.removePreviewLayer(peekPanel);
       this.showPeekContent(peekPanel);
     }
@@ -1163,18 +1289,31 @@
       peekContent.style.opacity = "1";
     }
 
-    animatePeekContentIn(peekPanel) {
+    animatePeekContentIn(
+      peekPanel,
+      { delayRatio = 0, durationRatio = this.ARC_CONFIG.previewFadeInRatio } = {}
+    ) {
       const peekContent = peekPanel?.querySelector(".peek-content");
       if (!peekContent || typeof peekContent.animate !== "function") {
         this.showPeekContent(peekPanel);
         return;
       }
 
+      const delay = Math.max(
+        0,
+        this.getGlanceDuration("opening") * delayRatio
+      );
+      const duration = Math.max(
+        1,
+        this.getGlanceDuration("opening") * Math.max(durationRatio, 0)
+      );
+
       peekContent.getAnimations().forEach((animation) => animation.cancel());
       peekContent.style.display = "";
       peekContent.style.opacity = "0";
       const animation = peekContent.animate([{ opacity: 0 }, { opacity: 1 }], {
-        duration: this.getGlanceDuration("opening") * this.ARC_CONFIG.previewFadeInRatio,
+        delay,
+        duration,
         easing: "ease-in-out",
         fill: "forwards",
       });
@@ -1224,7 +1363,13 @@
       }).catch(() => {});
     }
 
-    animatePreviewLayerOut(peekPanel) {
+    animatePreviewLayerOut(
+      peekPanel,
+      {
+        delayRatio = this.ARC_CONFIG.previewFadeOutDelayRatio,
+        durationRatio = this.ARC_CONFIG.previewFadeOutRatio,
+      } = {}
+    ) {
       const previewLayer = peekPanel?.querySelector(":scope > .peek-source-preview");
       if (!previewLayer) return;
       if (typeof previewLayer.animate !== "function") {
@@ -1235,8 +1380,11 @@
       previewLayer.getAnimations?.().forEach((animation) => animation.cancel());
       previewLayer.style.opacity = "1";
       const animation = previewLayer.animate([{ opacity: 1 }, { opacity: 0 }], {
-        delay: this.getGlanceDuration("opening") * this.ARC_CONFIG.previewFadeOutDelayRatio,
-        duration: this.getGlanceDuration("opening") * this.ARC_CONFIG.previewFadeOutRatio,
+        delay: this.getGlanceDuration("opening") * delayRatio,
+        duration: Math.max(
+          1,
+          this.getGlanceDuration("opening") * Math.max(durationRatio, 0)
+        ),
         easing: "ease-out",
         fill: "forwards",
       });
@@ -1290,6 +1438,76 @@
     setPreviewClosingState(peekPanel, enabled) {
       if (!peekPanel) return;
       peekPanel.classList.toggle("preview-closing", !!enabled);
+    }
+
+    setTransformOnlyPreviewState(peekPanel, enabled) {
+      if (!peekPanel) return;
+      peekPanel.classList.toggle("preview-transform-only", !!enabled);
+    }
+
+    shouldUseTransformOnlyPreviewMotion(peekPanel) {
+      if (!this.useLightweightPreviewMotion) return false;
+      if (!peekPanel?.querySelector(":scope > .peek-source-preview")) return false;
+      return true;
+    }
+
+    getPreviewSourceTransform(peekPanel, sourceRect) {
+      const finalRect = peekPanel?.getBoundingClientRect?.();
+      if (!finalRect?.width || !finalRect?.height) {
+        return {
+          transform: "translate(0, 0) scale(1, 1)",
+          borderRadius: "inherit",
+        };
+      }
+
+      const fallbackSource = {
+        left: finalRect.left,
+        top: finalRect.top - Math.min(finalRect.height * 0.35, 120),
+        width: finalRect.width * 0.9,
+        height: Math.max(finalRect.height * 0.22, 42),
+      };
+      const originRect = sourceRect || fallbackSource;
+      const translateX = originRect.left - finalRect.left;
+      const translateY = originRect.top - finalRect.top;
+      const scaleX = Math.min(Math.max(originRect.width / finalRect.width, 0.08), 1);
+      const scaleY = Math.min(Math.max(originRect.height / finalRect.height, 0.06), 1);
+      const radius = `${Math.min(Math.max(originRect.height / 2, 8), 18)}px`;
+
+      return {
+        transform: `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`,
+        borderRadius: radius,
+      };
+    }
+
+    animatePreviewTransformMotion(peekPanel, direction, sourceRect) {
+      const previewLayer = peekPanel?.querySelector(":scope > .peek-source-preview");
+      if (!previewLayer) return Promise.resolve();
+
+      const sourceState = this.getPreviewSourceTransform(peekPanel, sourceRect);
+      const targetState = { transform: "translate(0, 0) scale(1, 1)", borderRadius: "inherit" };
+      const keyframes =
+        direction === "opening"
+          ? [sourceState, targetState]
+          : [targetState, sourceState];
+
+      previewLayer.getAnimations?.().forEach((animation) => animation.cancel());
+      previewLayer.style.transformOrigin = "top left";
+
+      if (typeof previewLayer.animate !== "function") {
+        previewLayer.style.transform = keyframes[keyframes.length - 1].transform;
+        previewLayer.style.borderRadius = keyframes[keyframes.length - 1].borderRadius;
+        return Promise.resolve();
+      }
+
+      const previewAnimation = previewLayer.animate(keyframes, {
+        duration: this.getGlanceDuration(direction),
+        easing:
+          direction === "opening"
+            ? "cubic-bezier(0.16, 0.88, 0.22, 1)"
+            : "cubic-bezier(0.2, 0.82, 0.24, 1)",
+        fill: "forwards",
+      });
+      return previewAnimation.finished;
     }
 
     easeOutBack(x) {
@@ -1374,6 +1592,18 @@
 
     animatePeekMotion(peekPanel, direction, sourceRect) {
       if (!peekPanel) return Promise.resolve();
+
+      if (this.shouldUseTransformOnlyPreviewMotion(peekPanel)) {
+        this.setTransformOnlyPreviewState(peekPanel, true);
+        return this.animatePreviewTransformMotion(
+          peekPanel,
+          direction,
+          sourceRect
+        ).finally(() => {
+          if (direction === "closing") return;
+          this.setTransformOnlyPreviewState(peekPanel, false);
+        });
+      }
 
       const panelKeyframes = this.createGlanceArcKeyframes(peekPanel, direction, sourceRect);
       if (typeof peekPanel.animate !== "function") return Promise.resolve();
@@ -1491,68 +1721,64 @@
       const peekContainer = data.divContainer;
       const peekPanel = peekContainer.querySelector(".peek-panel");
       if (!peekPanel) return;
+      data.disableSourceCloseAnimation = true;
       
       peekContainer.classList.add("expanding-to-tab");
-      peekContainer.style.pointerEvents = "none";
+      peekContainer.style.pointerEvents = "auto";
       if (this.hasPeekCSS) {
         document.body.classList.remove("peek-open");
       }
 
-      const overlay = document.createElement("div");
-      overlay.style.position = "fixed";
-      overlay.style.top = "0";
-      overlay.style.left = "0";
-      overlay.style.width = "100%";
-      overlay.style.height = "100%";
-      overlay.style.backgroundColor = "#1C2220";
-      overlay.style.opacity = "0";
-      overlay.style.zIndex = "999999998";
-      overlay.style.transition = "opacity 0.3s ease-in-out";
-      overlay.style.pointerEvents = "none";
-      document.body.appendChild(overlay);
-
       let activeWebview = document.querySelector(".active.visible.webpageview webview");
-      if (activeWebview) {
+      const targetRect = this.getPeekViewportRect(activeWebview);
+      const expandDurationMs = 300;
+      if (targetRect) {
         const currentRect = peekPanel.getBoundingClientRect();
-        const rect = activeWebview.getBoundingClientRect();
-        const webviewContainerRect = document.getElementById("webview-container")?.getBoundingClientRect();
-        const targetWidth = webviewContainerRect?.width || rect.width;
-        const targetLeft = webviewContainerRect?.left ?? Math.round((window.innerWidth - targetWidth) / 2);
+        const easing = "cubic-bezier(0.2, 0.8, 0.2, 1)";
 
+        // Lock the current on-screen box first, then interpolate to the tab viewport.
+        peekPanel.getAnimations?.().forEach((animation) => animation.cancel());
         peekPanel.style.position = "fixed";
         peekPanel.style.left = `${currentRect.left}px`;
         peekPanel.style.top = `${currentRect.top}px`;
         peekPanel.style.width = `${currentRect.width}px`;
         peekPanel.style.height = `${currentRect.height}px`;
         peekPanel.style.margin = "0";
+        peekPanel.style.right = "auto";
+        peekPanel.style.bottom = "auto";
+        peekPanel.style.transform = "none";
         peekPanel.style.transition = "none";
         void peekPanel.offsetWidth;
-        peekPanel.style.transition = "width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), left 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)";
+        peekPanel.style.transition =
+          [
+            `left ${expandDurationMs}ms ${easing}`,
+            `top ${expandDurationMs}ms ${easing}`,
+            `width ${expandDurationMs}ms ${easing}`,
+            `height ${expandDurationMs}ms ${easing}`,
+          ].join(", ");
         requestAnimationFrame(() => {
-          peekPanel.style.width = `${targetWidth}px`;
-          peekPanel.style.left = `${targetLeft}px`;
+          peekPanel.style.left = `${targetRect.left}px`;
+          peekPanel.style.top = `${targetRect.top}px`;
+          peekPanel.style.width = `${targetRect.width}px`;
+          peekPanel.style.height = `${targetRect.height}px`;
         });
       }
-
-      setTimeout(() => overlay.style.opacity = "1", 10);
 
       chrome.tabs.create({ url: url, active: true }, async (tab) => {
         if (tab?.id) {
           await this.waitForTabComplete(tab.id);
         }
-        setTimeout(() => {
-          this.dismissPeekInstant(webviewId); // This directly uses disposePeek now and cleans the runtime tab
-        }, 120);
-
-        setTimeout(() => {
-          if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-        }, 100);
+        this.dismissPeekInstant(webviewId);
       });
     }
 
     async openInSplitView(webviewId) {
       const url = this.getPeekUrl(webviewId);
       if (!url) return;
+      const data = this.webviews.get(webviewId);
+      if (data) {
+        data.disableSourceCloseAnimation = true;
+      }
 
       try {
         const [currentTab] = await this.queryTabs({ active: true, currentWindow: true });
@@ -1581,22 +1807,27 @@
         });
         if (!newTab?.id) return;
 
+        // Remove the peek as soon as the split tab exists; the tiling metadata can finish in background.
+        this.dismissPeekInstant(webviewId);
+
+        const tilingUpdates = [];
         if (!existingTiling) {
-          await this.updateTabVivExtData(currentFresh.id, (viv) => ({
+          tilingUpdates.push(this.updateTabVivExtData(currentFresh.id, (viv) => ({
             ...viv,
             tiling: { id: tileId, index: 0, layout, type: "selection" },
-          }));
+          })));
         }
 
-        await this.updateTabVivExtData(newTab.id, (viv) => ({
+        tilingUpdates.push(this.updateTabVivExtData(newTab.id, (viv) => ({
           ...viv,
           tiling: { id: tileId, index: nextIndex, layout, type: "selection" },
-        }));
+        })));
+        await Promise.all(tilingUpdates);
 
-        await this.updateTab(currentFresh.id, { active: true, highlighted: true });
-        await this.updateTab(newTab.id, { highlighted: true });
-
-        this.dismissPeekInstant(webviewId); // This directly uses disposePeek now and cleans the runtime tab
+        await Promise.all([
+          this.updateTab(currentFresh.id, { active: true, highlighted: true }),
+          this.updateTab(newTab.id, { highlighted: true }),
+        ]);
       } catch (error) {
         console.error(DEBUG.prefix, "openInSplitView failed", { webviewId, url, error });
       }
@@ -1681,6 +1912,8 @@
     #messageListener = null;
     #beforeUnloadListener = null;
     #styleElement = null;
+    #hiddenPeekSourceLink = null;
+    #hiddenPeekSourceToken = null;
 
     constructor(fromPanel, config) {
       this.fromPanel = fromPanel;
@@ -1709,10 +1942,24 @@
 
       this.#initialize();
 
-      this.#messageListener = (message) => {
+      this.#messageListener = (message, _sender, sendResponse) => {
         if (message.type === "peek-closed") {
           this.isLongPress = false;
+          this.#restorePeekSourceLink();
           this.#releasePointerSuppression();
+          return;
+        }
+
+        if (message.type === "peek-source-link-state") {
+          this.#setPeekSourceLinkVisibility(message.sourceToken, message.hidden);
+          return;
+        }
+
+        if (message.type === "peek-source-rect-request") {
+          const rect = this.#getPeekSourceRect(message.sourceToken);
+          if (rect) {
+            sendResponse({ rect });
+          }
         }
       };
       chrome.runtime.onMessage.addListener(this.#messageListener);
@@ -1745,6 +1992,7 @@
       if (this.#styleElement && this.#styleElement.parentNode) {
         this.#styleElement.parentNode.removeChild(this.#styleElement);
       }
+      this.#restorePeekSourceLink();
     }
 
     #releasePointerSuppression() {
@@ -1882,18 +2130,100 @@
       return targetArea > linkArea ? targetRect : fallbackRect;
     }
 
+    #ensurePeekSourceToken(link) {
+      if (!link) return "";
+      if (!link.dataset.arcpeekSourceToken) {
+        const token =
+          typeof crypto?.randomUUID === "function"
+            ? crypto.randomUUID()
+            : `arcpeek-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+        link.dataset.arcpeekSourceToken = token;
+      }
+      return link.dataset.arcpeekSourceToken;
+    }
+
+    #getPeekSourceElement(sourceToken) {
+      if (!sourceToken) return null;
+      if (
+        this.#hiddenPeekSourceToken === sourceToken &&
+        this.#hiddenPeekSourceLink?.isConnected
+      ) {
+        return this.#hiddenPeekSourceLink;
+      }
+      return document.querySelector(
+        `[data-arcpeek-source-token="${sourceToken}"]`
+      );
+    }
+
+    #setPeekSourceLinkVisibility(sourceToken, hidden) {
+      if (!sourceToken) return;
+      const link = this.#getPeekSourceElement(sourceToken);
+      if (!link) return;
+
+      if (hidden) {
+        if (
+          this.#hiddenPeekSourceLink &&
+          this.#hiddenPeekSourceLink !== link
+        ) {
+          this.#restorePeekSourceLink();
+        }
+        link.classList.add("arcpeek-source-hidden");
+        this.#hiddenPeekSourceLink = link;
+        this.#hiddenPeekSourceToken = sourceToken;
+        return;
+      }
+
+      link.classList.remove("arcpeek-source-hidden");
+      if (this.#hiddenPeekSourceToken === sourceToken) {
+        this.#hiddenPeekSourceLink = null;
+        this.#hiddenPeekSourceToken = null;
+      }
+    }
+
+    #restorePeekSourceLink() {
+      if (this.#hiddenPeekSourceLink?.isConnected) {
+        this.#hiddenPeekSourceLink.classList.remove("arcpeek-source-hidden");
+      }
+      this.#hiddenPeekSourceLink = null;
+      this.#hiddenPeekSourceToken = null;
+    }
+
+    #getPeekSourceRect(sourceToken) {
+      const link = this.#getPeekSourceElement(sourceToken);
+      const rect = link?.getBoundingClientRect?.();
+      if (!rect?.width || !rect?.height) return null;
+      return {
+        left: rect.left,
+        top: rect.top,
+        width: rect.width,
+        height: rect.height,
+      };
+    }
+
     #recordLinkSnapshot(event, link = this.#getLinkElement(event)) {
       if (!link) return null;
 
       const recordTarget = this.#getEventRecordTarget(event);
       const rect = this.#getPreviewRect(recordTarget, link);
       if (!rect) return null;
+      const linkRect = link.getBoundingClientRect();
+      const targetRect =
+        recordTarget && typeof recordTarget.getBoundingClientRect === "function"
+          ? recordTarget.getBoundingClientRect()
+          : null;
+      const sourceElement =
+        targetRect &&
+        targetRect.width * targetRect.height > linkRect.width * linkRect.height
+          ? recordTarget
+          : link;
 
       const visualViewport = window.visualViewport;
       const computed = window.getComputedStyle(link);
       const parentComputed = window.getComputedStyle(link.parentElement || link);
+      const sourceToken = this.#ensurePeekSourceToken(sourceElement);
       const snapshot = {
         href: link.href,
+        sourceToken,
         left: rect.left,
         top: rect.top,
         width: rect.width,
@@ -1940,6 +2270,7 @@
             : null;
         const rect = cachedRect || this.#recordLinkSnapshot(event, link);
         this.#sendPeekMessage(link.href, {
+          sourceToken: rect.sourceToken,
           left: rect.left,
           top: rect.top,
           width: rect.width,
@@ -2002,6 +2333,12 @@
                     transition:
                         transform 55ms linear,
                         opacity 55ms linear;
+                }
+
+                .arcpeek-source-hidden {
+                    opacity: 0 !important;
+                    transition: opacity 120ms linear !important;
+                    pointer-events: none !important;
                 }
             `;
       const mountStyle = () => {
