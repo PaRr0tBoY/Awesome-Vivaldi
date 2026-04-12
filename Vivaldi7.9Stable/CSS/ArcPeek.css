@@ -95,6 +95,17 @@ body.peek-open #browser #webpage-stack {
   right: 0;
   bottom: 0;
   left: 0;
+  border-radius: var(--radius);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.peek-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
   background:
     radial-gradient(
       circle at var(--peek-backdrop-origin-x, 50%) var(--peek-backdrop-origin-y, 20%),
@@ -103,212 +114,144 @@ body.peek-open #browser #webpage-stack {
       rgba(0, 0, 0, 0) 48%
     ),
     rgba(8, 12, 18, 0.3);
-  border-radius: var(--radius);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--peek-backdrop-duration, 320ms)
+    cubic-bezier(0.16, 0.88, 0.22, 1);
+}
+
+.peek-container.open::before {
+  opacity: 1;
+}
+
+.peek-container.closing::before {
+  opacity: 0;
+}
+
+.peek-container .peek-panel {
+  position: fixed;
+  z-index: 1;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: calc(var(--radius) * 1.05);
+  box-shadow:
+    0 28px 80px rgba(0, 0, 0, 0.38),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
+  background: color-mix(in srgb, var(--colorBg) 92%, black 8%);
+  transition:
+    background 0.18s ease,
+    box-shadow 0.18s ease,
+    opacity 0.18s ease;
+  margin: 0;
+  transform-origin: top left;
+
+  &.preview-animating {
+    background: color-mix(in srgb, var(--colorBg) 42%, transparent);
+    box-shadow:
+      0 18px 44px rgba(0, 0, 0, 0.18),
+      0 0 0 1px rgba(255, 255, 255, 0.03);
+  }
+
+  &.preview-closing {
+    background: transparent;
+    box-shadow: none;
+  }
+
+  webview {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+    border-radius: var(--radius);
+  }
+
+  &:has(
+      webview[src^="https://app.web-highlights.com/reader/open-website-in-reader-mode"]
+    )
+    .reader-view-toggle {
+    background-color: var(--colorBgAlphaHeavy);
+    border-color: var(--colorBgDarker);
+  }
+}
+
+.peek-container .peek-source-preview {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: var(--preview-fg, rgba(18, 18, 18, 0.92));
+  background: var(--preview-bg, rgba(255, 255, 255, 0.1));
+  border-radius: inherit;
+}
 
-  .peek-panel {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    border-radius: calc(var(--radius) * 1.05);
-    box-shadow:
-      0 28px 80px rgba(0, 0, 0, 0.38),
-      0 0 0 1px rgba(255, 255, 255, 0.06);
-    background: color-mix(in srgb, var(--colorBg) 92%, black 8%);
-    transition:
-      background 0.18s ease,
-      box-shadow 0.18s ease,
-      backdrop-filter 0.18s ease;
+.peek-container .peek-panel.preview-closing .peek-source-preview {
+  background: transparent;
+}
 
-    &.preview-pending {
-      background:
-        linear-gradient(
-          180deg,
-          rgba(255, 255, 255, 0.12),
-          rgba(255, 255, 255, 0.05) 28%,
-          rgba(255, 255, 255, 0.02) 100%
-        ),
-        rgba(10, 16, 24, 0.08);
-      backdrop-filter: blur(18px) saturate(1.15);
-      box-shadow:
-        inset 0 0 0 1px rgba(255, 255, 255, 0.08),
-        0 28px 80px rgba(0, 0, 0, 0.22);
-    }
+.peek-container .peek-source-preview-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  flex: 0 0 auto;
+  opacity: 1;
+  border-radius: inherit;
+  object-fit: contain;
+  object-position: center;
+}
 
-    webview {
-      position: relative;
-      flex: 1;
-      overflow: hidden;
-      border-radius: var(--radius);
-    }
+.peek-container .peek-panel.preview-closing .peek-source-preview-image {
+  object-fit: fill;
+}
 
-    &:has(
-        webview[src^="https://app.web-highlights.com/reader/open-website-in-reader-mode"]
-      )
-      .reader-view-toggle {
-      background-color: var(--colorBgAlphaHeavy);
-      border-color: var(--colorBgDarker);
-    }
-  }
+.peek-container .peek-sidebar-button {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.92);
+  background: color-mix(in srgb, var(--colorBg) 68%, transparent);
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.16),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  transition:
+    transform 0.18s ease,
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
 
-  .peek-source-preview {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
-    max-height: 100%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    z-index: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    color: var(--preview-fg, rgba(18, 18, 18, 0.92));
-    background: var(--preview-bg, rgba(255, 255, 255, 0.94));
-    border-radius: inherit;
-    box-shadow:
-      0 10px 28px rgba(0, 0, 0, 0.18),
-      0 0 0 1px var(--preview-border-color, rgba(255, 255, 255, 0.08));
-    transition:
-      opacity 0.18s ease,
-      background-color 0.18s ease,
-      box-shadow 0.18s ease,
-      backdrop-filter 0.18s ease;
-  }
+.peek-container .peek-sidebar-button svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
 
-  .peek-source-preview-image {
-    width: 100%;
-    max-width: 100%;
-    max-height: 100%;
-    height: 100%;
-    object-fit: fill;
-    display: block;
-    flex: 0 0 auto;
-    opacity: 1;
-  }
+.peek-container .peek-sidebar-button:hover {
+  transform: scale(1.08);
+  background: color-mix(in srgb, var(--colorBgIntense) 82%, white 18%);
+}
 
-  .peek-source-preview.is-placeholder {
-    background:
-      linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.04),
-        rgba(255, 255, 255, 0.015) 35%,
-        rgba(255, 255, 255, 0.005) 100%
-      );
-    backdrop-filter: blur(14px) saturate(1.08);
-    box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.05),
-      0 8px 22px rgba(0, 0, 0, 0.08);
-  }
+.peek-container .peek-sidebar-button.close-button:hover {
+  background: rgb(220, 53, 69);
+  color: white;
+}
 
-  .peek-source-preview.is-placeholder .peek-source-preview-label {
-    opacity: 0;
-  }
-
-  .peek-source-preview.is-placeholder .peek-source-preview-sheen {
-    opacity: 0.22;
-  }
-
-  .peek-source-preview.has-preview-image {
-    background: var(--preview-bg, rgba(255, 255, 255, 0.94));
-    box-shadow:
-      0 10px 28px rgba(0, 0, 0, 0.18),
-      0 0 0 1px var(--preview-border-color, rgba(255, 255, 255, 0.08));
-  }
-
-  .peek-source-preview.has-preview-image .peek-source-preview-image {
-    opacity: 1;
-  }
-
-  .peek-source-preview.has-preview-image .peek-source-preview-sheen {
-    opacity: 0.28;
-  }
-
-  .peek-source-preview-sheen {
-    position: absolute;
-    inset: 0;
-    background:
-      linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.24),
-        rgba(255, 255, 255, 0.08) 26%,
-        rgba(255, 255, 255, 0) 68%
-      );
-    pointer-events: none;
-  }
-
-  .peek-source-preview-label {
-    position: relative;
-    padding: 0 12px;
-    width: 100%;
-    font-size: var(--ghost-font-size, 14px);
-    font-weight: var(--preview-font-weight, 600);
-    color: inherit;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .peek-source-preview.has-preview-image .peek-source-preview-label {
-    opacity: 0;
-  }
-
-  .peek-source-preview.has-preview-image .peek-source-preview-sheen {
-    opacity: 0;
-  }
-
-  .peek-sidebar-button {
-    width: 38px;
-    height: 38px;
-    border: 0;
-    border-radius: 999px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: rgba(255, 255, 255, 0.92);
-    background: color-mix(in srgb, var(--colorBg) 68%, transparent);
-    box-shadow:
-      0 8px 18px rgba(0, 0, 0, 0.16),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(12px);
-    transition:
-      transform 0.18s ease,
-      background-color 0.18s ease,
-      color 0.18s ease;
-  }
-
-  .peek-sidebar-button svg {
-    width: 16px;
-    height: 16px;
-    fill: currentColor;
-  }
-
-  .peek-sidebar-button:hover {
-    transform: scale(1.08);
-    background: color-mix(in srgb, var(--colorBgIntense) 82%, white 18%);
-  }
-
-  .peek-sidebar-button.close-button:hover {
-    background: rgb(220, 53, 69);
-    color: white;
-  }
-
-  .peek-panel + .peek-sidebar-controls {
-    position: fixed;
-    top: calc(var(--peek-panel-top, 76px) + 10px);
-    left: calc(var(--peek-panel-right, 1180px) + 8px);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 0;
-    width: 38px;
-    z-index: 4;
-  }
+.peek-container .peek-panel + .peek-sidebar-controls {
+  position: fixed;
+  top: calc(var(--peek-panel-top, 76px) + 10px);
+  left: calc(var(--peek-panel-right, 1180px) + 8px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0;
+  width: 38px;
+  z-index: 4;
 }

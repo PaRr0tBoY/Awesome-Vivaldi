@@ -24,28 +24,29 @@
     rightClickHoldDelay: 200,
   };
 
-  setTimeout(function waitPeek() {
-    const browser = document.getElementById("browser");
-    if (!browser) {
-      return setTimeout(waitPeek, 300);
-    }
-    new PeekMod();
-  }, 300);
-
   class PeekMod {
     ARC_CONFIG = Object.freeze({
       steps: 36,
       maxArcHeight: 25,
       arcHeightRatio: 0.2,
-      glanceAnimationDuration: 320,
-      previewSwapDeadline: 100,
-      openingPreviewRemoveLeadTime: 55,
-      closingPreviewMountDelay: 75,
+      glanceOpenAnimationDuration: 320,
+      glanceCloseAnimationDuration: 320,
+      previewFadeInRatio: 0.25,
+      previewFadeOutDelayRatio: 0,
+      previewFadeOutRatio: 0.25,
+      previewRevealDelayRatio: 0,
+      previewRevealRatio: 0,
+      contentHideDelayRatio: 0,
+      contentHideRatio: 0,
       previewCacheLimit: 48,
+      previewCacheTtlMs: 10 * 60 * 1000,
+      lastRecordedLinkTtlMs: 2000,
+      syncPreviewBeforeOpen: true,
     });
     webviews = new Map();
     previewCache = new Map();
     previewCaptureTasks = new Map();
+    lastRecordedLinkData = null;
     closeShortcutGuard = null;
     postClosePointerGuard = null;
     iconUtils = new IconUtils();
@@ -189,12 +190,8 @@
         return;
       }
 
-      const hasClosingPreview = !!data.sourcePreviewUrl;
-      if (hasClosingPreview) {
-        this.hidePeekContent(panel);
-      } else {
-        this.showPeekContent(panel);
-      }
+      data.closingMode = data.previewAssetUrl ? "preview" : "live";
+      this.showPeekContent(panel);
       container.classList.remove("open");
       container.classList.add("closing");
       container.style.setProperty(
@@ -202,20 +199,21 @@
         `${this.getBackdropDuration("closing")}ms`
       );
 
-      if (hasClosingPreview) {
-        data.timers.closingPreviewMount = window.setTimeout(() => {
-          if (!panel.isConnected || !container.classList.contains("closing")) return;
-          this.mountPreviewLayer(panel, data.sourcePreviewUrl, data.linkRect);
-        }, this.ARC_CONFIG.closingPreviewMountDelay);
-      } else if (data.previewCapturePromise) {
-        data.previewCapturePromise
-          .then((latePreviewUrl) => {
-            if (!latePreviewUrl) return;
-            if (!panel.isConnected || !container.classList.contains("closing")) return;
-            data.sourcePreviewUrl = latePreviewUrl;
-            this.mountPreviewLayer(panel, latePreviewUrl, data.linkRect);
-          })
-          .catch(() => {});
+      if (data.closingMode === "preview") {
+        const previewLayer = this.mountPreviewLayer(
+          panel,
+          data.previewAssetUrl,
+          data.linkRect
+        );
+        await this.waitForPreviewLayer(previewLayer);
+        this.setPreviewAnimationState(panel, true);
+        this.setPreviewClosingState(panel, true);
+        this.preparePreviewLayerForClosing(panel);
+        this.animatePreviewLayerIn(panel);
+        this.animatePeekContentOut(panel, {
+          delayRatio: this.ARC_CONFIG.contentHideDelayRatio,
+          durationRatio: this.ARC_CONFIG.contentHideRatio,
+        });
       }
 
       const sourceRect = data.sourceRect || this.resolveSourceRect(data.linkRect);
@@ -553,6 +551,13 @@
     openPeek(linkUrl, fromPanel = undefined, rect = undefined, meta = undefined) {
       this.reconcilePeeks();
       if (this.webviews.size > 0) return;
+      if (rect?.href || linkUrl) {
+        this.lastRecordedLinkData = {
+          ...rect,
+          href: rect?.href || linkUrl,
+          recordedAt: rect?.recordedAt || Date.now(),
+        };
+      }
 
       chrome.windows.getLastFocused((window) => {
         if (
@@ -584,18 +589,29 @@
         fromPanel = Array.from(this.webviews.values()).at(-1).fromPanel;
       }
 
+      const effectiveLinkRect = linkRect || this.getRecentLinkSnapshot(linkUrl);
+      const previewCacheKey = this.getPreviewCacheKey(linkUrl, effectiveLinkRect);
+      let previewAsset = this.getCachedPreviewAsset(previewCacheKey);
+
+      if (
+        !previewAsset &&
+        !fromPanel &&
+        effectiveLinkRect &&
+        this.ARC_CONFIG.syncPreviewBeforeOpen
+      ) {
+        previewAsset = await this.startPreviewCapture(previewCacheKey, effectiveLinkRect, fromPanel);
+      }
+
       const activeWebview = document.querySelector(".active.visible.webpageview webview");
       const tabId = !fromPanel && activeWebview ? Number(activeWebview.tab_id) : null;
-      const previewCacheKey = this.getPreviewCacheKey(linkUrl, linkRect);
-      const cachedPreviewUrl = this.getCachedPreviewUrl(previewCacheKey);
 
       this.webviews.set(webviewId, {
         divContainer: peekContainer,
         webview: webview,
         fromPanel: fromPanel,
         tabId: tabId,
-        linkRect: linkRect,
-        sourcePreviewUrl: cachedPreviewUrl,
+        linkRect: effectiveLinkRect,
+        previewAssetUrl: previewAsset?.dataUrl || null,
         sourceRect: null,
         isDisposing: false,
         timers: {},
@@ -604,8 +620,9 @@
         backdropCleanup: null,
         previewCacheKey: previewCacheKey,
         previewCapturePromise: null,
-        openingCompleted: false,
-        openingContentRevealStarted: false,
+        openingMode: previewAsset?.dataUrl ? "preview" : "live",
+        openingState: "starting",
+        closingMode: null,
       });
 
       if (!fromPanel) {
@@ -623,6 +640,7 @@
       }
 
       peekPanel.setAttribute("class", "peek-panel");
+      peekPanel.removeAttribute("data-has-finished-animation");
       peekContent.setAttribute("class", "peek-content");
 
       if (activeWebview) {
@@ -634,13 +652,13 @@
         peekPanel.style.width = targetWidth + "px";
         peekPanel.style.height = targetHeight + "px";
 
-        if (linkRect) {
-          const startX = rect.left + linkRect.left + linkRect.width / 2;
-          const startY = rect.top + linkRect.top + linkRect.height / 2;
+        if (effectiveLinkRect) {
+          const startX = rect.left + effectiveLinkRect.left + effectiveLinkRect.width / 2;
+          const startY = rect.top + effectiveLinkRect.top + effectiveLinkRect.height / 2;
           peekPanel.style.setProperty("--start-x", `${startX}px`);
           peekPanel.style.setProperty("--start-y", `${startY}px`);
-          peekPanel.style.setProperty("--start-width", `${linkRect.width}px`);
-          peekPanel.style.setProperty("--start-height", `${linkRect.height}px`);
+          peekPanel.style.setProperty("--start-width", `${effectiveLinkRect.width}px`);
+          peekPanel.style.setProperty("--start-height", `${effectiveLinkRect.height}px`);
           peekPanel.style.setProperty("--end-width", `${targetWidth}px`);
           peekPanel.style.setProperty("--end-height", `${targetHeight}px`);
         }
@@ -743,14 +761,15 @@
 
       document.querySelector("#browser").appendChild(peekContainer);
 
-      const geometry = this.applyPeekAnimationGeometry(peekContainer, peekPanel, linkRect);
+      const geometry = this.applyPeekAnimationGeometry(peekContainer, peekPanel, effectiveLinkRect);
       this.webviews.get(webviewId).sourceRect = geometry?.sourceRect || null;
-      if (cachedPreviewUrl) {
-        this.mountPreviewLayer(peekPanel, cachedPreviewUrl, linkRect);
+      if (previewAsset?.dataUrl) {
+        this.mountPreviewLayer(peekPanel, previewAsset.dataUrl, effectiveLinkRect);
+        this.setPreviewAnimationState(peekPanel, true);
+        this.preparePeekContentForPreview(peekPanel);
       } else {
-        this.setPreviewPending(peekPanel, true);
+        this.showPeekContent(peekPanel);
       }
-      this.hidePeekContent(peekPanel);
       
       peekContainer.style.setProperty("--peek-backdrop-duration", `${this.getBackdropDuration("opening")}ms`);
       
@@ -759,15 +778,15 @@
         peekContainer.classList.add("open");
       });
       
-      const sourceRect = this.webviews.get(webviewId).sourceRect || this.resolveSourceRect(linkRect);
-      const openingStartedAt = performance.now();
+      const sourceRect = this.webviews.get(webviewId).sourceRect || this.resolveSourceRect(effectiveLinkRect);
       
       this.startPeekNavigation(webview, webviewId);
 
-      if (cachedPreviewUrl) {
-        this.webviews.get(webviewId).openingContentRevealStarted = true;
+      if (previewAsset?.dataUrl) {
         this.animatePeekContentIn(peekPanel);
+        this.animatePreviewLayerOut(peekPanel);
       }
+      this.webviews.get(webviewId).openingState = "animating";
       
       this.animatePeekMotion(peekPanel, "opening", sourceRect)
         .then(() => {
@@ -778,7 +797,7 @@
           this.finalizePeekOpening(peekPanel, webviewId);
         });
         
-      this.captureAndSwapPreview(peekPanel, webviewId, linkRect, fromPanel, openingStartedAt);
+      this.captureAndStorePreview(webviewId, effectiveLinkRect, fromPanel);
 
       if (this.hasPeekCSS) {
         document.body.classList.add("peek-open");
@@ -787,93 +806,6 @@
 
     getActivePageWebview() {
       return document.querySelector(".active.visible.webpageview webview");
-    }
-
-    normalizeCaptureRect(rect, bounds = {}) {
-      if (!rect) return null;
-
-      const viewportWidth = Math.floor(bounds.width || window.innerWidth);
-      const viewportHeight = Math.floor(bounds.height || window.innerHeight);
-
-      const left = Math.max(0, Math.floor(rect.left));
-      const top = Math.max(0, Math.floor(rect.top));
-      const right = Math.min(viewportWidth, Math.ceil(rect.left + rect.width));
-      const bottom = Math.min(viewportHeight, Math.ceil(rect.top + rect.height));
-      const width = Math.max(1, right - left);
-      const height = Math.max(1, bottom - top);
-
-      if (!Number.isFinite(width) || !Number.isFinite(height)) return null;
-
-      return {
-        rect: { left, top, width, height },
-        bounds: { viewportWidth, viewportHeight },
-      };
-    }
-
-    buildCaptureCandidates(linkRect) {
-      if (!linkRect) return [];
-
-      const activeWebview = this.getActivePageWebview();
-      const webviewRect = activeWebview?.getBoundingClientRect?.();
-      const contentViewportWidth = Math.floor(
-        linkRect.viewportWidth || activeWebview?.clientWidth || webviewRect?.width || window.innerWidth
-      );
-      const contentViewportHeight = Math.floor(
-        linkRect.viewportHeight || activeWebview?.clientHeight || webviewRect?.height || window.innerHeight
-      );
-      const dpr = Number(linkRect.devicePixelRatio || window.devicePixelRatio || 1);
-      const vvScale = Number(linkRect.visualViewportScale || 1);
-      const vvOffsetLeft = Number(linkRect.visualViewportOffsetLeft || 0);
-      const vvOffsetTop = Number(linkRect.visualViewportOffsetTop || 0);
-
-      const candidates = [
-        {
-          basis: "content-viewport",
-          candidate: this.normalizeCaptureRect(
-            { left: linkRect.left, top: linkRect.top, width: linkRect.width, height: linkRect.height },
-            { width: contentViewportWidth, height: contentViewportHeight }
-          ),
-        },
-        {
-          basis: "content-viewport+visualViewportOffset",
-          candidate: this.normalizeCaptureRect(
-            { left: linkRect.left + vvOffsetLeft, top: linkRect.top + vvOffsetTop, width: linkRect.width, height: linkRect.height },
-            { width: contentViewportWidth, height: contentViewportHeight }
-          ),
-        },
-        {
-          basis: "content-viewport*dpr",
-          candidate: this.normalizeCaptureRect(
-            { left: linkRect.left * dpr, top: linkRect.top * dpr, width: linkRect.width * dpr, height: linkRect.height * dpr },
-            { width: contentViewportWidth * dpr, height: contentViewportHeight * dpr }
-          ),
-        },
-        {
-          basis: "content-viewport*visualViewportScale",
-          candidate: this.normalizeCaptureRect(
-            { left: linkRect.left * vvScale, top: linkRect.top * vvScale, width: linkRect.width * vvScale, height: linkRect.height * vvScale },
-            { width: contentViewportWidth * vvScale, height: contentViewportHeight * vvScale }
-          ),
-        },
-      ];
-
-      if (webviewRect) {
-        candidates.push({
-          basis: "browser-ui-webview-offset",
-          candidate: this.normalizeCaptureRect(
-            { left: webviewRect.left + linkRect.left, top: webviewRect.top + linkRect.top, width: linkRect.width, height: linkRect.height },
-            { width: window.innerWidth, height: window.innerHeight }
-          ),
-        });
-      }
-
-      return candidates
-        .filter((candidate) => candidate.candidate?.rect)
-        .map((candidate) => ({
-          basis: candidate.basis,
-          rect: candidate.candidate.rect,
-          bounds: candidate.candidate.bounds,
-        }));
     }
 
     async isUsablePreviewUrl(url) {
@@ -957,24 +889,6 @@
       });
     }
 
-    captureTabArea(rect) {
-      return new Promise((resolve, reject) => {
-        if (!window.vivaldi || !vivaldi.thumbnails || typeof vivaldi.thumbnails.captureTab !== "function") {
-          reject(new Error("vivaldi.thumbnails.captureTab is unavailable"));
-          return;
-        }
-
-        const params = { rect, encodeFormat: "png", saveToDisk: false };
-        vivaldi.thumbnails.captureTab(0, params, (url) => {
-          if (chrome.runtime.lastError) {
-            reject(new Error(chrome.runtime.lastError.message));
-            return;
-          }
-          resolve(url || null);
-        });
-      });
-    }
-
     getPreviewCacheKey(linkUrl, linkRect) {
       const rawKey = typeof linkRect?.href === "string" && linkRect.href ? linkRect.href : linkUrl;
       if (typeof rawKey !== "string" || !rawKey) return null;
@@ -982,36 +896,70 @@
       try {
         const url = new URL(rawKey, window.location.href);
         url.hash = "";
-        return url.toString();
+        const text = String(linkRect?.preview?.text || "").replace(/\s+/g, " ").trim().slice(0, 120);
+        const left = Math.round(linkRect?.left || 0);
+        const top = Math.round(linkRect?.top || 0);
+        const width = Math.round(linkRect?.width || 0);
+        const height = Math.round(linkRect?.height || 0);
+        return `${url.toString()}|${text}|${left},${top},${width}x${height}`;
       } catch (error) {
-        return rawKey;
+        const text = String(linkRect?.preview?.text || "").replace(/\s+/g, " ").trim().slice(0, 120);
+        const left = Math.round(linkRect?.left || 0);
+        const top = Math.round(linkRect?.top || 0);
+        const width = Math.round(linkRect?.width || 0);
+        const height = Math.round(linkRect?.height || 0);
+        return `${rawKey}|${text}|${left},${top},${width}x${height}`;
       }
     }
 
-    getCachedPreviewUrl(cacheKey) {
-      if (!cacheKey || !this.previewCache.has(cacheKey)) return null;
-      const cachedPreviewUrl = this.previewCache.get(cacheKey);
-      this.previewCache.delete(cacheKey);
-      this.previewCache.set(cacheKey, cachedPreviewUrl);
-      return cachedPreviewUrl;
+    getRecentLinkSnapshot(linkUrl) {
+      const snapshot = this.lastRecordedLinkData;
+      if (!snapshot?.href) return null;
+      if (snapshot.href !== linkUrl) return null;
+      if (Date.now() - (snapshot.recordedAt || 0) > this.ARC_CONFIG.lastRecordedLinkTtlMs) return null;
+      return snapshot;
     }
 
-    storePreviewUrl(cacheKey, sourcePreviewUrl) {
-      if (!cacheKey || !sourcePreviewUrl) return;
+    getCachedPreviewAsset(cacheKey) {
+      if (!cacheKey || !this.previewCache.has(cacheKey)) return null;
+      const cachedPreviewAsset = this.previewCache.get(cacheKey);
+      if (!cachedPreviewAsset?.dataUrl) {
+        this.previewCache.delete(cacheKey);
+        return null;
+      }
+      if (Date.now() - cachedPreviewAsset.createdAt > this.ARC_CONFIG.previewCacheTtlMs) {
+        this.previewCache.delete(cacheKey);
+        return null;
+      }
+      this.previewCache.delete(cacheKey);
+      this.previewCache.set(cacheKey, cachedPreviewAsset);
+      return cachedPreviewAsset;
+    }
+
+    storePreviewAsset(cacheKey, sourcePreviewUrl, linkRect = null) {
+      if (!cacheKey || !sourcePreviewUrl) return null;
+      const previewAsset = {
+        dataUrl: sourcePreviewUrl,
+        createdAt: Date.now(),
+        width: Math.max(0, Math.round(linkRect?.width || 0)),
+        height: Math.max(0, Math.round(linkRect?.height || 0)),
+      };
       if (this.previewCache.has(cacheKey)) {
         this.previewCache.delete(cacheKey);
       }
-      this.previewCache.set(cacheKey, sourcePreviewUrl);
+      this.previewCache.set(cacheKey, previewAsset);
 
       while (this.previewCache.size > this.ARC_CONFIG.previewCacheLimit) {
         const oldestKey = this.previewCache.keys().next().value;
         if (!oldestKey) break;
         this.previewCache.delete(oldestKey);
       }
+      return previewAsset;
     }
 
     async captureSourcePreview(linkRect, fromPanel, cacheKey = null) {
       if (fromPanel) return null;
+      if (!linkRect) return null;
 
       const uiRect = this.buildUICaptureRect(linkRect);
       if (uiRect) {
@@ -1019,34 +967,19 @@
           const sourcePreviewUrl = await this.captureUIArea(uiRect);
           const usable = await this.isUsablePreviewUrl(sourcePreviewUrl);
           if (usable) {
-            this.storePreviewUrl(cacheKey, sourcePreviewUrl);
-            return sourcePreviewUrl;
+            return this.storePreviewAsset(cacheKey, sourcePreviewUrl, linkRect);
           }
         } catch (error) {
           debugLog("captureUI preview capture failed", error);
         }
       }
-
-      const candidates = this.buildCaptureCandidates(linkRect);
-      if (!candidates.length) return null;
-
-      for (const candidate of candidates) {
-        try {
-          const sourcePreviewUrl = await this.captureTabArea(candidate.rect);
-          const usable = await this.isUsablePreviewUrl(sourcePreviewUrl);
-          if (usable) {
-            this.storePreviewUrl(cacheKey, sourcePreviewUrl);
-            return sourcePreviewUrl;
-          }
-        } catch (error) {}
-      }
       return null;
     }
 
     startPreviewCapture(cacheKey, linkRect, fromPanel) {
-      const cachedPreviewUrl = this.getCachedPreviewUrl(cacheKey);
-      if (cachedPreviewUrl) {
-        return Promise.resolve(cachedPreviewUrl);
+      const cachedPreviewAsset = this.getCachedPreviewAsset(cacheKey);
+      if (cachedPreviewAsset) {
+        return Promise.resolve(cachedPreviewAsset);
       }
 
       if (cacheKey && this.previewCaptureTasks.has(cacheKey)) {
@@ -1071,14 +1004,14 @@
       if (!activeWebview) return null;
 
       const webviewRect = activeWebview.getBoundingClientRect();
-      const width = Math.max(linkRect.width || 0, 36);
-      const height = Math.max(linkRect.height || 0, 24);
+      const width = Math.max(linkRect.width || 0, 1);
+      const height = Math.max(linkRect.height || 0, 1);
 
       return {
-        left: webviewRect.left + linkRect.left,
-        top: webviewRect.top + linkRect.top,
-        width,
-        height,
+        left: Math.max(0, Math.round(webviewRect.left + linkRect.left)),
+        top: Math.max(0, Math.round(webviewRect.top + linkRect.top)),
+        width: Math.max(1, Math.round(width)),
+        height: Math.max(1, Math.round(height)),
       };
     }
 
@@ -1097,6 +1030,9 @@
 
       peekContainer.style.setProperty("--peek-panel-top", `${finalRect.top}px`);
       peekContainer.style.setProperty("--peek-panel-right", `${finalRect.right}px`);
+      peekPanel.style.left = `${finalRect.left}px`;
+      peekPanel.style.top = `${finalRect.top}px`;
+      peekPanel.style.transform = "translate(0, 0)";
       peekPanel.style.setProperty("--peek-translate-x", `${translateX}px`);
       peekPanel.style.setProperty("--peek-translate-y", `${translateY}px`);
       peekPanel.style.setProperty("--peek-scale-x", scaleX.toFixed(4));
@@ -1108,25 +1044,40 @@
       return { sourceRect, finalRect, backdropOriginX, backdropOriginY };
     }
 
+    captureAndStorePreview(webviewId, linkRect, fromPanel) {
+      const data = this.webviews.get(webviewId);
+      if (!data || data.previewAssetUrl || !linkRect) return;
+
+      data.previewCapturePromise = this.startPreviewCapture(data.previewCacheKey, linkRect, fromPanel);
+      data.previewCapturePromise
+        .then((previewAsset) => {
+          if (!previewAsset?.dataUrl) return;
+          const current = this.webviews.get(webviewId);
+          if (!current || current.isDisposing) return;
+          current.previewAssetUrl = previewAsset.dataUrl;
+        })
+        .catch((error) => {
+          debugLog("background preview capture failed", error);
+        });
+    }
+
     createPreviewLayer(sourcePreviewUrl, linkRect) {
-      const preview = linkRect?.preview || {};
       const previewLayer = document.createElement("div");
       const imageLayer = document.createElement("img");
-      const sheenLayer = document.createElement("div");
-      const labelLayer = document.createElement("div");
       const hasPreview = !!sourcePreviewUrl;
+      const previewWidth = Math.max(1, Math.round(linkRect?.width || 1));
+      const previewHeight = Math.max(1, Math.round(linkRect?.height || 1));
 
       previewLayer.className = "peek-source-preview";
       imageLayer.className = "peek-source-preview-image";
-      sheenLayer.className = "peek-source-preview-sheen";
-      labelLayer.className = "peek-source-preview-label";
-
-      previewLayer.style.setProperty("--preview-bg", preview.backgroundColor || "rgba(255,255,255,0.94)");
-      previewLayer.style.setProperty("--preview-fg", preview.color || "rgba(18,18,18,0.92)");
-      previewLayer.style.setProperty("--preview-border-color", preview.borderColor || "rgba(255,255,255,0.08)");
-      previewLayer.style.setProperty("--preview-font-weight", preview.fontWeight || "600");
-      previewLayer.classList.toggle("has-preview-image", hasPreview);
-      previewLayer.classList.toggle("is-placeholder", !hasPreview);
+      previewLayer.style.setProperty(
+        "--preview-bg",
+        hasPreview ? "transparent" : "rgba(255,255,255,0.1)"
+      );
+      previewLayer.style.setProperty("--preview-aspect-ratio", `${previewWidth} / ${previewHeight}`);
+      previewLayer.dataset.previewWidth = String(previewWidth);
+      previewLayer.dataset.previewHeight = String(previewHeight);
+      imageLayer.style.aspectRatio = `${previewWidth} / ${previewHeight}`;
       
       if (hasPreview) {
         imageLayer.src = sourcePreviewUrl;
@@ -1134,20 +1085,8 @@
         imageLayer.decoding = "sync";
       }
 
-      labelLayer.textContent = hasPreview ? "" : preview.text || "";
-      labelLayer.style.fontFamily = preview.fontFamily || "";
-      labelLayer.style.fontSize = preview.fontSize || "";
-      labelLayer.style.fontWeight = preview.fontWeight || "";
-      labelLayer.style.lineHeight = preview.lineHeight || "";
-
       previewLayer.appendChild(imageLayer);
-      previewLayer.appendChild(sheenLayer);
-      previewLayer.appendChild(labelLayer);
       return previewLayer;
-    }
-
-    setPreviewPending(peekPanel, isPending) {
-      peekPanel?.classList.toggle("preview-pending", !!isPending);
     }
 
     mountPreviewLayer(peekPanel, sourcePreviewUrl, linkRect) {
@@ -1159,92 +1098,45 @@
     }
 
     removePreviewLayer(peekPanel) {
-      peekPanel?.querySelector(".peek-source-preview")?.remove();
+      peekPanel?.querySelector(":scope > .peek-source-preview")?.remove();
+    }
+
+    async waitForPreviewLayer(previewLayer, timeoutMs = 120) {
+      const imageElement = previewLayer?.querySelector(
+        ".peek-source-preview-image"
+      );
+      if (!(imageElement instanceof HTMLImageElement) || !imageElement.src) return;
+
+      if (imageElement.complete && imageElement.naturalWidth > 0) return;
+
+      await Promise.race([
+        new Promise((resolve) => {
+          const finish = () => resolve();
+          imageElement.addEventListener("load", finish, { once: true });
+          imageElement.addEventListener("error", finish, { once: true });
+          if (typeof imageElement.decode === "function") {
+            imageElement.decode().then(finish).catch(finish);
+          }
+        }),
+        new Promise((resolve) => window.setTimeout(resolve, timeoutMs)),
+      ]);
     }
 
     finalizePeekOpening(peekPanel, webviewId) {
       const data = this.webviews.get(webviewId);
       if (data) {
-        data.openingCompleted = true;
+        data.openingState = "finished";
       }
+      peekPanel?.setAttribute("data-has-finished-animation", "true");
+      this.setPreviewAnimationState(peekPanel, false);
+      this.setPreviewClosingState(peekPanel, false);
       this.removePreviewLayer(peekPanel);
       this.showPeekContent(peekPanel);
-    }
-
-    scheduleOpeningPreviewRemoval(peekPanel, webviewId, openingStartedAt) {
-      const removeDelay = Math.max(
-        0,
-        this.getGlanceDuration("opening") - this.ARC_CONFIG.openingPreviewRemoveLeadTime - (performance.now() - openingStartedAt)
-      );
-
-      const data = this.webviews.get(webviewId);
-      if (data) {
-        data.timers.openingPreviewRemoval = window.setTimeout(() => {
-          if (!peekPanel?.isConnected) return;
-          this.removePreviewLayer(peekPanel);
-        }, removeDelay);
-      }
     }
 
     startPeekNavigation(webview, webviewId = "") {
       if (!webview || webview.src !== "about:blank" || !webview.dataset.pendingSrc) return;
       webview.src = webview.dataset.pendingSrc;
-    }
-
-    async captureAndSwapPreview(peekPanel, webviewId, linkRect, fromPanel, openingStartedAt) {
-      const data = this.webviews.get(webviewId);
-      if (!data) return;
-
-      if (data.sourcePreviewUrl) return;
-
-      data.previewCapturePromise = this.startPreviewCapture(data.previewCacheKey, linkRect, fromPanel);
-      const sourcePreviewUrl = await data.previewCapturePromise;
-      if (!sourcePreviewUrl) return;
-
-      data.sourcePreviewUrl = sourcePreviewUrl;
-      if (!peekPanel?.isConnected) return;
-      if (data.openingCompleted) return;
-
-      const elapsed = performance.now() - openingStartedAt;
-      if (elapsed > this.ARC_CONFIG.previewSwapDeadline) return;
-      if (data?.isDisposing) return;
-
-      const previewLayer = this.mountPreviewLayer(peekPanel, sourcePreviewUrl, linkRect);
-      await this.waitForPreviewLayer(previewLayer);
-      
-      if (!peekPanel?.isConnected || data?.isDisposing) return;
-      if (data.openingCompleted) {
-        this.removePreviewLayer(peekPanel);
-        return;
-      }
-
-      const elapsedAfterDecode = performance.now() - openingStartedAt;
-      if (elapsedAfterDecode > this.ARC_CONFIG.previewSwapDeadline) return;
-      if (!data.openingContentRevealStarted) {
-        data.openingContentRevealStarted = true;
-        this.animatePeekContentIn(peekPanel);
-      }
-    }
-
-    async waitForPreviewLayer(previewLayer) {
-      const imageElement = previewLayer?.querySelector(".peek-source-preview-image");
-      if (!(imageElement instanceof HTMLImageElement) || !imageElement.src) return;
-
-      try {
-        if (typeof imageElement.decode === "function") {
-          await imageElement.decode();
-          return;
-        }
-      } catch (error) {}
-
-      await new Promise((resolve) => {
-        if (imageElement.complete) {
-          resolve();
-          return;
-        }
-        imageElement.addEventListener("load", resolve, { once: true });
-        imageElement.addEventListener("error", resolve, { once: true });
-      });
     }
 
     hidePeekContent(peekPanel) {
@@ -1255,13 +1147,20 @@
       peekContent.style.opacity = "0";
     }
 
+    preparePeekContentForPreview(peekPanel) {
+      const peekContent = peekPanel?.querySelector(".peek-content");
+      if (!peekContent) return;
+      peekContent.getAnimations?.().forEach((animation) => animation.cancel());
+      peekContent.style.display = "";
+      peekContent.style.opacity = "0";
+    }
+
     showPeekContent(peekPanel) {
       const peekContent = peekPanel?.querySelector(".peek-content");
       if (!peekContent) return;
       peekContent.getAnimations?.().forEach((animation) => animation.cancel());
       peekContent.style.display = "";
       peekContent.style.opacity = "1";
-      this.setPreviewPending(peekPanel, false);
     }
 
     animatePeekContentIn(peekPanel) {
@@ -1274,9 +1173,8 @@
       peekContent.getAnimations().forEach((animation) => animation.cancel());
       peekContent.style.display = "";
       peekContent.style.opacity = "0";
-      this.setPreviewPending(peekPanel, false);
       const animation = peekContent.animate([{ opacity: 0 }, { opacity: 1 }], {
-        duration: this.getGlanceDuration("opening") / 4,
+        duration: this.getGlanceDuration("opening") * this.ARC_CONFIG.previewFadeInRatio,
         easing: "ease-in-out",
         fill: "forwards",
       });
@@ -1287,16 +1185,111 @@
       }).catch(() => {});
     }
 
-    animatePeekContentOut(peekPanel) {
+    animatePeekContentOut(
+      peekPanel,
+      { delayRatio = 0, durationRatio = 0 } = {}
+    ) {
       const peekContent = peekPanel?.querySelector(".peek-content");
       if (!peekContent || typeof peekContent.animate !== "function") {
         this.hidePeekContent(peekPanel);
         return;
       }
 
+      const duration = Math.max(
+        0,
+        this.getGlanceDuration("closing") * (durationRatio || this.ARC_CONFIG.contentHideRatio)
+      );
+      const delay = Math.max(
+        0,
+        this.getGlanceDuration("closing") * delayRatio
+      );
+
+      if (duration <= 0 && delay <= 0) {
+        this.hidePeekContent(peekPanel);
+        return;
+      }
+
       peekContent.getAnimations().forEach((animation) => animation.cancel());
-      peekContent.style.opacity = "0";
-      peekContent.style.display = "none";
+      const animation = peekContent.animate([{ opacity: 1 }, { opacity: 0 }], {
+        delay,
+        duration: Math.max(1, duration),
+        easing: "ease-out",
+        fill: "forwards",
+      });
+
+      animation.finished.then(() => {
+        if (!peekPanel?.isConnected) return;
+        peekContent.style.opacity = "0";
+        peekContent.style.display = "none";
+      }).catch(() => {});
+    }
+
+    animatePreviewLayerOut(peekPanel) {
+      const previewLayer = peekPanel?.querySelector(":scope > .peek-source-preview");
+      if (!previewLayer) return;
+      if (typeof previewLayer.animate !== "function") {
+        previewLayer.style.opacity = "0";
+        return;
+      }
+
+      previewLayer.getAnimations?.().forEach((animation) => animation.cancel());
+      previewLayer.style.opacity = "1";
+      const animation = previewLayer.animate([{ opacity: 1 }, { opacity: 0 }], {
+        delay: this.getGlanceDuration("opening") * this.ARC_CONFIG.previewFadeOutDelayRatio,
+        duration: this.getGlanceDuration("opening") * this.ARC_CONFIG.previewFadeOutRatio,
+        easing: "ease-out",
+        fill: "forwards",
+      });
+
+      animation.finished.then(() => {
+        if (!previewLayer.isConnected) return;
+        previewLayer.style.opacity = "0";
+      }).catch(() => {});
+    }
+
+    preparePreviewLayerForClosing(peekPanel) {
+      const previewLayer = peekPanel?.querySelector(":scope > .peek-source-preview");
+      if (!previewLayer) return;
+      previewLayer.getAnimations?.().forEach((animation) => animation.cancel());
+      previewLayer.style.opacity = "1";
+    }
+
+    animatePreviewLayerIn(peekPanel) {
+      const previewLayer = peekPanel?.querySelector(":scope > .peek-source-preview");
+      if (!previewLayer) return;
+      if (this.ARC_CONFIG.previewRevealRatio <= 0) {
+        previewLayer.getAnimations?.().forEach((animation) => animation.cancel());
+        previewLayer.style.opacity = "1";
+        return;
+      }
+      if (typeof previewLayer.animate !== "function") {
+        previewLayer.style.opacity = "1";
+        return;
+      }
+
+      previewLayer.getAnimations?.().forEach((animation) => animation.cancel());
+      previewLayer.style.opacity = "1";
+      const animation = previewLayer.animate([{ opacity: 1 }, { opacity: 1 }], {
+        delay: this.getGlanceDuration("closing") * this.ARC_CONFIG.previewRevealDelayRatio,
+        duration: this.getGlanceDuration("closing") * this.ARC_CONFIG.previewRevealRatio,
+        easing: "ease-out",
+        fill: "forwards",
+      });
+
+      animation.finished.then(() => {
+        if (!previewLayer.isConnected) return;
+        previewLayer.style.opacity = "1";
+      }).catch(() => {});
+    }
+
+    setPreviewAnimationState(peekPanel, enabled) {
+      if (!peekPanel) return;
+      peekPanel.classList.toggle("preview-animating", !!enabled);
+    }
+
+    setPreviewClosingState(peekPanel, enabled) {
+      if (!peekPanel) return;
+      peekPanel.classList.toggle("preview-closing", !!enabled);
     }
 
     easeOutBack(x) {
@@ -1325,12 +1318,22 @@
       const startCenterY = startRect.top + startRect.height / 2;
       const endCenterX = endRect.left + endRect.width / 2;
       const endCenterY = endRect.top + endRect.height / 2;
+      const startRadius =
+        direction === "opening"
+          ? Math.min(Math.max(startRect.height / 2, 8), 18)
+          : finalRadius;
+      const endRadius =
+        direction === "opening"
+          ? finalRadius
+          : Math.min(Math.max(endRect.height / 2, 8), 18);
       const distanceX = endCenterX - startCenterX;
       const distanceY = endCenterY - startCenterY;
       const distance = Math.hypot(distanceX, distanceY);
       const arcHeight = Math.min(distance * this.ARC_CONFIG.arcHeightRatio, this.ARC_CONFIG.maxArcHeight);
       const arcDirection = startCenterY > endCenterY ? -1 : 1;
-      const easing = direction === "opening" ? this.easeOutBack.bind(this) : this.easeOutCubic.bind(this);
+      const easing = direction === "opening"
+        ? this.easeOutBack.bind(this)
+        : this.easeOutCubic.bind(this);
       const frames = [];
 
       for (let i = 0; i <= this.ARC_CONFIG.steps; i++) {
@@ -1342,39 +1345,51 @@
         const centerY = startCenterY + distanceY * eased + arcDirection * arcHeight * (1 - (2 * eased - 1) ** 2);
         const left = centerX - width / 2;
         const top = centerY - height / 2;
-        const scaleX = width / finalRect.width;
-        const scaleY = height / finalRect.height;
+        const currentRadius = startRadius + (endRadius - startRadius) * eased;
 
         frames.push({
-          transform: `translate(${left - finalRect.left}px, ${top - finalRect.top}px) scale(${scaleX}, ${scaleY})`,
-          borderRadius: `${Math.min(Math.max(height / 2, 8), 18) + (finalRadius - Math.min(Math.max(height / 2, 8), 18)) * eased}px`,
+          transform: `translate(${left - finalRect.left}px, ${top - finalRect.top}px)`,
+          width: `${width}px`,
+          height: `${height}px`,
+          borderRadius: `${currentRadius}px`,
           offset: progress,
         });
       }
 
-      const finalRadiusCss = `${finalRadius}px`;
-      frames[frames.length - 1].borderRadius = finalRadiusCss;
-      if (direction === "closing") frames[0].borderRadius = finalRadiusCss;
+      if (direction === "opening") {
+        frames[frames.length - 1].borderRadius = `${finalRadius}px`;
+        frames[frames.length - 1].width = `${finalRect.width}px`;
+        frames[frames.length - 1].height = `${finalRect.height}px`;
+      } else {
+        frames[0].borderRadius = `${finalRadius}px`;
+        frames[0].width = `${finalRect.width}px`;
+        frames[0].height = `${finalRect.height}px`;
+        frames[frames.length - 1].borderRadius = `${endRadius}px`;
+        frames[frames.length - 1].width = `${endRect.width}px`;
+        frames[frames.length - 1].height = `${endRect.height}px`;
+      }
 
       return frames;
     }
 
     animatePeekMotion(peekPanel, direction, sourceRect) {
-      if (typeof peekPanel.animate !== "function") return Promise.resolve();
+      if (!peekPanel) return Promise.resolve();
 
-      peekPanel.getAnimations().forEach((animation) => animation.cancel());
-      const keyframes = this.createGlanceArcKeyframes(peekPanel, direction, sourceRect);
-      const animation = peekPanel.animate(keyframes, {
+      const panelKeyframes = this.createGlanceArcKeyframes(peekPanel, direction, sourceRect);
+      if (typeof peekPanel.animate !== "function") return Promise.resolve();
+      peekPanel.getAnimations?.().forEach((animation) => animation.cancel());
+      const panelAnimation = peekPanel.animate(panelKeyframes, {
         duration: this.getGlanceDuration(direction),
         easing: "linear",
         fill: "forwards",
       });
-
-      return animation.finished;
+      return panelAnimation.finished;
     }
 
-    getGlanceDuration(_direction) {
-      return this.ARC_CONFIG.glanceAnimationDuration;
+    getGlanceDuration(direction) {
+      return direction === "closing"
+        ? this.ARC_CONFIG.glanceCloseAnimationDuration
+        : this.ARC_CONFIG.glanceOpenAnimationDuration;
     }
 
     getBackdropDuration(direction) {
@@ -1599,20 +1614,28 @@
         }
       };
 
+      chrome.webNavigation.onCommitted.addListener(injectForNavigation);
+      chrome.webNavigation.onDOMContentLoaded.addListener(injectForNavigation);
       chrome.webNavigation.onCompleted.addListener(injectForNavigation);
 
-      window.setTimeout(() => {
-        const activeWebview = document.querySelector(".active.visible.webpageview webview");
-        if (activeWebview && this.isInjectableWebview(activeWebview)) {
-          this.injectCode(activeWebview, activeWebview.name === "vivaldi-webpanel");
-        }
-      }, 350);
+      [0, 32, 120, 300].forEach((delay) => {
+        window.setTimeout(() => {
+          this.injectActiveWebview();
+        }, delay);
+      });
 
       chrome.runtime.onMessage.addListener((message) => {
         if (message.url) {
           openPeek(message.url, message.fromPanel, message.rect, message.meta);
         }
       });
+    }
+
+    injectActiveWebview() {
+      const activeWebview = document.querySelector(".active.visible.webpageview webview");
+      if (activeWebview && this.isInjectableWebview(activeWebview)) {
+        this.injectCode(activeWebview, activeWebview.name === "vivaldi-webpanel");
+      }
     }
 
     isInjectableWebview(webview) {
@@ -1638,7 +1661,7 @@
                 }
             `;
       try {
-        webview.executeScript({ code: instantiationCode }, () => {
+        webview.executeScript({ code: instantiationCode, runAt: "document_start" }, () => {
           if (chrome.runtime.lastError) {
             debugLog("injectCode skipped", {
               tabId: webview.getAttribute("tab_id") || webview.tab_id,
@@ -1981,7 +2004,20 @@
                         opacity 55ms linear;
                 }
             `;
-      document.head.appendChild(this.#styleElement);
+      const mountStyle = () => {
+        if (!this.#styleElement || this.#styleElement.isConnected) return;
+        const styleHost = document.head || document.documentElement;
+        if (!styleHost) return;
+        styleHost.appendChild(this.#styleElement);
+      };
+
+      mountStyle();
+      if (!this.#styleElement.isConnected) {
+        document.addEventListener("DOMContentLoaded", mountStyle, {
+          once: true,
+          signal: this.#abortController.signal,
+        });
+      }
     }
 
     debounce(fn, delay) {
@@ -2051,5 +2087,37 @@
     get newTab() { return this.getIcon("newTab"); }
     get splitView() { return this.getIcon("splitView"); }
     get backgroundTab() { return this.getIcon("backgroundTab"); }
+  }
+
+  function bootstrapPeekMod() {
+    if (window.__arcPeekInitialized) return true;
+    const browser = document.getElementById("browser");
+    if (!browser) return false;
+    window.__arcPeekInitialized = true;
+    new PeekMod();
+    return true;
+  }
+
+  if (!bootstrapPeekMod()) {
+    const observerTarget = document.documentElement || document;
+    const observer = new MutationObserver(() => {
+      if (bootstrapPeekMod()) {
+        observer.disconnect();
+      }
+    });
+
+    observer.observe(observerTarget, { childList: true, subtree: true });
+
+    let rafAttempts = 0;
+    const retryBootstrap = () => {
+      if (bootstrapPeekMod()) {
+        observer.disconnect();
+        return;
+      }
+      if (rafAttempts++ < 120) {
+        window.requestAnimationFrame(retryBootstrap);
+      }
+    };
+    window.requestAnimationFrame(retryBootstrap);
   }
 })();
