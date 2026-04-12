@@ -81,7 +81,7 @@ Preview link content before opening
     box-shadow 0.35s cubic-bezier(0.16, 0.88, 0.22, 1) !important;
 }
 
-body.peek-open #browser #webpage-stack {
+body.peek-open:not(.peek-lightweight) #browser #webpage-stack {
   transform: scale(0.97) !important;
   border-radius: var(--radius);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24) !important;
@@ -128,6 +128,10 @@ body.peek-open #browser #webpage-stack {
   opacity: 0;
 }
 
+.peek-container.expanding-to-tab::before {
+  opacity: 0;
+}
+
 .peek-container .peek-panel {
   position: fixed;
   z-index: 1;
@@ -154,6 +158,11 @@ body.peek-open #browser #webpage-stack {
   }
 
   &.preview-closing {
+    background: transparent;
+    box-shadow: none;
+  }
+
+  &.preview-transform-only {
     background: transparent;
     box-shadow: none;
   }
@@ -192,6 +201,10 @@ body.peek-open #browser #webpage-stack {
   background: transparent;
 }
 
+.peek-container .peek-panel.preview-transform-only .peek-source-preview {
+  background: transparent;
+}
+
 .peek-container .peek-source-preview-image {
   width: 100%;
   height: 100%;
@@ -204,6 +217,10 @@ body.peek-open #browser #webpage-stack {
 }
 
 .peek-container .peek-panel.preview-closing .peek-source-preview-image {
+  object-fit: fill;
+}
+
+.peek-container .peek-panel.preview-transform-only .peek-source-preview-image {
   object-fit: fill;
 }
 
