@@ -1,0 +1,159 @@
+Module 59322
+Size: 69.2KB
+Exports: [{'export_name': 'ZP', 'local_var': 'We'}]
+Requires: ['14022', '1407', '14481', '14789', '15489', '16152', '16716', '17434', '17885', '18237', '18873', '19789', '2497', '29104', '31301', '33638', '34155', '35369', '36436', '37441', '4027', '42578', '42941', '44850', '46382', '47995', '50486', '53454', '58821', '63153', '69046', '69787', '7064', '7065', '70864', '71193', '7168', '721', '751', '80419', '8074', '81762', '82786', '83526', '84847', '92292', '96951']
+
+Local variables: ['i', 'c', 'X', 'e', 't', 'q', 'e', 't', 's', 'e', 'e', 'i', 't', 'e', 't']
+
+Functions/classes: ['Q', 'ee']
+
+Source overview (first 5000 chars):
+59322: (e, t, n) => {
+        "use strict";
+        n.d(t, {
+          ZP: () => We,
+          nq: () => ke,
+        });
+        var i = n(69787),
+          s = n(7065),
+          a = n(47995),
+          o = n(19789),
+          r = n(46382),
+          l = n(33638);
+        var c = n(7168),
+          d = n(8074),
+          u = n(96951),
+          h = n(17434),
+          p = n(14481),
+          g = n(31301),
+          m = n(18873),
+          f = n(18237),
+          v = n(14022),
+          b = n(81762),
+          y = n(16716),
+          S = n(70864),
+          C = n(83526),
+          w = n(63153),
+          x = n(15489),
+          A = n(29104),
+          T = n(53454),
+          _ = n(92292),
+          E = n(2497),
+          I = n(71193),
+          k = n(84847),
+          Z = n(4027),
+          N = n(7064),
+          P = n(1407),
+          M = n(44850),
+          D = n(35369),
+          O = n(69046),
+          L = n(50486),
+          j = n(751),
+          R = n(82786),
+          F = n(16152),
+          B = n(42941),
+          W = n(42578),
+          U = n(36436),
+          V = n(58821),
+          H = n(17885),
+          G = n(721),
+          z = n(14789),
+          K = n(80419),
+          $ = n(37441),
+          Y = n(34155);
+        let X = 0;
+        async function Q() {
+          const e = x.ZP.getLastActiveBrowserWindowId();
+          if (e === x.Ex)
+            return void console.warn(
+              "showWhatsNewTab: Expected a valid windowId"
+            );
+          if (x.ZP.isIncognitoOrGuest(e)) return;
+          const t = await (async function (e) {
+              return (
+                await _.Z.windows.getAll({
+                  populate: !0,
+                })
+              ).some((t) =>
+                t.tabs?.some((t) => t.url === e || t.pendingUrl === e)
+              );
+            })(M.INTERNAL_URL_MAP.welcome),
+            n = await N.Z.utilities.canShowWhatsNewPage();
+          if (!n.show) return;
+          if (n.firstrun) return;
+          const { vivaldiVersion: i } = N.Z.utilities.getVersion();
+          return ee(
+            e,
+            "https://vivaldi.com/newfeatures?hl=" +
+              o.ZP.UI_LANGUAGE +
+              "&version=" +
+              i +
+              "&os=M",
+            {
+              inCurrent: !1,
+              inBackground: t,
+            }
+          );
+        }
+        const q = (0, F.Z)(() => {
+            const e = new Date();
+            let t = m.Z.get(H.kStartupActiveDays) || [];
+            (t.length > 0 && (0, V.KC)(e, new Date(t[t.length - 1]))) ||
+              ((t = t.filter((t) => e - t < 12096e5)),
+              t.push(e.getTime()),
+              g.Z.set(H.kStartupActiveDays, t));
+          }, 1e4),
+          J = (0, F.Z)((e) => {
+            const { toStart: t, windowId: n } = e,
+              i = u.ZP.getActivePage(n);
+            if (!i) return;
+            const s = u.ZP.getSelectionOrActivePage(n),
+              a = (0, O.av)(i),
+              o = u.ZP.getPages(n);
+            if (a) {
+              const e = o.flatMap((e, t) => ((0, O.av)(e) === a ? [t] : [])),
+                r = s.filter((e) => (0, O.av)(e) === a),
+                l = t ? e.get(0) : e.get(e.size - 1);
+              "number" == typeof l && Be.moveDroppedTabs(n, r, i.id, l, a);
+            } else {
+              const e = t ? 0 : o.size - 1;
+              if (s.isEmpty()) return;
+              Be.moveDroppedTabs(n, s, i.id, e, void 0);
+            }
+          }, 50);
+        async function ee(e, t = "", n = {}) {
+          q();
+          const i = (0, M.getUrl)(t),
+            s = i && "_blank" !== i ? i : u.ZP.getDefaultStartpage(e);
+          if (!x.ZP.getWindowState(e)) {
+            if (e !== x.Ex) return Promise.reject("Unknown window");
+            n.inNewWindow = !0;
+          }
+          if (x.ZP.isSettings(e) && !0 !== n.inNewWindow) {
+            let t = x.ZP.getLastActiveBrowserWindowId();
+            if ((t !== x.Ex && x.ZP.isGuest() && (t = x.Ex), t === x.Ex)) {
+              const e = x.ZP.getIds("normal").filter((e) => !x.ZP.isGuest());
+              e.length > 0 && (t = e[0]);
+            }
+            t === x.Ex
+              ? ((e = x.Ex), (n.inNewWindow = !0), (n.inBackground = !1))
+              : ((e = t), (n.inNewWindow = !1), (n.inCurrent = !1));
+          }
+          if ((0, M.isBannedFromLoading)(s))
+            return Promise.reject("Illegal URL All profiles");
+          if (x.ZP.isGuest() && (0, M.isBannedFromGuestMode)(s))
+            return Promise.reject("Illegal URL for Guest mode");
+          if (
+            x.ZP.isIncognito(e) &&
+            (0, M.isBannedFromPrivateProfileWindows)(s)
+          ) {
+            const t = x.ZP.getIds("normal").filter(
+              (e) => !x.ZP.isIncognitoOrGuest(e)
+            );
+            (n.incognito = !1),
+              t.length > 0 ? (e = t[0]) : (n.inNewWindow = !0);
+          }
+          if (
+            (x.ZP.isPopup(e) && ((n.inNewWindow = !0), (n.inBackground = !1)),
+            n.inNewWindow)
+  

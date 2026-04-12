@@ -1,0 +1,173 @@
+Module 46382
+Size: 23.7KB
+Exports: [{'export_name': 'Z', 'local_var': 'w'}]
+Requires: ['12442', '12964', '1407', '15489', '17885', '18873', '2497', '33638', '44850', '47995', '54162', '56371', '59322', '63153', '7064', '99827']
+
+Local variables: ['i', 'b', 'r', 'C', 't', 'n']
+
+Functions/classes: ['S']
+
+Source overview (first 5000 chars):
+46382: (e, t, n) => {
+        "use strict";
+        n.d(t, {
+          Z: () => w,
+        });
+        var i = n(12442),
+          s = n(99827),
+          a = n(54162),
+          o = n(59322),
+          r = n(18873),
+          l = n(33638),
+          c = n(63153),
+          d = n(15489),
+          u = n(56371),
+          h = n(2497),
+          p = n(7064),
+          g = n(1407),
+          m = n(12964),
+          f = n(17885),
+          v = n(44850);
+        const b = "window.html";
+        let y;
+
+        function S(e, t, n, i, s) {
+          const { screen: a } = (0, h.Z)(e),
+            o = n <= a.height ? n : a.height;
+          let r = i >= 0 ? i : a.availLeft + t / 2,
+            l = s >= 0 ? s : a.availTop + (a.height - n) / 2;
+          l < 22 ? (l = 22) : l < 0 && (l = 0);
+          r + t > a.availLeft + a.width &&
+            ((r = a.availLeft + (a.width - t)), r < 0 && (r = 0));
+          return {
+            left: Math.round(r),
+            top: Math.round(l),
+            width: Math.round(t),
+            height: Math.round(o),
+          };
+        }
+        const C = new (class {
+            openGuestWindow() {
+              p.Z.runtimePrivate.switchToGuestSession((e) => {
+                e || console.warn("Guest mode is disabled.");
+              });
+            }
+            closeGuestSession() {
+              p.Z.runtimePrivate.closeGuestSession((e) => {
+                e || console.warn("Guest mode is disabled.");
+              });
+            }
+            managePeople() {
+              return p.Z.runtimePrivate.openProfileSelectionWindow();
+            }
+            closeActiveProfile() {
+              p.Z.runtimePrivate.closeActiveProfile((e) => {
+                e || console.warn("Failed to open profile window.");
+              });
+            }
+            showCaretBrowsingDialog(e) {
+              const t = {
+                actionType: "MAIN_SHOW_CARET_BROWSING_DIALOG",
+                winId: e,
+              };
+              l.Z.dispatch(t);
+            }
+            showAddFeed(e, t) {
+              l.Z.dispatch({
+                actionType: "MAIN_SHOW_ADD_FEED",
+                winId: e,
+                options: t,
+              });
+            }
+            showAddMailFolder(e, t) {
+              l.Z.dispatch({
+                actionType: "MAIN_SHOW_ADD_MAIL_FOLDER",
+                winId: e,
+                options: t,
+              });
+            }
+            showDeleteMailFolder(e, t) {
+              l.Z.dispatch({
+                actionType: "MAIN_SHOW_DELETE_MAIL_FOLDER",
+                winId: e,
+                options: t,
+              });
+            }
+            showAddFeedFolder(e, t) {
+              l.Z.dispatch({
+                actionType: "MAIN_SHOW_ADD_FEED_FOLDER",
+                winId: e,
+                options: t,
+              });
+            }
+            showDeleteFeedFolder(e, t) {
+              l.Z.dispatch({
+                actionType: "MAIN_SHOW_DELETE_FEED_FOLDER",
+                winId: e,
+                options: t,
+              });
+            }
+            showDeleteWorkspace(e, t) {
+              l.Z.dispatch({
+                actionType: "MAIN_SHOW_DELETE_WORKSPACE",
+                winId: e,
+                options: t,
+              });
+            }
+            showQuickCommand(e) {
+              l.Z.dispatch({
+                actionType: "MAIN_SHOW_QUICKCOMMANDS",
+                winId: e,
+              });
+            }
+            async showCalendar(e, t) {
+              try {
+                const n = await o.ZP.openURL(e, "vivaldi://calendar", {
+                  singleton: !0,
+                });
+                t &&
+                  i.Z.selectEvent(n.pageId, {
+                    eventId: t,
+                  });
+              } catch (e) {
+                console.error(e);
+              }
+            }
+            showCalendarNotification(e, t) {
+              l.Z.dispatch({
+                actionType: "MAIN_SHOW_CALENDAR_ALARM",
+                winId: e,
+                options: t,
+              });
+            }
+            showCalendarEditEvent(e, t) {
+              l.Z.dispatch({
+                actionType: "MAIN_SHOW_CALENDAR_EDIT_EVENT",
+                winId: e,
+                options: {
+                  event: t,
+                },
+              });
+            }
+            showEditEventTemplate(e, t) {
+              l.Z.dispatch({
+                actionType: "MAIN_SHOW_CALENDAR_EDIT_TEMPLATE",
+                winId: e,
+                options: t,
+              });
+            }
+            showCalendarImportEvents(e, t) {
+              l.Z.dispatch({
+                actionType: "MAIN_SHOW_CALENDAR_IMPORT_EVENTS_DIALOG",
+                winId: e,
+                options: {
+                  uri: t,
+                },
+              });
+            }
+            showKeyboardShortcuts(e) {
+              l.Z.dispatch({
+                actionType: "MAIN_SHOW_KEYBOARDS_SHORTCUTS",
+                winId: e,
+              });
+  
