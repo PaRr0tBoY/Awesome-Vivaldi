@@ -118,6 +118,25 @@ body.peek-open #browser #webpage-stack {
       0 28px 80px rgba(0, 0, 0, 0.38),
       0 0 0 1px rgba(255, 255, 255, 0.06);
     background: color-mix(in srgb, var(--colorBg) 92%, black 8%);
+    transition:
+      background 0.18s ease,
+      box-shadow 0.18s ease,
+      backdrop-filter 0.18s ease;
+
+    &.preview-pending {
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.12),
+          rgba(255, 255, 255, 0.05) 28%,
+          rgba(255, 255, 255, 0.02) 100%
+        ),
+        rgba(10, 16, 24, 0.08);
+      backdrop-filter: blur(18px) saturate(1.15);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+        0 28px 80px rgba(0, 0, 0, 0.22);
+    }
 
     webview {
       position: relative;
@@ -156,6 +175,11 @@ body.peek-open #browser #webpage-stack {
     box-shadow:
       0 10px 28px rgba(0, 0, 0, 0.18),
       0 0 0 1px var(--preview-border-color, rgba(255, 255, 255, 0.08));
+    transition:
+      opacity 0.18s ease,
+      background-color 0.18s ease,
+      box-shadow 0.18s ease,
+      backdrop-filter 0.18s ease;
   }
 
   .peek-source-preview-image {
@@ -167,6 +191,28 @@ body.peek-open #browser #webpage-stack {
     display: block;
     flex: 0 0 auto;
     opacity: 1;
+  }
+
+  .peek-source-preview.is-placeholder {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.04),
+        rgba(255, 255, 255, 0.015) 35%,
+        rgba(255, 255, 255, 0.005) 100%
+      );
+    backdrop-filter: blur(14px) saturate(1.08);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+      0 8px 22px rgba(0, 0, 0, 0.08);
+  }
+
+  .peek-source-preview.is-placeholder .peek-source-preview-label {
+    opacity: 0;
+  }
+
+  .peek-source-preview.is-placeholder .peek-source-preview-sheen {
+    opacity: 0.22;
   }
 
   .peek-source-preview.has-preview-image {
