@@ -1,0 +1,151 @@
+Module 48603
+Size: 27.8KB
+Exports: [{'export_name': 'Z', 'local_var': 'J'}]
+Requires: ['17885', '18856', '18873', '27770', '28773', '30381', '30460', '31301', '33638', '35369', '36436', '44850', '53454', '56371', '56688', '57049', '57118', '58379', '59322', '61896', '7064', '83897', '92292', '96951']
+
+Local variables: ['i', 'd', 't', 'i', 's', 'n', 'n', 'n', 'i', 'i', 'i']
+
+Functions/classes: []
+
+Source overview (first 5000 chars):
+48603: (e, t, n) => {
+        "use strict";
+        n.d(t, {
+          Z: () => J,
+        });
+        var i = n(56688),
+          s = n(31301),
+          a = n(18873),
+          o = n(61896),
+          r = n(92292),
+          l = n(7064),
+          c = n(17885);
+        const d = "[bookmark update]",
+          u = function () {
+            return new Promise((e) => {
+              l.Z.bookmarksPrivate.updatePartners((t, n, i) => {
+                r.Z.runtime.lastError &&
+                  (console.warn(
+                    d,
+                    "failed to call vivaldi.bookmarksPrivate.updatePartners:",
+                    r.Z.runtime.lastError.message
+                  ),
+                  (t = !1),
+                  (n = !1)),
+                  e([t, n, i]);
+              });
+            });
+          },
+          h = function (e) {
+            const t = function (e, n) {
+              for (let i = 0; i < e.length; i++) {
+                const s = e[i];
+                s.url &&
+                  (s.partner
+                    ? console.warn(
+                        d,
+                        "partner id in bookmark tree without version:",
+                        s.partner,
+                        s.url
+                      )
+                    : n.set(s.url, s.id)),
+                  s.children && t(s.children, n);
+              }
+            };
+            return Promise.all([
+              new Promise((e) => {
+                r.Z.bookmarks.getTree((t) => {
+                  r.Z.runtime.lastError &&
+                    console.warn(
+                      d,
+                      "failed to call chrome.bookmarks.getTree:",
+                      r.Z.runtime.lastError.message
+                    ),
+                    e(t);
+                });
+              }).then((e) => {
+                const n = new Map();
+                return e && t(e, n), n;
+              }),
+              fetch("./default-bookmarks/fallback-partner-ids.json", {
+                method: "GET",
+              })
+                .then((e) => e.json())
+                .then((t) => {
+                  let n = t[e];
+                  return n || (n = t[o.Z.getFallbackLocale()]), n;
+                }),
+            ])
+              .then(([e, t]) => {
+                const n = {
+                  numMatch: 0,
+                  size: 0,
+                };
+                return t
+                  ? Promise.all(
+                      (function* (e, t, n) {
+                        const i = Object.keys(t);
+                        e: for (const s of i) {
+                          const i = t[s];
+                          n.size += 1;
+                          for (const t of i) {
+                            const i = e.get(t);
+                            if (i) {
+                              console.warn(d, "Match", s, t),
+                                (n.numMatch += 1),
+                                yield new Promise((e) => {
+                                  r.Z.bookmarks.update(
+                                    i,
+                                    {
+                                      partner: s,
+                                    },
+                                    () => {
+                                      r.Z.runtime.lastError &&
+                                        console.warn(
+                                          d,
+                                          "failed to update partner:",
+                                          s,
+                                          r.Z.runtime.lastError.message
+                                        ),
+                                        e();
+                                    }
+                                  );
+                                });
+                              continue e;
+                            }
+                          }
+                          console.warn(d, "No match for", s, i.join(" "));
+                        }
+                      })(e, t, n)
+                    ).then(() => n)
+                  : n;
+              })
+              .then((e) => {
+                console.warn(d, "Urls matched", e.numMatch, "of", e.size);
+              });
+          },
+          p = {
+            init: () =>
+              u()
+                .then(([e, t, n]) =>
+                  t
+                    ? h(n).then(
+                        () => (
+                          s.Z.set(c.kBookmarksVersion, "0"),
+                          u().then(([e]) => e)
+                        )
+                      )
+                    : e
+                )
+                .catch(
+                  (e) => (
+                    console.warn(d, "error while updating bookmarks:", e), !1
+                  )
+                )
+                .then(
+                  (e) => (
+                    e ||
+                      console.warn(
+                        d,
+                        "failed to update bookmarks, current version:",
+                        a.Z.get
