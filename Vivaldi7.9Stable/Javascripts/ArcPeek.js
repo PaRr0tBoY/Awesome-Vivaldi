@@ -2917,15 +2917,24 @@
                 }
 
                 a.peek-hold-press {
-                    display: inline-block;
+                    position: relative;
                     transform-origin: center center;
                     transform:
-                        scaleX(calc(1 - var(--peek-hold-depth, 0) * 0.028))
-                        scaleY(calc(1 - var(--peek-hold-depth, 0) * 0.05));
-                    opacity: calc(1 - var(--peek-hold-depth, 0) * 0.12);
+                        translateY(calc(var(--peek-hold-depth, 0) * 3px))
+                        scaleX(calc(1 - var(--peek-hold-depth, 0) * 0.1))
+                        scaleY(calc(1 - var(--peek-hold-depth, 0) * 0.1));
+                    opacity: calc(1 - var(--peek-hold-depth, 0) * 0.08);
+                    filter:
+                        brightness(calc(1 - var(--peek-hold-depth, 0) * 0.13))
+                        saturate(calc(1 - var(--peek-hold-depth, 0) * 0.06));
+                    text-shadow:
+                        0 calc(var(--peek-hold-depth, 0) * 0.5px) 0
+                        rgba(0, 0, 0, calc(var(--peek-hold-depth, 0) * 0.22));
                     transition:
                         transform 55ms linear,
-                        opacity 55ms linear;
+                        opacity 55ms linear,
+                        filter 55ms linear,
+                        text-shadow 55ms linear;
                 }
 
                 .arcpeek-source-hidden {
