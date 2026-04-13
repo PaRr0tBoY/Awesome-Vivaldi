@@ -11,17 +11,14 @@ Preview link content before opening
     transform: translate(var(--peek-translate-x, 0), var(--peek-translate-y, 0))
       scale(var(--peek-scale-x, 0.92), var(--peek-scale-y, 0.9));
     border-radius: var(--peek-source-radius, 18px);
-    filter: saturate(0.92) brightness(1.06);
   }
   76% {
     transform: translate(0, 0) scale(1.014);
     border-radius: calc(var(--radius) * 1.08);
-    filter: none;
   }
   100% {
     transform: translate(0, 0) scale(1);
     border-radius: calc(var(--radius) * 1.05);
-    filter: none;
   }
 }
 
@@ -29,18 +26,15 @@ Preview link content before opening
   0% {
     transform: translate(0, 0) scale(1);
     border-radius: calc(var(--radius) * 1.05);
-    filter: none;
   }
   20% {
     transform: translate(0, 0) scale(1.01);
     border-radius: calc(var(--radius) * 1.08);
-    filter: none;
   }
   100% {
     transform: translate(var(--peek-translate-x, 0), var(--peek-translate-y, 0))
       scale(var(--peek-scale-x, 0.92), var(--peek-scale-y, 0.9));
     border-radius: var(--peek-source-radius, 18px);
-    filter: saturate(0.92) brightness(1.06);
   }
 }
 
@@ -78,15 +72,13 @@ Preview link content before opening
 }
 
 #browser #webpage-stack {
-  transition:
-    transform 0.35s cubic-bezier(0.16, 0.88, 0.22, 1),
-    box-shadow 0.35s cubic-bezier(0.16, 0.88, 0.22, 1) !important;
+  transition: transform 0.35s cubic-bezier(0.16, 0.88, 0.22, 1) !important;
 }
 
 body.peek-open #browser #webpage-stack {
   transform: scale(0.97) !important;
   border-radius: var(--radius);
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24) !important;
+  box-shadow: 0 18px 56px rgba(0, 0, 0, 0.22) !important;
   overflow: hidden;
 }
 
@@ -142,16 +134,21 @@ body.peek-open #browser #webpage-stack {
   overflow: visible;
   border-radius: calc(var(--radius) * 1.05);
   box-shadow:
-    0 28px 80px rgba(0, 0, 0, 0.38),
+    0 16px 44px rgba(0, 0, 0, 0.26),
     0 0 0 1px rgba(255, 255, 255, 0.06);
   background: color-mix(in srgb, var(--colorBg) 92%, black 8%);
   transition:
     background 0.18s ease,
-    box-shadow 0.18s ease,
     opacity 0.18s ease;
   margin: 0;
   transform-origin: top left;
   will-change: transform, opacity;
+
+  &[data-has-finished-animation="true"] {
+    box-shadow:
+      0 28px 80px rgba(0, 0, 0, 0.38),
+      0 0 0 1px rgba(255, 255, 255, 0.06);
+  }
 
   &.preview-animating {
     background: transparent;
@@ -163,24 +160,11 @@ body.peek-open #browser #webpage-stack {
     box-shadow: none;
   }
 
-  &.preview-transform-only {
-    background: transparent;
-    box-shadow: none;
-  }
-
   webview {
     position: relative;
     flex: 1;
     overflow: hidden;
     border-radius: var(--radius);
-  }
-
-  &:has(
-      webview[src^="https://app.web-highlights.com/reader/open-website-in-reader-mode"]
-    )
-    .reader-view-toggle {
-    background-color: var(--colorBgAlphaHeavy);
-    border-color: var(--colorBgDarker);
   }
 }
 
@@ -199,6 +183,7 @@ body.peek-open #browser #webpage-stack {
   will-change: transform, opacity;
   transform: translateZ(0);
   backface-visibility: hidden;
+  contain: paint;
 }
 
 .peek-container .peek-source-preview::before {
@@ -217,12 +202,8 @@ body.peek-open #browser #webpage-stack {
   z-index: 3;
 }
 
-.peek-container .peek-panel.preview-closing .peek-source-preview::before {
+.peek-container .peek-panel.preview-closing-matte .peek-source-preview::before {
   opacity: 0;
-}
-
-.peek-container .peek-panel.preview-transform-only .peek-source-preview {
-  background: transparent;
 }
 
 .peek-container .peek-source-preview-image {
@@ -236,7 +217,6 @@ body.peek-open #browser #webpage-stack {
   border-radius: inherit;
   object-fit: contain;
   object-position: center;
-  will-change: transform, opacity;
   position: relative;
   z-index: 1;
 }
@@ -255,11 +235,21 @@ body.peek-open #browser #webpage-stack {
   box-shadow:
     0 8px 18px rgba(0, 0, 0, 0.16),
     inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(8px);
   transition:
     transform 0.18s ease,
     background-color 0.18s ease,
     color 0.18s ease;
+}
+
+.peek-container .peek-panel:not([data-has-finished-animation="true"])
+  .peek-sidebar-button,
+.peek-container .peek-panel.preview-animating .peek-sidebar-button,
+.peek-container .peek-panel.preview-closing .peek-sidebar-button {
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  backdrop-filter: none;
 }
 
 .peek-container .peek-sidebar-button svg {

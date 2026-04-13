@@ -4,17 +4,6 @@
  * Forum link: https://forum.vivaldi.net/topic/92501/open-in-dialog-mod?_=1717490394230
  */
 (() => {
-  const DEBUG = {
-    enabled: true,
-    prefix: "[ArcPeek]",
-  };
-
-  const debugLog = (...args) => {
-    if (DEBUG.enabled) {
-      console.log(DEBUG.prefix, ...args);
-    }
-  };
-
   const ICON_CONFIG = {
     linkIcon: "",
     linkIconInteractionOnHover: true,
@@ -26,9 +15,6 @@
 
   class PeekMod {
     ARC_CONFIG = Object.freeze({
-      steps: 36,
-      maxArcHeight: 25,
-      arcHeightRatio: 0.2,
       glanceOpenAnimationDuration: 400,
       glanceCloseAnimationDuration: 400,
       previewFadeInRatio: 0.18,
@@ -36,15 +22,10 @@
       previewFadeOutRatio: 0.16,
       previewRevealDelayRatio: 0,
       previewRevealRatio: 0,
-      contentHideDelayRatio: 0,
       contentHideRatio: 0,
       previewCacheLimit: 48,
       previewCacheTtlMs: 10 * 60 * 1000,
       lastRecordedLinkTtlMs: 2000,
-      syncPreviewBeforeOpen: true,
-      lightweightPreviewMotionOnWindows: true,
-      lightweightPreviewHandoffDelayRatio: 0.04,
-      lightweightPreviewHandoffDurationRatio: 0.18,
     });
     webviews = new Map();
     previewCache = new Map();
@@ -58,8 +39,6 @@
 
     constructor() {
       this.hasPeekCSS = this.checkPeekCSSSupport();
-      this.useLightweightPreviewMotion = true;
-      document.body.classList.add("peek-lightweight");
       this.registerPeekCloseShortcuts();
       this.registerPeekCloseGuard();
 
@@ -75,8 +54,7 @@
         const webpageStack = document.querySelector("#browser #webpage-stack");
         if (!webpageStack) return false;
         return true;
-      } catch (e) {
-        console.warn("peek CSS support check failed:", e);
+      } catch (_) {
         return false;
       }
     }
@@ -113,6 +91,12 @@
       }
 
       return { webview: null, fromPanel: false };
+    }
+
+    cancelAnimations(elements = []) {
+      for (const element of elements) {
+        element?.getAnimations?.().forEach((animation) => animation.cancel());
+      }
     }
 
     /**
@@ -198,37 +182,17 @@
       };
 
       if (!animated || !container || !panel || !sourceRect) {
-        debugLog("disposePeek skip animation", {
-          webviewId,
-          animated,
-          hasContainer: !!container,
-          hasPanel: !!panel,
-          sourceRect,
-        });
         await finishCleanup();
         return;
       }
 
-      panel.getAnimations?.().forEach((animation) => animation.cancel());
-      panel.querySelectorAll(".peek-content, .peek-source-preview").forEach((element) => {
-        element.getAnimations?.().forEach((animation) => animation.cancel());
-      });
-
-      await this.ensurePreviewAsset(data);
-      debugLog("disposePeek closing setup", {
-        webviewId,
-        sourceRect,
-        hasPreviewAsset: !!data.previewAssetUrl,
-        linkRect: data.linkRect,
-      });
-
-      data.closingMode = data.previewAssetUrl ? "preview" : "live";
-      debugLog("disposePeek closing mode", {
-        webviewId,
-        closingMode: data.closingMode,
-        hasPreviewAssetUrl: !!data.previewAssetUrl,
-        previewAssetUrlLength: data.previewAssetUrl?.length || 0,
-      });
+      this.cancelAnimations([
+        panel,
+        ...panel.querySelectorAll(".peek-content, .peek-source-preview"),
+      ]);
+      await this.ensurePreviewAsset(data, { maxWaitMs: 1200 });
+      data.closingMode =
+        data.previewAssetUrl && data.previewAssetTrusted ? "preview" : "live";
       if (data.closingMode !== "preview") {
         this.showPeekContent(panel);
       }
@@ -240,36 +204,29 @@
       );
 
       if (data.closingMode === "preview") {
-        const previewLayer = this.mountPreviewLayer(
-          panel,
-          data.previewAssetUrl,
-          data.linkRect
-        );
-        debugLog("disposePeek mounted preview layer", {
-          webviewId,
-          previewSrcLength: data.previewAssetUrl?.length || 0,
-          previewLayerRect: previewLayer?.getBoundingClientRect?.(),
-        });
-        this.applyPreviewLayerGeometry(
-          panel,
-          data.linkRect,
-          false
-        );
+        let previewLayer = panel.querySelector(":scope > .peek-source-preview");
+        if (!previewLayer) {
+          previewLayer = this.mountPreviewLayer(
+            panel,
+            data.previewAssetUrl,
+            data.linkRect
+          );
+        }
         await this.waitForPreviewLayer(previewLayer);
         await this.flushPreviewLayerForClosing(panel, previewLayer);
-        this.setPreviewAnimationState(panel, true);
-        this.setPreviewClosingState(panel, true);
-        this.setTransformOnlyPreviewState(panel, false);
+        this.setPreviewAnimationState(panel, false);
         this.preparePreviewLayerForClosing(panel);
         this.hideSidebarControls(panel.querySelector(".peek-sidebar-controls"));
         this.suppressPeekContentForClosing(panel);
         this.animatePreviewLayerIn(panel);
+        this.setPreviewClosingState(panel, true);
+        await this.waitForAnimationFrames(1);
+        this.setPreviewClosingMatteState(panel, true);
       }
 
       try {
         await this.animatePeekMotion(panel, "closing", sourceRect);
-      } catch (error) {
-        console.warn(DEBUG.prefix, "closing animation failed", error);
+      } catch (_) {
       } finally {
         await finishCleanup();
       }
@@ -413,9 +370,7 @@
             this.clearCloseShortcutGuard();
           }
         }, 1450);
-      } catch (error) {
-        console.warn(DEBUG.prefix, "armCloseShortcutGuard failed", error);
-      }
+      } catch (_) {}
     }
 
     clearCloseShortcutGuard() {
@@ -429,12 +384,7 @@
         return;
       }
       chrome.sessions.restore(undefined, () => {
-        if (chrome.runtime.lastError) {
-          console.warn(DEBUG.prefix, "restoreRecentlyClosedTab failed", {
-            guard,
-            error: chrome.runtime.lastError.message,
-          });
-        }
+        void guard;
       });
     }
 
@@ -618,9 +568,8 @@
     }
 
     showPeek(linkUrl, fromPanel, linkRect = undefined, meta = undefined) {
-      this.buildPeek(linkUrl, fromPanel, linkRect, meta).catch((error) => {
+      this.buildPeek(linkUrl, fromPanel, linkRect, meta).catch(() => {
         this.setPeekSourceLinkVisibility(linkRect?.sourceToken, false);
-        console.error(DEBUG.prefix, "showPeek failed", error);
       });
     }
 
@@ -640,16 +589,11 @@
 
       const effectiveLinkRect = linkRect || this.getRecentLinkSnapshot(linkUrl);
       const previewCacheKey = this.getPreviewCacheKey(linkUrl, effectiveLinkRect);
-      let previewAsset = this.getCachedPreviewAsset(previewCacheKey);
-
-      if (
-        !previewAsset &&
-        !fromPanel &&
-        effectiveLinkRect &&
-        this.ARC_CONFIG.syncPreviewBeforeOpen
-      ) {
-        previewAsset = await this.startPreviewCapture(previewCacheKey, effectiveLinkRect, fromPanel);
-      }
+      const previewAsset = this.getCachedPreviewAsset(previewCacheKey);
+      const previewCapturePromise =
+        !previewAsset && effectiveLinkRect && !fromPanel
+          ? this.startPreviewCapture(previewCacheKey, effectiveLinkRect, fromPanel)
+          : null;
 
       const activeWebview = document.querySelector(".active.visible.webpageview webview");
       const peekViewportRect = this.getPeekViewportRect(activeWebview);
@@ -662,6 +606,7 @@
         tabId: tabId,
         linkRect: effectiveLinkRect,
         previewAssetUrl: previewAsset?.dataUrl || null,
+        previewAssetTrusted: !!previewAsset?.dataUrl,
         sourceToken: effectiveLinkRect?.sourceToken || null,
         openingSourceRect: null,
         sourceRect: null,
@@ -671,7 +616,7 @@
         tabCloseListener: null,
         backdropCleanup: null,
         previewCacheKey: previewCacheKey,
-        previewCapturePromise: null,
+        previewCapturePromise,
         openingMode: previewAsset?.dataUrl ? "preview" : "live",
         openingState: "starting",
         closingMode: null,
@@ -802,6 +747,7 @@
         if (!backdropClosePending) return;
         backdropClosePending = false;
         swallowBackdropEvent(event);
+        this.armPostClosePointerGuard();
         this.disposePeek(webviewId, { animated: true, closeRuntimeTab: true });
       };
 
@@ -811,6 +757,7 @@
         swallowBackdropEvent(event);
         if (backdropClosePending) return;
         backdropClosePending = true;
+        this.armPostClosePointerGuard();
         window.addEventListener("pointerup", finalizeBackdropClose, true);
         window.addEventListener("mouseup", finalizeBackdropClose, true);
         window.addEventListener("click", swallowBackdropEvent, true);
@@ -827,19 +774,16 @@
 
       document.querySelector("#browser").appendChild(peekContainer);
 
-      const geometry = this.applyPeekAnimationGeometry(peekContainer, peekPanel, effectiveLinkRect);
-      debugLog("buildPeek geometry", {
-        webviewId,
-        effectiveLinkRect,
-        sourceRect: geometry?.sourceRect || null,
-        finalRect: geometry?.finalRect || null,
-      });
+      const geometry = this.applyPeekAnimationGeometry(
+        peekContainer,
+        peekPanel,
+        effectiveLinkRect
+      );
       this.webviews.get(webviewId).openingSourceRect = geometry?.sourceRect || null;
       this.webviews.get(webviewId).sourceRect = geometry?.sourceRect || null;
       this.setPeekSourceLinkVisibility(effectiveLinkRect?.sourceToken, true);
       if (previewAsset?.dataUrl) {
         this.mountPreviewLayer(peekPanel, previewAsset.dataUrl, effectiveLinkRect);
-        this.applyPreviewLayerGeometry(peekPanel, effectiveLinkRect, false);
         this.setPreviewAnimationState(peekPanel, true);
         this.preparePeekContentForPreview(peekPanel);
       } else {
@@ -859,8 +803,8 @@
 
       if (previewAsset?.dataUrl) {
         const handoffOptions = {
-          delayRatio: this.ARC_CONFIG.lightweightPreviewHandoffDelayRatio,
-          durationRatio: this.ARC_CONFIG.lightweightPreviewHandoffDurationRatio,
+          delayRatio: 0.04,
+          durationRatio: 0.18,
         };
         this.animatePeekContentIn(peekPanel, handoffOptions);
         this.animatePreviewLayerOut(peekPanel, handoffOptions);
@@ -871,13 +815,10 @@
         .then(() => {
           this.finalizePeekOpening(peekPanel, webviewId);
         })
-        .catch((error) => {
-          console.warn(DEBUG.prefix, "opening animation failed", error);
+        .catch(() => {
           this.finalizePeekOpening(peekPanel, webviewId);
         });
         
-      this.captureAndStorePreview(webviewId, effectiveLinkRect, fromPanel);
-
       if (this.hasPeekCSS) {
         document.body.classList.add("peek-open");
       }
@@ -1012,7 +953,6 @@
     }
 
     captureUIArea(rect) {
-      debugLog("captureUIArea request", rect);
       return new Promise((resolve, reject) => {
         const windowId = this.getVivaldiWindowId();
         if (!window.vivaldi || !vivaldi.thumbnails || typeof vivaldi.thumbnails.captureUI !== "function") {
@@ -1039,11 +979,6 @@
         };
 
         vivaldi.thumbnails.captureUI(params, (success, url) => {
-          debugLog("captureUIArea response", {
-            success,
-            hasUrl: !!url,
-            urlLength: typeof url === "string" ? url.length : 0,
-          });
           if (chrome.runtime.lastError) {
             reject(new Error(chrome.runtime.lastError.message));
             return;
@@ -1112,12 +1047,6 @@
         width: Math.max(0, Math.round(linkRect?.width || 0)),
         height: Math.max(0, Math.round(linkRect?.height || 0)),
       };
-      debugLog("storePreviewAsset", {
-        cacheKey,
-        width: previewAsset.width,
-        height: previewAsset.height,
-        dataUrlLength: previewAsset.dataUrl.length,
-      });
       if (this.previewCache.has(cacheKey)) {
         this.previewCache.delete(cacheKey);
       }
@@ -1136,29 +1065,14 @@
       if (!linkRect) return null;
 
       const uiRect = this.buildUICaptureRect(linkRect);
-      debugLog("captureSourcePreview start", {
-        cacheKey,
-        fromPanel,
-        linkRect,
-        uiRect,
-      });
       if (uiRect) {
         try {
           const sourcePreviewUrl = await this.captureUIArea(uiRect);
           const usable = await this.isUsablePreviewUrl(sourcePreviewUrl);
-          debugLog("captureSourcePreview result", {
-            cacheKey,
-            usable,
-            hasSourcePreviewUrl: !!sourcePreviewUrl,
-            sourcePreviewUrlLength:
-              typeof sourcePreviewUrl === "string" ? sourcePreviewUrl.length : 0,
-          });
           if (usable) {
             return this.storePreviewAsset(cacheKey, sourcePreviewUrl, linkRect);
           }
-        } catch (error) {
-          debugLog("captureUI preview capture failed", error);
-        }
+        } catch (_) {}
       }
       return null;
     }
@@ -1166,25 +1080,13 @@
     startPreviewCapture(cacheKey, linkRect, fromPanel) {
       const cachedPreviewAsset = this.getCachedPreviewAsset(cacheKey);
       if (cachedPreviewAsset) {
-        debugLog("startPreviewCapture cache hit", {
-          cacheKey,
-          width: cachedPreviewAsset.width,
-          height: cachedPreviewAsset.height,
-          dataUrlLength: cachedPreviewAsset.dataUrl?.length || 0,
-        });
         return Promise.resolve(cachedPreviewAsset);
       }
 
       if (cacheKey && this.previewCaptureTasks.has(cacheKey)) {
-        debugLog("startPreviewCapture join pending task", { cacheKey });
         return this.previewCaptureTasks.get(cacheKey);
       }
 
-      debugLog("startPreviewCapture create task", {
-        cacheKey,
-        fromPanel,
-        linkRect,
-      });
       const previewTask = this.captureSourcePreview(linkRect, fromPanel, cacheKey)
         .finally(() => {
           if (cacheKey) this.previewCaptureTasks.delete(cacheKey);
@@ -1245,78 +1147,52 @@
       const data = this.webviews.get(webviewId);
       if (!data || data.previewAssetUrl || !linkRect) return;
 
-      data.previewCapturePromise = this.startPreviewCapture(data.previewCacheKey, linkRect, fromPanel);
+      data.previewCapturePromise =
+        data.previewCapturePromise ||
+        this.startPreviewCapture(data.previewCacheKey, linkRect, fromPanel);
       data.previewCapturePromise
         .then((previewAsset) => {
           if (!previewAsset?.dataUrl) return;
           const current = this.webviews.get(webviewId);
           if (!current || current.isDisposing) return;
+          if (current.openingState !== "starting") return;
           current.previewAssetUrl = previewAsset.dataUrl;
+          current.previewAssetTrusted = true;
         })
-        .catch((error) => {
-          debugLog("background preview capture failed", error);
-        });
+        .catch(() => {});
     }
 
-    async ensurePreviewAsset(data) {
+    async ensurePreviewAsset(data, { maxWaitMs = 120 } = {}) {
       if (!data) return null;
-      debugLog("ensurePreviewAsset start", {
-        webviewId: data.webview?.id,
-        hasPreviewAssetUrl: !!data.previewAssetUrl,
-        hasPreviewCapturePromise: !!data.previewCapturePromise,
-        previewCacheKey: data.previewCacheKey,
-        linkRect: data.linkRect,
-      });
       if (data.previewAssetUrl) {
-        debugLog("ensurePreviewAsset cache hit", {
-          webviewId: data.webview?.id,
-          hasPreviewAsset: true,
-        });
+        return data.previewAssetUrl;
+      }
+
+      const cachedPreviewAsset = this.getCachedPreviewAsset(data.previewCacheKey);
+      if (cachedPreviewAsset?.dataUrl) {
+        data.previewAssetUrl = cachedPreviewAsset.dataUrl;
+        data.previewAssetTrusted = true;
         return data.previewAssetUrl;
       }
 
       if (data.previewCapturePromise) {
         try {
-          const previewAsset = await data.previewCapturePromise;
+          const previewAsset = await Promise.race([
+            data.previewCapturePromise,
+            new Promise((resolve) =>
+              window.setTimeout(() => resolve(null), Math.max(0, maxWaitMs))
+            ),
+          ]);
           if (previewAsset?.dataUrl) {
+            if (data.openingState !== "starting") {
+              return null;
+            }
             data.previewAssetUrl = previewAsset.dataUrl;
-            debugLog("ensurePreviewAsset resolved pending capture", {
-              webviewId: data.webview?.id,
-              width: previewAsset.width,
-              height: previewAsset.height,
-              dataUrlLength: previewAsset.dataUrl.length,
-            });
+            data.previewAssetTrusted = true;
             return data.previewAssetUrl;
           }
         } catch (_) {}
       }
-
-      if (!data.previewCacheKey || !data.linkRect) return null;
-
-      try {
-        const previewAsset = await this.startPreviewCapture(
-          data.previewCacheKey,
-          data.linkRect,
-          data.fromPanel
-        );
-        if (previewAsset?.dataUrl) {
-          data.previewAssetUrl = previewAsset.dataUrl;
-          debugLog("ensurePreviewAsset captured synchronously", {
-            webviewId: data.webview?.id,
-            width: previewAsset.width,
-            height: previewAsset.height,
-            dataUrlLength: previewAsset.dataUrl.length,
-          });
-          return data.previewAssetUrl;
-        }
-      } catch (_) {}
-
-      debugLog("ensurePreviewAsset failed", {
-        webviewId: data.webview?.id,
-        hasPreviewCapturePromise: !!data.previewCapturePromise,
-        previewCacheKey: data.previewCacheKey,
-        linkRect: data.linkRect,
-      });
       return null;
     }
 
@@ -1333,15 +1209,13 @@
         "--preview-bg",
         hasPreview ? "rgba(255, 255, 255, 0.18)" : "rgba(255,255,255,0.1)"
       );
-      previewLayer.style.setProperty("--preview-aspect-ratio", `${previewWidth} / ${previewHeight}`);
-      previewLayer.dataset.previewWidth = String(previewWidth);
-      previewLayer.dataset.previewHeight = String(previewHeight);
       imageLayer.style.aspectRatio = `${previewWidth} / ${previewHeight}`;
       
       if (hasPreview) {
         imageLayer.src = sourcePreviewUrl;
         imageLayer.alt = "";
         imageLayer.decoding = "sync";
+        imageLayer.draggable = false;
         previewLayer.style.backgroundImage = `url("${sourcePreviewUrl}")`;
         previewLayer.style.backgroundRepeat = "no-repeat";
         previewLayer.style.backgroundPosition = "center";
@@ -1362,15 +1236,6 @@
 
     removePreviewLayer(peekPanel) {
       peekPanel?.querySelector(":scope > .peek-source-preview")?.remove();
-    }
-
-    resetPreviewLayerGeometry(previewLayer) {
-      if (!previewLayer) return;
-      previewLayer.style.inset = "";
-      previewLayer.style.left = "";
-      previewLayer.style.top = "";
-      previewLayer.style.width = "";
-      previewLayer.style.height = "";
     }
 
     getFittedPreviewRect(peekPanel, linkRect) {
@@ -1395,80 +1260,6 @@
       };
     }
 
-    applyPreviewLayerGeometry(peekPanel, linkRect, transformOnly = false) {
-      const previewLayer = peekPanel?.querySelector(":scope > .peek-source-preview");
-      if (!previewLayer) return;
-
-      if (!transformOnly) {
-        this.resetPreviewLayerGeometry(previewLayer);
-        return;
-      }
-
-      const fittedRect = this.getFittedPreviewRect(peekPanel, linkRect);
-      if (!fittedRect) {
-        this.resetPreviewLayerGeometry(previewLayer);
-        return;
-      }
-
-      previewLayer.style.inset = "auto";
-      previewLayer.style.left = `${fittedRect.left}px`;
-      previewLayer.style.top = `${fittedRect.top}px`;
-      previewLayer.style.width = `${fittedRect.width}px`;
-      previewLayer.style.height = `${fittedRect.height}px`;
-    }
-
-    getPreviewMotionRects(peekPanel, sourceRect, linkRect) {
-      const panelRect = peekPanel?.getBoundingClientRect?.();
-      if (!panelRect?.width || !panelRect?.height) return null;
-
-      const fittedRect =
-        this.getFittedPreviewRect(peekPanel, linkRect) || {
-          left: 0,
-          top: 0,
-          width: Math.round(panelRect.width),
-          height: Math.round(panelRect.height),
-        };
-
-      const fallbackSource = {
-        left: fittedRect.left,
-        top: fittedRect.top - Math.min(fittedRect.height * 0.32, 96),
-        width: fittedRect.width,
-        height: Math.max(fittedRect.height * 0.22, 42),
-      };
-      const viewportSource = sourceRect || fallbackSource;
-      const sourceLayerRect = {
-        left: Math.round(viewportSource.left - panelRect.left),
-        top: Math.round(viewportSource.top - panelRect.top),
-        width: Math.max(1, Math.round(viewportSource.width)),
-        height: Math.max(1, Math.round(viewportSource.height)),
-      };
-      const targetLayerRect = {
-        left: Math.round(fittedRect.left),
-        top: Math.round(fittedRect.top),
-        width: Math.max(1, Math.round(fittedRect.width)),
-        height: Math.max(1, Math.round(fittedRect.height)),
-      };
-
-      return {
-        source: sourceLayerRect,
-        target: targetLayerRect,
-        sourceRadius: `${Math.min(Math.max(sourceLayerRect.height / 2, 8), 18)}px`,
-        targetRadius:
-          getComputedStyle(peekPanel).borderRadius ||
-          `${Math.min(targetLayerRect.height / 2, 18)}px`,
-      };
-    }
-
-    setPreviewLayerRectStyles(previewLayer, rect, borderRadius = "inherit") {
-      if (!previewLayer || !rect) return;
-      previewLayer.style.inset = "auto";
-      previewLayer.style.left = `${rect.left}px`;
-      previewLayer.style.top = `${rect.top}px`;
-      previewLayer.style.width = `${rect.width}px`;
-      previewLayer.style.height = `${rect.height}px`;
-      previewLayer.style.borderRadius = borderRadius;
-    }
-
     async waitForPreviewLayer(previewLayer, timeoutMs = 400) {
       const imageElement = previewLayer?.querySelector(
         ".peek-source-preview-image"
@@ -1488,24 +1279,11 @@
         }),
         new Promise((resolve) => window.setTimeout(resolve, timeoutMs)),
       ]);
-      debugLog("waitForPreviewLayer settled", {
-        srcLength: imageElement.src.length,
-        complete: imageElement.complete,
-        naturalWidth: imageElement.naturalWidth,
-        naturalHeight: imageElement.naturalHeight,
-      });
     }
 
     finalizePeekOpening(peekPanel, webviewId) {
       const data = this.webviews.get(webviewId);
       if (!data || data.isDisposing || data.closingMode || !peekPanel?.isConnected) {
-        debugLog("finalizePeekOpening skipped", {
-          webviewId,
-          hasData: !!data,
-          isDisposing: !!data?.isDisposing,
-          closingMode: data?.closingMode || null,
-          panelConnected: !!peekPanel?.isConnected,
-        });
         return;
       }
       if (data) {
@@ -1514,7 +1292,6 @@
       peekPanel?.setAttribute("data-has-finished-animation", "true");
       this.setPreviewAnimationState(peekPanel, false);
       this.setPreviewClosingState(peekPanel, false);
-      this.setTransformOnlyPreviewState(peekPanel, false);
       this.removePreviewLayer(peekPanel);
       this.showPeekContent(peekPanel);
     }
@@ -1705,19 +1482,16 @@
       if (!previewLayer) return;
       previewLayer.getAnimations?.().forEach((animation) => animation.cancel());
       previewLayer.style.opacity = "1";
+      previewLayer.style.zIndex = "3";
+      previewLayer.style.visibility = "visible";
     }
 
     async flushPreviewLayerForClosing(peekPanel, previewLayer) {
       if (!peekPanel || !previewLayer) return;
-      // Force layout/compositing before we hide the live content and start motion.
+      previewLayer.style.transform = "translateZ(0)";
       void previewLayer.offsetHeight;
       void peekPanel.offsetHeight;
-      previewLayer.style.transform = "translateZ(0)";
       await this.waitForAnimationFrames(2);
-      debugLog("flushPreviewLayerForClosing", {
-        previewLayerRect: previewLayer.getBoundingClientRect?.(),
-        panelRect: peekPanel.getBoundingClientRect?.(),
-      });
     }
 
     animatePreviewLayerIn(peekPanel) {
@@ -1758,122 +1532,9 @@
       peekPanel.classList.toggle("preview-closing", !!enabled);
     }
 
-    setTransformOnlyPreviewState(peekPanel, enabled) {
+    setPreviewClosingMatteState(peekPanel, enabled) {
       if (!peekPanel) return;
-      peekPanel.classList.toggle("preview-transform-only", !!enabled);
-    }
-
-    shouldUseTransformOnlyPreviewMotion(peekPanel) {
-      return false;
-    }
-
-    getMotionSourceTransform(targetRect, sourceRect) {
-      if (!targetRect?.width || !targetRect?.height) {
-        return {
-          transform: "translate(0, 0) scale(1, 1)",
-          borderRadius: "inherit",
-        };
-      }
-
-      const fallbackSource = {
-        left: targetRect.left,
-        top: targetRect.top - Math.min(targetRect.height * 0.35, 120),
-        width: targetRect.width * 0.9,
-        height: Math.max(targetRect.height * 0.22, 42),
-      };
-      const originRect = sourceRect || fallbackSource;
-      const translateX = originRect.left - targetRect.left;
-      const translateY = originRect.top - targetRect.top;
-      const scaleX = Math.min(Math.max(originRect.width / targetRect.width, 0.08), 1);
-      const scaleY = Math.min(Math.max(originRect.height / targetRect.height, 0.06), 1);
-      const radius = `${Math.min(Math.max(originRect.height / 2, 8), 18)}px`;
-
-      return {
-        transform: `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`,
-        borderRadius: radius,
-      };
-    }
-
-    animatePreviewTransformMotion(peekPanel, direction, sourceRect, linkRect = null) {
-      const previewLayer = peekPanel?.querySelector(":scope > .peek-source-preview");
-      if (!previewLayer) return Promise.resolve();
-
-      previewLayer.getAnimations?.().forEach((animation) => animation.cancel());
-      previewLayer.style.transformOrigin = "top left";
-
-      const motionRects = this.getPreviewMotionRects(peekPanel, sourceRect, linkRect);
-      if (!motionRects) return Promise.resolve();
-
-      const sourceState = {
-        left: `${motionRects.source.left}px`,
-        top: `${motionRects.source.top}px`,
-        width: `${motionRects.source.width}px`,
-        height: `${motionRects.source.height}px`,
-        borderRadius: motionRects.sourceRadius,
-        opacity: 1,
-      };
-      const targetState = {
-        left: `${motionRects.target.left}px`,
-        top: `${motionRects.target.top}px`,
-        width: `${motionRects.target.width}px`,
-        height: `${motionRects.target.height}px`,
-        borderRadius: motionRects.targetRadius,
-        opacity: 1,
-      };
-      const keyframes =
-        direction === "opening"
-          ? [
-              sourceState,
-              {
-                left: `${motionRects.target.left}px`,
-                top: `${motionRects.target.top}px`,
-                width: `${motionRects.target.width}px`,
-                height: `${motionRects.target.height}px`,
-                borderRadius: motionRects.targetRadius,
-                opacity: 1,
-                offset: 0.86,
-              },
-              targetState,
-            ]
-          : [
-              targetState,
-              {
-                left: `${motionRects.target.left}px`,
-                top: `${motionRects.target.top}px`,
-                width: `${motionRects.target.width}px`,
-                height: `${motionRects.target.height}px`,
-                borderRadius: motionRects.targetRadius,
-                opacity: 1,
-                offset: 0.14,
-              },
-              sourceState,
-            ];
-
-      if (typeof previewLayer.animate !== "function") {
-        this.setPreviewLayerRectStyles(
-          previewLayer,
-          direction === "opening" ? motionRects.target : motionRects.source,
-          direction === "opening" ? motionRects.targetRadius : motionRects.sourceRadius
-        );
-        return Promise.resolve();
-      }
-
-      const previewAnimation = previewLayer.animate(keyframes, {
-        duration: this.getGlanceDuration(direction),
-        easing:
-          direction === "opening"
-            ? "cubic-bezier(0.16, 0.88, 0.22, 1)"
-            : "cubic-bezier(0.2, 0.82, 0.24, 1)",
-        fill: "forwards",
-      });
-      return previewAnimation.finished.then(() => {
-        if (!previewLayer.isConnected) return;
-        this.setPreviewLayerRectStyles(
-          previewLayer,
-          direction === "opening" ? motionRects.target : motionRects.source,
-          direction === "opening" ? motionRects.targetRadius : motionRects.sourceRadius
-        );
-      });
+      peekPanel.classList.toggle("preview-closing-matte", !!enabled);
     }
 
     getPeekPanelLinkRect(peekPanel) {
@@ -1993,7 +1654,7 @@
         Math.min(finalRect.height / 2, 18);
       const sourceRadius = `${Math.min(Math.max(originRect.height / 2, 8), 18)}px`;
 
-      const geometry = {
+      return {
         finalRadius: `${finalRadius}px`,
         sourceRadius,
         openingKeyframes: [
@@ -2033,32 +1694,16 @@
           },
         ],
       };
-      debugLog("getPanelScaleMotionGeometry", {
-        directionSourceRect: sourceRect,
-        linkRect,
-        panelAbsoluteRect,
-        fittedRect,
-        fittedAbsoluteRect,
-        uniformScale,
-        panelTranslateX,
-        panelTranslateY,
-      });
-      return geometry;
     }
 
     animatePanelTransformMotion(peekPanel, direction, sourceRect) {
+      const linkRect = this.getPeekPanelLinkRect(peekPanel);
       const geometry = this.getPanelScaleMotionGeometry(
         peekPanel,
         sourceRect,
-        this.getPeekPanelLinkRect(peekPanel)
+        linkRect
       );
       if (!geometry) return Promise.resolve();
-      debugLog("animatePanelTransformMotion", {
-        direction,
-        sourceRect,
-        panelRect: peekPanel.getBoundingClientRect(),
-        linkRect: this.getPeekPanelLinkRect(peekPanel),
-      });
       const keyframes =
         direction === "opening"
           ? geometry.openingKeyframes
@@ -2093,12 +1738,6 @@
         direction === "opening"
           ? geometry.openingKeyframes
           : geometry.closingKeyframes;
-
-      debugLog("animatePanelRectMotion", {
-        direction,
-        sourceRect,
-        targetRect: geometry.targetRect,
-      });
 
       peekPanel.getAnimations?.().forEach((animation) => animation.cancel());
       peekPanel.style.transform = "none";
@@ -2163,21 +1802,6 @@
       if (!thisElement || thisElement.childElementCount > 0) return;
       thisElement.style.opacity = "1";
       thisElement.style.pointerEvents = "auto";
-      ["pointerdown", "mousedown", "pointerup", "mouseup", "click"].forEach(
-        (eventName) => {
-          thisElement.addEventListener(
-            eventName,
-            (event) => {
-              debugLog("peek controls container event", {
-                eventType: event.type,
-                target: event.target?.className,
-                currentTarget: event.currentTarget?.className,
-              });
-            },
-            true
-          );
-        }
-      );
 
       const buttons = [
         {
@@ -2235,33 +1859,17 @@
         }, 0);
       };
       button.addEventListener("pointerdown", (event) => {
-        debugLog("peek button pointerdown", {
-          cls,
-          target: event.target?.className,
-          currentTarget: event.currentTarget?.className,
-        });
         actionTriggered = false;
         event.stopPropagation();
         event.stopImmediatePropagation?.();
       });
       button.addEventListener("mousedown", (event) => {
-        debugLog("peek button mousedown", {
-          cls,
-          target: event.target?.className,
-          currentTarget: event.currentTarget?.className,
-        });
         event.stopPropagation();
         event.stopImmediatePropagation?.();
       });
       const invoke = (event) => {
         if (actionTriggered) return;
         actionTriggered = true;
-        debugLog("peek button invoke", {
-          cls,
-          eventType: event.type,
-          target: event.target?.className,
-          currentTarget: event.currentTarget?.className,
-        });
         event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation?.();
@@ -2421,16 +2029,15 @@
           this.updateTab(currentFresh.id, { active: true, highlighted: true }),
           this.updateTab(newTab.id, { highlighted: true }),
         ]);
-      } catch (error) {
-        console.error(DEBUG.prefix, "openInSplitView failed", { webviewId, url, error });
-      }
+      } catch (_) {}
     }
   }
 
   class WebsiteInjectionUtils {
     constructor(getWebviewConfig, openPeek, iconConfig) {
       this.iconConfig = JSON.stringify(iconConfig);
-      this.injectRetryTimer = null;
+      this.injectRetryTimers = new Map();
+      this.injectThrottleState = new WeakMap();
       this.webviewObserver = null;
 
       const injectForNavigation = (navigationDetails) => {
@@ -2460,13 +2067,12 @@
     }
 
     scheduleActiveWebviewInjection(delay = 0) {
-      if (this.injectRetryTimer) {
-        clearTimeout(this.injectRetryTimer);
-      }
-      this.injectRetryTimer = window.setTimeout(() => {
-        this.injectRetryTimer = null;
+      if (this.injectRetryTimers.has(delay)) return;
+      const timeoutId = window.setTimeout(() => {
+        this.injectRetryTimers.delete(delay);
         this.injectActiveWebview();
       }, delay);
+      this.injectRetryTimers.set(delay, timeoutId);
     }
 
     observeWebviewLifecycle() {
@@ -2543,18 +2149,21 @@
                 }
             `;
       try {
+        const src = webview.getAttribute("src") || webview.src || "";
+        const lastInject = this.injectThrottleState.get(webview);
+        const now = Date.now();
+        if (
+          lastInject &&
+          lastInject.src === src &&
+          now - lastInject.at < 250
+        ) {
+          return;
+        }
+        this.injectThrottleState.set(webview, { src, at: now });
         webview.executeScript({ code: instantiationCode, runAt: "document_start" }, () => {
-          if (chrome.runtime.lastError) {
-            debugLog("injectCode skipped", {
-              tabId: webview.getAttribute("tab_id") || webview.tab_id,
-              src: webview.getAttribute("src") || webview.src || "",
-              error: chrome.runtime.lastError.message,
-            });
-          }
+          void chrome.runtime.lastError;
         });
-      } catch (error) {
-        debugLog("injectCode failed", error);
-      }
+      } catch (_) {}
     }
   }
 
@@ -2649,6 +2258,7 @@
     }
 
     #releasePointerSuppression() {
+      clearTimeout(this.timers.postClosePointerGuardRelease);
       this.peekTriggered = false;
       this.suppressPointerSequence = false;
       this.pendingLeftButtonRelease = false;
@@ -2659,6 +2269,7 @@
 
     #armPostClosePointerGuard() {
       clearTimeout(this.timers.suppressNativeOpen);
+      clearTimeout(this.timers.postClosePointerGuardRelease);
       this.peekTriggered = false;
       this.suppressPointerSequence = true;
       this.pendingLeftButtonRelease = false;
@@ -2680,10 +2291,21 @@
             this.postClosePointerGuardActive &&
             this.postClosePointerGuardSawPrimaryDown
           ) {
-            this.#releasePointerSuppression();
-          } else if (this.pendingLeftButtonRelease) {
-            this.#releasePointerSuppression();
+            clearTimeout(this.timers.postClosePointerGuardRelease);
+            this.timers.postClosePointerGuardRelease = setTimeout(() => {
+              this.#releasePointerSuppression();
+            }, 80);
           }
+        }
+
+        if (
+          (event.type === "click" ||
+            event.type === "auxclick" ||
+            event.type === "contextmenu") &&
+          (this.pendingLeftButtonRelease || this.postClosePointerGuardActive)
+        ) {
+          clearTimeout(this.timers.postClosePointerGuardRelease);
+          this.#releasePointerSuppression();
         }
 
         event.preventDefault();
@@ -2753,7 +2375,6 @@
             this.visibilityDelayTimer = null;
           }
           if (this.pendingLeftButtonRelease) {
-            this.#releasePointerSuppression();
             return;
           }
           if (!this.peekTriggered) {
@@ -2766,7 +2387,6 @@
     #startLinkHoldFeedback(link, duration = 1) {
       this.#stopLinkHoldFeedback();
       this.longPressLink = link;
-      link.style.setProperty("--peek-hold-progress", "0");
       link.style.setProperty("--peek-hold-depth", "0");
       link.classList.add("peek-hold-press");
       const startTime = performance.now();
@@ -2774,7 +2394,6 @@
         if (!this.longPressLink || this.longPressLink !== link) return;
         const progress = Math.min((now - startTime) / Math.max(duration, 1), 1);
         const depth = 1 - Math.pow(1 - progress, 1.75);
-        link.style.setProperty("--peek-hold-progress", progress.toFixed(3));
         link.style.setProperty("--peek-hold-depth", depth.toFixed(3));
         if (progress < 1) {
           this.holdFeedbackFrame = requestAnimationFrame(tick);
@@ -2792,7 +2411,6 @@
       }
       if (this.longPressLink) {
         this.longPressLink.classList.remove("peek-hold-press");
-        this.longPressLink.style.removeProperty("--peek-hold-progress");
         this.longPressLink.style.removeProperty("--peek-hold-depth");
         this.longPressLink = null;
       }
@@ -3019,17 +2637,9 @@
                         scaleX(calc(1 - var(--peek-hold-depth, 0) * 0.1))
                         scaleY(calc(1 - var(--peek-hold-depth, 0) * 0.1));
                     opacity: calc(1 - var(--peek-hold-depth, 0) * 0.08);
-                    filter:
-                        brightness(calc(1 - var(--peek-hold-depth, 0) * 0.13))
-                        saturate(calc(1 - var(--peek-hold-depth, 0) * 0.06));
-                    text-shadow:
-                        0 calc(var(--peek-hold-depth, 0) * 0.5px) 0
-                        rgba(0, 0, 0, calc(var(--peek-hold-depth, 0) * 0.22));
                     transition:
                         transform 55ms linear,
-                        opacity 55ms linear,
-                        filter 55ms linear,
-                        text-shadow 55ms linear;
+                        opacity 55ms linear;
                 }
 
                 .arcpeek-source-hidden {
