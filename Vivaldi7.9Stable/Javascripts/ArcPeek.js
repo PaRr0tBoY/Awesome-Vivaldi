@@ -2430,6 +2430,8 @@
   class WebsiteInjectionUtils {
     constructor(getWebviewConfig, openPeek, iconConfig) {
       this.iconConfig = JSON.stringify(iconConfig);
+      this.injectRetryTimer = null;
+      this.webviewObserver = null;
 
       const injectForNavigation = (navigationDetails) => {
         const { webview, fromPanel } = getWebviewConfig(navigationDetails);
@@ -2448,11 +2450,67 @@
         }, delay);
       });
 
+      this.observeWebviewLifecycle();
+
       chrome.runtime.onMessage.addListener((message) => {
         if (message.url) {
           openPeek(message.url, message.fromPanel, message.rect, message.meta);
         }
       });
+    }
+
+    scheduleActiveWebviewInjection(delay = 0) {
+      if (this.injectRetryTimer) {
+        clearTimeout(this.injectRetryTimer);
+      }
+      this.injectRetryTimer = window.setTimeout(() => {
+        this.injectRetryTimer = null;
+        this.injectActiveWebview();
+      }, delay);
+    }
+
+    observeWebviewLifecycle() {
+      const observerTarget = document.getElementById("browser") || document.body || document.documentElement;
+      if (!observerTarget) return;
+
+      this.webviewObserver = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          if (mutation.type === "attributes") {
+            const target = mutation.target;
+            if (
+              target?.tagName === "WEBVIEW" ||
+              target?.classList?.contains?.("webpageview")
+            ) {
+              this.scheduleActiveWebviewInjection(0);
+              return;
+            }
+          }
+
+          if (mutation.type === "childList") {
+            const addedNodes = [...mutation.addedNodes];
+            if (
+              addedNodes.some((node) => {
+                if (node?.tagName === "WEBVIEW") return true;
+                return node?.querySelector?.("webview");
+              })
+            ) {
+              this.scheduleActiveWebviewInjection(0);
+              return;
+            }
+          }
+        }
+      });
+
+      this.webviewObserver.observe(observerTarget, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ["class", "src", "tab_id"],
+      });
+
+      this.scheduleActiveWebviewInjection(0);
+      this.scheduleActiveWebviewInjection(200);
+      this.scheduleActiveWebviewInjection(800);
     }
 
     injectActiveWebview() {
@@ -2529,6 +2587,8 @@
       this.suppressPointerSequence = false;
       this.selectionSuppressed = false;
       this.pendingLeftButtonRelease = false;
+      this.postClosePointerGuardActive = false;
+      this.postClosePointerGuardSawPrimaryDown = false;
 
       this.#beforeUnloadListener = this.#cleanup.bind(this);
       window.addEventListener("beforeunload", this.#beforeUnloadListener, { signal: this.#abortController.signal });
@@ -2539,7 +2599,7 @@
         if (message.type === "peek-closed") {
           this.isLongPress = false;
           this.#restorePeekSourceLink();
-          this.#releasePointerSuppression();
+          this.#armPostClosePointerGuard();
           return;
         }
 
@@ -2592,7 +2652,19 @@
       this.peekTriggered = false;
       this.suppressPointerSequence = false;
       this.pendingLeftButtonRelease = false;
+      this.postClosePointerGuardActive = false;
+      this.postClosePointerGuardSawPrimaryDown = false;
       this.#restoreSelection();
+    }
+
+    #armPostClosePointerGuard() {
+      clearTimeout(this.timers.suppressNativeOpen);
+      this.peekTriggered = false;
+      this.suppressPointerSequence = true;
+      this.pendingLeftButtonRelease = false;
+      this.postClosePointerGuardActive = true;
+      this.postClosePointerGuardSawPrimaryDown = false;
+      this.#suppressSelection();
     }
 
     #setupMouseHandling() {
@@ -2602,6 +2674,18 @@
 
       const suppressNativeEvent = (event) => {
         if (!this.peekTriggered && !this.suppressPointerSequence) return;
+
+        if (event.type === "pointerup" && event.button === 0) {
+          if (
+            this.postClosePointerGuardActive &&
+            this.postClosePointerGuardSawPrimaryDown
+          ) {
+            this.#releasePointerSuppression();
+          } else if (this.pendingLeftButtonRelease) {
+            this.#releasePointerSuppression();
+          }
+        }
+
         event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
@@ -2615,6 +2699,16 @@
       });
 
       document.addEventListener("pointerdown", (event) => {
+        if (this.postClosePointerGuardActive) {
+          if (event.button === 0) {
+            this.postClosePointerGuardSawPrimaryDown = true;
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+          }
+          return;
+        }
+
         const link = this.#getLinkElement(event);
         if (link) {
           this.#recordLinkSnapshot(event, link);
@@ -2629,6 +2723,7 @@
         } else if (event.button === 0) {
           if (link) {
             this.isLongPress = true;
+            this.#suppressSelection();
             const effectiveHoldTime = this.config.rightClickHoldTime - this.config.rightClickHoldDelay;
 
             this.visibilityDelayTimer = setTimeout(() => {
