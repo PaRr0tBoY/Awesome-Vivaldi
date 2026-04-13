@@ -73,6 +73,8 @@ Preview link content before opening
   opacity: 0;
   position: relative;
   z-index: 1;
+  overflow: hidden;
+  border-radius: inherit;
 }
 
 #browser #webpage-stack {
@@ -81,7 +83,7 @@ Preview link content before opening
     box-shadow 0.35s cubic-bezier(0.16, 0.88, 0.22, 1) !important;
 }
 
-body.peek-open:not(.peek-lightweight) #browser #webpage-stack {
+body.peek-open #browser #webpage-stack {
   transform: scale(0.97) !important;
   border-radius: var(--radius);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24) !important;
@@ -137,7 +139,7 @@ body.peek-open:not(.peek-lightweight) #browser #webpage-stack {
   z-index: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
   border-radius: calc(var(--radius) * 1.05);
   box-shadow:
     0 28px 80px rgba(0, 0, 0, 0.38),
@@ -149,12 +151,11 @@ body.peek-open:not(.peek-lightweight) #browser #webpage-stack {
     opacity 0.18s ease;
   margin: 0;
   transform-origin: top left;
+  will-change: transform, opacity;
 
   &.preview-animating {
-    background: color-mix(in srgb, var(--colorBg) 42%, transparent);
-    box-shadow:
-      0 18px 44px rgba(0, 0, 0, 0.18),
-      0 0 0 1px rgba(255, 255, 255, 0.03);
+    background: transparent;
+    box-shadow: none;
   }
 
   &.preview-closing {
@@ -187,18 +188,37 @@ body.peek-open:not(.peek-lightweight) #browser #webpage-stack {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 0;
+  z-index: 3;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   color: var(--preview-fg, rgba(18, 18, 18, 0.92));
-  background: var(--preview-bg, rgba(255, 255, 255, 0.1));
+  background: transparent;
   border-radius: inherit;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.peek-container .peek-source-preview::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--preview-bg, rgba(255, 255, 255, 0.1));
+  opacity: 1;
+  transition: opacity var(--peek-backdrop-duration, 320ms)
+    cubic-bezier(0.2, 0.82, 0.24, 1);
+  z-index: 0;
 }
 
 .peek-container .peek-panel.preview-closing .peek-source-preview {
-  background: transparent;
+  z-index: 3;
+}
+
+.peek-container .peek-panel.preview-closing .peek-source-preview::before {
+  opacity: 0;
 }
 
 .peek-container .peek-panel.preview-transform-only .peek-source-preview {
@@ -206,22 +226,19 @@ body.peek-open:not(.peek-lightweight) #browser #webpage-stack {
 }
 
 .peek-container .peek-source-preview-image {
-  width: 100%;
-  height: 100%;
+  width: 0;
+  height: 0;
+  max-width: 0;
+  max-height: 0;
   display: block;
   flex: 0 0 auto;
-  opacity: 1;
+  opacity: 0;
   border-radius: inherit;
   object-fit: contain;
   object-position: center;
-}
-
-.peek-container .peek-panel.preview-closing .peek-source-preview-image {
-  object-fit: fill;
-}
-
-.peek-container .peek-panel.preview-transform-only .peek-source-preview-image {
-  object-fit: fill;
+  will-change: transform, opacity;
+  position: relative;
+  z-index: 1;
 }
 
 .peek-container .peek-sidebar-button {
@@ -261,14 +278,21 @@ body.peek-open:not(.peek-lightweight) #browser #webpage-stack {
   color: white;
 }
 
-.peek-container .peek-panel + .peek-sidebar-controls {
-  position: fixed;
-  top: calc(var(--peek-panel-top, 76px) + 10px);
-  left: calc(var(--peek-panel-right, 1180px) + 8px);
+.peek-container .peek-panel .peek-sidebar-controls {
+  position: absolute;
+  top: 10px;
+  left: calc(100% + 8px);
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding: 0;
   width: 38px;
   z-index: 4;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.peek-container .peek-panel .peek-sidebar-controls,
+.peek-container .peek-panel .peek-sidebar-controls .peek-sidebar-button {
+  pointer-events: auto;
 }
