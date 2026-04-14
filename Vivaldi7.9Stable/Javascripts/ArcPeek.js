@@ -241,6 +241,8 @@
         `${this.getBackdropDuration("closing")}ms`
       );
 
+      let closingHandoffPromise = Promise.resolve();
+
       if (data.closingMode === "preview") {
         let previewLayer = panel.querySelector(":scope > .peek-source-preview");
         if (!previewLayer) {
@@ -249,21 +251,46 @@
             data.previewAssetUrl,
             data.linkRect
           );
+          if (previewLayer) {
+            previewLayer.style.opacity = "0";
+            previewLayer.style.visibility = "hidden";
+          }
         }
         await this.waitForPreviewLayer(previewLayer);
         await this.flushPreviewLayerForClosing(panel, previewLayer);
         this.setPreviewAnimationState(panel, false);
         this.preparePreviewLayerForClosing(panel);
         this.hideSidebarControls(panel.querySelector(".peek-sidebar-controls"));
-        this.suppressPeekContentForClosing(panel);
-        this.animatePreviewLayerIn(panel);
+        await this.waitForAnimationFrames(1);
+        const contentFadeDurationRatio = 0.14;
+        const contentFadeOut = this.animatePeekContentOut(panel, {
+          delayRatio: 0,
+          durationRatio: contentFadeDurationRatio,
+          hideOnFinish: false,
+        });
+        const previewFadeDelayMs = Math.round(
+          this.getGlanceDuration("closing") * contentFadeDurationRatio * 0.5
+        );
+        const previewFadeIn = this.animatePreviewLayerIn(panel, {
+          delayMs: previewFadeDelayMs,
+        });
         this.setPreviewClosingState(panel, true);
         await this.waitForAnimationFrames(1);
         this.setPreviewClosingMatteState(panel, true);
+        closingHandoffPromise = Promise.allSettled([
+          contentFadeOut,
+          previewFadeIn,
+        ]).then(() => {
+          if (!panel?.isConnected) return;
+          this.suppressPeekContentForClosing(panel);
+        });
       }
 
       try {
-        await this.animatePeekMotion(panel, "closing", sourceRect);
+        await Promise.allSettled([
+          this.animatePeekMotion(panel, "closing", sourceRect),
+          closingHandoffPromise,
+        ]);
       } catch (_) {
       } finally {
         await finishCleanup();
@@ -734,7 +761,6 @@
       webview.dataset.pendingSrc = pendingUrl;
 
       webview.addEventListener("loadstart", () => {
-        webview.style.backgroundColor = "var(--colorBorder)";
         const input = document.getElementById(`input-${webview.id}`);
         if (input !== null) {
           input.value = webview.src;
@@ -1477,12 +1503,22 @@
 
     animatePeekContentOut(
       peekPanel,
-      { delayRatio = 0, durationRatio = 0 } = {}
+      { delayRatio = 0, durationRatio = 0, hideOnFinish = true } = {}
     ) {
       const peekContent = peekPanel?.querySelector(".peek-content");
       if (!peekContent || typeof peekContent.animate !== "function") {
-        this.hidePeekContent(peekPanel);
-        return;
+        if (hideOnFinish) {
+          this.hidePeekContent(peekPanel);
+        } else {
+          const webview = peekContent?.querySelector?.("webview");
+          peekContent.style.opacity = "0";
+          peekContent.style.pointerEvents = "none";
+          if (webview) {
+            webview.style.opacity = "0";
+            webview.style.pointerEvents = "none";
+          }
+        }
+        return Promise.resolve();
       }
 
       const duration = Math.max(
@@ -1495,8 +1531,18 @@
       );
 
       if (duration <= 0 && delay <= 0) {
-        this.hidePeekContent(peekPanel);
-        return;
+        if (hideOnFinish) {
+          this.hidePeekContent(peekPanel);
+        } else {
+          const webview = peekContent.querySelector("webview");
+          peekContent.style.opacity = "0";
+          peekContent.style.pointerEvents = "none";
+          if (webview) {
+            webview.style.opacity = "0";
+            webview.style.pointerEvents = "none";
+          }
+        }
+        return Promise.resolve();
       }
 
       peekContent.getAnimations().forEach((animation) => animation.cancel());
@@ -1507,10 +1553,18 @@
         fill: "forwards",
       });
 
-      animation.finished.then(() => {
+      return animation.finished.then(() => {
         if (!peekPanel?.isConnected) return;
         peekContent.style.opacity = "0";
-        peekContent.style.display = "none";
+        peekContent.style.pointerEvents = "none";
+        const webview = peekContent.querySelector("webview");
+        if (webview) {
+          webview.style.opacity = "0";
+          webview.style.pointerEvents = "none";
+        }
+        if (hideOnFinish) {
+          peekContent.style.display = "none";
+        }
       }).catch(() => {});
     }
 
@@ -1550,9 +1604,10 @@
       const previewLayer = peekPanel?.querySelector(":scope > .peek-source-preview");
       if (!previewLayer) return;
       previewLayer.getAnimations?.().forEach((animation) => animation.cancel());
-      previewLayer.style.opacity = "1";
+      previewLayer.style.opacity = "0";
       previewLayer.style.zIndex = "3";
       previewLayer.style.visibility = "visible";
+      previewLayer.style.transition = "opacity 400ms ease-out";
     }
 
     async flushPreviewLayerForClosing(peekPanel, previewLayer) {
@@ -1563,32 +1618,16 @@
       await this.waitForAnimationFrames(2);
     }
 
-    animatePreviewLayerIn(peekPanel) {
+    async animatePreviewLayerIn(peekPanel, { delayMs = 0 } = {}) {
       const previewLayer = peekPanel?.querySelector(":scope > .peek-source-preview");
       if (!previewLayer) return;
-      if (this.ARC_CONFIG.previewRevealRatio <= 0) {
-        previewLayer.getAnimations?.().forEach((animation) => animation.cancel());
-        previewLayer.style.opacity = "1";
-        return;
-      }
-      if (typeof previewLayer.animate !== "function") {
-        previewLayer.style.opacity = "1";
-        return;
-      }
-
       previewLayer.getAnimations?.().forEach((animation) => animation.cancel());
+      void previewLayer.offsetHeight;
+      await this.waitForAnimationFrames(1);
+      if (delayMs > 0) {
+        await new Promise((resolve) => window.setTimeout(resolve, delayMs));
+      }
       previewLayer.style.opacity = "1";
-      const animation = previewLayer.animate([{ opacity: 1 }, { opacity: 1 }], {
-        delay: this.getGlanceDuration("closing") * this.ARC_CONFIG.previewRevealDelayRatio,
-        duration: this.getGlanceDuration("closing") * this.ARC_CONFIG.previewRevealRatio,
-        easing: "ease-out",
-        fill: "forwards",
-      });
-
-      animation.finished.then(() => {
-        if (!previewLayer.isConnected) return;
-        previewLayer.style.opacity = "1";
-      }).catch(() => {});
     }
 
     setPreviewAnimationState(peekPanel, enabled) {
