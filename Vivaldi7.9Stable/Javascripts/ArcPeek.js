@@ -834,6 +834,14 @@
         this.mountPreviewLayer(peekPanel, previewAsset.dataUrl, effectiveLinkRect);
         this.setPreviewAnimationState(peekPanel, true);
         this.preparePeekContentForPreview(peekPanel);
+        webview.addEventListener(
+          "loadstart",
+          () => {
+            this.removePreviewLayer(peekPanel);
+            this.showPeekContent(peekPanel);
+          },
+          { once: true }
+        );
       } else {
         this.showPeekContent(peekPanel);
       }
@@ -843,14 +851,6 @@
       requestAnimationFrame(() => {
         peekContainer.classList.remove("pre-open");
         peekContainer.classList.add("open");
-      });
-
-      // Start navigation once the webview is attached so it does not get stuck
-      // on about:blank while the opening animation is still running.
-      requestAnimationFrame(() => {
-        const currentData = this.webviews.get(webviewId);
-        if (!currentData || currentData.isDisposing) return;
-        this.startPeekNavigation(webview, webviewId);
       });
       
       const sourceRect = this.webviews.get(webviewId).sourceRect || this.resolveSourceRect(effectiveLinkRect);
@@ -1352,12 +1352,10 @@
       if (data) {
         data.openingState = "finished";
       }
-      this.startPeekNavigation(data.webview, webviewId);
       peekPanel?.setAttribute("data-has-finished-animation", "true");
       this.setPreviewAnimationState(peekPanel, false);
       this.setPreviewClosingState(peekPanel, false);
-      this.removePreviewLayer(peekPanel);
-      this.showPeekContent(peekPanel);
+      this.startPeekNavigation(data.webview, webviewId);
     }
 
     startPeekNavigation(webview, webviewId = "") {
