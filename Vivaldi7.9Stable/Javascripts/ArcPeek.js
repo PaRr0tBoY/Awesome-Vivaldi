@@ -4,11 +4,20 @@
  * Forum link: https://forum.vivaldi.net/topic/92501/open-in-dialog-mod?_=1717490394230
  */
 (() => {
+  // =========================
+  // Trigger Config
+  // =========================
   const ICON_CONFIG = {
-    linkIcon: "",
-    linkIconInteractionOnHover: true,
-    showIconDelay: 250,
-    showPeekOnHoverDelay: 100,
+    // Modifier keys that allow left click to open Peek.
+    // Available values: "alt", "shift", "ctrl", "meta"
+    // Examples:
+    // ["alt"] => Alt + click opens Peek
+    // ["shift"] => Shift + click opens Peek
+    // ["meta"] => Command (macOS) / Windows key + click opens Peek
+    // ["ctrl", "shift"] => Ctrl + click OR Shift + click both open Peek
+    // [] or "none" => disable modifier + click opening
+    clickOpenModifiers: ["alt"],
+
     // Long-press trigger buttons.
     // Available values: "middle", "right"
     // Examples:
@@ -17,10 +26,19 @@
     // ["middle", "right"] => middle and right long press both open Peek
     // [] or "none" => disable long-press open entirely
     longPressButtons: ["middle"],
+
+    // How long the button must be held before Peek opens, in milliseconds.
+    // Example: 400
     longPressHoldTime: 400,
+
+    // Delay before the hold feedback animation starts, in milliseconds.
+    // Example: 200
     longPressHoldDelay: 200,
   };
 
+  // =========================
+  // Visual Config
+  // =========================
   const PEEK_FOREGROUND_CONFIG = {
     // Foreground blank layer shown while the webview loads behind it.
     // Available values:
@@ -36,11 +54,14 @@
     scaleBackgroundPage: true,
   };
 
+  // =========================
+  // Debug Config
+  // =========================
   const PEEK_DEBUG_CONFIG = {
     // Log candidate coordinate systems during open/close for auto-hide debugging.
-    logCoordinateSystems: true,
+    logCoordinateSystems: false,
     // Log sourceToken -> live rect request/response path.
-    logSourceRectRequests: true,
+    logSourceRectRequests: false,
   };
 
   class PeekMod {
@@ -2741,8 +2762,8 @@
   }
 
   class WebsiteInjectionUtils {
-    constructor(getWebviewConfig, openPeek, iconConfig) {
-      this.iconConfig = JSON.stringify(iconConfig);
+    constructor(getWebviewConfig, openPeek, triggerConfig) {
+      this.triggerConfig = JSON.stringify(triggerConfig);
       this.injectRetryTimers = new Map();
       this.injectThrottleState = new WeakMap();
       this.webviewObserver = null;
@@ -2851,7 +2872,7 @@
       const handler = WebsiteLinkInteractionHandler.toString(),
         instantiationCode = `
                 if (!this.peekEventListenerSet) {
-                    new (${handler})(${fromPanel}, ${this.iconConfig});
+                    new (${handler})(${fromPanel}, ${this.triggerConfig});
                     this.peekEventListenerSet = true;
                 }
             `;
@@ -2893,13 +2914,9 @@
       this.fromPanel = fromPanel;
       this.config = config;
 
-      this.icon = null;
       this.longPressLink = null;
 
       this.timers = {
-        showIcon: null,
-        showPeekIntent: null,
-        hideIcon: null,
         suppressNativeOpen: null,
       };
 
@@ -2952,7 +2969,7 @@
 
     #initialize() {
       this.#setupMouseHandling();
-      this.#createIconStyle();
+      this.#createStyle();
     }
 
     #cleanup() {
@@ -3009,6 +3026,36 @@
       return false;
     }
 
+    #getConfiguredClickOpenModifiers() {
+      const raw = this.config?.clickOpenModifiers;
+      const values = Array.isArray(raw) ? raw : [raw];
+      return new Set(
+        values
+          .flatMap((value) => String(value || "").toLowerCase().split(","))
+          .map((value) => value.trim())
+          .filter(Boolean)
+          .filter((value) => value !== "none")
+          .filter((value) =>
+            value === "alt" ||
+            value === "shift" ||
+            value === "ctrl" ||
+            value === "meta"
+          )
+      );
+    }
+
+    #isConfiguredClickOpenModifierEvent(event) {
+      if (!event || event.button !== 0) return false;
+      const modifiers = this.#getConfiguredClickOpenModifiers();
+      if (!modifiers.size) return false;
+      return (
+        (modifiers.has("alt") && !!event.altKey) ||
+        (modifiers.has("shift") && !!event.shiftKey) ||
+        (modifiers.has("ctrl") && !!event.ctrlKey) ||
+        (modifiers.has("meta") && !!event.metaKey)
+      );
+    }
+
     #setupMouseHandling() {
       let holdTimer;
       const signalOptions = { signal: this.#abortController.signal, capture: true };
@@ -3057,7 +3104,7 @@
           this.#recordLinkSnapshot(event, link);
         }
 
-        if ((event.altKey || event.metaKey || event.ctrlKey) && event.button === 0) {
+        if (this.#isConfiguredClickOpenModifierEvent(event)) {
           this.pendingLeftButtonRelease = true;
           this.pendingSuppressedButton = 0;
           this.#openPeekFromEvent(event);
@@ -3392,7 +3439,7 @@
       } catch (_) {}
     }
 
-    #createIconStyle() {
+    #createStyle() {
       this.#styleElement = document.createElement("style");
       this.#styleElement.textContent = `
                 html.arcpeek-no-select,
@@ -3434,14 +3481,6 @@
           signal: this.#abortController.signal,
         });
       }
-    }
-
-    debounce(fn, delay) {
-      let timer = null;
-      return (...args) => {
-        clearTimeout(timer);
-        timer = setTimeout(fn.bind(this, ...args), delay);
-      };
     }
   }
 
