@@ -84,7 +84,14 @@
         return { webview: null, fromPanel: false };
       }
       if (webview)
-        return { webview, fromPanel: webview.name === "vivaldi-webpanel" };
+        return { webview, fromPanel: this.isPanelWebview(webview) };
+
+      webview = Array.from(this.webviews.values()).find(
+        (view) => view.fromPanel
+      )?.webview;
+      if (webview) {
+        return { webview, fromPanel: true };
+      }
 
       const activeWebview = document.querySelector(".active.visible.webpageview webview");
       const activeTabId = Number(activeWebview?.tab_id);
@@ -95,11 +102,33 @@
       ) {
         return {
           webview: activeWebview,
-          fromPanel: activeWebview.name === "vivaldi-webpanel",
+          fromPanel: this.isPanelWebview(activeWebview),
         };
       }
 
       return { webview: null, fromPanel: false };
+    }
+
+    isPanelWebview(webview) {
+      if (!webview) return false;
+      if (webview.closest?.(".peek-panel")) return false;
+
+      const name = String(webview.name || webview.getAttribute?.("name") || "");
+      if (name === "vivaldi-webpanel" || name.includes("webpanel")) return true;
+
+      if (
+        webview.closest?.(
+          "#panels-container, .panel-group, .panel.webpanel, .webpanel-stack, .webpanel-content"
+        )
+      ) {
+        return true;
+      }
+
+      const rawTabId = webview.getAttribute?.("tab_id") || webview.tab_id;
+      const tabId = Number(rawTabId);
+      if (!Number.isFinite(tabId) || tabId <= 0) return true;
+
+      return false;
     }
 
     cancelAnimations(elements = []) {
@@ -612,7 +641,11 @@
 
       const activeWebview = document.querySelector(".active.visible.webpageview webview");
       const peekViewportRect = this.getPeekViewportRect(activeWebview);
-      const tabId = !fromPanel && activeWebview ? Number(activeWebview.tab_id) : null;
+      const activeTabId = Number(activeWebview?.tab_id);
+      const tabId =
+        !fromPanel && Number.isFinite(activeTabId) && activeTabId > 0
+          ? activeTabId
+          : null;
 
       this.webviews.set(webviewId, {
         divContainer: peekContainer,
@@ -811,10 +844,16 @@
         peekContainer.classList.remove("pre-open");
         peekContainer.classList.add("open");
       });
+
+      // Start navigation once the webview is attached so it does not get stuck
+      // on about:blank while the opening animation is still running.
+      requestAnimationFrame(() => {
+        const currentData = this.webviews.get(webviewId);
+        if (!currentData || currentData.isDisposing) return;
+        this.startPeekNavigation(webview, webviewId);
+      });
       
       const sourceRect = this.webviews.get(webviewId).sourceRect || this.resolveSourceRect(effectiveLinkRect);
-      
-      this.startPeekNavigation(webview, webviewId);
 
       if (previewAsset?.dataUrl) {
         const handoffOptions = {
@@ -829,6 +868,11 @@
       }
 
       this.webviews.get(webviewId).openingState = "animating";
+      this.webviews.get(webviewId).timers.startNavigation = window.setTimeout(() => {
+        const currentData = this.webviews.get(webviewId);
+        if (!currentData || currentData.isDisposing) return;
+        this.startPeekNavigation(webview, webviewId);
+      }, Math.max(0, this.getGlanceDuration("opening") - 80));
       
       this.animatePeekMotion(peekPanel, "opening", sourceRect)
         .then(() => {
@@ -1308,6 +1352,7 @@
       if (data) {
         data.openingState = "finished";
       }
+      this.startPeekNavigation(data.webview, webviewId);
       peekPanel?.setAttribute("data-has-finished-animation", "true");
       this.setPreviewAnimationState(peekPanel, false);
       this.setPreviewClosingState(peekPanel, false);
@@ -1316,8 +1361,11 @@
     }
 
     startPeekNavigation(webview, webviewId = "") {
-      if (!webview || webview.src !== "about:blank" || !webview.dataset.pendingSrc) return;
-      webview.src = webview.dataset.pendingSrc;
+      const pendingSrc = webview?.dataset?.pendingSrc;
+      if (!webview || !pendingSrc) return;
+      webview.setAttribute("src", pendingSrc);
+      webview.src = pendingSrc;
+      delete webview.dataset.pendingSrc;
     }
 
     hidePeekContent(peekPanel) {
