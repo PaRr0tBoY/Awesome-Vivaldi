@@ -32,6 +32,8 @@
       previewRevealDelayRatio: 0,
       previewRevealRatio: 0,
       contentHideRatio: 0,
+      webviewRevealSettleMs: 120,
+      webviewRevealSettleMsWindows: 220,
       previewCacheLimit: 48,
       previewCacheTtlMs: 10 * 60 * 1000,
       lastRecordedLinkTtlMs: 2000,
@@ -66,6 +68,15 @@
       } catch (_) {
         return false;
       }
+    }
+
+    getWebviewRevealSettleDelay() {
+      const isWindows =
+        navigator.userAgentData?.platform === "Windows" ||
+        /Windows/i.test(navigator.platform || "");
+      return isWindows
+        ? this.ARC_CONFIG.webviewRevealSettleMsWindows
+        : this.ARC_CONFIG.webviewRevealSettleMs;
     }
 
     getWebviewConfig(navigationDetails) {
@@ -694,6 +705,9 @@
         previewCapturePromise,
         openingMode: previewAsset?.dataUrl ? "preview" : "live",
         openingState: "starting",
+        pageStable: false,
+        webviewRevealPending: false,
+        webviewRevealed: false,
         closingMode: null,
         disableSourceCloseAnimation: false,
       });
@@ -856,16 +870,16 @@
       this.webviews.get(webviewId).openingSourceRect = geometry?.sourceRect || null;
       this.webviews.get(webviewId).sourceRect = geometry?.sourceRect || null;
       this.setPeekSourceLinkVisibility(effectiveLinkRect?.sourceToken, true);
+      this.mountPreviewLayer(
+        peekPanel,
+        previewAsset?.dataUrl || null,
+        effectiveLinkRect
+      );
+      this.preparePeekContentForPreview(peekPanel);
+      this.setPeekWebviewVisibility(peekPanel, false);
+      this.armPeekWebviewReveal(peekPanel, webviewId);
       if (previewAsset?.dataUrl) {
-        this.mountPreviewLayer(peekPanel, previewAsset.dataUrl, effectiveLinkRect);
         this.setPreviewAnimationState(peekPanel, true);
-        this.preparePeekContentForPreview(peekPanel);
-        this.setPeekWebviewVisibility(peekPanel, false);
-        this.armPeekWebviewReveal(peekPanel, webview, { removePreview: true });
-      } else {
-        this.showPeekContent(peekPanel);
-        this.setPeekWebviewVisibility(peekPanel, false);
-        this.armPeekWebviewReveal(peekPanel, webview, { removePreview: false });
       }
       
       peekContainer.style.setProperty("--peek-backdrop-duration", `${this.getBackdropDuration("opening")}ms`);
@@ -877,24 +891,14 @@
       
       const sourceRect = this.webviews.get(webviewId).sourceRect || this.resolveSourceRect(effectiveLinkRect);
 
+      this.webviews.get(webviewId).openingState = "animating";
+      this.startPeekNavigation(webview, webviewId);
       if (previewAsset?.dataUrl) {
-        const handoffOptions = {
+        this.animatePreviewImageOut(peekPanel, {
           delayRatio: 0,
-          durationRatio: 0.25,
-        };
-        this.animatePeekContentIn(peekPanel, handoffOptions);
-        this.animatePreviewLayerOut(peekPanel, {
-          delayRatio: 0,
-          durationRatio: 0.25,
+          durationRatio: 0.28,
         });
       }
-
-      this.webviews.get(webviewId).openingState = "animating";
-      this.webviews.get(webviewId).timers.startNavigation = window.setTimeout(() => {
-        const currentData = this.webviews.get(webviewId);
-        if (!currentData || currentData.isDisposing) return;
-        this.startPeekNavigation(webview, webviewId);
-      }, Math.max(0, this.getGlanceDuration("opening") - 80));
       
       this.animatePeekMotion(peekPanel, "opening", sourceRect)
         .then(() => {
@@ -1287,12 +1291,16 @@
       const hasPreview = !!sourcePreviewUrl;
       const previewWidth = Math.max(1, Math.round(linkRect?.width || 1));
       const previewHeight = Math.max(1, Math.round(linkRect?.height || 1));
+      const isDarkMode = window.matchMedia?.(
+        "(prefers-color-scheme: dark)"
+      )?.matches;
 
       previewLayer.className = "peek-source-preview";
       imageLayer.className = "peek-source-preview-image";
+      previewLayer.classList.toggle("has-source-preview", hasPreview);
       previewLayer.style.setProperty(
         "--preview-bg",
-        hasPreview ? "rgba(255, 255, 255, 0.1)" : "rgba(255,255,255,0.1)"
+        isDarkMode ? "rgb(28, 28, 30)" : "rgb(247, 247, 248)"
       );
       imageLayer.style.aspectRatio = `${previewWidth} / ${previewHeight}`;
       
@@ -1301,10 +1309,6 @@
         imageLayer.alt = "";
         imageLayer.decoding = "sync";
         imageLayer.draggable = false;
-        previewLayer.style.backgroundImage = `url("${sourcePreviewUrl}")`;
-        previewLayer.style.backgroundRepeat = "no-repeat";
-        previewLayer.style.backgroundPosition = "center";
-        previewLayer.style.backgroundSize = "contain";
       }
 
       previewLayer.appendChild(imageLayer);
@@ -1377,7 +1381,7 @@
       peekPanel?.setAttribute("data-has-finished-animation", "true");
       this.setPreviewAnimationState(peekPanel, false);
       this.setPreviewClosingState(peekPanel, false);
-      this.startPeekNavigation(data.webview, webviewId);
+      this.maybeRevealPeekWebview(webviewId);
     }
 
     startPeekNavigation(webview, webviewId = "") {
@@ -1397,21 +1401,72 @@
       webview.style.pointerEvents = visible ? "" : "none";
     }
 
-    armPeekWebviewReveal(peekPanel, webview, { removePreview = false } = {}) {
-      if (!peekPanel || !webview) return;
-      let revealed = false;
-      const reveal = async () => {
-        if (revealed || !peekPanel.isConnected) return;
-        revealed = true;
-        await this.waitForAnimationFrames(2);
-        if (!peekPanel.isConnected) return;
-        if (removePreview) {
-          this.removePreviewLayer(peekPanel);
-        }
-        this.setPeekWebviewVisibility(peekPanel, true);
+    armPeekWebviewReveal(peekPanel, webviewId) {
+      const data = this.webviews.get(webviewId);
+      const webview = data?.webview;
+      if (!peekPanel || !webview || !data) return;
+      const markStable = () => {
+        const current = this.webviews.get(webviewId);
+        if (!current || current.isDisposing) return;
+        current.pageStable = true;
+        this.maybeRevealPeekWebview(webviewId);
       };
 
-      webview.addEventListener("loadstop", reveal, { once: true });
+      webview.addEventListener("loadstop", markStable, { once: true });
+    }
+
+    maybeRevealPeekWebview(webviewId) {
+      const data = this.webviews.get(webviewId);
+      const peekPanel = data?.divContainer?.querySelector?.(":scope > .peek-panel");
+      if (
+        !data ||
+        data.isDisposing ||
+        data.closingMode ||
+        data.webviewRevealPending ||
+        data.webviewRevealed ||
+        data.openingState !== "finished" ||
+        !data.pageStable ||
+        !peekPanel?.isConnected
+      ) {
+        return;
+      }
+
+      data.webviewRevealPending = true;
+      Promise.resolve()
+        .then(async () => {
+          const settleDelay = this.getWebviewRevealSettleDelay();
+          if (settleDelay > 0) {
+            await new Promise((resolve) =>
+              window.setTimeout(resolve, settleDelay)
+            );
+          }
+          await this.waitForAnimationFrames(2);
+          const current = this.webviews.get(webviewId);
+          const currentPanel =
+            current?.divContainer?.querySelector?.(":scope > .peek-panel");
+          if (
+            !current ||
+            current.isDisposing ||
+            current.closingMode ||
+            current.webviewRevealed ||
+            current.openingState !== "finished" ||
+            !current.pageStable ||
+            !currentPanel?.isConnected
+          ) {
+            return;
+          }
+          this.showPeekContent(currentPanel);
+          this.setPeekWebviewVisibility(currentPanel, true);
+          await this.fadeForegroundLayerOut(currentPanel);
+          this.removePreviewLayer(currentPanel);
+          current.webviewRevealed = true;
+        })
+        .finally(() => {
+          const current = this.webviews.get(webviewId);
+          if (current) {
+            current.webviewRevealPending = false;
+          }
+        });
     }
 
     hidePeekContent(peekPanel) {
@@ -1590,23 +1645,25 @@
       }).catch(() => {});
     }
 
-    animatePreviewLayerOut(
+    animatePreviewImageOut(
       peekPanel,
       {
         delayRatio = this.ARC_CONFIG.previewFadeOutDelayRatio,
         durationRatio = this.ARC_CONFIG.previewFadeOutRatio,
       } = {}
     ) {
-      const previewLayer = peekPanel?.querySelector(":scope > .peek-source-preview");
-      if (!previewLayer) return;
-      if (typeof previewLayer.animate !== "function") {
-        previewLayer.style.opacity = "0";
+      const previewImage = peekPanel?.querySelector(
+        ":scope > .peek-source-preview .peek-source-preview-image"
+      );
+      if (!previewImage) return;
+      if (typeof previewImage.animate !== "function") {
+        previewImage.style.opacity = "0";
         return;
       }
 
-      previewLayer.getAnimations?.().forEach((animation) => animation.cancel());
-      previewLayer.style.opacity = "1";
-      const animation = previewLayer.animate([{ opacity: 1 }, { opacity: 0 }], {
+      previewImage.getAnimations?.().forEach((animation) => animation.cancel());
+      previewImage.style.opacity = "1";
+      const animation = previewImage.animate([{ opacity: 1 }, { opacity: 0 }], {
         delay: this.getGlanceDuration("opening") * delayRatio,
         duration: Math.max(
           1,
@@ -1617,6 +1674,27 @@
       });
 
       animation.finished.then(() => {
+        if (!previewImage.isConnected) return;
+        previewImage.style.opacity = "0";
+      }).catch(() => {});
+    }
+
+    fadeForegroundLayerOut(peekPanel, durationMs = 140) {
+      const previewLayer = peekPanel?.querySelector(":scope > .peek-source-preview");
+      if (!previewLayer || typeof previewLayer.animate !== "function") {
+        this.removePreviewLayer(peekPanel);
+        return Promise.resolve();
+      }
+
+      previewLayer.getAnimations?.().forEach((animation) => animation.cancel());
+      previewLayer.style.opacity = "1";
+      const animation = previewLayer.animate([{ opacity: 1 }, { opacity: 0 }], {
+        duration: Math.max(1, durationMs),
+        easing: "ease-out",
+        fill: "forwards",
+      });
+
+      return animation.finished.then(() => {
         if (!previewLayer.isConnected) return;
         previewLayer.style.opacity = "0";
       }).catch(() => {});
@@ -1626,6 +1704,11 @@
       const previewLayer = peekPanel?.querySelector(":scope > .peek-source-preview");
       if (!previewLayer) return;
       previewLayer.getAnimations?.().forEach((animation) => animation.cancel());
+      const previewImage = previewLayer.querySelector(".peek-source-preview-image");
+      previewImage?.getAnimations?.().forEach((animation) => animation.cancel());
+      if (previewImage && previewLayer.classList.contains("has-source-preview")) {
+        previewImage.style.opacity = "1";
+      }
       previewLayer.style.opacity = "0";
       previewLayer.style.zIndex = "3";
       previewLayer.style.visibility = "visible";
