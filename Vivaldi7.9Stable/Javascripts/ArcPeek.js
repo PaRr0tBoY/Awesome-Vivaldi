@@ -9,8 +9,17 @@
     linkIconInteractionOnHover: true,
     showIconDelay: 250,
     showPeekOnHoverDelay: 100,
-    rightClickHoldTime: 400,
-    rightClickHoldDelay: 200,
+    // Long-press trigger buttons.
+    // Available values: "left", "middle", "right"
+    // Examples:
+    // ["left"] => only left-button long press opens Peek
+    // ["right"] => only right-button long press opens Peek
+    // ["left", "right"] => left and right long press both open Peek
+    // ["middle"] => only middle-button long press opens Peek
+    // [] or "none" => disable long-press open entirely
+    longPressButtons: ["left"],
+    longPressHoldTime: 400,
+    longPressHoldDelay: 200,
   };
 
   class PeekMod {
@@ -292,9 +301,7 @@
     }
 
     armPostClosePointerGuard() {
-      if (this.postClosePointerGuard) {
-        this.postClosePointerGuard.cleanup();
-      }
+      if (this.postClosePointerGuard) return;
 
       let cleaned = false;
       const swallow = (event) => {
@@ -306,6 +313,8 @@
         if (cleaned) return;
         cleaned = true;
         [
+          "pointerdown",
+          "mousedown",
           "pointermove",
           "mousemove",
           "selectstart",
@@ -326,6 +335,12 @@
         }
       };
       const handlers = {
+        pointerdown: () => {
+          cleanup();
+        },
+        mousedown: () => {
+          cleanup();
+        },
         pointermove: swallow,
         mousemove: swallow,
         selectstart: swallow,
@@ -747,6 +762,7 @@
         if (!backdropClosePending) return;
         backdropClosePending = false;
         swallowBackdropEvent(event);
+        chrome.runtime.sendMessage({ type: "peek-will-close" });
         this.armPostClosePointerGuard();
         this.disposePeek(webviewId, { animated: true, closeRuntimeTab: true });
       };
@@ -757,7 +773,6 @@
         swallowBackdropEvent(event);
         if (backdropClosePending) return;
         backdropClosePending = true;
-        this.armPostClosePointerGuard();
         window.addEventListener("pointerup", finalizeBackdropClose, true);
         window.addEventListener("mouseup", finalizeBackdropClose, true);
         window.addEventListener("click", swallowBackdropEvent, true);
@@ -803,12 +818,16 @@
 
       if (previewAsset?.dataUrl) {
         const handoffOptions = {
-          delayRatio: 0.04,
-          durationRatio: 0.18,
+          delayRatio: 0,
+          durationRatio: 0.25,
         };
         this.animatePeekContentIn(peekPanel, handoffOptions);
-        this.animatePreviewLayerOut(peekPanel, handoffOptions);
+        this.animatePreviewLayerOut(peekPanel, {
+          delayRatio: 0,
+          durationRatio: 0.25,
+        });
       }
+
       this.webviews.get(webviewId).openingState = "animating";
       
       this.animatePeekMotion(peekPanel, "opening", sourceRect)
@@ -1207,7 +1226,7 @@
       imageLayer.className = "peek-source-preview-image";
       previewLayer.style.setProperty(
         "--preview-bg",
-        hasPreview ? "rgba(255, 255, 255, 0.18)" : "rgba(255,255,255,0.1)"
+        hasPreview ? "rgba(255, 255, 255, 0.1)" : "rgba(255,255,255,0.1)"
       );
       imageLayer.style.aspectRatio = `${previewWidth} / ${previewHeight}`;
       
@@ -1348,6 +1367,7 @@
       peekContent.style.display = "";
       peekContent.style.opacity = "0";
       peekContent.style.visibility = "";
+      peekContent.style.pointerEvents = "none";
       const webview = peekContent.querySelector("webview");
       if (webview) {
         webview.style.display = "";
@@ -1363,11 +1383,13 @@
       peekContent.style.display = "";
       peekContent.style.opacity = "1";
       peekContent.style.visibility = "";
+      peekContent.style.pointerEvents = "";
       const webview = peekContent.querySelector("webview");
       if (webview) {
         webview.style.display = "";
         webview.style.opacity = "1";
         webview.style.visibility = "";
+        webview.style.pointerEvents = "";
       }
     }
 
@@ -1403,6 +1425,7 @@
       animation.finished.then(() => {
         if (!peekPanel?.isConnected) return;
         peekContent.style.opacity = "1";
+        peekContent.style.pointerEvents = "";
       }).catch(() => {});
     }
 
@@ -1664,10 +1687,10 @@
             opacity: 0.94,
           },
           {
-            transform: "translate(0, 0) scale(1.01)",
+            transform: "translate(0, 0) scale(1.008)",
             borderRadius: `${finalRadius}px`,
             opacity: 1,
-            offset: 0.8,
+            offset: 0.92,
           },
           {
             transform: "translate(0, 0) scale(1)",
@@ -2196,6 +2219,7 @@
       this.suppressPointerSequence = false;
       this.selectionSuppressed = false;
       this.pendingLeftButtonRelease = false;
+      this.pendingSuppressedButton = null;
       this.postClosePointerGuardActive = false;
       this.postClosePointerGuardSawPrimaryDown = false;
 
@@ -2208,6 +2232,13 @@
         if (message.type === "peek-closed") {
           this.isLongPress = false;
           this.#restorePeekSourceLink();
+          if (!this.postClosePointerGuardActive) {
+            this.#armPostClosePointerGuard();
+          }
+          return;
+        }
+
+        if (message.type === "peek-will-close") {
           this.#armPostClosePointerGuard();
           return;
         }
@@ -2259,9 +2290,11 @@
 
     #releasePointerSuppression() {
       clearTimeout(this.timers.postClosePointerGuardRelease);
+      clearTimeout(this.timers.suppressNativeOpen);
       this.peekTriggered = false;
       this.suppressPointerSequence = false;
       this.pendingLeftButtonRelease = false;
+      this.pendingSuppressedButton = null;
       this.postClosePointerGuardActive = false;
       this.postClosePointerGuardSawPrimaryDown = false;
       this.#restoreSelection();
@@ -2278,13 +2311,44 @@
       this.#suppressSelection();
     }
 
+    #getConfiguredLongPressButtons() {
+      const raw = this.config?.longPressButtons;
+      const values = Array.isArray(raw) ? raw : [raw];
+      const normalized = values
+        .flatMap((value) => String(value || "").toLowerCase().split(","))
+        .map((value) => value.trim())
+        .filter(Boolean)
+        .filter((value) => value !== "none");
+      return new Set(normalized);
+    }
+
+    #isConfiguredLongPressButton(button) {
+      const longPressButtons = this.#getConfiguredLongPressButtons();
+      if (button === 0) return longPressButtons.has("left");
+      if (button === 1) return longPressButtons.has("middle");
+      if (button === 2) return longPressButtons.has("right");
+      return false;
+    }
+
     #setupMouseHandling() {
-      let holdTimerForMiddleClick;
       let holdTimer;
       const signalOptions = { signal: this.#abortController.signal, capture: true };
 
       const suppressNativeEvent = (event) => {
         if (!this.peekTriggered && !this.suppressPointerSequence) return;
+
+        if (
+          (event.type === "pointerup" || event.type === "mouseup") &&
+          typeof this.pendingSuppressedButton === "number" &&
+          event.button === this.pendingSuppressedButton
+        ) {
+          clearTimeout(this.timers.suppressNativeOpen);
+          this.timers.suppressNativeOpen = setTimeout(() => {
+            if (typeof this.pendingSuppressedButton === "number") {
+              this.#releasePointerSuppression();
+            }
+          }, 450);
+        }
 
         if (event.type === "pointerup" && event.button === 0) {
           if (
@@ -2302,9 +2366,13 @@
           (event.type === "click" ||
             event.type === "auxclick" ||
             event.type === "contextmenu") &&
-          (this.pendingLeftButtonRelease || this.postClosePointerGuardActive)
+          (
+            typeof this.pendingSuppressedButton === "number" ||
+            this.postClosePointerGuardActive
+          )
         ) {
           clearTimeout(this.timers.postClosePointerGuardRelease);
+          clearTimeout(this.timers.suppressNativeOpen);
           this.#releasePointerSuppression();
         }
 
@@ -2338,36 +2406,34 @@
 
         if ((event.altKey || event.metaKey || event.ctrlKey) && event.button === 0) {
           this.pendingLeftButtonRelease = true;
+          this.pendingSuppressedButton = 0;
           this.#openPeekFromEvent(event);
           this.preventAllClicks();
-        } else if (event.button === 1) {
-          holdTimerForMiddleClick = setTimeout(() => this.#openPeekFromEvent(event), 500);
-        } else if (event.button === 0) {
+        } else if (this.#isConfiguredLongPressButton(event.button)) {
           if (link) {
             this.isLongPress = true;
             this.#suppressSelection();
-            const effectiveHoldTime = this.config.rightClickHoldTime - this.config.rightClickHoldDelay;
+            const effectiveHoldTime =
+              this.config.longPressHoldTime - this.config.longPressHoldDelay;
 
             this.visibilityDelayTimer = setTimeout(() => {
               this.#startLinkHoldFeedback(link, effectiveHoldTime);
-            }, this.config.rightClickHoldDelay);
+            }, this.config.longPressHoldDelay);
 
             holdTimer = setTimeout(() => {
-              event.preventDefault();
-              event.stopPropagation();
               this.pendingLeftButtonRelease = true;
+              this.pendingSuppressedButton = event.button;
               this.#openPeekFromEvent(event);
               this.preventAllClicks();
               this.#stopLinkHoldFeedback();
               if (this.visibilityDelayTimer) clearTimeout(this.visibilityDelayTimer);
-            }, this.config.rightClickHoldTime);
+            }, this.config.longPressHoldTime);
           }
         }
       }, { signal: this.#abortController.signal });
 
       document.addEventListener("pointerup", (event) => {
-        if (event.button === 1) clearTimeout(holdTimerForMiddleClick);
-        if (event.button === 0) {
+        if (this.#isConfiguredLongPressButton(event.button)) {
           clearTimeout(holdTimer);
           this.#stopLinkHoldFeedback();
           if (this.visibilityDelayTimer) {
@@ -2597,9 +2663,6 @@
       this.peekTriggered = true;
       this.suppressPointerSequence = true;
       this.#suppressSelection();
-      this.timers.suppressNativeOpen = setTimeout(() => {
-        this.#releasePointerSuppression();
-      }, 1400);
     }
 
     #suppressSelection() {
