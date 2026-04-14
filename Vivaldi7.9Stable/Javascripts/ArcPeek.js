@@ -262,14 +262,14 @@
         this.preparePreviewLayerForClosing(panel);
         this.hideSidebarControls(panel.querySelector(".peek-sidebar-controls"));
         await this.waitForAnimationFrames(1);
-        const contentFadeDurationRatio = 0.14;
+        const contentFadeDurationRatio = 0.16;
         const contentFadeOut = this.animatePeekContentOut(panel, {
           delayRatio: 0,
           durationRatio: contentFadeDurationRatio,
           hideOnFinish: false,
         });
         const previewFadeDelayMs = Math.round(
-          this.getGlanceDuration("closing") * contentFadeDurationRatio * 0.5
+          this.getGlanceDuration("closing") * contentFadeDurationRatio * 0.2
         );
         const previewFadeIn = this.animatePreviewLayerIn(panel, {
           delayMs: previewFadeDelayMs,
@@ -860,16 +860,12 @@
         this.mountPreviewLayer(peekPanel, previewAsset.dataUrl, effectiveLinkRect);
         this.setPreviewAnimationState(peekPanel, true);
         this.preparePeekContentForPreview(peekPanel);
-        webview.addEventListener(
-          "loadstart",
-          () => {
-            this.removePreviewLayer(peekPanel);
-            this.showPeekContent(peekPanel);
-          },
-          { once: true }
-        );
+        this.setPeekWebviewVisibility(peekPanel, false);
+        this.armPeekWebviewReveal(peekPanel, webview, { removePreview: true });
       } else {
         this.showPeekContent(peekPanel);
+        this.setPeekWebviewVisibility(peekPanel, false);
+        this.armPeekWebviewReveal(peekPanel, webview, { removePreview: false });
       }
       
       peekContainer.style.setProperty("--peek-backdrop-duration", `${this.getBackdropDuration("opening")}ms`);
@@ -1392,6 +1388,32 @@
       delete webview.dataset.pendingSrc;
     }
 
+    setPeekWebviewVisibility(peekPanel, visible) {
+      const webview = peekPanel?.querySelector("webview");
+      if (!webview) return;
+      webview.style.display = "";
+      webview.style.opacity = visible ? "1" : "0";
+      webview.style.visibility = visible ? "" : "hidden";
+      webview.style.pointerEvents = visible ? "" : "none";
+    }
+
+    armPeekWebviewReveal(peekPanel, webview, { removePreview = false } = {}) {
+      if (!peekPanel || !webview) return;
+      let revealed = false;
+      const reveal = async () => {
+        if (revealed || !peekPanel.isConnected) return;
+        revealed = true;
+        await this.waitForAnimationFrames(2);
+        if (!peekPanel.isConnected) return;
+        if (removePreview) {
+          this.removePreviewLayer(peekPanel);
+        }
+        this.setPeekWebviewVisibility(peekPanel, true);
+      };
+
+      webview.addEventListener("loadstop", reveal, { once: true });
+    }
+
     hidePeekContent(peekPanel) {
       const peekContent = peekPanel?.querySelector(".peek-content");
       if (!peekContent) return;
@@ -1607,7 +1629,7 @@
       previewLayer.style.opacity = "0";
       previewLayer.style.zIndex = "3";
       previewLayer.style.visibility = "visible";
-      previewLayer.style.transition = "opacity 400ms ease-out";
+      previewLayer.style.transition = "opacity 100ms ease-out";
     }
 
     async flushPreviewLayerForClosing(peekPanel, previewLayer) {
