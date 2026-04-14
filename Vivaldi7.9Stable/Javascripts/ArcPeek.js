@@ -17,7 +17,7 @@
     // ["left", "right"] => left and right long press both open Peek
     // ["middle"] => only middle-button long press opens Peek
     // [] or "none" => disable long-press open entirely
-    longPressButtons: ["left"],
+    longPressButtons: ["middle"],
     longPressHoldTime: 400,
     longPressHoldDelay: 200,
   };
