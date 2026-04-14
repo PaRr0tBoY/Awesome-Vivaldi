@@ -72,7 +72,10 @@ Preview link content before opening
 }
 
 #browser #webpage-stack {
-  transition: transform 0.35s cubic-bezier(0.16, 0.88, 0.22, 1) !important;
+  transition:
+    transform 0.35s cubic-bezier(0.16, 0.88, 0.22, 1),
+    border-radius 0.35s cubic-bezier(0.16, 0.88, 0.22, 1),
+    box-shadow 0.35s cubic-bezier(0.16, 0.88, 0.22, 1) !important;
 }
 
 body.peek-open #browser #webpage-stack {
@@ -83,7 +86,7 @@ body.peek-open #browser #webpage-stack {
 }
 
 .peek-container {
-  z-index: 9999999999999999999999999999999999999;
+  z-index: 1;
   position: fixed;
   top: 0;
   right: 0;
@@ -122,7 +125,7 @@ body.peek-open #browser #webpage-stack {
 }
 
 .peek-container .peek-panel {
-  position: fixed;
+  position: absolute;
   z-index: 1;
   display: flex;
   flex-direction: column;
@@ -140,6 +143,15 @@ body.peek-open #browser #webpage-stack {
   will-change: transform, opacity;
 
   &[data-has-finished-animation="true"] {
+    position: relative !important;
+    width: 80% !important;
+    height: 100% !important;
+    left: auto !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    margin: auto !important;
+    transform: none !important;
     box-shadow:
       0 28px 80px rgba(0, 0, 0, 0.38),
       0 0 0 1px rgba(255, 255, 255, 0.06);
