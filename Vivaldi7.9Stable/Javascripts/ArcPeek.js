@@ -10,16 +10,23 @@
     showIconDelay: 250,
     showPeekOnHoverDelay: 100,
     // Long-press trigger buttons.
-    // Available values: "left", "middle", "right"
+    // Available values: "middle", "right"
     // Examples:
-    // ["left"] => only left-button long press opens Peek
     // ["right"] => only right-button long press opens Peek
-    // ["left", "right"] => left and right long press both open Peek
     // ["middle"] => only middle-button long press opens Peek
+    // ["middle", "right"] => middle and right long press both open Peek
     // [] or "none" => disable long-press open entirely
     longPressButtons: ["middle"],
     longPressHoldTime: 400,
     longPressHoldDelay: 200,
+  };
+
+  const PEEK_FOREGROUND_CONFIG = {
+    // Foreground blank layer shown while the webview loads behind it.
+    // Available values:
+    // "default" => light/dark blank color that follows system appearance
+    // "theme" => uses Vivaldi theme color var(--colorBgFaded)
+    mode: "theme",
   };
 
   class PeekMod {
@@ -43,7 +50,6 @@
     previewCaptureTasks = new Map();
     lastRecordedLinkData = null;
     closeShortcutGuard = null;
-    postClosePointerGuard = null;
     iconUtils = new IconUtils();
     READER_VIEW_URL =
       "https://app.web-highlights.com/reader/open-website-in-reader-mode?url=";
@@ -77,6 +83,23 @@
       return isWindows
         ? this.ARC_CONFIG.webviewRevealSettleMsWindows
         : this.ARC_CONFIG.webviewRevealSettleMs;
+    }
+
+    getPeekForegroundBackground() {
+      if (PEEK_FOREGROUND_CONFIG.mode === "theme") {
+        return "var(--colorBg)";
+      }
+
+      const isDarkMode = window.matchMedia?.(
+        "(prefers-color-scheme: dark)"
+      )?.matches;
+      return isDarkMode ? "rgb(28, 28, 30)" : "rgb(247, 247, 248)";
+    }
+
+    getPanelPointerBlockerTarget() {
+      return document.querySelector(
+        "#panels-container, .panel-group, .panel.webpanel, .webpanel-stack, .webpanel-content"
+      );
     }
 
     getWebviewConfig(navigationDetails) {
@@ -189,7 +212,10 @@
         chrome.tabs.onRemoved.removeListener(data.tabCloseListener);
       }
       if (data.panelPointerBlocker && data.fromPanel) {
-        document.body.removeEventListener("pointerdown", data.panelPointerBlocker);
+        (
+          data.panelPointerBlockerTarget ||
+          document.querySelector("#panels-container")
+        )?.removeEventListener("pointerdown", data.panelPointerBlocker, true);
       }
       if (data.backdropCleanup) {
         data.backdropCleanup();
@@ -367,72 +393,6 @@
       });
     }
 
-    armPostClosePointerGuard() {
-      if (this.postClosePointerGuard) return;
-
-      let cleaned = false;
-      const swallow = (event) => {
-        event.preventDefault?.();
-        event.stopPropagation?.();
-        event.stopImmediatePropagation?.();
-      };
-      const cleanup = () => {
-        if (cleaned) return;
-        cleaned = true;
-        [
-          "pointerdown",
-          "mousedown",
-          "pointermove",
-          "mousemove",
-          "selectstart",
-          "dragstart",
-          "click",
-          "auxclick",
-          "contextmenu",
-          "pointerup",
-          "mouseup",
-        ].forEach((eventName) => {
-          document.removeEventListener(eventName, handlers[eventName], true);
-        });
-        if (timeoutId) {
-          clearTimeout(timeoutId);
-        }
-        if (this.postClosePointerGuard?.cleanup === cleanup) {
-          this.postClosePointerGuard = null;
-        }
-      };
-      const handlers = {
-        pointerdown: () => {
-          cleanup();
-        },
-        mousedown: () => {
-          cleanup();
-        },
-        pointermove: swallow,
-        mousemove: swallow,
-        selectstart: swallow,
-        dragstart: swallow,
-        click: swallow,
-        auxclick: swallow,
-        contextmenu: swallow,
-        pointerup: (event) => {
-          swallow(event);
-          cleanup();
-        },
-        mouseup: (event) => {
-          swallow(event);
-          cleanup();
-        },
-      };
-
-      Object.entries(handlers).forEach(([eventName, handler]) => {
-        document.addEventListener(eventName, handler, true);
-      });
-
-      const timeoutId = window.setTimeout(cleanup, 700);
-      this.postClosePointerGuard = { cleanup };
-    }
-
     async armCloseShortcutGuard() {
       try {
         const [activeTab] = await this.queryTabs({
@@ -530,7 +490,6 @@
         )?.[0];
         
         if (webviewId) {
-          this.armPostClosePointerGuard();
           this.disposePeek(webviewId, { animated: true, closeRuntimeTab: true });
         }
       }
@@ -699,6 +658,7 @@
         isDisposing: false,
         timers: {},
         panelPointerBlocker: null,
+        panelPointerBlockerTarget: null,
         tabCloseListener: null,
         backdropCleanup: null,
         previewCacheKey: previewCacheKey,
@@ -813,8 +773,15 @@
       };
 
       if (fromPanel) {
-        document.body.addEventListener("pointerdown", stopEvent);
+        const panelPointerBlockerTarget = this.getPanelPointerBlockerTarget();
+        panelPointerBlockerTarget?.addEventListener(
+          "pointerdown",
+          stopEvent,
+          true
+        );
         this.webviews.get(webviewId).panelPointerBlocker = stopEvent;
+        this.webviews.get(webviewId).panelPointerBlockerTarget =
+          panelPointerBlockerTarget;
       }
 
       let backdropClosePending = false;
@@ -835,8 +802,6 @@
         if (!backdropClosePending) return;
         backdropClosePending = false;
         swallowBackdropEvent(event);
-        chrome.runtime.sendMessage({ type: "peek-will-close" });
-        this.armPostClosePointerGuard();
         this.disposePeek(webviewId, { animated: true, closeRuntimeTab: true });
       };
 
@@ -1291,16 +1256,13 @@
       const hasPreview = !!sourcePreviewUrl;
       const previewWidth = Math.max(1, Math.round(linkRect?.width || 1));
       const previewHeight = Math.max(1, Math.round(linkRect?.height || 1));
-      const isDarkMode = window.matchMedia?.(
-        "(prefers-color-scheme: dark)"
-      )?.matches;
 
       previewLayer.className = "peek-source-preview";
       imageLayer.className = "peek-source-preview-image";
       previewLayer.classList.toggle("has-source-preview", hasPreview);
       previewLayer.style.setProperty(
         "--preview-bg",
-        isDarkMode ? "rgb(28, 28, 30)" : "rgb(247, 247, 248)"
+        this.getPeekForegroundBackground()
       );
       imageLayer.style.aspectRatio = `${previewWidth} / ${previewHeight}`;
       
@@ -2410,8 +2372,6 @@
       this.selectionSuppressed = false;
       this.pendingLeftButtonRelease = false;
       this.pendingSuppressedButton = null;
-      this.postClosePointerGuardActive = false;
-      this.postClosePointerGuardSawPrimaryDown = false;
 
       this.#beforeUnloadListener = this.#cleanup.bind(this);
       window.addEventListener("beforeunload", this.#beforeUnloadListener, { signal: this.#abortController.signal });
@@ -2422,14 +2382,6 @@
         if (message.type === "peek-closed") {
           this.isLongPress = false;
           this.#restorePeekSourceLink();
-          if (!this.postClosePointerGuardActive) {
-            this.#armPostClosePointerGuard();
-          }
-          return;
-        }
-
-        if (message.type === "peek-will-close") {
-          this.#armPostClosePointerGuard();
           return;
         }
 
@@ -2479,26 +2431,12 @@
     }
 
     #releasePointerSuppression() {
-      clearTimeout(this.timers.postClosePointerGuardRelease);
       clearTimeout(this.timers.suppressNativeOpen);
       this.peekTriggered = false;
       this.suppressPointerSequence = false;
       this.pendingLeftButtonRelease = false;
       this.pendingSuppressedButton = null;
-      this.postClosePointerGuardActive = false;
-      this.postClosePointerGuardSawPrimaryDown = false;
       this.#restoreSelection();
-    }
-
-    #armPostClosePointerGuard() {
-      clearTimeout(this.timers.suppressNativeOpen);
-      clearTimeout(this.timers.postClosePointerGuardRelease);
-      this.peekTriggered = false;
-      this.suppressPointerSequence = true;
-      this.pendingLeftButtonRelease = false;
-      this.postClosePointerGuardActive = true;
-      this.postClosePointerGuardSawPrimaryDown = false;
-      this.#suppressSelection();
     }
 
     #getConfiguredLongPressButtons() {
@@ -2508,13 +2446,14 @@
         .flatMap((value) => String(value || "").toLowerCase().split(","))
         .map((value) => value.trim())
         .filter(Boolean)
+        .filter((value) => value !== "left")
         .filter((value) => value !== "none");
       return new Set(normalized);
     }
 
     #isConfiguredLongPressButton(button) {
       const longPressButtons = this.#getConfiguredLongPressButtons();
-      if (button === 0) return longPressButtons.has("left");
+      if (button === 0) return false;
       if (button === 1) return longPressButtons.has("middle");
       if (button === 2) return longPressButtons.has("right");
       return false;
@@ -2540,28 +2479,12 @@
           }, 450);
         }
 
-        if (event.type === "pointerup" && event.button === 0) {
-          if (
-            this.postClosePointerGuardActive &&
-            this.postClosePointerGuardSawPrimaryDown
-          ) {
-            clearTimeout(this.timers.postClosePointerGuardRelease);
-            this.timers.postClosePointerGuardRelease = setTimeout(() => {
-              this.#releasePointerSuppression();
-            }, 80);
-          }
-        }
-
         if (
           (event.type === "click" ||
             event.type === "auxclick" ||
             event.type === "contextmenu") &&
-          (
-            typeof this.pendingSuppressedButton === "number" ||
-            this.postClosePointerGuardActive
-          )
+          typeof this.pendingSuppressedButton === "number"
         ) {
-          clearTimeout(this.timers.postClosePointerGuardRelease);
           clearTimeout(this.timers.suppressNativeOpen);
           this.#releasePointerSuppression();
         }
@@ -2579,16 +2502,6 @@
       });
 
       document.addEventListener("pointerdown", (event) => {
-        if (this.postClosePointerGuardActive) {
-          if (event.button === 0) {
-            this.postClosePointerGuardSawPrimaryDown = true;
-            event.preventDefault();
-            event.stopPropagation();
-            event.stopImmediatePropagation();
-          }
-          return;
-        }
-
         const link = this.#getLinkElement(event);
         if (link) {
           this.#recordLinkSnapshot(event, link);
