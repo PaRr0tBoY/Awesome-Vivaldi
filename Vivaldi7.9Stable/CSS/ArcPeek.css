@@ -173,7 +173,7 @@ body.peek-open #browser #webpage-stack {
   justify-content: center;
   overflow: hidden;
   color: var(--preview-fg, rgba(18, 18, 18, 0.92));
-  background: transparent;
+  background: var(--preview-bg, rgb(247, 247, 248));
   border-radius: inherit;
   will-change: transform, opacity;
   transform: translateZ(0);
@@ -186,7 +186,7 @@ body.peek-open #browser #webpage-stack {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: var(--preview-bg, rgba(255, 255, 255, 0.1));
+  background: var(--preview-bg, rgb(247, 247, 248));
   opacity: 1;
   transition: opacity var(--peek-backdrop-duration, 320ms)
     cubic-bezier(0.2, 0.82, 0.24, 1);
@@ -202,10 +202,10 @@ body.peek-open #browser #webpage-stack {
 }
 
 .peek-container .peek-source-preview-image {
-  width: 0;
-  height: 0;
-  max-width: 0;
-  max-height: 0;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
   display: block;
   flex: 0 0 auto;
   opacity: 0;
@@ -214,6 +214,10 @@ body.peek-open #browser #webpage-stack {
   object-position: center;
   position: relative;
   z-index: 1;
+}
+
+.peek-container .peek-source-preview.has-source-preview .peek-source-preview-image {
+  opacity: 1;
 }
 
 .peek-container .peek-sidebar-button {
