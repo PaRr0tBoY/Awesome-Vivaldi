@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Define the base path
+BASE_PATH="/Users/acid/Desktop/VivaldiModpack"
+
+# Close Vivaldi browser
+osascript -e 'quit app "Vivaldi.app"'
+
+# Move all CSS files from CSS root directory to CSS/debug directory, excluding the debug directory itself
+find "$BASE_PATH/CSS/" -maxdepth 1 -name "*.css" -exec mv {} "$BASE_PATH/CSS/debug/" \;
+
+read -rsp $'Press [Enter] to restart Vivaldi...\n'
+
+# Restart Vivaldi with debug flags
+open /Applications/Vivaldi.app --args --debug-packed-apps --silent-debugger-extension-api
+
+# Wait for debugging to complete
+read -rsp $'Debugging completed? Press [Enter] to restore CSS files and restart Vivaldi...\n'
+
+# Copy CSS files back from debug directory to CSS root directory
+find "$BASE_PATH/CSS/debug/" -name "*.css" -exec cp {} "$BASE_PATH/CSS/" \;
+
+# Restart Vivaldi normally
+osascript -e 'quit app "Vivaldi.app"'
+read -rsp $'Press [Enter] to restart Vivaldi normally...\n'
+open /Applications/Vivaldi.app

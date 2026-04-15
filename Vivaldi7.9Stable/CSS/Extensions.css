@@ -1,0 +1,50 @@
+/* ========================================
+   EXTENSIONS MENU STYLING
+   ======================================== */
+
+.toolbar-extensions {
+  display: flex;
+  flex-wrap: wrap;
+  overflow-x: visible;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  gap: var(--densityGap);
+  max-width: 100%;
+}
+
+.toolbar-extensions::-webkit-scrollbar {
+  display: none;
+}
+
+.toolbar-extensions .button-toolbar {
+  flex-shrink: 0;
+}
+/*============================================================================*/
+
+.extensionIconPopupMenu {
+  --popupWidth: 280px !important;
+}
+
+.extensionIconPopupMenu > .toolbar {
+  max-height: 50vh;
+  overflow: hidden auto;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+}
+
+.extensionIconPopupMenu .ExtensionDropdownIcon > button {
+  justify-content: flex-start;
+  padding: 10px;
+}
+
+.extensionIconPopupMenu .ExtensionDropdownIcon > button::after {
+  content: attr(title);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.button-toolbar > button > .button-badge {
+  top: auto;
+  right: 10px;
+}
