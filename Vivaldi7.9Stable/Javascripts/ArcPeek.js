@@ -470,6 +470,14 @@
       const data = this.webviews.get(webviewId);
       
       if (!data) return;
+      // Always clean up window-level backdrop listeners before the isDisposing guard.
+      // If armBackdropClose fires during a closing animation (isDisposing=true), its
+      // window.click/pointerup/mouseup listeners must still be removed; otherwise they
+      // leak permanently and block all subsequent click events (including Vivaldi UI buttons).
+      if (data.backdropCleanup) {
+        data.backdropCleanup();
+        data.backdropCleanup = null;
+      }
       if (data.isDisposing && !force) return;
       data.isDisposing = true;
 
@@ -484,6 +492,7 @@
           document.querySelector("#panels-container")
         )?.removeEventListener("pointerdown", data.panelPointerBlocker, true);
       }
+      // backdropCleanup already called above; this is now a no-op but kept for safety.
       if (data.backdropCleanup) {
         data.backdropCleanup();
       }
@@ -1153,6 +1162,12 @@
       const armBackdropClose = (event) => {
         if (event.target !== peekContainer) return;
         if (typeof event.button === "number" && event.button !== 0) return;
+        // Guard: if the peek is already being disposed (e.g. closing animation in progress),
+        // do not arm the backdrop-close path.  Doing so would register a window-level
+        // click-swallow listener that disposePeek's early-return (isDisposing) would skip,
+        // leaving it permanently attached and blocking all subsequent click events.
+        const peekData = this.webviews.get(webviewId);
+        if (!peekData || peekData.isDisposing) return;
         swallowBackdropEvent(event);
         if (backdropClosePending) return;
         backdropClosePending = true;
