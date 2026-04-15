@@ -1,8 +1,7 @@
 /**
- * v5 (Refactored Lifecycle & Memory Leak Fixes)
- * Opens links in a peek panel, either by key combinations, holding the middle mouse button or context menu
- * Forum link: https://forum.vivaldi.net/topic/92501/open-in-dialog-mod?_=1717490394230
- */
+ * Opens links in a peek panel, either by holding the middle/right mouse button or alt/ctrl/shift/meta+click on links.
+ * Forum link: https://forum.vivaldi.net/post/897615
+**/
 (() => {
   // =========================
   // Trigger Config

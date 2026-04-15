@@ -43,6 +43,7 @@
 
 | Demo                                                | Mods                                                              |
 | --------------------------------------------------- | ----------------------------------------------------------------- |
+| ![ArcPeek](./Others/assets/ArcPeek.gif)             | `ArcPeek.css` + `ArcPeek.js`                                      |
 | ![AskInPage](./Others/assets/AskInPage.png) | `AskInPage.js`                                                |
 | ![TidyDownloads](./Others/assets/TidyDownloads.gif) | `TidyDownloads.js`                                                |
 
@@ -60,9 +61,8 @@ Please choose the modpack that matches your Vivaldi Version. Which version of Vi
 | Demo                                                | Mods                                                              |
 | --------------------------------------------------- | ----------------------------------------------------------------- |
 | ![FavouriteTabs](./Others/assets/FavouriteTabs.gif) | `FavouriteTabs.css`                                               |
-| ![VivaldiMax](./Others/assets/VivaldiMax.gif)       | `TidyTabs.css` + `TidyTabs.js` + `ClearTabs.js` + `TidyTitles.js` |
+| ![VivaldiMax](./Others/assets/VivaldiMax.gif)       | `TidyTabs.css` + `TidyTabs.js` + `TidyTitles.js` |
 | ![PeekTabbar](./Others/assets/PeekTabbar.gif)       | `PeekTabbar.css`                                                  |
-| ![ArcPeek](./Others/assets/ArcPeek.gif)             | `ArcPeek.css` + `ArcPeek.js`                                      |
 | ![Quietify](./Others/assets/Quietify.gif)           | `Quietify.css`                                                    |
 
 ## Main File Structure
