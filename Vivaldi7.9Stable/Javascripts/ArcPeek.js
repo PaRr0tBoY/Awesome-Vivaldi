@@ -83,6 +83,8 @@
     logCoordinateSystems: false,
     // Log sourceToken -> live rect request/response path.
     logSourceRectRequests: false,
+    // Log split-view source rect mapping diagnostics.
+    logSplitRectDiagnostics: false,
   };
 
   class PeekMod {
@@ -196,6 +198,13 @@
       if (!PEEK_DEBUG_CONFIG.logSourceRectRequests) return;
       console.groupCollapsed(`[ArcPeek] source-rect ${label}`);
       console.log(extra);
+      console.groupEnd();
+    }
+
+    logSplitRectDiagnostic(label, payload = {}) {
+      if (!PEEK_DEBUG_CONFIG.logSplitRectDiagnostics) return;
+      console.groupCollapsed(`[ArcPeek] split-rect ${label}`);
+      console.log(payload);
       console.groupEnd();
     }
 
@@ -929,6 +938,13 @@
       }
 
       const effectiveLinkRect = linkRect || this.getRecentLinkSnapshot(linkUrl);
+      if (effectiveLinkRect && !fromPanel) {
+        effectiveLinkRect.sourceViewportHint =
+          effectiveLinkRect.sourceViewportHint ||
+          this.createSourceViewportHint(
+            Number(effectiveLinkRect.sourceTabId) || Number(meta?.sourceTabId) || null
+          );
+      }
       const previewCacheKey = this.getPreviewCacheKey(linkUrl, effectiveLinkRect);
       const previewAsset = this.getCachedPreviewAsset(previewCacheKey);
       const previewCapturePromise =
@@ -938,12 +954,21 @@
 
       const activeWebview = document.querySelector(".active.visible.webpageview webview");
       const peekViewportRect = this.getPeekViewportRect(activeWebview);
+      const metaSourceTabId = Number(meta?.sourceTabId);
+      const rectSourceTabId = Number(linkRect?.sourceTabId);
       const activeTabId = Number(activeWebview?.tab_id);
-      const ownerTabId =
-        Number.isFinite(activeTabId) && activeTabId > 0 ? activeTabId : null;
+      const sourceTabId =
+        Number.isFinite(metaSourceTabId) && metaSourceTabId > 0
+          ? metaSourceTabId
+          : Number.isFinite(rectSourceTabId) && rectSourceTabId > 0
+            ? rectSourceTabId
+          : Number.isFinite(activeTabId) && activeTabId > 0
+            ? activeTabId
+            : null;
+      const ownerTabId = sourceTabId;
       const tabId =
-        !fromPanel && Number.isFinite(activeTabId) && activeTabId > 0
-          ? activeTabId
+        !fromPanel && Number.isFinite(sourceTabId) && sourceTabId > 0
+          ? sourceTabId
           : null;
 
       if (ownerTabId !== null) {
@@ -1051,6 +1076,15 @@
           input.value = webview.src;
         }
       });
+      webview.addEventListener("newwindow", (event) => {
+        const nextUrl = String(
+          event?.url || event?.targetUrl || event?.src || ""
+        ).trim();
+        if (!nextUrl || nextUrl === "about:blank") return;
+
+        event.preventDefault?.();
+        this.navigatePeekToUrl(webviewId, nextUrl);
+      });
       fromPanel && webview.addEventListener("mousedown", (event) => event.stopPropagation());
 
       peekContainer.setAttribute("class", "peek-container");
@@ -1141,7 +1175,8 @@
       const geometry = this.applyPeekAnimationGeometry(
         peekContainer,
         peekPanel,
-        effectiveLinkRect
+        effectiveLinkRect,
+        { tabId }
       );
       this.webviews.get(webviewId).openingSourceRect = geometry?.sourceRect || null;
       this.webviews.get(webviewId).sourceRect = geometry?.sourceRect || null;
@@ -1172,7 +1207,11 @@
         peekContainer.classList.add("open");
       });
       
-      const sourceRect = this.webviews.get(webviewId).sourceRect || this.resolveSourceRect(effectiveLinkRect);
+      const sourceRect =
+        this.webviews.get(webviewId).sourceRect ||
+        this.resolveSourceRect(effectiveLinkRect, {
+          tabId,
+        });
 
       this.webviews.get(webviewId).openingState = "animating";
       this.startPeekNavigation(webview, webviewId);
@@ -1198,6 +1237,76 @@
       return document.querySelector(".active.visible.webpageview webview");
     }
 
+    getVisiblePageWebviews() {
+      return Array.from(
+        document.querySelectorAll(".visible.webpageview webview")
+      ).filter((webview) => webview?.isConnected && !webview.closest?.(".peek-panel"));
+    }
+
+    isSplitViewActive() {
+      return this.getVisiblePageWebviews().length > 1;
+    }
+
+    getPageWebviewByTabId(tabId) {
+      if (!Number.isFinite(tabId) || tabId <= 0) return null;
+      const webview = document.querySelector(`webview[tab_id="${tabId}"]`);
+      if (!webview?.isConnected || webview.closest?.(".peek-panel")) return null;
+      return webview;
+    }
+
+    getPageViewportRectByTabId(tabId) {
+      const sourceWebview = this.getPageWebviewByTabId(tabId);
+      const rect = sourceWebview?.getBoundingClientRect?.();
+      if (!rect?.width || !rect?.height) return null;
+      return {
+        left: Math.round(rect.left),
+        top: Math.round(rect.top),
+        width: Math.max(1, Math.round(rect.width)),
+        height: Math.max(1, Math.round(rect.height)),
+      };
+    }
+
+    getStableSourceViewportRect() {
+      const stableRect =
+        document.getElementById("webview-container")?.getBoundingClientRect?.() ||
+        this.getPeekViewportRect();
+
+      if (!stableRect?.width || !stableRect?.height) return null;
+
+      return {
+        left: Math.round(stableRect.left),
+        top: Math.round(stableRect.top),
+        width: Math.max(1, Math.round(stableRect.width)),
+        height: Math.max(1, Math.round(stableRect.height)),
+      };
+    }
+
+    createSourceViewportHint(tabId) {
+      const sourceRect = this.getPageViewportRectByTabId(Number(tabId));
+      const stableRect = this.getStableSourceViewportRect();
+      if (!sourceRect || !stableRect) return null;
+      if (!stableRect.width || !stableRect.height) return null;
+
+      return {
+        stableRect,
+        sourceRect,
+        leftRatio: (sourceRect.left - stableRect.left) / stableRect.width,
+        topRatio: (sourceRect.top - stableRect.top) / stableRect.height,
+        widthRatio: sourceRect.width / stableRect.width,
+        heightRatio: sourceRect.height / stableRect.height,
+      };
+    }
+
+    projectSourceViewportHintToStableRect(viewportHint, stableRect) {
+      if (!viewportHint || !stableRect?.width || !stableRect?.height) return null;
+      return {
+        left: Math.round(stableRect.left + stableRect.width * viewportHint.leftRatio),
+        top: Math.round(stableRect.top + stableRect.height * viewportHint.topRatio),
+        width: Math.max(1, Math.round(stableRect.width * viewportHint.widthRatio)),
+        height: Math.max(1, Math.round(stableRect.height * viewportHint.heightRatio)),
+      };
+    }
+
     getActivePageTabId() {
       const tabId = Number(this.getActivePageWebview()?.tab_id);
       if (!Number.isFinite(tabId) || tabId <= 0) return null;
@@ -1208,7 +1317,7 @@
       if (data?.fromPanel) return true;
       const sourceTabId = Number(data?.tabId);
       if (!Number.isFinite(sourceTabId) || sourceTabId <= 0) return false;
-      return this.getActivePageTabId() === sourceTabId;
+      return !!this.getPageViewportRectByTabId(sourceTabId);
     }
 
     async getPeekClosingSourceRect(data) {
@@ -1218,6 +1327,7 @@
       const shouldPreferStableContainer = this.shouldScaleBackgroundPage();
       const currentSourceViewportRect = this.getPeekSourceViewportRect({
         preferStableContainer: shouldPreferStableContainer,
+        tabId: Number(data?.tabId) || null,
       });
       const recordedViewportWidth = Math.round(data.linkRect?.viewportWidth || 0);
       const recordedViewportHeight = Math.round(data.linkRect?.viewportHeight || 0);
@@ -1228,28 +1338,58 @@
           Math.abs(currentSourceViewportRect.height - recordedViewportHeight) > 1
         );
 
-      const liveLinkRect = await this.requestSourceLinkRect(data.sourceToken);
+      const liveLinkRect = await this.requestSourceLinkRect(
+        data.sourceToken,
+        Number(data?.tabId) || null
+      );
       if (liveLinkRect) {
-        return this.resolveSourceRect(liveLinkRect, {
+        const resolvedLiveRect = this.resolveSourceRect(liveLinkRect, {
           preferStableContainer: shouldPreferStableContainer,
+          tabId: Number(data?.tabId) || null,
+          viewportHint: data?.linkRect?.sourceViewportHint || null,
         });
+        if (PEEK_DEBUG_CONFIG.logSplitRectDiagnostics) {
+          this.logSplitRectDiagnostic("close-live", {
+            webviewId: data?.webview?.id || null,
+            tabId: Number(data?.tabId) || null,
+            shouldPreferStableContainer,
+            currentSourceViewportRect,
+            liveLinkRect,
+            resolvedLiveRect,
+          });
+        }
+        return resolvedLiveRect;
       }
 
       const originalResolvedRect = this.resolveSourceRect(data.linkRect, {
         preferStableContainer: shouldPreferStableContainer,
+        tabId: Number(data?.tabId) || null,
+        viewportHint: data?.linkRect?.sourceViewportHint || null,
       });
+      if (PEEK_DEBUG_CONFIG.logSplitRectDiagnostics) {
+        this.logSplitRectDiagnostic("close-fallback", {
+          webviewId: data?.webview?.id || null,
+          tabId: Number(data?.tabId) || null,
+          shouldPreferStableContainer,
+          currentSourceViewportRect,
+          recordedLinkRect: data.linkRect || null,
+          openingSourceRect: data.openingSourceRect || null,
+          sourceRect: data.sourceRect || null,
+          originalResolvedRect: originalResolvedRect || null,
+          viewportChanged,
+        });
+      }
       if (originalResolvedRect?.width && originalResolvedRect?.height && !viewportChanged) {
         return originalResolvedRect;
       }
 
-      if (data.openingSourceRect?.width && data.openingSourceRect?.height) {
-        return data.openingSourceRect;
-      }
-
       return (
+        data.openingSourceRect ||
         data.sourceRect ||
         this.resolveSourceRect(data.linkRect, {
           preferStableContainer: shouldPreferStableContainer,
+          tabId: Number(data?.tabId) || null,
+          viewportHint: data?.linkRect?.sourceViewportHint || null,
         })
       );
     }
@@ -1263,21 +1403,24 @@
       });
     }
 
-    requestSourceLinkRect(sourceToken) {
+    requestSourceLinkRect(sourceToken, tabId = null) {
       if (!sourceToken) return Promise.resolve(null);
 
       return new Promise((resolve) => {
-        const activeWebview = this.getActivePageWebview();
+        const targetWebview =
+          this.getPageWebviewByTabId(Number(tabId)) || this.getActivePageWebview();
         if (
-          activeWebview &&
-          typeof activeWebview.executeScript === "function"
+          targetWebview &&
+          typeof targetWebview.executeScript === "function"
         ) {
           const tokenLiteral = JSON.stringify(String(sourceToken));
           this.logSourceRectRequest("execute-script:request", {
             sourceToken,
-            tabId: Number(activeWebview.getAttribute("tab_id") || activeWebview.tab_id || 0) || null,
+            tabId:
+              Number(targetWebview.getAttribute("tab_id") || targetWebview.tab_id || 0) ||
+              null,
           });
-          activeWebview.executeScript(
+          targetWebview.executeScript(
             {
               code: `(() => {
                 const token = ${tokenLiteral};
@@ -1336,6 +1479,7 @@
               this.logSourceRectRequest("request", {
                 sourceToken,
                 activeTabId: this.getActivePageTabId?.() || null,
+                targetTabId: Number(tabId) || null,
               });
               chrome.runtime.sendMessage(
                 {
@@ -1467,7 +1611,25 @@
     }
 
     buildUICaptureRect(linkRect) {
-      const sourceRect = this.resolveSourceRect(linkRect);
+      const sourceRect = this.resolveSourceRect(linkRect, {
+        tabId: Number(linkRect?.sourceTabId) || null,
+      });
+      if (PEEK_DEBUG_CONFIG.logSplitRectDiagnostics) {
+        this.logSplitRectDiagnostic("capture-ui", {
+          tabId: Number(linkRect?.sourceTabId) || null,
+          linkRect: linkRect
+            ? {
+                left: Math.round(Number(linkRect.left) || 0),
+                top: Math.round(Number(linkRect.top) || 0),
+                width: Math.round(Number(linkRect.width) || 0),
+                height: Math.round(Number(linkRect.height) || 0),
+                viewportWidth: Math.round(Number(linkRect.viewportWidth) || 0),
+                viewportHeight: Math.round(Number(linkRect.viewportHeight) || 0),
+              }
+            : null,
+          resolvedSourceRect: sourceRect,
+        });
+      }
       if (!sourceRect) return null;
 
       return {
@@ -1625,20 +1787,17 @@
       return previewTask;
     }
 
-    getPeekSourceViewportRect({ preferStableContainer = false } = {}) {
+    getPeekSourceViewportRect({ preferStableContainer = false, tabId = null } = {}) {
+      const sourceTabViewportRect = this.getPageViewportRectByTabId(Number(tabId));
+      if (sourceTabViewportRect && this.isSplitViewActive()) {
+        return sourceTabViewportRect;
+      }
+
       if (preferStableContainer) {
-        const stableRect =
-          document.getElementById("webview-container")?.getBoundingClientRect?.() ||
-          this.getPeekViewportRect();
+        const stableRect = this.getStableSourceViewportRect();
 
         if (!stableRect?.width || !stableRect?.height) return null;
-
-        return {
-          left: Math.round(stableRect.left),
-          top: Math.round(stableRect.top),
-          width: Math.max(1, Math.round(stableRect.width)),
-          height: Math.max(1, Math.round(stableRect.height)),
-        };
+        return stableRect;
       }
 
       const activeWebpageView =
@@ -1661,8 +1820,22 @@
 
     resolveSourceRect(linkRect, options = {}) {
       if (!linkRect) return null;
-      const viewportRect = this.getPeekSourceViewportRect(options);
-      if (!viewportRect) return null;
+      const tabId =
+        Number(options?.tabId) ||
+        Number(linkRect?.sourceTabId) ||
+        null;
+      const stableViewportRect = this.getStableSourceViewportRect();
+      const viewportHint = options?.viewportHint || linkRect?.sourceViewportHint || null;
+      const hintedViewportRect =
+        options?.preferStableContainer && this.isSplitViewActive()
+          ? this.projectSourceViewportHintToStableRect(viewportHint, stableViewportRect)
+          : null;
+      const viewportRect = this.getPeekSourceViewportRect({
+        ...options,
+        tabId,
+      }) || hintedViewportRect;
+      const chosenViewportRect = hintedViewportRect || viewportRect;
+      if (!chosenViewportRect) return null;
       const recordedViewportWidth = Math.max(
         Number(linkRect.viewportWidth) || 0,
         1
@@ -1671,26 +1844,54 @@
         Number(linkRect.viewportHeight) || 0,
         1
       );
-      const scaleX = viewportRect.width / recordedViewportWidth;
-      const scaleY = viewportRect.height / recordedViewportHeight;
+      const scaleX = chosenViewportRect.width / recordedViewportWidth;
+      const scaleY = chosenViewportRect.height / recordedViewportHeight;
       const width = Math.max((Number(linkRect.width) || 0) * scaleX, 1);
       const height = Math.max((Number(linkRect.height) || 0) * scaleY, 1);
       const left = (Number(linkRect.left) || 0) * scaleX;
       const top = (Number(linkRect.top) || 0) * scaleY;
-
-      return {
-        left: Math.max(0, Math.round(viewportRect.left + left)),
-        top: Math.max(0, Math.round(viewportRect.top + top)),
+      const resolvedRect = {
+        left: Math.max(0, Math.round(chosenViewportRect.left + left)),
+        top: Math.max(0, Math.round(chosenViewportRect.top + top)),
         width: Math.max(1, Math.round(width)),
         height: Math.max(1, Math.round(height)),
       };
+
+      if (PEEK_DEBUG_CONFIG.logSplitRectDiagnostics) {
+        this.logSplitRectDiagnostic("resolve", {
+          tabId,
+          preferStableContainer: !!options?.preferStableContainer,
+          isSplitViewActive: this.isSplitViewActive(),
+          linkRect: linkRect
+            ? {
+                sourceTabId: Number(linkRect.sourceTabId) || null,
+                left: Math.round(Number(linkRect.left) || 0),
+                top: Math.round(Number(linkRect.top) || 0),
+                width: Math.round(Number(linkRect.width) || 0),
+                height: Math.round(Number(linkRect.height) || 0),
+                viewportWidth: Math.round(Number(linkRect.viewportWidth) || 0),
+                viewportHeight: Math.round(Number(linkRect.viewportHeight) || 0),
+              }
+            : null,
+          sourceWebviewRect: this.getPageViewportRectByTabId(tabId),
+          stableViewportRect,
+          sourceViewportHint: viewportHint || null,
+          projectedViewportRect: hintedViewportRect,
+          chosenViewportRect,
+          scaleX: Number(scaleX.toFixed(4)),
+          scaleY: Number(scaleY.toFixed(4)),
+          resolvedRect,
+        });
+      }
+
+      return resolvedRect;
     }
 
-    applyPeekAnimationGeometry(peekContainer, peekPanel, linkRect) {
+    applyPeekAnimationGeometry(peekContainer, peekPanel, linkRect, options = {}) {
       const finalRect = peekPanel.getBoundingClientRect();
       if (!finalRect.width || !finalRect.height) return;
 
-      const sourceRect = this.resolveSourceRect(linkRect);
+      const sourceRect = this.resolveSourceRect(linkRect, options);
       const scaleX = sourceRect ? Math.min(Math.max(sourceRect.width / finalRect.width, 0.08), 1) : 0.92;
       const scaleY = sourceRect ? Math.min(Math.max(sourceRect.height / finalRect.height, 0.06), 1) : 0.9;
       const translateX = sourceRect ? sourceRect.left - finalRect.left : 0;
@@ -2655,6 +2856,19 @@
       return data.webview.dataset.pendingSrc || data.webview.src || "";
     }
 
+    navigatePeekToUrl(webviewId, url) {
+      const nextUrl = String(url || "").trim();
+      if (!nextUrl) return;
+
+      const data = this.webviews.get(webviewId);
+      const webview = data?.webview;
+      if (!webview) return;
+
+      webview.dataset.pendingSrc = nextUrl;
+      data.pageStable = false;
+      this.startPeekNavigation(webview, webviewId);
+    }
+
     openNewTab(webviewId, active) {
       const url = this.getPeekUrl(webviewId);
       if (!url) return;
@@ -2950,6 +3164,7 @@
           const pageConfig = JSON.stringify({
             ...this.triggerConfig,
             currentTabIsPinned,
+            currentTabId: Number.isFinite(tabId) && tabId > 0 ? tabId : null,
           });
           const instantiationCode = `
                 window.__arcpeekCurrentTabIsPinned = ${currentTabIsPinned ? "true" : "false"};
@@ -3477,6 +3692,7 @@
       const sourceToken = this.#ensurePeekSourceToken(sourceElement);
       const snapshot = {
         href: link.href,
+        sourceTabId: Number(this.config?.currentTabId) || null,
         sourceToken,
         left: rect.left,
         top: rect.top,
@@ -3506,7 +3722,14 @@
     }
 
     #sendPeekMessage(url, rect) {
-      chrome.runtime.sendMessage({ url, fromPanel: this.fromPanel, rect });
+      chrome.runtime.sendMessage({
+        url,
+        fromPanel: this.fromPanel,
+        rect,
+        meta: {
+          sourceTabId: Number(this.config?.currentTabId) || null,
+        },
+      });
     }
 
     #openPeekFromEvent(event) {
@@ -3524,6 +3747,7 @@
             : null;
         const rect = cachedRect || this.#recordLinkSnapshot(event, link);
         this.#sendPeekMessage(link.href, {
+          sourceTabId: rect.sourceTabId,
           sourceToken: rect.sourceToken,
           left: rect.left,
           top: rect.top,
