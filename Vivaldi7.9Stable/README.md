@@ -218,8 +218,8 @@ You must configure your own **OpenAI-compatible API**
 
 #### ⭐ FavouriteTabs not showing
 - Only **first 9 pinned tabs / tab stacks** are turned into grids.
-- Which you need to pin tabs to see it take effect.
-- This mods often caused side effect, for instance, break location of tabs' popup thumbnails.
+- Which means you need to pin at least one tabs to see it take effect.
+- This mod often causes side effect, for instance, break location of tabs' popup thumbnails.
 
 ---
 
@@ -230,7 +230,7 @@ That’s normal.
 - Many mods run **in the background**
 - Effects may be subtle or only appear in specific situations
 
-👉 Check the mod list to understand what each one does
+👉 Check the [Mod List](#mod-list) to understand what each one does
 
 ---
 
@@ -239,8 +239,8 @@ That’s normal.
 Some mods are intentionally turned off (buggy / unfinished)
 
 **Enable them manually:**
-- CSS mods → `Import.css`
-- JS mods → `window.html`
+- CSS mods → [Import.css](./Import.css)
+- JS mods → [window.html](./Javascripts/window.html)
 
 ---
 

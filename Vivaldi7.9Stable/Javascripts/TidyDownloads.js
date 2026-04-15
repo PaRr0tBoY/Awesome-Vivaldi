@@ -3,7 +3,7 @@
  * Uses chrome.downloads.onDeterminingFilename to dynamically set filenames during download
  *
  * Usage:
- * 1. Modify the CONFIG below (API endpoint, key, model)
+ * 1. Modify AI_CONFIG below, then adjust CONFIG if needed
  * 2. Copy to <Vivaldi Dir>/Application/<Version>/resources/vivaldi/
  * 3. Include in window.html: <script src="TidyDownloads.js"></script>
  * 4. Restart Vivaldi
@@ -12,20 +12,28 @@
 (() => {
   "use strict";
 
-  // ========== CONFIG ==========
-  const CONFIG = {
-    // OpenAI Compatible API endpoint (no trailing /)
-    apiEndpoint: "https://open.bigmodel.cn/api/paas/v4",
-
-    // API key
-    apiKey: "fa1b93e2a5bc45acb62554423ef772b5.xxdSGe7psrMw1RVZ",
-
-    // Model
+  // ==================== AI Configuration ====================
+  // 1. Fill in apiKey.
+  // 2. Set apiEndpoint to the full chat completions URL.
+  // 3. Adjust model / timeout / maxTokens if needed.
+  // 4. If apiKey is empty, download renaming will fall back to the original filename.
+  //
+  // Common examples:
+  // GLM: https://open.bigmodel.cn/api/paas/v4/chat/completions
+  // Mimo: https://api.xiaomimimo.com/v1/chat/completions
+  // OpenRouter: https://openrouter.ai/api/v1/chat/completions
+  // DeepSeek: https://api.deepseek.com/chat/completions
+  const AI_CONFIG = {
+    apiEndpoint: "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+    apiKey: "",
     model: "glm-4-flash",
-
-    // Request timeout (ms)
     timeout: 15000,
+    temperature: 0.1,
+    maxTokens: 1000,
+  };
 
+  // ==================== Script Configuration ====================
+  const CONFIG = {
     // Enable AI renaming (false = use original filename)
     enabled: true,
 
@@ -111,7 +119,7 @@ Write responses (but not JSON keys) in English.`;
 
   // ---------- AI Request ----------
   async function fetchAiRename({ filename, tabTitle, hostname }) {
-    if (!CONFIG.enabled) return null;
+    if (!CONFIG.enabled || !AI_CONFIG.apiKey) return null;
     if (
       CONFIG.skipKeywords.some(
         (kw) => filename.includes(kw) || hostname?.includes(kw)
@@ -124,10 +132,10 @@ Write responses (but not JSON keys) in English.`;
     const userMsg = buildUserMessage({ filename, tabTitle, hostname });
 
     const body = {
-      temperature: 0,
-      max_tokens: 1000,
+      temperature: AI_CONFIG.temperature,
+      max_tokens: AI_CONFIG.maxTokens,
       stream: true,
-      model: CONFIG.model,
+      model: AI_CONFIG.model,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: userMsg },
@@ -140,14 +148,14 @@ Write responses (but not JSON keys) in English.`;
     log.debug(`AI request body:`, body);
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), CONFIG.timeout);
+    const timeoutId = setTimeout(() => controller.abort(), AI_CONFIG.timeout);
 
     try {
-      const response = await fetch(`${CONFIG.apiEndpoint}/chat/completions`, {
+      const response = await fetch(AI_CONFIG.apiEndpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${CONFIG.apiKey}`,
+          Authorization: `Bearer ${AI_CONFIG.apiKey}`,
         },
         body: JSON.stringify(body),
         signal: controller.signal,
@@ -208,7 +216,7 @@ Write responses (but not JSON keys) in English.`;
     } catch (err) {
       clearTimeout(timeoutId);
       if (err.name === "AbortError") {
-        log.error(`AI request timeout (${CONFIG.timeout}ms)`);
+        log.error(`AI request timeout (${AI_CONFIG.timeout}ms)`);
       } else {
         log.error(`AI request failed: ${err.message}`);
       }
@@ -373,15 +381,15 @@ Write responses (but not JSON keys) in English.`;
 
   // ---------- Startup ----------
   log.info(`========== TidyDownloads Module Starting ==========`);
-  log.info(`API: ${CONFIG.apiEndpoint}/chat/completions`);
-  log.info(`Model: ${CONFIG.model}`);
+  log.info(`API: ${AI_CONFIG.apiEndpoint}`);
+  log.info(`Model: ${AI_CONFIG.model}`);
   log.info(`Enabled: ${CONFIG.enabled}`);
   log.info(`Prefer focused tab context: ${CONFIG.preferFocusedTabContext}`);
   log.info(`Skip keywords: ${CONFIG.skipKeywords.join(", ")}`);
   log.info(`Skip extensions: ${CONFIG.skipExtensions.join(", ")}`);
 
-  if (CONFIG.apiKey === "YOUR_API_KEY_HERE") {
-    log.warn(`Please set CONFIG.apiKey to your API key!`);
+  if (!AI_CONFIG.apiKey) {
+    log.warn(`Please set AI_CONFIG.apiKey to your API key.`);
   }
 
   init();

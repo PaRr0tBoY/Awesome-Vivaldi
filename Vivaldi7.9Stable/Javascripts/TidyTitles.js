@@ -2,27 +2,24 @@
 (function () {
   "use strict";
 
-  // ========== CONFIG ==========
-  const CONFIG = {
-    // === GLM(free) ===
-    BASE_URL: "https://open.bigmodel.cn/api/paas/v4/chat/completions",
-    API_TOKEN: "",
-    MODEL: "glm-4.7-flash",
-
-    // === Mimo ===
-    // BASE_URL: "https://api.xiaomimimo.com/v1/chat/completions",
-    // API_TOKEN: "",
-    // MODEL: "mimo-v2-flash",
-
-    // === Openrouter/Free Quite Buggy===
-    // BASE_URL: "https://openrouter.ai/api/v1/chat/completions",
-    // API_TOKEN: "",
-    // MODEL: "openrouter/free",
-
-    // === Deepseek ===
-    // BASE_URL: 'https://api.deepseek.com/v1/chat/completions',
-    // API_TOKEN: "",
-    // MODEL: 'deepseek-chat',
+  // ==================== AI Configuration ====================
+  // 1. Fill in apiKey.
+  // 2. Set apiEndpoint to the full chat completions URL.
+  // 3. Adjust model / timeout / maxTokens if needed.
+  // 4. If apiKey is empty, title generation will be skipped.
+  //
+  // Common examples:
+  // GLM: https://open.bigmodel.cn/api/paas/v4/chat/completions
+  // Mimo: https://api.xiaomimimo.com/v1/chat/completions
+  // OpenRouter: https://openrouter.ai/api/v1/chat/completions
+  // DeepSeek: https://api.deepseek.com/chat/completions
+  const AI_CONFIG = {
+    apiEndpoint: "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+    apiKey: "",
+    model: "glm-4-flash",
+    timeout: 0,
+    temperature: 0.1,
+    maxTokens: 500,
   };
 
   // Language mapping
@@ -127,6 +124,11 @@
    * Calls the AI API to generate an optimized title
    */
   async function generateOptimizedTitle(originalTitle, url) {
+    if (!AI_CONFIG.apiKey) {
+      console.warn("[TidyTitles] AI API key not configured, skipping.");
+      return originalTitle;
+    }
+
     // Skip special/internal URLs that cause permission errors
     if (!url || (!url.startsWith("http") && !url.startsWith("https"))) {
       console.log(`[TidyTitles] Skipping non-web URL: ${url}`);
@@ -135,7 +137,7 @@
 
     const languageName = getLanguageName(getBrowserLanguage());
     const title = originalTitle.replace(/`/g, "\\`").replace(/\${/g, "\\${");
-    const systemPrompt = `You are a perfect editor, summarizer and translator.
+    const prompt = `You are a perfect editor, summarizer and translator.
 I am bookmarking a tab in my browser.
 
 The title is \`${title}\`.
@@ -157,13 +159,15 @@ Return a response using JSON, according to this schema:
 
 Write responses (but not JSON keys) in ${languageName}.`;
 
+    let timeoutId = null;
+
     try {
-      const isGLM = CONFIG.BASE_URL?.includes("bigmodel.cn");
+      const isGLM = AI_CONFIG.apiEndpoint?.includes("bigmodel.cn");
       const payload = {
-        model: CONFIG.MODEL,
-        messages: [{ role: "system", content: systemPrompt }],
-        temperature: 0,
-        max_tokens: 500,
+        model: AI_CONFIG.model,
+        messages: [{ role: "user", content: prompt }],
+        temperature: AI_CONFIG.temperature,
+        max_tokens: AI_CONFIG.maxTokens,
         stream: false,
         response_format: { type: "json_object" },
       };
@@ -176,15 +180,23 @@ Write responses (but not JSON keys) in ${languageName}.`;
 
       console.log(`[TidyTitles] API Request:`, payload);
 
-      const response = await fetch(CONFIG.BASE_URL, {
+      const controller =
+        AI_CONFIG.timeout > 0 ? new AbortController() : null;
+      timeoutId =
+        AI_CONFIG.timeout > 0
+          ? setTimeout(() => controller.abort(), AI_CONFIG.timeout)
+          : null;
+
+      const response = await fetch(AI_CONFIG.apiEndpoint, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${CONFIG.API_TOKEN}`,
+          Authorization: `Bearer ${AI_CONFIG.apiKey}`,
           "Content-Type": "application/json",
           "HTTP-Referer": "https://github.com/Gershom-Chen/VivaldiModpack",
           "X-Title": "Vivaldi TidyTitles",
         },
         body: JSON.stringify(payload),
+        signal: controller?.signal,
       });
 
       const data = await response.json();
@@ -249,6 +261,8 @@ Write responses (but not JSON keys) in ${languageName}.`;
     } catch (error) {
       console.error("[TidyTitles] API call exception:", error.message);
       return originalTitle;
+    } finally {
+      if (typeof timeoutId !== "undefined" && timeoutId) clearTimeout(timeoutId);
     }
   }
 
