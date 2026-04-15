@@ -33,6 +33,28 @@
     // Delay before the hold feedback animation starts, in milliseconds.
     // Example: 200
     longPressHoldDelay: 200,
+
+    // Auto-open rules for normal left click on links.
+    // Available values:
+    // "*.baidu.com" => any matching hostname auto-opens Peek
+    // "example.com" => exact hostname match auto-opens Peek
+    // "pin" => all links inside pinned tabs auto-open Peek
+    // Examples:
+    // ["pin"] => only pinned tabs auto-open Peek
+    // ["pin", "*.baidu.com"] => pinned tabs and all baidu subdomains auto-open Peek
+    // [] => disable auto-open
+    // The list can be long:
+    // autoOpenList: [
+    //   "pin",
+    //   "*.baidu.com",
+    //   "*.google.com",
+    //   "*.bilibili.com",
+    //   "*.x.com",
+    // ],
+    autoOpenList: [
+      "pin",
+      "*.google.com",
+    ],
   };
 
   // =========================
@@ -2762,7 +2784,7 @@
 
   class WebsiteInjectionUtils {
     constructor(getWebviewConfig, openPeek, triggerConfig) {
-      this.triggerConfig = JSON.stringify(triggerConfig);
+      this.triggerConfig = triggerConfig;
       this.injectRetryTimers = new Map();
       this.injectThrottleState = new WeakMap();
       this.webviewObserver = null;
@@ -2810,6 +2832,9 @@
         for (const mutation of mutations) {
           if (mutation.type === "attributes") {
             const target = mutation.target;
+            if (target?.classList?.contains?.("tab-position")) {
+              this.syncPinnedStateForTabPosition(target);
+            }
             if (
               target?.tagName === "WEBVIEW" ||
               target?.classList?.contains?.("webpageview")
@@ -2846,6 +2871,43 @@
       this.scheduleActiveWebviewInjection(800);
     }
 
+    getTabWrapperByTabId(tabId) {
+      if (!Number.isFinite(tabId) || tabId <= 0) return null;
+      return document.querySelector(`.tab-wrapper[data-id="tab-${tabId}"]`);
+    }
+
+    isPinnedTabId(tabId) {
+      const tabWrapper = this.getTabWrapperByTabId(tabId);
+      return !!tabWrapper?.closest?.(".tab-position.is-pinned");
+    }
+
+    updateInjectedPinnedState(webview, isPinned) {
+      if (!webview?.isConnected) return;
+      webview.executeScript(
+        {
+          code: `window.__arcpeekCurrentTabIsPinned = ${isPinned ? "true" : "false"};`,
+          runAt: "document_start",
+        },
+        () => {
+          void chrome.runtime.lastError;
+        }
+      );
+    }
+
+    syncPinnedStateForTabPosition(tabPositionElement) {
+      if (!tabPositionElement?.classList?.contains?.("tab-position")) return;
+      const dataId = tabPositionElement.querySelector(".tab-wrapper")?.getAttribute?.("data-id") || "";
+      const match = /^tab-(\d+)$/.exec(dataId);
+      const tabId = Number(match?.[1] || 0);
+      if (!Number.isFinite(tabId) || tabId <= 0) return;
+      const webview = document.querySelector(`webview[tab_id="${tabId}"]`);
+      if (!webview || !this.isInjectableWebview(webview)) return;
+      this.updateInjectedPinnedState(
+        webview,
+        tabPositionElement.classList.contains("is-pinned")
+      );
+    }
+
     injectActiveWebview() {
       const activeWebview = document.querySelector(".active.visible.webpageview webview");
       if (activeWebview && this.isInjectableWebview(activeWebview)) {
@@ -2868,13 +2930,6 @@
     }
 
     injectCode(webview, fromPanel) {
-      const handler = WebsiteLinkInteractionHandler.toString(),
-        instantiationCode = `
-                if (!this.peekEventListenerSet) {
-                    new (${handler})(${fromPanel}, ${this.triggerConfig});
-                    this.peekEventListenerSet = true;
-                }
-            `;
       try {
         const src = webview.getAttribute("src") || webview.src || "";
         const lastInject = this.injectThrottleState.get(webview);
@@ -2887,9 +2942,29 @@
           return;
         }
         this.injectThrottleState.set(webview, { src, at: now });
-        webview.executeScript({ code: instantiationCode, runAt: "document_start" }, () => {
-          void chrome.runtime.lastError;
-        });
+
+        const handler = WebsiteLinkInteractionHandler.toString();
+        const rawTabId = webview.getAttribute("tab_id") || webview.tab_id;
+        const tabId = Number(rawTabId);
+        const finalizeInjection = (currentTabIsPinned = false) => {
+          const pageConfig = JSON.stringify({
+            ...this.triggerConfig,
+            currentTabIsPinned,
+          });
+          const instantiationCode = `
+                window.__arcpeekCurrentTabIsPinned = ${currentTabIsPinned ? "true" : "false"};
+                if (!this.peekEventListenerSet) {
+                    new (${handler})(${fromPanel}, ${pageConfig});
+                    this.peekEventListenerSet = true;
+                }
+            `;
+
+          webview.executeScript({ code: instantiationCode, runAt: "document_start" }, () => {
+            void chrome.runtime.lastError;
+          });
+        };
+
+        finalizeInjection(this.isPinnedTabId(tabId));
       } catch (_) {}
     }
   }
@@ -3055,6 +3130,53 @@
       );
     }
 
+    #getAutoOpenList() {
+      const raw = this.config?.autoOpenList;
+      const values = Array.isArray(raw) ? raw : [raw];
+      return values
+        .flatMap((value) => String(value || "").toLowerCase().split(","))
+        .map((value) => value.trim())
+        .filter(Boolean)
+        .filter((value) => value !== "none");
+    }
+
+    #hostnameMatchesPattern(hostname, pattern) {
+      if (!hostname || !pattern || pattern === "pin") return false;
+      if (pattern.startsWith("*.")) {
+        const suffix = pattern.slice(2);
+        return !!suffix && hostname.endsWith(`.${suffix}`);
+      }
+      return hostname === pattern;
+    }
+
+    #isCurrentTabPinned() {
+      if (typeof window.__arcpeekCurrentTabIsPinned === "boolean") {
+        return window.__arcpeekCurrentTabIsPinned;
+      }
+      return !!this.config?.currentTabIsPinned;
+    }
+
+    #shouldAutoOpenLinkEvent(event) {
+      if (!event || event.button !== 0) return false;
+
+      const autoOpenList = this.#getAutoOpenList();
+      if (!autoOpenList.length) return false;
+
+      if (
+        autoOpenList.includes("pin") &&
+        this.#isCurrentTabPinned()
+      ) {
+        return true;
+      }
+
+      const hostname = String(window.location.hostname || "").toLowerCase();
+      if (!hostname) return false;
+
+      return autoOpenList.some((pattern) =>
+        this.#hostnameMatchesPattern(hostname, pattern)
+      );
+    }
+
     #setupMouseHandling() {
       let holdTimer;
       const signalOptions = { signal: this.#abortController.signal, capture: true };
@@ -3103,7 +3225,12 @@
           this.#recordLinkSnapshot(event, link);
         }
 
-        if (this.#isConfiguredClickOpenModifierEvent(event)) {
+        if (link && this.#shouldAutoOpenLinkEvent(event)) {
+          this.pendingLeftButtonRelease = true;
+          this.pendingSuppressedButton = 0;
+          this.#openPeekFromEvent(event);
+          this.preventAllClicks();
+        } else if (this.#isConfiguredClickOpenModifierEvent(event)) {
           this.pendingLeftButtonRelease = true;
           this.pendingSuppressedButton = 0;
           this.#openPeekFromEvent(event);
