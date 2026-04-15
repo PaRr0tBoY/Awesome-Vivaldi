@@ -38,6 +38,13 @@
 - [安装](#安装)
 - [社区修改](#社区修改)
 
+## 最新更新
+
+| 演示                                                    | 修改                                                              |
+| :------------------------------------------------------ | :---------------------------------------------------------------- |
+| ![AskInPage](../../Others/assets/AskInPage.png)         | `AskInPage.js`                                                |
+| ![TidyDownloads](../../Others/assets/TidyDownloads.gif) | `TidyDownloads.js`                                                |
+
 ## 简介
 
 本修改包支持两个版本的 Vivaldi。
@@ -56,7 +63,6 @@
 | ![PeekTabbar](../../Others/assets/PeekTabbar.gif)       | `PeekTabbar.css`                                                  |
 | ![ArcPeek](../../Others/assets/ArcPeek.gif)             | `ArcPeek.css` + `ArcPeek.js`                                      |
 | ![Quietify](../../Others/assets/Quietify.gif)           | `Quietify.css`                                                    |
-| ![TidyDownloads](./Others/assets/TidyDownloads.gif) | `TidyDownloads.js`                                           |
 
 ## 主要文件结构
 

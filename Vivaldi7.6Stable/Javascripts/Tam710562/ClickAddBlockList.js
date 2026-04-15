@@ -151,7 +151,7 @@
                 ? String.fromCharCode(codepoint)
                 : String.fromCharCode(
                     0xd7c0 + (codepoint >> 10),
-                    0xdc00 + (codepoint & 0x3ff),
+                    0xdc00 + (codepoint & 0x3ff)
                   );
 
             codepoint = 0;
@@ -162,7 +162,7 @@
             codepoint = 0;
             percentPosition = startOfOctets = str.indexOf(
               "%",
-              startOfOctets + 1,
+              startOfOctets + 1
             );
           } else {
             percentPosition += 3;
@@ -185,10 +185,10 @@
         const id = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
           /[xy]/g,
           (c) => {
-            r = ((d + Math.random() * 16) % 16) | 0;
+            r = (d + Math.random() * 16) % 16 | 0;
             d = Math.floor(d / 16);
             return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
-          },
+          }
         );
 
         if (Array.isArray(ids) && ids.includes(id)) {
@@ -269,7 +269,7 @@
       let cancelEvent;
       const id = this.uuid.generate();
       const inner = document.querySelector(
-        "#main > .inner, #main > .webpageview",
+        "#main > .inner, #main > .webpageview"
       );
 
       if (!config) {
@@ -290,7 +290,7 @@
         mousedown,
         button,
         clientX,
-        clientY,
+        clientY
       ) {
         if (
           config.autoClose &&
@@ -361,7 +361,7 @@
           "data-dialog-id": id,
           class: "dialog-custom modal-wrapper",
         },
-        div,
+        div
       );
       if (config.class) {
         dialog.classList.add(config.class);
@@ -372,7 +372,7 @@
           class: "dialog-header",
         },
         dialog,
-        "<h1>" + (title || "") + "</h1>",
+        "<h1>" + (title || "") + "</h1>"
       );
       const dialogContent = this.createElement(
         "div",
@@ -383,7 +383,7 @@
           },
         },
         dialog,
-        content,
+        content
       );
       if (buttons && buttons.length > 0) {
         const dialogFooter = this.createElement(
@@ -392,7 +392,7 @@
             class: "dialog-footer",
           },
           dialog,
-          buttonElements,
+          buttonElements
         );
       }
       modalBg = this.createElement(
@@ -402,7 +402,7 @@
           class: "slide",
         },
         inner,
-        [focusModal.cloneNode(true), div, focusModal.cloneNode(true)],
+        [focusModal.cloneNode(true), div, focusModal.cloneNode(true)]
       );
       return {
         dialog,
@@ -418,7 +418,7 @@
         this.constant.dialogButtons.submit,
         {
           cancel: true,
-        },
+        }
       );
       if (typeof okEvent === "function") {
         buttonOkElement.click = function (data) {
@@ -453,7 +453,7 @@
         click(data) {
           isLoading = false;
         },
-      },
+      }
     );
     const buttonCancelElement = gnoh.object.merge(
       gnoh.constant.dialogButtons.cancel,
@@ -463,11 +463,11 @@
         click(data) {
           vivaldi.contentBlocking.deleteKnownSource(
             vivaldi.contentBlocking.RuleGroup.AD_BLOCKING,
-            blockListId,
+            blockListId
           );
           isLoading = false;
         },
-      },
+      }
     );
 
     dialogRef = gnoh.dialog(
@@ -478,7 +478,7 @@
         width: 500,
         class: "ContentBlocker-Exception",
         autoClose: false,
-      },
+      }
     );
   }
 
@@ -504,7 +504,7 @@
         dialogRef.close();
         vivaldi.contentBlocking.deleteKnownSource(
           vivaldi.contentBlocking.RuleGroup.AD_BLOCKING,
-          blockList.id,
+          blockList.id
         );
         gnoh.alert(blockList.last_fetch_result, () => {
           isLoading = false;
@@ -520,7 +520,7 @@
     if (
       tab.pendingUrl &&
       (matchURL = tab.pendingUrl.match(
-        /(https:\/\/subscribe\.adblockplus\.org\/|abp:subscribe)\?location=(.+)(&|&amp;)title=.+/,
+        /(https:\/\/subscribe\.adblockplus\.org\/|abp:subscribe)\?location=(.+)(&|&amp;)title=.+/
       ))
     ) {
       const blockListURL = gnoh.decode.url(matchURL[2]);
@@ -546,7 +546,7 @@
                 isLoading = false;
               });
             }
-          },
+          }
         );
       }
     }

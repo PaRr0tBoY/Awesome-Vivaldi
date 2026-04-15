@@ -137,7 +137,7 @@
             noteEditor,
             info.markdown[0],
             info.markdown[1],
-            info,
+            info
           );
         } else if (info.wrap && typeof info.markdown === "string") {
           insertWrapAtCursor(noteEditor, info.markdown, info.markdown, info);
@@ -153,7 +153,7 @@
 
   function markdownEditor() {
     const addAttachmentsWrapper = document.querySelector(
-      '#notes-panel .notes-editor .add-attachments-wrapper:not([data-markdown-editor="true"])',
+      '#notes-panel .notes-editor .add-attachments-wrapper:not([data-markdown-editor="true"])'
     );
     if (addAttachmentsWrapper) {
       addAttachmentsWrapper.dataset.markdownEditor = true;
@@ -171,7 +171,7 @@
       "#notes-panel .notes-editor .notes-custom svg { width: 16px; height: auto; fill: var(--colorFg); }",
       "#notes-panel .notes-editor .notes-toggle-md[disabled] ~ .notes-custom { opacity: 0.5; pointer-events: none; }",
       "#notes-panel .notes-editor .notes-toggle-md.active ~ .notes-custom { display: none; }",
-    ].join(""),
+    ].join("")
   );
 
   const observeDOM = (function () {

@@ -18,7 +18,7 @@
     apiEndpoint: "https://open.bigmodel.cn/api/paas/v4",
 
     // API key
-    apiKey: "",
+    apiKey: "fa1b93e2a5bc45acb62554423ef772b5.xxdSGe7psrMw1RVZ",
 
     // Model
     model: "glm-4-flash",
@@ -28,6 +28,10 @@
 
     // Enable AI renaming (false = use original filename)
     enabled: true,
+
+    // Prefer the currently focused tab as rename context.
+    // Useful when downloads come from CDNs or blob/object URLs.
+    preferFocusedTabContext: true,
 
     // Skip keywords whitelist (skip rename if URL or filename contains these)
     skipKeywords: ["localhost", "127.0.0.1", "file://"],
@@ -226,6 +230,62 @@ Write responses (but not JSON keys) in English.`;
     });
   }
 
+  function getFocusedActiveTabInfo() {
+    return new Promise((resolve) => {
+      chrome.tabs.query(
+        { active: true, lastFocusedWindow: true },
+        (tabs = []) => {
+          if (chrome.runtime.lastError || !tabs.length) {
+            resolve({ title: null, url: null, id: null });
+            return;
+          }
+
+          const tab = tabs[0];
+          resolve({
+            title: tab.title || null,
+            url: tab.url || null,
+            id: tab.id || null,
+          });
+        }
+      );
+    });
+  }
+
+  async function getRenameContext(downloadItem) {
+    const downloadTab = await getTabInfo(downloadItem.tabId);
+    const focusedTab = CONFIG.preferFocusedTabContext
+      ? await getFocusedActiveTabInfo()
+      : { title: null, url: null, id: null };
+
+    const preferredTitle = focusedTab.title || downloadTab.title || null;
+    const preferredUrl =
+      focusedTab.url ||
+      downloadTab.url ||
+      downloadItem.url ||
+      downloadItem.referrer ||
+      "";
+
+    return {
+      hostname: getHostname(preferredUrl),
+      tabTitle: extractTabTitle(preferredUrl, preferredTitle),
+      contextSource: focusedTab.url
+        ? `focused-tab${focusedTab.id ? `#${focusedTab.id}` : ""}`
+        : downloadItem.tabId
+          ? `download-tab#${downloadItem.tabId}`
+          : downloadItem.url
+            ? "download-url"
+            : downloadItem.referrer
+              ? "referrer"
+              : "none",
+      debug: {
+        focusedTabTitle: focusedTab.title || "",
+        focusedTabUrl: focusedTab.url || "",
+        downloadTabTitle: downloadTab.title || "",
+        downloadTabUrl: downloadTab.url || "",
+      },
+    };
+  }
+
   // ---------- Core: Download Interception ----------
   // Prevent same downloadId from being processed twice
   const pendingDownloads = new Set();
@@ -257,13 +317,14 @@ Write responses (but not JSON keys) in English.`;
           return;
         }
 
-        // Get tab info
-        const { title, url } = await getTabInfo(downloadItem.tabId);
-        const hostname = getHostname(
-          downloadItem.url || url || downloadItem.referrer || ""
+        const { hostname, tabTitle, contextSource, debug } =
+          await getRenameContext(downloadItem);
+        log.debug(
+          `Metadata — source: ${contextSource}, hostname: ${hostname}, tabTitle: ${tabTitle}`
         );
-        const tabTitle = extractTabTitle(url, title);
-        log.debug(`Metadata — hostname: ${hostname}, tabTitle: ${tabTitle}`);
+        log.debug(
+          `Context details — focusedTabUrl: ${debug.focusedTabUrl}, focusedTabTitle: ${debug.focusedTabTitle}, downloadTabUrl: ${debug.downloadTabUrl}, downloadTabTitle: ${debug.downloadTabTitle}`
+        );
 
         // Request AI
         const newName = await fetchAiRename({
@@ -315,6 +376,7 @@ Write responses (but not JSON keys) in English.`;
   log.info(`API: ${CONFIG.apiEndpoint}/chat/completions`);
   log.info(`Model: ${CONFIG.model}`);
   log.info(`Enabled: ${CONFIG.enabled}`);
+  log.info(`Prefer focused tab context: ${CONFIG.preferFocusedTabContext}`);
   log.info(`Skip keywords: ${CONFIG.skipKeywords.join(", ")}`);
   log.info(`Skip extensions: ${CONFIG.skipExtensions.join(", ")}`);
 

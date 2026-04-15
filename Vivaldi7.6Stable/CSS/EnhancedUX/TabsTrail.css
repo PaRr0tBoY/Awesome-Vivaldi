@@ -36,9 +36,7 @@ Show trail on tab to highlight mouse hover action and active tabs
   );
   transform: translateX(100%);
   opacity: 0;
-  transition:
-    transform 300ms ease-out,
-    opacity 300ms ease-out;
+  transition: transform 300ms ease-out, opacity 300ms ease-out;
   pointer-events: none;
   z-index: 1;
   /* border-radius: 12px !important; */
@@ -61,9 +59,7 @@ Show trail on tab to highlight mouse hover action and active tabs
   );
   transform: translateX(100%);
   opacity: 0;
-  transition:
-    transform 300ms ease-out,
-    opacity 300ms ease-out;
+  transition: transform 300ms ease-out, opacity 300ms ease-out;
   pointer-events: none;
   z-index: 2;
   /* border-radius: 12px !important; */
@@ -100,9 +96,7 @@ Show trail on tab to highlight mouse hover action and active tabs
   /* border-radius: 12px !important; */
   transform: translateX(100%);
   opacity: 0;
-  transition:
-    transform 150ms ease-out,
-    opacity 150ms ease-out;
+  transition: transform 150ms ease-out, opacity 150ms ease-out;
 }
 
 /* Red trail return to base state when green trail is active */
@@ -110,9 +104,7 @@ Show trail on tab to highlight mouse hover action and active tabs
   /* border-radius: 12px !important; */
   transform: translateX(100%);
   opacity: 0;
-  transition:
-    transform 150ms ease-out,
-    opacity 150ms ease-out;
+  transition: transform 150ms ease-out, opacity 150ms ease-out;
 }
 
 #tabs-subcontainer .tab.tab-small.tab-mini .tab-header,

@@ -73,9 +73,7 @@
     }
 
     .panel-group {
-      transition:
-        border-right 0.5s ease,
-        width var(--duration) ease-out !important;
+      transition: border-right 0.5s ease, width var(--duration) ease-out !important;
       margin-bottom: calc(var(--edge-like-border-radius) / 2);
 
       &::before {

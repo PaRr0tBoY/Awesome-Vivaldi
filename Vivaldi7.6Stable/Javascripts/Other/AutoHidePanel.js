@@ -49,16 +49,16 @@
 
   const simulateClick = (element) => {
     element.dispatchEvent(
-      new PointerEvent("pointerdown", { bubbles: true, pointerId: 1 }),
+      new PointerEvent("pointerdown", { bubbles: true, pointerId: 1 })
     );
     element.dispatchEvent(
-      new PointerEvent("mousedown", { bubbles: true, detail: 1 }),
+      new PointerEvent("mousedown", { bubbles: true, detail: 1 })
     );
     element.dispatchEvent(
-      new PointerEvent("pointerup", { bubbles: true, pointerId: 1 }),
+      new PointerEvent("pointerup", { bubbles: true, pointerId: 1 })
     );
     element.dispatchEvent(
-      new PointerEvent("mouseup", { bubbles: true, detail: 1 }),
+      new PointerEvent("mouseup", { bubbles: true, detail: 1 })
     );
     element.dispatchEvent(new PointerEvent("click", { bubbles: true }));
   };
@@ -96,7 +96,7 @@
 
   const isPanelButton = (element) =>
     element.matches(
-      'button:is([name^="Panel"], [name^="WEBPANEL_"]):not([name="PanelWeb"])',
+      'button:is([name^="Panel"], [name^="WEBPANEL_"]):not([name="PanelWeb"])'
     );
 
   let showToken;

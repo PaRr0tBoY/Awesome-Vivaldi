@@ -207,7 +207,7 @@
         if (retryCount === 0) {
           console.log(
             "Failed to capture tab (will retry once):",
-            error.message,
+            error.message
           );
         }
 
@@ -242,7 +242,7 @@
             0,
             0,
             img.width,
-            sampleHeight,
+            sampleHeight
           );
           const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
@@ -460,7 +460,7 @@
     chrome.tabs.onUpdated.addListener(eventHandlers.onTabUpdated);
     chrome.tabs.onRemoved.addListener(eventHandlers.onTabRemoved);
     chrome.windows.onFocusChanged.addListener(
-      eventHandlers.onWindowFocusChanged,
+      eventHandlers.onWindowFocusChanged
     );
 
     const browser = dom.getBrowser();

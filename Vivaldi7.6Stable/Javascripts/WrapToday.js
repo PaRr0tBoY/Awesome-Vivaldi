@@ -187,14 +187,14 @@
               {
                 hour: "2-digit",
                 minute: "2-digit",
-              },
+              }
             );
             const lastTime = new Date(item.lastVisit).toLocaleTimeString(
               "en-US",
               {
                 hour: "2-digit",
                 minute: "2-digit",
-              },
+              }
             );
 
             if (item.count === 1) {
@@ -215,7 +215,7 @@
         historyText += `URL: ${site.url}\n`;
         historyText += `Visits: ${site.count}\n`;
         const percentage = ((site.count / historyItems.length) * 100).toFixed(
-          1,
+          1
         );
         historyText += `Share of today's visits: ${percentage}%\n`;
       });
@@ -265,7 +265,7 @@
 
       if (!response.ok) {
         throw new Error(
-          `API request failed: ${response.status} ${response.statusText}`,
+          `API request failed: ${response.status} ${response.statusText}`
         );
       }
 
@@ -344,7 +344,7 @@
         !btn[i].classList.contains("vhs-summary-btn")
       ) {
         console.log(
-          "Vivaldi History Summary: Button found and event attached.",
+          "Vivaldi History Summary: Button found and event attached."
         );
         // Bind main function
         btn[i].addEventListener("click", main);

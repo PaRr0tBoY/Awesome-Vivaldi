@@ -24,7 +24,7 @@
     uuid: {
       check(id) {
         return !/^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i.test(
-          id,
+          id
         );
       },
       generate(ids) {
@@ -33,10 +33,10 @@
         const id = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
           /[xy]/g,
           (c) => {
-            r = ((d + Math.random() * 16) % 16) | 0;
+            r = (d + Math.random() * 16) % 16 | 0;
             d = Math.floor(d / 16);
             return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
-          },
+          }
         );
 
         if (Array.isArray(ids) && ids.includes(id)) {
@@ -77,7 +77,7 @@
           html: css || "",
           "data-id": id,
         },
-        document.head,
+        document.head
       );
       return this.styles[id];
     },
@@ -172,7 +172,7 @@
       let cancelEvent;
       const id = this.uuid.generate();
       const inner = document.querySelector(
-        "#main > .inner, #main > .webpageview",
+        "#main > .inner, #main > .webpageview"
       );
 
       if (!config) {
@@ -193,7 +193,7 @@
         mousedown,
         button,
         clientX,
-        clientY,
+        clientY
       ) {
         if (
           config.autoClose &&
@@ -264,7 +264,7 @@
           "data-dialog-id": id,
           class: "dialog-custom modal-wrapper",
         },
-        div,
+        div
       );
       if (config.class) {
         dialog.classList.add(config.class);
@@ -275,7 +275,7 @@
           class: "dialog-header",
         },
         dialog,
-        "<h1>" + (title || "") + "</h1>",
+        "<h1>" + (title || "") + "</h1>"
       );
       const dialogContent = this.createElement(
         "div",
@@ -286,7 +286,7 @@
           },
         },
         dialog,
-        content,
+        content
       );
       if (buttons && buttons.length > 0) {
         const dialogFooter = this.createElement(
@@ -295,7 +295,7 @@
             class: "dialog-footer",
           },
           dialog,
-          buttonElements,
+          buttonElements
         );
       }
       modalBg = this.createElement(
@@ -305,7 +305,7 @@
           class: "slide",
         },
         inner,
-        [focusModal.cloneNode(true), div, focusModal.cloneNode(true)],
+        [focusModal.cloneNode(true), div, focusModal.cloneNode(true)]
       );
       return {
         dialog,
@@ -322,7 +322,7 @@
         this.constant.dialogButtons.submit,
         {
           cancel: true,
-        },
+        }
       );
       if (typeof okEvent === "function") {
         buttonOkElement.click = function (data) {
@@ -430,35 +430,35 @@
     preview: gnoh.i18n.getMessage("Preview"),
     commandParameter: gnoh.i18n.getMessage(
       "Command Parameter",
-      "chainedcommand",
+      "chainedcommand"
     ),
     textSelection: gnoh.i18n.getMessage(
       messageKey.textSelection.message,
-      messageKey.textSelection.type,
+      messageKey.textSelection.type
     ),
     websiteLink: gnoh.i18n.getMessage(
       messageKey.websiteLink.message,
-      messageKey.websiteLink.type,
+      messageKey.websiteLink.type
     ),
     pageUrl: gnoh.i18n.getMessage(
       messageKey.pageUrl.message,
-      messageKey.pageUrl.type,
+      messageKey.pageUrl.type
     ),
     webpageTitle: gnoh.i18n.getMessage(
       messageKey.webpageTitle.message,
-      messageKey.webpageTitle.type,
+      messageKey.webpageTitle.type
     ),
     elementSource: gnoh.i18n.getMessage(
       messageKey.elementSource.message,
-      messageKey.elementSource.type,
+      messageKey.elementSource.type
     ),
   };
 
   const placeholdersCurrent = Object.keys(messageKey).map((key) =>
-    langs[key].replace(/\s/g, "_"),
+    langs[key].replace(/\s/g, "_")
   );
   const placeholdersEn = Object.values(messageKey).map((m) =>
-    m.message.replace(/\s/g, "_"),
+    m.message.replace(/\s/g, "_")
   );
 
   gnoh.addStyle(
@@ -474,7 +474,7 @@
       ".import-export-command-chains .editor::highlight(json-string) { color: var(--jsonString); }",
       ".import-export-command-chains .chained-command-item-value { background-color: var(--colorBgIntense); padding: 6px 12px; white-space: nowrap; overflow: auto; scrollbar-width: none; user-select: text; }",
     ],
-    "import-export-command-chains",
+    "import-export-command-chains"
   );
 
   const buttons = {
@@ -503,8 +503,8 @@
     const bundleScript = await response.text();
     const matches = Array.from(
       bundleScript.matchAll(
-        /category\s*:\s*"([^"]+)",[\s\S]+?guid\s*:\s*"([^"]+)",[\s\S]+?\("(([^"]+)"\s*,\s*")?([^"]+)"\)/g,
-      ),
+        /category\s*:\s*"([^"]+)",[\s\S]+?guid\s*:\s*"([^"]+)",[\s\S]+?\("(([^"]+)"\s*,\s*")?([^"]+)"\)/g
+      )
     );
 
     const commands = {};
@@ -537,7 +537,7 @@
         range.setStart(element.firstChild, match.index);
         range.setEnd(element.firstChild, match.index + match[0].length);
         return range;
-      },
+      }
     );
 
     const jsonNumbersHighlight = new Highlight(...jsonNumbers);
@@ -549,7 +549,7 @@
         range.setStart(element.firstChild, match.index);
         range.setEnd(element.firstChild, match.index + match[0].length);
         return range;
-      },
+      }
     );
 
     const jsonBooleansHighlight = new Highlight(...jsonBooleans);
@@ -569,7 +569,7 @@
         } else {
           jsonStrings.push(range);
         }
-      },
+      }
     );
     const jsonKeysHighlight = new Highlight(...jsonKeys);
     CSS.highlights.set("json-key", jsonKeysHighlight);
@@ -591,11 +591,11 @@
             },
           },
         },
-        attribute,
+        attribute
       ),
       parent,
       inner,
-      options,
+      options
     );
 
     function setValue(value) {
@@ -628,12 +628,12 @@
             "{(" +
               placeholdersEn.map((p) => gnoh.encode.regex(p)).join("|") +
               ")}",
-            "gi",
+            "gi"
           ),
           (match, p1) =>
             "{" +
             placeholdersCurrent[placeholdersEn.findIndex((p) => p === p1)] +
-            "}",
+            "}"
         );
       }
     });
@@ -647,12 +647,12 @@
             "{(" +
               placeholdersCurrent.map((p) => gnoh.encode.regex(p)).join("|") +
               ")}",
-            "gi",
+            "gi"
           ),
           (match, p1) =>
             "{" +
             placeholdersEn[placeholdersCurrent.findIndex((p) => p === p1)] +
-            "}",
+            "}"
         );
       }
     });
@@ -707,7 +707,7 @@
             await reloadSetting();
           }
         },
-      },
+      }
     );
 
     const buttonPreviewElement = Object.assign(
@@ -728,12 +728,12 @@
             await showDialogPreview(commandChainText);
           }
         },
-      },
+      }
     );
 
     const buttonCancelElement = Object.assign(
       {},
-      gnoh.constant.dialogButtons.cancel,
+      gnoh.constant.dialogButtons.cancel
     );
 
     gnoh.dialog(
@@ -743,7 +743,7 @@
       {
         width: 500,
         class: "import-export-command-chains",
-      },
+      }
     );
   }
 
@@ -768,7 +768,7 @@
         click: () => {
           navigator.clipboard.writeText(commandChainText);
         },
-      },
+      }
     );
 
     const buttonExportElement = Object.assign(
@@ -786,7 +786,7 @@
               .replace(/^-+|-+$/g, "") || key;
 
           const commandChainUrl = URL.createObjectURL(
-            new Blob([commandChainText], { type: "application/json" }),
+            new Blob([commandChainText], { type: "application/json" })
           );
 
           chrome.downloads.download({
@@ -797,12 +797,12 @@
 
           URL.revokeObjectURL(commandChainUrl);
         },
-      },
+      }
     );
 
     const buttonCancelElement = Object.assign(
       {},
-      gnoh.constant.dialogButtons.cancel,
+      gnoh.constant.dialogButtons.cancel
     );
 
     gnoh.dialog(
@@ -812,7 +812,7 @@
       {
         width: 500,
         class: "import-export-command-chains",
-      },
+      }
     );
   }
 
@@ -826,7 +826,7 @@
       {
         class: "ChainedCommand-Item--Title floating-label",
       },
-      chainedCommandItem,
+      chainedCommandItem
     );
 
     const chainedCommandItemName = gnoh.createElement(
@@ -835,7 +835,7 @@
         class: "chained-command-item-name",
         text: "Command " + index,
       },
-      chainedCommandItemTitle,
+      chainedCommandItemTitle
     );
 
     const chainedCommandItemValue = gnoh.createElement(
@@ -844,7 +844,7 @@
         class: "chained-command-item-value",
         text: commands[chain.key]?.label || chain.label || "",
       },
-      chainedCommandItemTitle,
+      chainedCommandItemTitle
     );
 
     if (typeof chain.param !== "undefined") {
@@ -853,7 +853,7 @@
         {
           class: "ChainedCommand-Item--Parameter floating-label",
         },
-        chainedCommandItem,
+        chainedCommandItem
       );
 
       const chainedCommandItemParameterName = gnoh.createElement(
@@ -862,7 +862,7 @@
           class: "chained-command-item-name",
           text: langs.commandParameter,
         },
-        chainedCommandItemParameter,
+        chainedCommandItemParameter
       );
 
       const chainedCommandItemParameterValue = gnoh.createElement(
@@ -871,7 +871,7 @@
           class: "chained-command-item-value",
           text: chain.param || chain.defaultValue || "",
         },
-        chainedCommandItemParameter,
+        chainedCommandItemParameter
       );
     }
 
@@ -918,12 +918,12 @@
             await reloadSetting();
           }
         },
-      },
+      }
     );
 
     const buttonCancelElement = Object.assign(
       {},
-      gnoh.constant.dialogButtons.cancel,
+      gnoh.constant.dialogButtons.cancel
     );
 
     gnoh.dialog(
@@ -933,7 +933,7 @@
       {
         width: 750,
         class: "import-export-command-chains",
-      },
+      }
     );
   }
 
@@ -950,7 +950,7 @@
       commandChain.category !== "CATEGORY_COMMAND_CHAIN" ||
       !Array.from(commandChain.chain) ||
       commandChain.chain.some(
-        (c) => typeof c.key !== "string" || gnoh.uuid.check(c.key),
+        (c) => typeof c.key !== "string" || gnoh.uuid.check(c.key)
       ) ||
       typeof commandChain.key !== "string" ||
       typeof commandChain.label !== "string" ||
@@ -1000,7 +1000,7 @@
       document,
       null,
       XPathResult.ANY_TYPE,
-      null,
+      null
     );
     return menuItem.iterateNext();
   }
@@ -1030,14 +1030,15 @@
 
     const tabs = await chrome.tabs.query({ url: urls.quickCommands });
     tabs.forEach(async (tab) => {
-      chrome.tabs.onUpdated.addListener(
-        async function listener(tabId, changeInfo) {
-          if (changeInfo.status === "complete" && tabId === tab.id) {
-            chrome.tabs.onUpdated.removeListener(listener);
-            await chrome.tabs.update(tab.id, { url: urls.quickCommands });
-          }
-        },
-      );
+      chrome.tabs.onUpdated.addListener(async function listener(
+        tabId,
+        changeInfo
+      ) {
+        if (changeInfo.status === "complete" && tabId === tab.id) {
+          chrome.tabs.onUpdated.removeListener(listener);
+          await chrome.tabs.update(tab.id, { url: urls.quickCommands });
+        }
+      });
       await chrome.tabs.update(tab.id, { url: urls.general });
     });
   }
@@ -1078,7 +1079,7 @@
             case "reload-setting":
               const menuItemGeneralElement = getMenuItem(langs.general);
               const menuItemQuickCommandsElement = getMenuItem(
-                langs.quickCommands,
+                langs.quickCommands
               );
               if (menuItemGeneralElement && menuItemQuickCommandsElement) {
                 setTimeout(() => menuItemGeneralElement.click());
@@ -1113,11 +1114,11 @@
         {
           class: "button-toolbar",
         },
-        attribute,
+        attribute
       ),
       parent,
       inner,
-      options,
+      options
     );
   }
 
@@ -1128,18 +1129,18 @@
     timeOut = gnoh.timeOut((chainedCommand) => {
       chainedCommand.dataset.importExportCommandChains = true;
       const masterToolbar = chainedCommand.querySelector(
-        '.master-toolbar:not([data-import-export-command-chains="true"])',
+        '.master-toolbar:not([data-import-export-command-chains="true"])'
       );
       masterToolbar.dataset.importExportCommandChains = true;
 
       const master = chainedCommand.querySelector(
-        '.master:not([data-import-export-command-chains="true"])',
+        '.master:not([data-import-export-command-chains="true"])'
       );
       master.dataset.importExportCommandChains = true;
 
       async function selectedKey() {
         const itemSelected = master.querySelector(
-          ".master-items .item-selected",
+          ".master-items .item-selected"
         );
         if (!itemSelected) {
           return;
@@ -1163,7 +1164,7 @@
             },
           }),
           masterToolbar,
-          button.index,
+          button.index
         );
       });
     }, '.Setting--ChainedCommand.master-detail:not([data-import-export-command-chains="true"])');
@@ -1238,7 +1239,7 @@
 
             function createButton(node) {
               const codes = node.querySelectorAll(
-                'code:not([data-import-export-command-chains="true"])',
+                'code:not([data-import-export-command-chains="true"])'
               );
 
               codes.forEach(async (codeElement) => {
@@ -1272,12 +1273,12 @@
                 if (preElement) {
                   preElement.parentNode.insertBefore(
                     commandChainElement,
-                    preElement.nextSibling,
+                    preElement.nextSibling
                   );
                 } else {
                   codeElement.parentNode.insertBefore(
                     commandChainElement,
-                    codeElement.nextSibling,
+                    codeElement.nextSibling
                   );
                 }
               });

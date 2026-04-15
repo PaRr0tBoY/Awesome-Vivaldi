@@ -134,43 +134,37 @@
     }
 
     const languageName = getLanguageName(getBrowserLanguage());
+    const title = originalTitle.replace(/`/g, "\\`").replace(/\${/g, "\\${");
+    const systemPrompt = `You are a perfect editor, summarizer and translator.
+I am bookmarking a tab in my browser.
 
-    const prompt = `
-Return a response strictly using JSON, according to this schema:
-{
-  "filtered": "string",
-  "rewritten": "string"
-}
+The title is \`${title}\`.
 
-The title is "${originalTitle}".
-The URL is "${url}".
-Write responses (but not JSON keys) in ${languageName}. Ensure the "rewritten" field contains the final short title.
-
-Rules:
-- Remove the name of the site from the title, if it's not the only thing there.
+- Remove the name of the site (e.g. youtube.com, github.com), if it's not the only thing there).
 - Remove other SEO cruft.
-- Don't make the title too general. As specific as possible.
-- If the page is about a proper noun (personal site, restaurant, brand homepage), the new title should always include the proper noun along with context. For example, "Individualized Eng Expectations - Anna Delvey" would translate to "Anna's Eng Expectations", and "Arc by the Browser Company: Monetization Strategy" would translate to "Arc Monetization".
+- Don't make the title too general. As specific as possible without going over the word count.
+- If the page is about a proper noun (personal site, restaurant homepage, brand homepage), the new title should always include the proper noun along with context. For example, "Individualized Eng Expectations - Anna Delvey" would translate to "Anna's Eng Expectations", and "Arc by the Browser Company: Monetization Strategy" would translate to "Arc Monetization".
 - Remove words that describe the 'kind of page' (video, recipe, guide, etc).
 - Err on the side of keeping the subject, main verb, and direct object. Remove other parts of speech.
-`;
+
+Return a response using JSON, according to this schema:
+\`\`\`
+{
+    "filtered": string // The title translated and filtered to remove the cruft. No word limit.
+    "rewritten": string // The title rewritten in 1-3 words
+}
+\`\`\`
+
+Write responses (but not JSON keys) in ${languageName}.`;
 
     try {
       const isGLM = CONFIG.BASE_URL?.includes("bigmodel.cn");
       const payload = {
         model: CONFIG.MODEL,
-        messages: [
-          {
-            role: "system",
-            content:
-              "You are a professional editor. You must output valid JSON. No conversation, no preamble, no thinking.",
-          },
-          { role: "user", content: prompt },
-        ],
-        temperature: 0.1,
+        messages: [{ role: "system", content: systemPrompt }],
+        temperature: 0,
         max_tokens: 500,
         stream: false,
-        // Standard OpenAI JSON mode
         response_format: { type: "json_object" },
       };
 

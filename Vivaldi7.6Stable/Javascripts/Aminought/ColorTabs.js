@@ -57,7 +57,7 @@
       chrome.tabs.onCreated.addListener(() => this.#colorTabsDelayed());
       chrome.tabs.onActivated.addListener(() => this.#colorTabsDelayed());
       vivaldi.tabsPrivate.onThemeColorChanged.addListener(() =>
-        this.#colorTabsDelayed(),
+        this.#colorTabsDelayed()
       );
 
       vivaldi.prefs.onChanged.addListener((info) => {
@@ -106,12 +106,12 @@
             tabWrapper,
             accentOnWindow,
             accentColor,
-            accentSaturationLimit,
-          ),
+            accentSaturationLimit
+          )
         );
       } else {
         pinnedTabWrappers.forEach((tabWrapper) =>
-          this.#resetTabBorder(tabWrapper),
+          this.#resetTabBorder(tabWrapper)
         );
       }
     }
@@ -119,7 +119,7 @@
     // Get the first 9 pinned tab wrappers
     #getPinnedTabWrappers() {
       return document.querySelectorAll(
-        `#tabs-container .tab-strip > span:has(.is-pinned):nth-child(-n+${MAX_PINNED_TABS}) .is-pinned .tab-wrapper`,
+        `#tabs-container .tab-strip > span:has(.is-pinned):nth-child(-n+${MAX_PINNED_TABS}) .is-pinned .tab-wrapper`
       );
     }
 
@@ -133,7 +133,7 @@
       tabWrapper,
       accentOnWindow,
       colorAccentBg,
-      accentSaturationLimit,
+      accentSaturationLimit
     ) {
       const tabId = this.#getTabId(tabWrapper);
       if (!tabId) {
@@ -286,7 +286,7 @@
       colorPalette.sort((a, b) => b[3] - a[3]);
       const topColors = colorPalette.slice(
         0,
-        Math.min(10, colorPalette.length),
+        Math.min(10, colorPalette.length)
       );
       return topColors.map((color) => [color[0], color[1], color[2]]);
     }
@@ -345,7 +345,7 @@
         const themeId = await vivaldi.prefs.get("vivaldi.themes.current");
         const themes = Array.prototype.concat(
           await vivaldi.prefs.get("vivaldi.themes.system"),
-          await vivaldi.prefs.get("vivaldi.themes.user"),
+          await vivaldi.prefs.get("vivaldi.themes.user")
         );
         const theme = themes.find((theme) => theme.id === themeId);
         console.log("Current theme:", theme);

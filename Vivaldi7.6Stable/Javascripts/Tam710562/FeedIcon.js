@@ -121,8 +121,8 @@
     // Find unprocessed RSS elements using updated selectors for Vivaldi 7.6+
     const elements = Array.from(
       container.querySelectorAll(
-        '.tree-item[data-id^="FEEDS_LABELS_"]:not([data-feed-icon-processed])',
-      ),
+        '.tree-item[data-id^="FEEDS_LABELS_"]:not([data-feed-icon-processed])'
+      )
     );
 
     if (!elements.length) return;

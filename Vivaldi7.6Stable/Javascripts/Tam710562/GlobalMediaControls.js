@@ -167,7 +167,7 @@
       }
       if (!this.reactPropsKey) {
         this.reactPropsKey = Object.keys(element).find((key) =>
-          key.startsWith("__reactProps"),
+          key.startsWith("__reactProps")
         );
       }
       return element[this.reactPropsKey];
@@ -460,7 +460,7 @@
           html: css || "",
           "data-id": id,
         },
-        document.head,
+        document.head
       );
       return this.styles[id];
     },
@@ -508,7 +508,7 @@
         config || {
           childList: true,
           subtree: true,
-        },
+        }
       );
     },
     uuid: {
@@ -518,10 +518,10 @@
         const id = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
           /[xy]/g,
           (c) => {
-            r = ((d + Math.random() * 16) % 16) | 0;
+            r = (d + Math.random() * 16) % 16 | 0;
             d = Math.floor(d / 16);
             return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
-          },
+          }
         );
 
         if (Array.isArray(ids) && ids.includes(id)) {
@@ -805,7 +805,7 @@
               currentVideo.addEventListener("pause", pauseVideo);
               currentVideo = null;
             },
-            { once: true },
+            { once: true }
           );
           currentVideo.pause();
           hasSendResponse = true;
@@ -857,7 +857,7 @@
 
     function hasVideoPlaying() {
       return Array.from(document.querySelectorAll("video, audio")).find(
-        (video) => isPlaying(video),
+        (video) => isPlaying(video)
       );
     }
 
@@ -1016,7 +1016,7 @@
 
     function injectVideo() {
       const videos = document.querySelectorAll(
-        "video:not([global-media-controls]), audio:not([global-media-controls])",
+        "video:not([global-media-controls]), audio:not([global-media-controls])"
       );
 
       videos.forEach((video) => {
@@ -1066,7 +1066,7 @@
     ctx.drawImage(
       image,
       (canvas.width - image.width * scale) * 0.5,
-      (canvas.height - image.height * scale) * 0.5,
+      (canvas.height - image.height * scale) * 0.5
     );
 
     if (!colorLoaded[image.src]) {
@@ -1104,13 +1104,13 @@
       }
 
       const entryColors = Object.entries(colors).sort(
-        (a, b) => b[1].count - a[1].count,
+        (a, b) => b[1].count - a[1].count
       );
       let filterEntryColors = entryColors.filter((entryColor) => {
         const luminance = gnoh.color.getLuminance(
           entryColor[1].rgb.r,
           entryColor[1].rgb.g,
-          entryColor[1].rgb.b,
+          entryColor[1].rgb.b
         );
         return luminance >= 30 && luminance <= 200;
       });
@@ -1130,7 +1130,7 @@
               2 &&
             gnoh.color.deltaE(
               { r: 255, g: 255, b: 255 },
-              { r: +r, g: +g, b: +b },
+              { r: +r, g: +g, b: +b }
             ) > 2
           );
         });
@@ -1146,7 +1146,7 @@
         rgbMax.r,
         rgbMax.g,
         rgbMax.b,
-        isLightBg ? 0.4 : -0.4,
+        isLightBg ? 0.4 : -0.4
       );
 
       colorLoaded[image.src] = {
@@ -1155,7 +1155,7 @@
         progressBarBackgroundColor: gnoh.color.rgbToHex(
           rgbProgressBar.r,
           rgbProgressBar.g,
-          rgbProgressBar.b,
+          rgbProgressBar.b
         ),
       };
     }
@@ -1165,15 +1165,15 @@
     itemInfo.color = colorLoaded[image.src].color;
     itemInfo.item.style.setProperty(
       "--colorGMCBg",
-      colorLoaded[image.src].backgroundColor,
+      colorLoaded[image.src].backgroundColor
     );
     itemInfo.item.style.setProperty(
       "--colorGMCFg",
-      colorLoaded[image.src].color,
+      colorLoaded[image.src].color
     );
     itemInfo.item.style.setProperty(
       "--colorGMCProgressBarBg",
-      colorLoaded[image.src].progressBarBackgroundColor,
+      colorLoaded[image.src].progressBarBackgroundColor
     );
 
     return canvas;
@@ -1348,7 +1348,7 @@
             itemInfo.currentTimeStr + " / " + itemInfo.durationStr;
           itemInfo.item.style.setProperty(
             "--colorGMCProgressBarValue",
-            (itemInfo.currentTime / itemInfo.duration) * 100 + "%",
+            (itemInfo.currentTime / itemInfo.duration) * 100 + "%"
           );
         }
       },
@@ -1392,7 +1392,7 @@
             },
             () => {
               deleteItem(itemInfo.tabId);
-            },
+            }
           );
         },
       },
@@ -1452,7 +1452,7 @@
               },
               {
                 frameId: itemInfo.frameId,
-              },
+              }
             );
           }
         },
@@ -1505,7 +1505,7 @@
               },
               {
                 frameId: itemInfo.frameId,
-              },
+              }
             );
           }
           activeItem(itemInfo.tabId);
@@ -1541,13 +1541,13 @@
               },
               {
                 frameId: itemInfo.frameId,
-              },
+              }
             );
             itemInfo.setMuted(!itemInfo.muted);
           },
         },
       },
-      itemInfo.volumeControl,
+      itemInfo.volumeControl
     );
     itemInfo.rangeVolume = gnoh.createElement(
       "input",
@@ -1572,12 +1572,12 @@
               },
               {
                 frameId: itemInfo.frameId,
-              },
+              }
             );
           },
         },
       },
-      itemInfo.volumeControl,
+      itemInfo.volumeControl
     );
     itemInfo.setVolume(info.volume);
     itemInfo.setMuted(info.muted);
@@ -1603,7 +1603,7 @@
         itemInfo.buttonTab,
         itemInfo.volumeControl,
         itemInfo.currentTimeDuration,
-      ],
+      ]
     );
     itemInfo.contentItem = gnoh.createElement(
       "div",
@@ -1611,7 +1611,7 @@
         class: "content",
       },
       null,
-      [itemInfo.titleItem, itemInfo.domainItem, itemInfo.actionItem],
+      [itemInfo.titleItem, itemInfo.domainItem, itemInfo.actionItem]
     );
     itemInfo.item = gnoh.createElement(
       "div",
@@ -1699,7 +1699,7 @@
         },
       },
       panelContent,
-      [itemInfo.contentItem, itemInfo.imageItem, itemInfo.buttonClose],
+      [itemInfo.contentItem, itemInfo.imageItem, itemInfo.buttonClose]
     );
     itemInfo.setProgress(info.duration, info.currentTime);
     tabs[itemInfo.tabId] = itemInfo;
@@ -1870,7 +1870,7 @@
       webviewButton = document.querySelector(
         '.toolbar > .button-toolbar > .ToolbarButton-Button[name*="' +
           webPanelId +
-          '"]',
+          '"]'
       );
     }
 
@@ -1895,7 +1895,7 @@
         cancelable: true,
         buttons: 0,
         pointerType: "mouse",
-      }),
+      })
     );
   }
 
@@ -1907,13 +1907,13 @@
       panel.dataset.globalMediaControls = true;
 
       let showCloseButton = await vivaldi.prefs.get(
-        "vivaldi.panels.show_close_button",
+        "vivaldi.panels.show_close_button"
       );
       let autoClose = await vivaldi.prefs.get(
-        "vivaldi.panels.as_overlay.auto_close",
+        "vivaldi.panels.as_overlay.auto_close"
       );
       let asOverlayEnabled = await vivaldi.prefs.get(
-        "vivaldi.panels.as_overlay.enabled",
+        "vivaldi.panels.as_overlay.enabled"
       );
 
       const buttonClose = gnoh.createElement("button", {
@@ -1971,7 +1971,7 @@
           },
           html: icons.closePanel,
         },
-        buttonClose,
+        buttonClose
       );
       const title = gnoh.createElement(
         "h1",
@@ -1979,7 +1979,7 @@
           html: "<span>" + name + "</span>",
         },
         null,
-        buttonClose,
+        buttonClose
       );
 
       const inputSearch = gnoh.createElement("input", {
@@ -2038,7 +2038,7 @@
             },
           },
           null,
-          iconEl,
+          iconEl
         );
         const buttonToolbar = gnoh.createElement(
           "div",
@@ -2046,7 +2046,7 @@
             class: "button-toolbar",
           },
           toolbarGroup,
-          buttonEl,
+          buttonEl
         );
         button.iconEL = iconEl;
         button.buttonEl = buttonEl;
@@ -2058,7 +2058,7 @@
           class: "toolbar",
         },
         null,
-        toolbarGroup,
+        toolbarGroup
       );
       const toolbarWrap = gnoh.createElement(
         "div",
@@ -2066,7 +2066,7 @@
           class: "toolbar toolbar-default toolbar-medium toolbar-wrap",
         },
         null,
-        [inputSearch, toolbar],
+        [inputSearch, toolbar]
       );
 
       const panelHeader = gnoh.createElement("header", null, panel, [
@@ -2145,8 +2145,8 @@
       document.querySelectorAll(
         '.toolbar > .button-toolbar > .ToolbarButton-Button[name*="' +
           webPanelId +
-          '"]',
-      ),
+          '"]'
+      )
     );
 
     const webPanelStack =
@@ -2158,7 +2158,7 @@
     const panel = document.querySelector(
       ".panel-group .webpanel-stack .panel.webpanel:nth-child(" +
         webPanelIndex +
-        ")",
+        ")"
     );
 
     if (panel && webviewButtons.length) {
@@ -2220,17 +2220,17 @@
           "vivaldi.toolbars.mail",
           "vivaldi.toolbars.mail_message",
           "vivaldi.toolbars.mail_composer",
-        ].map((path) => vivaldi.prefs.get(path)),
+        ].map((path) => vivaldi.prefs.get(path))
       ).then((toolbars) => {
         const hasGlobalMediaControl = toolbars.some((toolbar) =>
-          toolbar.some((p) => p === webPanelId),
+          toolbar.some((p) => p === webPanelId)
         );
 
         if (!hasGlobalMediaControl) {
           const panels = toolbars[0];
 
           const panelIndex = panels.findIndex((panel) =>
-            panel.startsWith("WEBPANEL_"),
+            panel.startsWith("WEBPANEL_")
           );
           panels.splice(panelIndex, 0, webPanelId);
 
@@ -2333,7 +2333,7 @@
                 });
               }
             });
-          },
+          }
         );
 
         chrome.webNavigation.onCommitted.addListener((details) => {
@@ -2356,7 +2356,7 @@
           });
         });
       },
-      () => window.vivaldiWindowId != null,
+      () => window.vivaldiWindowId != null
     );
 
     function injectToggleLucidModeVideo(enable) {
@@ -2407,7 +2407,7 @@
             args: [lucidModeVideo],
           });
         });
-      },
+      }
     );
 
     chrome.storage.local.onChanged.addListener((changes, namespace) => {
@@ -2424,8 +2424,8 @@
       document.querySelectorAll(
         '.toolbar > .button-toolbar > .ToolbarButton-Button[name*="' +
           webPanelId +
-          '"]',
-      ),
+          '"]'
+      )
     );
     if (webviewButtons.length) {
       updateIconAndTitle();

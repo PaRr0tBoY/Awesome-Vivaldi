@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thinking Shimmer Preview</title>
+  <style>
+    :root {
+      --bg: #0f141a;
+      --panel: #1b2129;
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --text-secondary: rgba(255, 255, 255, 0.72);
+      --duration: 4.1s;
+      --bg-size-x: 220%;
+      --bg-size-y: 100%;
+      --stop-1: 45%;
+      --stop-2: 48.5%;
+      --stop-3: 51.5%;
+      --stop-4: 55%;
+      --band-darkness: 0.44;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at top, rgba(60, 194, 255, 0.08), transparent 30%),
+        linear-gradient(180deg, #0d1218 0%, var(--bg) 100%);
+      color: #fff;
+      font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .layout {
+      width: min(920px, calc(100vw - 32px));
+      display: grid;
+      grid-template-columns: minmax(280px, 360px) 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .card {
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px solid var(--panel-border);
+      background: rgba(27, 33, 41, 0.92);
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.32);
+      backdrop-filter: blur(10px);
+    }
+
+    .controls h1,
+    .preview h2 {
+      margin: 0 0 12px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .controls p {
+      margin: 0 0 16px;
+      color: rgba(255, 255, 255, 0.68);
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .field label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    .field input[type="range"] {
+      width: 100%;
+    }
+
+    .preview-shell {
+      min-height: 360px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 20px;
+      border-radius: 20px;
+      background: linear-gradient(180deg, #12202a 0%, #0f171f 100%);
+    }
+
+    .message {
+      width: min(100%, 520px);
+    }
+
+    .ask-msg-ai-processing {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 6px 0 10px;
+    }
+
+    .ask-msg-ai-thinking {
+      color: var(--text-secondary);
+      font-weight: 600;
+      background: linear-gradient(
+        90deg,
+        currentColor 0%,
+        currentColor var(--stop-1),
+        rgba(0, 0, 0, 0.08) var(--stop-2),
+        rgba(0, 0, 0, var(--band-darkness)) 50%,
+        rgba(0, 0, 0, 0.08) var(--stop-3),
+        currentColor var(--stop-4),
+        currentColor 100%
+      );
+      background-size: var(--bg-size-x) var(--bg-size-y);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: askThinkingShimmer var(--duration) infinite linear;
+      display: inline-block;
+    }
+
+    @keyframes askThinkingShimmer {
+      0% {
+        background-position: 200% 0;
+      }
+
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    .code {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: rgba(255, 255, 255, 0.85);
+      font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    @media (max-width: 760px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <section class="card controls">
+      <h1>Thinking Shimmer Controls</h1>
+      <p>Defaults match the current Ask in Page shimmer. Adjust these while running a live server, then copy the generated CSS back into <code>AskInPage.js</code>.</p>
+
+      <div class="field">
+        <label for="duration">Duration <span id="durationValue">4.1s</span></label>
+        <input id="duration" type="range" min="0.8" max="6" step="0.1" value="4.1">
+      </div>
+
+      <div class="field">
+        <label for="bgSizeX">Background Size X <span id="bgSizeXValue">220%</span></label>
+        <input id="bgSizeX" type="range" min="120" max="700" step="10" value="220">
+      </div>
+
+      <div class="field">
+        <label for="stop1">Base End <span id="stop1Value">45%</span></label>
+        <input id="stop1" type="range" min="0" max="100" step="0.5" value="45">
+      </div>
+
+      <div class="field">
+        <label for="stop2">Band Start <span id="stop2Value">48.5%</span></label>
+        <input id="stop2" type="range" min="0" max="100" step="0.5" value="48.5">
+      </div>
+
+      <div class="field">
+        <label for="stop3">Band End <span id="stop3Value">51.5%</span></label>
+        <input id="stop3" type="range" min="0" max="100" step="0.5" value="51.5">
+      </div>
+
+      <div class="field">
+        <label for="stop4">Base Resume <span id="stop4Value">55%</span></label>
+        <input id="stop4" type="range" min="0" max="100" step="0.5" value="55">
+      </div>
+
+      <div class="field">
+        <label for="bandDarkness">Band Darkness <span id="bandDarknessValue">0.44</span></label>
+        <input id="bandDarkness" type="range" min="0.1" max="0.95" step="0.01" value="0.44">
+      </div>
+
+      <div class="code" id="cssOutput"></div>
+    </section>
+
+    <section class="card preview">
+      <h2>Preview</h2>
+      <div class="preview-shell">
+        <div class="message">
+          <div class="ask-msg-ai-processing">
+            <div class="ask-msg-ai-thinking">Thinking...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const root = document.documentElement;
+    const output = document.getElementById('cssOutput');
+    const fields = [
+      ['duration', 'durationValue', (value) => value + 's', '--duration'],
+      ['bgSizeX', 'bgSizeXValue', (value) => value + '%', '--bg-size-x'],
+      ['stop1', 'stop1Value', (value) => value + '%', '--stop-1'],
+      ['stop2', 'stop2Value', (value) => value + '%', '--stop-2'],
+      ['stop3', 'stop3Value', (value) => value + '%', '--stop-3'],
+      ['stop4', 'stop4Value', (value) => value + '%', '--stop-4'],
+      ['bandDarkness', 'bandDarknessValue', (value) => Number(value).toFixed(2), '--band-darkness'],
+    ];
+
+    function update() {
+      const values = {};
+      fields.forEach(([id, valueId, formatter, variable]) => {
+        const input = document.getElementById(id);
+        const label = document.getElementById(valueId);
+        const formatted = formatter(input.value);
+        values[id] = formatted;
+        label.textContent = formatted;
+        root.style.setProperty(variable, formatted);
+      });
+
+      output.textContent =
+`.ask-msg-ai-thinking {
+  background: linear-gradient(
+    90deg,
+    currentColor 0%,
+    currentColor ${values.stop1},
+    rgba(0, 0, 0, 0.08) ${values.stop2},
+    rgba(0, 0, 0, ${values.bandDarkness}) 50%,
+    rgba(0, 0, 0, 0.08) ${values.stop3},
+    currentColor ${values.stop4},
+    currentColor 100%
+  );
+  background-size: ${values.bgSizeX} 100%;
+  animation: askThinkingShimmer ${values.duration} infinite linear;
+}`;
+    }
+
+    fields.forEach(([id]) => {
+      document.getElementById(id).addEventListener('input', update);
+    });
+
+    update();
+  </script>
+</body>
+</html>

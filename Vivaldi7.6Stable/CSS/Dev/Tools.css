@@ -7,20 +7,16 @@
 
 :root {
   /* Shadow Effects for rounded webviews */
-  --webview-shadow-light:
-    0px 1px 3px 0px rgba(0, 0, 0, 0.1),
+  --webview-shadow-light: 0px 1px 3px 0px rgba(0, 0, 0, 0.1),
     0px 0px var(--window-border) 0px rgba(0, 0, 0, 0.1);
-  --webview-shadow-dark:
-    0px 2px 2px 0px rgba(0, 0, 0, 0.05), 0px 2px 8px 0px rgba(0, 0, 0, 0.05),
-    0px 0px 0px 1.2px #ffffff18;
+  --webview-shadow-dark: 0px 2px 2px 0px rgba(0, 0, 0, 0.05),
+    0px 2px 8px 0px rgba(0, 0, 0, 0.05), 0px 0px 0px 1.2px #ffffff18;
 
   /* Large corner radius optimized shadows */
-  --webview-shadow-large-light:
-    0px 8px 24px 0px rgba(0, 0, 0, 0.15), 0px 16px 48px 0px rgba(0, 0, 0, 0.12),
-    0px 2px 8px 0px rgba(0, 0, 0, 0.1),
+  --webview-shadow-large-light: 0px 8px 24px 0px rgba(0, 0, 0, 0.15),
+    0px 16px 48px 0px rgba(0, 0, 0, 0.12), 0px 2px 8px 0px rgba(0, 0, 0, 0.1),
     inset 0px 1px 2px 0px rgba(255, 255, 255, 0.2);
-  --webview-shadow-large-dark:
-    0px 12px 32px 0px rgba(0, 0, 0, 0.25),
+  --webview-shadow-large-dark: 0px 12px 32px 0px rgba(0, 0, 0, 0.25),
     0px 24px 64px 0px rgba(0, 0, 0, 0.18), 0px 4px 12px 0px rgba(0, 0, 0, 0.15),
     inset 0px 1px 2px 0px rgba(255, 255, 255, 0.1);
 
@@ -75,8 +71,7 @@
 /* Enhanced shadow on hover for better interactivity */
 #browser:not(.tabs-top):not(.tabs-bottom):not(.fullscreen)
   #webpage-stack:hover {
-  box-shadow:
-    var(--webview-shadow-large-light),
+  box-shadow: var(--webview-shadow-large-light),
     0px 0px 0px 1px rgba(0, 0, 0, 0.1);
 }
 
@@ -98,8 +93,7 @@
 /* Enhanced hover effect for dark theme */
 #browser:not(.tabs-top):not(.tabs-bottom):not(.fullscreen).theme-dark
   #webpage-stack:hover {
-  box-shadow:
-    var(--webview-shadow-large-dark),
+  box-shadow: var(--webview-shadow-large-dark),
     0px 0px 0px 1px rgba(255, 255, 255, 0.15);
 }
 
