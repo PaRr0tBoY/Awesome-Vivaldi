@@ -1063,7 +1063,7 @@
       optionsContainer.setAttribute("class", "options-container");
       optionsContainer.hidden = true;
       sidebarControls.setAttribute("class", "peek-sidebar-controls");
-      this.showSidebarControls(webviewId, sidebarControls);
+      this.hideSidebarControls(sidebarControls);
 
       webview.id = webviewId;
       webview.tab_id = `${webviewId}tabId`;
@@ -2061,6 +2061,10 @@
       this.releasePeekPanelLayout(peekPanel);
       this.setPreviewAnimationState(peekPanel, false);
       this.setPreviewClosingState(peekPanel, false);
+      this.showSidebarControls(
+        webviewId,
+        peekPanel.querySelector(".peek-sidebar-controls")
+      );
       this.maybeRevealPeekWebview(webviewId);
     }
 
