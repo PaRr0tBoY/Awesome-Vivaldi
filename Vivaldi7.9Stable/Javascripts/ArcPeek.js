@@ -9,8 +9,24 @@
     linkIconInteractionOnHover: true,
     showIconDelay: 250,
     showPeekOnHoverDelay: 100,
-    rightClickHoldTime: 400,
-    rightClickHoldDelay: 200,
+    // Long-press trigger buttons.
+    // Available values: "middle", "right"
+    // Examples:
+    // ["right"] => only right-button long press opens Peek
+    // ["middle"] => only middle-button long press opens Peek
+    // ["middle", "right"] => middle and right long press both open Peek
+    // [] or "none" => disable long-press open entirely
+    longPressButtons: ["middle"],
+    longPressHoldTime: 400,
+    longPressHoldDelay: 200,
+  };
+
+  const PEEK_FOREGROUND_CONFIG = {
+    // Foreground blank layer shown while the webview loads behind it.
+    // Available values:
+    // "default" => light/dark blank color that follows system appearance
+    // "theme" => uses Vivaldi theme color var(--colorBgFaded)
+    mode: "theme",
   };
 
   class PeekMod {
@@ -23,6 +39,8 @@
       previewRevealDelayRatio: 0,
       previewRevealRatio: 0,
       contentHideRatio: 0,
+      webviewRevealSettleMs: 120,
+      webviewRevealSettleMsWindows: 220,
       previewCacheLimit: 48,
       previewCacheTtlMs: 10 * 60 * 1000,
       lastRecordedLinkTtlMs: 2000,
@@ -32,7 +50,6 @@
     previewCaptureTasks = new Map();
     lastRecordedLinkData = null;
     closeShortcutGuard = null;
-    postClosePointerGuard = null;
     iconUtils = new IconUtils();
     READER_VIEW_URL =
       "https://app.web-highlights.com/reader/open-website-in-reader-mode?url=";
@@ -59,6 +76,32 @@
       }
     }
 
+    getWebviewRevealSettleDelay() {
+      const isWindows =
+        navigator.userAgentData?.platform === "Windows" ||
+        /Windows/i.test(navigator.platform || "");
+      return isWindows
+        ? this.ARC_CONFIG.webviewRevealSettleMsWindows
+        : this.ARC_CONFIG.webviewRevealSettleMs;
+    }
+
+    getPeekForegroundBackground() {
+      if (PEEK_FOREGROUND_CONFIG.mode === "theme") {
+        return "var(--colorBg)";
+      }
+
+      const isDarkMode = window.matchMedia?.(
+        "(prefers-color-scheme: dark)"
+      )?.matches;
+      return isDarkMode ? "rgb(28, 28, 30)" : "rgb(247, 247, 248)";
+    }
+
+    getPanelPointerBlockerTarget() {
+      return document.querySelector(
+        "#panels-container, .panel-group, .panel.webpanel, .webpanel-stack, .webpanel-content"
+      );
+    }
+
     getWebviewConfig(navigationDetails) {
       if (navigationDetails.frameType !== "outermost_frame")
         return { webview: null, fromPanel: false };
@@ -75,7 +118,14 @@
         return { webview: null, fromPanel: false };
       }
       if (webview)
-        return { webview, fromPanel: webview.name === "vivaldi-webpanel" };
+        return { webview, fromPanel: this.isPanelWebview(webview) };
+
+      webview = Array.from(this.webviews.values()).find(
+        (view) => view.fromPanel
+      )?.webview;
+      if (webview) {
+        return { webview, fromPanel: true };
+      }
 
       const activeWebview = document.querySelector(".active.visible.webpageview webview");
       const activeTabId = Number(activeWebview?.tab_id);
@@ -86,11 +136,33 @@
       ) {
         return {
           webview: activeWebview,
-          fromPanel: activeWebview.name === "vivaldi-webpanel",
+          fromPanel: this.isPanelWebview(activeWebview),
         };
       }
 
       return { webview: null, fromPanel: false };
+    }
+
+    isPanelWebview(webview) {
+      if (!webview) return false;
+      if (webview.closest?.(".peek-panel")) return false;
+
+      const name = String(webview.name || webview.getAttribute?.("name") || "");
+      if (name === "vivaldi-webpanel" || name.includes("webpanel")) return true;
+
+      if (
+        webview.closest?.(
+          "#panels-container, .panel-group, .panel.webpanel, .webpanel-stack, .webpanel-content"
+        )
+      ) {
+        return true;
+      }
+
+      const rawTabId = webview.getAttribute?.("tab_id") || webview.tab_id;
+      const tabId = Number(rawTabId);
+      if (!Number.isFinite(tabId) || tabId <= 0) return true;
+
+      return false;
     }
 
     cancelAnimations(elements = []) {
@@ -140,7 +212,10 @@
         chrome.tabs.onRemoved.removeListener(data.tabCloseListener);
       }
       if (data.panelPointerBlocker && data.fromPanel) {
-        document.body.removeEventListener("pointerdown", data.panelPointerBlocker);
+        (
+          data.panelPointerBlockerTarget ||
+          document.querySelector("#panels-container")
+        )?.removeEventListener("pointerdown", data.panelPointerBlocker, true);
       }
       if (data.backdropCleanup) {
         data.backdropCleanup();
@@ -203,6 +278,8 @@
         `${this.getBackdropDuration("closing")}ms`
       );
 
+      let closingHandoffPromise = Promise.resolve();
+
       if (data.closingMode === "preview") {
         let previewLayer = panel.querySelector(":scope > .peek-source-preview");
         if (!previewLayer) {
@@ -211,21 +288,46 @@
             data.previewAssetUrl,
             data.linkRect
           );
+          if (previewLayer) {
+            previewLayer.style.opacity = "0";
+            previewLayer.style.visibility = "hidden";
+          }
         }
         await this.waitForPreviewLayer(previewLayer);
         await this.flushPreviewLayerForClosing(panel, previewLayer);
         this.setPreviewAnimationState(panel, false);
         this.preparePreviewLayerForClosing(panel);
         this.hideSidebarControls(panel.querySelector(".peek-sidebar-controls"));
-        this.suppressPeekContentForClosing(panel);
-        this.animatePreviewLayerIn(panel);
+        await this.waitForAnimationFrames(1);
+        const contentFadeDurationRatio = 0.16;
+        const contentFadeOut = this.animatePeekContentOut(panel, {
+          delayRatio: 0,
+          durationRatio: contentFadeDurationRatio,
+          hideOnFinish: false,
+        });
+        const previewFadeDelayMs = Math.round(
+          this.getGlanceDuration("closing") * contentFadeDurationRatio * 0.2
+        );
+        const previewFadeIn = this.animatePreviewLayerIn(panel, {
+          delayMs: previewFadeDelayMs,
+        });
         this.setPreviewClosingState(panel, true);
         await this.waitForAnimationFrames(1);
         this.setPreviewClosingMatteState(panel, true);
+        closingHandoffPromise = Promise.allSettled([
+          contentFadeOut,
+          previewFadeIn,
+        ]).then(() => {
+          if (!panel?.isConnected) return;
+          this.suppressPeekContentForClosing(panel);
+        });
       }
 
       try {
-        await this.animatePeekMotion(panel, "closing", sourceRect);
+        await Promise.allSettled([
+          this.animatePeekMotion(panel, "closing", sourceRect),
+          closingHandoffPromise,
+        ]);
       } catch (_) {
       } finally {
         await finishCleanup();
@@ -289,66 +391,6 @@
         }
         this.restoreRecentlyClosedTab();
       });
-    }
-
-    armPostClosePointerGuard() {
-      if (this.postClosePointerGuard) {
-        this.postClosePointerGuard.cleanup();
-      }
-
-      let cleaned = false;
-      const swallow = (event) => {
-        event.preventDefault?.();
-        event.stopPropagation?.();
-        event.stopImmediatePropagation?.();
-      };
-      const cleanup = () => {
-        if (cleaned) return;
-        cleaned = true;
-        [
-          "pointermove",
-          "mousemove",
-          "selectstart",
-          "dragstart",
-          "click",
-          "auxclick",
-          "contextmenu",
-          "pointerup",
-          "mouseup",
-        ].forEach((eventName) => {
-          document.removeEventListener(eventName, handlers[eventName], true);
-        });
-        if (timeoutId) {
-          clearTimeout(timeoutId);
-        }
-        if (this.postClosePointerGuard?.cleanup === cleanup) {
-          this.postClosePointerGuard = null;
-        }
-      };
-      const handlers = {
-        pointermove: swallow,
-        mousemove: swallow,
-        selectstart: swallow,
-        dragstart: swallow,
-        click: swallow,
-        auxclick: swallow,
-        contextmenu: swallow,
-        pointerup: (event) => {
-          swallow(event);
-          cleanup();
-        },
-        mouseup: (event) => {
-          swallow(event);
-          cleanup();
-        },
-      };
-
-      Object.entries(handlers).forEach(([eventName, handler]) => {
-        document.addEventListener(eventName, handler, true);
-      });
-
-      const timeoutId = window.setTimeout(cleanup, 700);
-      this.postClosePointerGuard = { cleanup };
     }
 
     async armCloseShortcutGuard() {
@@ -448,7 +490,6 @@
         )?.[0];
         
         if (webviewId) {
-          this.armPostClosePointerGuard();
           this.disposePeek(webviewId, { animated: true, closeRuntimeTab: true });
         }
       }
@@ -597,7 +638,11 @@
 
       const activeWebview = document.querySelector(".active.visible.webpageview webview");
       const peekViewportRect = this.getPeekViewportRect(activeWebview);
-      const tabId = !fromPanel && activeWebview ? Number(activeWebview.tab_id) : null;
+      const activeTabId = Number(activeWebview?.tab_id);
+      const tabId =
+        !fromPanel && Number.isFinite(activeTabId) && activeTabId > 0
+          ? activeTabId
+          : null;
 
       this.webviews.set(webviewId, {
         divContainer: peekContainer,
@@ -613,12 +658,16 @@
         isDisposing: false,
         timers: {},
         panelPointerBlocker: null,
+        panelPointerBlockerTarget: null,
         tabCloseListener: null,
         backdropCleanup: null,
         previewCacheKey: previewCacheKey,
         previewCapturePromise,
         openingMode: previewAsset?.dataUrl ? "preview" : "live",
         openingState: "starting",
+        pageStable: false,
+        webviewRevealPending: false,
+        webviewRevealed: false,
         closingMode: null,
         disableSourceCloseAnimation: false,
       });
@@ -686,7 +735,6 @@
       webview.dataset.pendingSrc = pendingUrl;
 
       webview.addEventListener("loadstart", () => {
-        webview.style.backgroundColor = "var(--colorBorder)";
         const input = document.getElementById(`input-${webview.id}`);
         if (input !== null) {
           input.value = webview.src;
@@ -725,8 +773,15 @@
       };
 
       if (fromPanel) {
-        document.body.addEventListener("pointerdown", stopEvent);
+        const panelPointerBlockerTarget = this.getPanelPointerBlockerTarget();
+        panelPointerBlockerTarget?.addEventListener(
+          "pointerdown",
+          stopEvent,
+          true
+        );
         this.webviews.get(webviewId).panelPointerBlocker = stopEvent;
+        this.webviews.get(webviewId).panelPointerBlockerTarget =
+          panelPointerBlockerTarget;
       }
 
       let backdropClosePending = false;
@@ -747,7 +802,6 @@
         if (!backdropClosePending) return;
         backdropClosePending = false;
         swallowBackdropEvent(event);
-        this.armPostClosePointerGuard();
         this.disposePeek(webviewId, { animated: true, closeRuntimeTab: true });
       };
 
@@ -757,7 +811,6 @@
         swallowBackdropEvent(event);
         if (backdropClosePending) return;
         backdropClosePending = true;
-        this.armPostClosePointerGuard();
         window.addEventListener("pointerup", finalizeBackdropClose, true);
         window.addEventListener("mouseup", finalizeBackdropClose, true);
         window.addEventListener("click", swallowBackdropEvent, true);
@@ -782,12 +835,16 @@
       this.webviews.get(webviewId).openingSourceRect = geometry?.sourceRect || null;
       this.webviews.get(webviewId).sourceRect = geometry?.sourceRect || null;
       this.setPeekSourceLinkVisibility(effectiveLinkRect?.sourceToken, true);
+      this.mountPreviewLayer(
+        peekPanel,
+        previewAsset?.dataUrl || null,
+        effectiveLinkRect
+      );
+      this.preparePeekContentForPreview(peekPanel);
+      this.setPeekWebviewVisibility(peekPanel, false);
+      this.armPeekWebviewReveal(peekPanel, webviewId);
       if (previewAsset?.dataUrl) {
-        this.mountPreviewLayer(peekPanel, previewAsset.dataUrl, effectiveLinkRect);
         this.setPreviewAnimationState(peekPanel, true);
-        this.preparePeekContentForPreview(peekPanel);
-      } else {
-        this.showPeekContent(peekPanel);
       }
       
       peekContainer.style.setProperty("--peek-backdrop-duration", `${this.getBackdropDuration("opening")}ms`);
@@ -798,18 +855,15 @@
       });
       
       const sourceRect = this.webviews.get(webviewId).sourceRect || this.resolveSourceRect(effectiveLinkRect);
-      
-      this.startPeekNavigation(webview, webviewId);
 
-      if (previewAsset?.dataUrl) {
-        const handoffOptions = {
-          delayRatio: 0.04,
-          durationRatio: 0.18,
-        };
-        this.animatePeekContentIn(peekPanel, handoffOptions);
-        this.animatePreviewLayerOut(peekPanel, handoffOptions);
-      }
       this.webviews.get(webviewId).openingState = "animating";
+      this.startPeekNavigation(webview, webviewId);
+      if (previewAsset?.dataUrl) {
+        this.animatePreviewImageOut(peekPanel, {
+          delayRatio: 0,
+          durationRatio: 0.28,
+        });
+      }
       
       this.animatePeekMotion(peekPanel, "opening", sourceRect)
         .then(() => {
@@ -1205,9 +1259,10 @@
 
       previewLayer.className = "peek-source-preview";
       imageLayer.className = "peek-source-preview-image";
+      previewLayer.classList.toggle("has-source-preview", hasPreview);
       previewLayer.style.setProperty(
         "--preview-bg",
-        hasPreview ? "rgba(255, 255, 255, 0.18)" : "rgba(255,255,255,0.1)"
+        this.getPeekForegroundBackground()
       );
       imageLayer.style.aspectRatio = `${previewWidth} / ${previewHeight}`;
       
@@ -1216,10 +1271,6 @@
         imageLayer.alt = "";
         imageLayer.decoding = "sync";
         imageLayer.draggable = false;
-        previewLayer.style.backgroundImage = `url("${sourcePreviewUrl}")`;
-        previewLayer.style.backgroundRepeat = "no-repeat";
-        previewLayer.style.backgroundPosition = "center";
-        previewLayer.style.backgroundSize = "contain";
       }
 
       previewLayer.appendChild(imageLayer);
@@ -1292,13 +1343,92 @@
       peekPanel?.setAttribute("data-has-finished-animation", "true");
       this.setPreviewAnimationState(peekPanel, false);
       this.setPreviewClosingState(peekPanel, false);
-      this.removePreviewLayer(peekPanel);
-      this.showPeekContent(peekPanel);
+      this.maybeRevealPeekWebview(webviewId);
     }
 
     startPeekNavigation(webview, webviewId = "") {
-      if (!webview || webview.src !== "about:blank" || !webview.dataset.pendingSrc) return;
-      webview.src = webview.dataset.pendingSrc;
+      const pendingSrc = webview?.dataset?.pendingSrc;
+      if (!webview || !pendingSrc) return;
+      webview.setAttribute("src", pendingSrc);
+      webview.src = pendingSrc;
+      delete webview.dataset.pendingSrc;
+    }
+
+    setPeekWebviewVisibility(peekPanel, visible) {
+      const webview = peekPanel?.querySelector("webview");
+      if (!webview) return;
+      webview.style.display = "";
+      webview.style.opacity = visible ? "1" : "0";
+      webview.style.visibility = visible ? "" : "hidden";
+      webview.style.pointerEvents = visible ? "" : "none";
+    }
+
+    armPeekWebviewReveal(peekPanel, webviewId) {
+      const data = this.webviews.get(webviewId);
+      const webview = data?.webview;
+      if (!peekPanel || !webview || !data) return;
+      const markStable = () => {
+        const current = this.webviews.get(webviewId);
+        if (!current || current.isDisposing) return;
+        current.pageStable = true;
+        this.maybeRevealPeekWebview(webviewId);
+      };
+
+      webview.addEventListener("loadstop", markStable, { once: true });
+    }
+
+    maybeRevealPeekWebview(webviewId) {
+      const data = this.webviews.get(webviewId);
+      const peekPanel = data?.divContainer?.querySelector?.(":scope > .peek-panel");
+      if (
+        !data ||
+        data.isDisposing ||
+        data.closingMode ||
+        data.webviewRevealPending ||
+        data.webviewRevealed ||
+        data.openingState !== "finished" ||
+        !data.pageStable ||
+        !peekPanel?.isConnected
+      ) {
+        return;
+      }
+
+      data.webviewRevealPending = true;
+      Promise.resolve()
+        .then(async () => {
+          const settleDelay = this.getWebviewRevealSettleDelay();
+          if (settleDelay > 0) {
+            await new Promise((resolve) =>
+              window.setTimeout(resolve, settleDelay)
+            );
+          }
+          await this.waitForAnimationFrames(2);
+          const current = this.webviews.get(webviewId);
+          const currentPanel =
+            current?.divContainer?.querySelector?.(":scope > .peek-panel");
+          if (
+            !current ||
+            current.isDisposing ||
+            current.closingMode ||
+            current.webviewRevealed ||
+            current.openingState !== "finished" ||
+            !current.pageStable ||
+            !currentPanel?.isConnected
+          ) {
+            return;
+          }
+          this.showPeekContent(currentPanel);
+          this.setPeekWebviewVisibility(currentPanel, true);
+          await this.fadeForegroundLayerOut(currentPanel);
+          this.removePreviewLayer(currentPanel);
+          current.webviewRevealed = true;
+        })
+        .finally(() => {
+          const current = this.webviews.get(webviewId);
+          if (current) {
+            current.webviewRevealPending = false;
+          }
+        });
     }
 
     hidePeekContent(peekPanel) {
@@ -1348,6 +1478,7 @@
       peekContent.style.display = "";
       peekContent.style.opacity = "0";
       peekContent.style.visibility = "";
+      peekContent.style.pointerEvents = "none";
       const webview = peekContent.querySelector("webview");
       if (webview) {
         webview.style.display = "";
@@ -1363,11 +1494,13 @@
       peekContent.style.display = "";
       peekContent.style.opacity = "1";
       peekContent.style.visibility = "";
+      peekContent.style.pointerEvents = "";
       const webview = peekContent.querySelector("webview");
       if (webview) {
         webview.style.display = "";
         webview.style.opacity = "1";
         webview.style.visibility = "";
+        webview.style.pointerEvents = "";
       }
     }
 
@@ -1403,17 +1536,28 @@
       animation.finished.then(() => {
         if (!peekPanel?.isConnected) return;
         peekContent.style.opacity = "1";
+        peekContent.style.pointerEvents = "";
       }).catch(() => {});
     }
 
     animatePeekContentOut(
       peekPanel,
-      { delayRatio = 0, durationRatio = 0 } = {}
+      { delayRatio = 0, durationRatio = 0, hideOnFinish = true } = {}
     ) {
       const peekContent = peekPanel?.querySelector(".peek-content");
       if (!peekContent || typeof peekContent.animate !== "function") {
-        this.hidePeekContent(peekPanel);
-        return;
+        if (hideOnFinish) {
+          this.hidePeekContent(peekPanel);
+        } else {
+          const webview = peekContent?.querySelector?.("webview");
+          peekContent.style.opacity = "0";
+          peekContent.style.pointerEvents = "none";
+          if (webview) {
+            webview.style.opacity = "0";
+            webview.style.pointerEvents = "none";
+          }
+        }
+        return Promise.resolve();
       }
 
       const duration = Math.max(
@@ -1426,8 +1570,18 @@
       );
 
       if (duration <= 0 && delay <= 0) {
-        this.hidePeekContent(peekPanel);
-        return;
+        if (hideOnFinish) {
+          this.hidePeekContent(peekPanel);
+        } else {
+          const webview = peekContent.querySelector("webview");
+          peekContent.style.opacity = "0";
+          peekContent.style.pointerEvents = "none";
+          if (webview) {
+            webview.style.opacity = "0";
+            webview.style.pointerEvents = "none";
+          }
+        }
+        return Promise.resolve();
       }
 
       peekContent.getAnimations().forEach((animation) => animation.cancel());
@@ -1438,30 +1592,40 @@
         fill: "forwards",
       });
 
-      animation.finished.then(() => {
+      return animation.finished.then(() => {
         if (!peekPanel?.isConnected) return;
         peekContent.style.opacity = "0";
-        peekContent.style.display = "none";
+        peekContent.style.pointerEvents = "none";
+        const webview = peekContent.querySelector("webview");
+        if (webview) {
+          webview.style.opacity = "0";
+          webview.style.pointerEvents = "none";
+        }
+        if (hideOnFinish) {
+          peekContent.style.display = "none";
+        }
       }).catch(() => {});
     }
 
-    animatePreviewLayerOut(
+    animatePreviewImageOut(
       peekPanel,
       {
         delayRatio = this.ARC_CONFIG.previewFadeOutDelayRatio,
         durationRatio = this.ARC_CONFIG.previewFadeOutRatio,
       } = {}
     ) {
-      const previewLayer = peekPanel?.querySelector(":scope > .peek-source-preview");
-      if (!previewLayer) return;
-      if (typeof previewLayer.animate !== "function") {
-        previewLayer.style.opacity = "0";
+      const previewImage = peekPanel?.querySelector(
+        ":scope > .peek-source-preview .peek-source-preview-image"
+      );
+      if (!previewImage) return;
+      if (typeof previewImage.animate !== "function") {
+        previewImage.style.opacity = "0";
         return;
       }
 
-      previewLayer.getAnimations?.().forEach((animation) => animation.cancel());
-      previewLayer.style.opacity = "1";
-      const animation = previewLayer.animate([{ opacity: 1 }, { opacity: 0 }], {
+      previewImage.getAnimations?.().forEach((animation) => animation.cancel());
+      previewImage.style.opacity = "1";
+      const animation = previewImage.animate([{ opacity: 1 }, { opacity: 0 }], {
         delay: this.getGlanceDuration("opening") * delayRatio,
         duration: Math.max(
           1,
@@ -1472,6 +1636,27 @@
       });
 
       animation.finished.then(() => {
+        if (!previewImage.isConnected) return;
+        previewImage.style.opacity = "0";
+      }).catch(() => {});
+    }
+
+    fadeForegroundLayerOut(peekPanel, durationMs = 140) {
+      const previewLayer = peekPanel?.querySelector(":scope > .peek-source-preview");
+      if (!previewLayer || typeof previewLayer.animate !== "function") {
+        this.removePreviewLayer(peekPanel);
+        return Promise.resolve();
+      }
+
+      previewLayer.getAnimations?.().forEach((animation) => animation.cancel());
+      previewLayer.style.opacity = "1";
+      const animation = previewLayer.animate([{ opacity: 1 }, { opacity: 0 }], {
+        duration: Math.max(1, durationMs),
+        easing: "ease-out",
+        fill: "forwards",
+      });
+
+      return animation.finished.then(() => {
         if (!previewLayer.isConnected) return;
         previewLayer.style.opacity = "0";
       }).catch(() => {});
@@ -1481,9 +1666,15 @@
       const previewLayer = peekPanel?.querySelector(":scope > .peek-source-preview");
       if (!previewLayer) return;
       previewLayer.getAnimations?.().forEach((animation) => animation.cancel());
-      previewLayer.style.opacity = "1";
+      const previewImage = previewLayer.querySelector(".peek-source-preview-image");
+      previewImage?.getAnimations?.().forEach((animation) => animation.cancel());
+      if (previewImage && previewLayer.classList.contains("has-source-preview")) {
+        previewImage.style.opacity = "1";
+      }
+      previewLayer.style.opacity = "0";
       previewLayer.style.zIndex = "3";
       previewLayer.style.visibility = "visible";
+      previewLayer.style.transition = "opacity 100ms ease-out";
     }
 
     async flushPreviewLayerForClosing(peekPanel, previewLayer) {
@@ -1494,32 +1685,16 @@
       await this.waitForAnimationFrames(2);
     }
 
-    animatePreviewLayerIn(peekPanel) {
+    async animatePreviewLayerIn(peekPanel, { delayMs = 0 } = {}) {
       const previewLayer = peekPanel?.querySelector(":scope > .peek-source-preview");
       if (!previewLayer) return;
-      if (this.ARC_CONFIG.previewRevealRatio <= 0) {
-        previewLayer.getAnimations?.().forEach((animation) => animation.cancel());
-        previewLayer.style.opacity = "1";
-        return;
-      }
-      if (typeof previewLayer.animate !== "function") {
-        previewLayer.style.opacity = "1";
-        return;
-      }
-
       previewLayer.getAnimations?.().forEach((animation) => animation.cancel());
+      void previewLayer.offsetHeight;
+      await this.waitForAnimationFrames(1);
+      if (delayMs > 0) {
+        await new Promise((resolve) => window.setTimeout(resolve, delayMs));
+      }
       previewLayer.style.opacity = "1";
-      const animation = previewLayer.animate([{ opacity: 1 }, { opacity: 1 }], {
-        delay: this.getGlanceDuration("closing") * this.ARC_CONFIG.previewRevealDelayRatio,
-        duration: this.getGlanceDuration("closing") * this.ARC_CONFIG.previewRevealRatio,
-        easing: "ease-out",
-        fill: "forwards",
-      });
-
-      animation.finished.then(() => {
-        if (!previewLayer.isConnected) return;
-        previewLayer.style.opacity = "1";
-      }).catch(() => {});
     }
 
     setPreviewAnimationState(peekPanel, enabled) {
@@ -1664,10 +1839,10 @@
             opacity: 0.94,
           },
           {
-            transform: "translate(0, 0) scale(1.01)",
+            transform: "translate(0, 0) scale(1.008)",
             borderRadius: `${finalRadius}px`,
             opacity: 1,
-            offset: 0.8,
+            offset: 0.92,
           },
           {
             transform: "translate(0, 0) scale(1)",
@@ -2196,8 +2371,7 @@
       this.suppressPointerSequence = false;
       this.selectionSuppressed = false;
       this.pendingLeftButtonRelease = false;
-      this.postClosePointerGuardActive = false;
-      this.postClosePointerGuardSawPrimaryDown = false;
+      this.pendingSuppressedButton = null;
 
       this.#beforeUnloadListener = this.#cleanup.bind(this);
       window.addEventListener("beforeunload", this.#beforeUnloadListener, { signal: this.#abortController.signal });
@@ -2208,7 +2382,6 @@
         if (message.type === "peek-closed") {
           this.isLongPress = false;
           this.#restorePeekSourceLink();
-          this.#armPostClosePointerGuard();
           return;
         }
 
@@ -2258,53 +2431,61 @@
     }
 
     #releasePointerSuppression() {
-      clearTimeout(this.timers.postClosePointerGuardRelease);
+      clearTimeout(this.timers.suppressNativeOpen);
       this.peekTriggered = false;
       this.suppressPointerSequence = false;
       this.pendingLeftButtonRelease = false;
-      this.postClosePointerGuardActive = false;
-      this.postClosePointerGuardSawPrimaryDown = false;
+      this.pendingSuppressedButton = null;
       this.#restoreSelection();
     }
 
-    #armPostClosePointerGuard() {
-      clearTimeout(this.timers.suppressNativeOpen);
-      clearTimeout(this.timers.postClosePointerGuardRelease);
-      this.peekTriggered = false;
-      this.suppressPointerSequence = true;
-      this.pendingLeftButtonRelease = false;
-      this.postClosePointerGuardActive = true;
-      this.postClosePointerGuardSawPrimaryDown = false;
-      this.#suppressSelection();
+    #getConfiguredLongPressButtons() {
+      const raw = this.config?.longPressButtons;
+      const values = Array.isArray(raw) ? raw : [raw];
+      const normalized = values
+        .flatMap((value) => String(value || "").toLowerCase().split(","))
+        .map((value) => value.trim())
+        .filter(Boolean)
+        .filter((value) => value !== "left")
+        .filter((value) => value !== "none");
+      return new Set(normalized);
+    }
+
+    #isConfiguredLongPressButton(button) {
+      const longPressButtons = this.#getConfiguredLongPressButtons();
+      if (button === 0) return false;
+      if (button === 1) return longPressButtons.has("middle");
+      if (button === 2) return longPressButtons.has("right");
+      return false;
     }
 
     #setupMouseHandling() {
-      let holdTimerForMiddleClick;
       let holdTimer;
       const signalOptions = { signal: this.#abortController.signal, capture: true };
 
       const suppressNativeEvent = (event) => {
         if (!this.peekTriggered && !this.suppressPointerSequence) return;
 
-        if (event.type === "pointerup" && event.button === 0) {
-          if (
-            this.postClosePointerGuardActive &&
-            this.postClosePointerGuardSawPrimaryDown
-          ) {
-            clearTimeout(this.timers.postClosePointerGuardRelease);
-            this.timers.postClosePointerGuardRelease = setTimeout(() => {
+        if (
+          (event.type === "pointerup" || event.type === "mouseup") &&
+          typeof this.pendingSuppressedButton === "number" &&
+          event.button === this.pendingSuppressedButton
+        ) {
+          clearTimeout(this.timers.suppressNativeOpen);
+          this.timers.suppressNativeOpen = setTimeout(() => {
+            if (typeof this.pendingSuppressedButton === "number") {
               this.#releasePointerSuppression();
-            }, 80);
-          }
+            }
+          }, 450);
         }
 
         if (
           (event.type === "click" ||
             event.type === "auxclick" ||
             event.type === "contextmenu") &&
-          (this.pendingLeftButtonRelease || this.postClosePointerGuardActive)
+          typeof this.pendingSuppressedButton === "number"
         ) {
-          clearTimeout(this.timers.postClosePointerGuardRelease);
+          clearTimeout(this.timers.suppressNativeOpen);
           this.#releasePointerSuppression();
         }
 
@@ -2321,16 +2502,6 @@
       });
 
       document.addEventListener("pointerdown", (event) => {
-        if (this.postClosePointerGuardActive) {
-          if (event.button === 0) {
-            this.postClosePointerGuardSawPrimaryDown = true;
-            event.preventDefault();
-            event.stopPropagation();
-            event.stopImmediatePropagation();
-          }
-          return;
-        }
-
         const link = this.#getLinkElement(event);
         if (link) {
           this.#recordLinkSnapshot(event, link);
@@ -2338,36 +2509,34 @@
 
         if ((event.altKey || event.metaKey || event.ctrlKey) && event.button === 0) {
           this.pendingLeftButtonRelease = true;
+          this.pendingSuppressedButton = 0;
           this.#openPeekFromEvent(event);
           this.preventAllClicks();
-        } else if (event.button === 1) {
-          holdTimerForMiddleClick = setTimeout(() => this.#openPeekFromEvent(event), 500);
-        } else if (event.button === 0) {
+        } else if (this.#isConfiguredLongPressButton(event.button)) {
           if (link) {
             this.isLongPress = true;
             this.#suppressSelection();
-            const effectiveHoldTime = this.config.rightClickHoldTime - this.config.rightClickHoldDelay;
+            const effectiveHoldTime =
+              this.config.longPressHoldTime - this.config.longPressHoldDelay;
 
             this.visibilityDelayTimer = setTimeout(() => {
               this.#startLinkHoldFeedback(link, effectiveHoldTime);
-            }, this.config.rightClickHoldDelay);
+            }, this.config.longPressHoldDelay);
 
             holdTimer = setTimeout(() => {
-              event.preventDefault();
-              event.stopPropagation();
               this.pendingLeftButtonRelease = true;
+              this.pendingSuppressedButton = event.button;
               this.#openPeekFromEvent(event);
               this.preventAllClicks();
               this.#stopLinkHoldFeedback();
               if (this.visibilityDelayTimer) clearTimeout(this.visibilityDelayTimer);
-            }, this.config.rightClickHoldTime);
+            }, this.config.longPressHoldTime);
           }
         }
       }, { signal: this.#abortController.signal });
 
       document.addEventListener("pointerup", (event) => {
-        if (event.button === 1) clearTimeout(holdTimerForMiddleClick);
-        if (event.button === 0) {
+        if (this.#isConfiguredLongPressButton(event.button)) {
           clearTimeout(holdTimer);
           this.#stopLinkHoldFeedback();
           if (this.visibilityDelayTimer) {
@@ -2597,9 +2766,6 @@
       this.peekTriggered = true;
       this.suppressPointerSequence = true;
       this.#suppressSelection();
-      this.timers.suppressNativeOpen = setTimeout(() => {
-        this.#releasePointerSuppression();
-      }, 1400);
     }
 
     #suppressSelection() {
