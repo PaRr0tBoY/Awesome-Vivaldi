@@ -95,6 +95,7 @@
 | `ElementCapture.js`      | Auto-select capture area for screenshots                 |
 | `GlobalMediaControls.js` | Global Media Controls panel (Chrome-like)                |
 | `MonochromeIcons.js`     | Monochrome web panel icons to reduce visual noise        |
+| `QuickCapture.js`        | Auto-select capture area with clipboard/file/default modes |
 | `TabScroll.js`           | Click active tab: scroll to top / previous position      |
 | `TidyTabs.js`            | AI tab grouping _(pairs with `TidyTabs.css`)_            |
 | `TidyTitles.js`          | AI tab title cleanup                                     |
@@ -176,7 +177,7 @@ To install, Just copy all the content under ./Javascripts/ to your `<YOURVIVALDI
     <script src="tabScroll.js"></script>
     <script src="monochromeIcons.js"></script>
     <script src="ybAddressBar.js"></script>
-    <script src="elementCapture.js"></script>
+    <script src="QuickCapture.js"></script>
     <script src="globalMediaControls.js"></script>
     <script src="easyFiles.js"></script>
     <script src="dialogTab.js"></script>

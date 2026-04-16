@@ -15,7 +15,7 @@ cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/TidyTabs.js "
 cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/TidyTitles.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/ClearTabs.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/ArcPeek.js "$findPath"/Resources/vivaldi/
-cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/ElementCapture.js "$findPath"/Resources/vivaldi/
+cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/QuickCapture.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/GlobalMediaControls.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/MonochromeIcons.js "$findPath"/Resources/vivaldi/
 cp /Users/acid/Desktop/VivaldiModpack/Vivaldi7.9Stable/Javascripts/TabScroll.js "$findPath"/Resources/vivaldi/
@@ -71,7 +71,7 @@ sed -i '' -e '/<\/body>/i\
 <script src="tabScroll.js"></script>\
 <script src="monochromeIcons.js"></script>\
 <script src="ybAddressBar.js"></script>\
-<script src="elementCapture.js"></script>\
+<script src="QuickCapture.js"></script>\
 <script src="globalMediaControls.js"></script>\
 <script src="easyFiles.js"></script>\
 <script src="ArcPeek.js"></script>\

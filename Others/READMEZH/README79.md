@@ -91,6 +91,7 @@
 | `ElementCapture.js`      | 自动选择截屏区域                            |
 | `GlobalMediaControls.js` | 全局媒体控制面板（Chrome 风格）             |
 | `MonochromeIcons.js`     | 网页面板图标单色化，减少视觉噪音            |
+| `QuickCapture.js`        | 自动框选区域，支持剪贴板/文件/默认模式      |
 | `TabScroll.js`           | 点击活动标签：滚动到顶部/上一位置           |
 | `TidyTabs.js`            | AI 标签分组 _（配合 `TidyTabs.css`）_       |
 | `TidyTitles.js`          | AI 标签标题清理                             |
@@ -164,7 +165,7 @@ Vivaldi 中你唯一需要修改的文件是 window.html，它位于：
     <script src="tabScroll.js"></script>
     <script src="monochromeIcons.js"></script>
     <script src="ybAddressBar.js"></script>
-    <script src="elementCapture.js"></script>
+    <script src="QuickCapture.js"></script>
     <script src="globalMediaControls.js"></script>
     <script src="easyFiles.js"></script>
     <script src="dialogTab.js"></script>
