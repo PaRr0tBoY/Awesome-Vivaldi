@@ -1092,25 +1092,38 @@
       webview.setAttribute("src", "about:blank");
       webview.dataset.pendingSrc = pendingUrl;
 
-      const updateCurrentPeekUrl = (event) => {
-        const nextUrl = String(event?.url || webview.src || "").trim();
+      const updateCurrentPeekUrl = (event, options = {}) => {
+        const { fallbackToWebviewSrc = false, requireTopLevel = false } = options;
+        if (requireTopLevel && event?.isTopLevel !== true) return;
+        if (event?.isTopLevel === false) return;
+
+        const eventUrl = String(event?.url || "").trim();
+        const nextUrl = eventUrl || (fallbackToWebviewSrc ? String(webview.src || "").trim() : "");
         if (this.isUsablePeekUrl(nextUrl)) {
           this.recordPeekNavigation(webviewId, nextUrl);
         }
       };
       webview.addEventListener("loadstart", (event) => {
-        updateCurrentPeekUrl(event);
+        void event;
         this.syncPeekNavigationControls(webviewId);
         const input = document.getElementById(`input-${webview.id}`);
         if (input !== null) {
           input.value = webview.src;
         }
       });
-      ["loadcommit", "did-navigate", "did-navigate-in-page", "loadstop"].forEach((eventName) => {
+      webview.addEventListener("loadcommit", (event) => {
+        updateCurrentPeekUrl(event, { requireTopLevel: true });
+        this.syncPeekNavigationControls(webviewId);
+      });
+      ["did-navigate", "did-navigate-in-page"].forEach((eventName) => {
         webview.addEventListener(eventName, (event) => {
           updateCurrentPeekUrl(event);
           this.syncPeekNavigationControls(webviewId);
         });
+      });
+      webview.addEventListener("loadstop", (event) => {
+        updateCurrentPeekUrl(event, { fallbackToWebviewSrc: true });
+        this.syncPeekNavigationControls(webviewId);
       });
       webview.addEventListener("newwindow", (event) => {
         const nextUrl = String(
@@ -3001,7 +3014,21 @@
 
     isUsablePeekUrl(url) {
       const normalized = String(url || "").trim();
-      return !!normalized && normalized !== "about:blank" && !normalized.startsWith("about:blank");
+      if (!normalized) return false;
+      try {
+        const parsed = new URL(normalized);
+        return ![
+          "about:",
+          "javascript:",
+          "data:",
+          "blob:",
+          "chrome:",
+          "vivaldi:",
+          "devtools:",
+        ].includes(parsed.protocol);
+      } catch (_) {
+        return false;
+      }
     }
 
     normalizePeekHistoryUrl(url) {
@@ -3039,8 +3066,14 @@
     getPeekUrl(webviewId) {
       const data = this.webviews.get(webviewId);
       if (!data?.webview) return "";
+      const historyUrl =
+        Array.isArray(data.navigationHistory) &&
+        Number.isFinite(Number(data.navigationIndex))
+          ? data.navigationHistory[Number(data.navigationIndex)]
+          : "";
       const candidates = [
         data.webview.dataset.pendingSrc,
+        historyUrl,
         data.currentUrl,
         data.initialUrl,
         data.webview.getAttribute("src"),
