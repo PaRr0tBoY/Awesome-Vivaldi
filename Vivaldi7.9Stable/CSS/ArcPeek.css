@@ -271,6 +271,16 @@ body.peek-open #browser #webpage-stack {
   fill: currentColor;
 }
 
+.peek-container .peek-sidebar-button[hidden] {
+  display: none !important;
+}
+
+.peek-container .peek-sidebar-button.open-here-button svg,
+.peek-container .peek-sidebar-button.background-button svg {
+  width: 20px;
+  height: 20px;
+}
+
 .peek-container .peek-sidebar-button:hover {
   transform: scale(1.08);
   background: color-mix(in srgb, var(--colorBgIntense) 82%, white 18%);
@@ -279,6 +289,44 @@ body.peek-open #browser #webpage-stack {
 .peek-container .peek-sidebar-button.close-button:hover {
   background: rgb(220, 53, 69);
   color: white;
+}
+
+.peek-container .peek-open-actions {
+  position: relative;
+  width: 38px;
+  height: 38px;
+}
+
+.peek-container .peek-open-actions::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 100%;
+  width: 8px;
+  height: 38px;
+}
+
+.peek-container .peek-open-actions-menu {
+  position: absolute;
+  top: 0;
+  left: calc(100% + 8px);
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-12px) scale(0.92);
+  transform-origin: left center;
+  transition:
+    opacity 0.16s ease,
+    transform 0.18s cubic-bezier(0.16, 0.88, 0.22, 1);
+}
+
+.peek-container .peek-open-actions:hover .peek-open-actions-menu,
+.peek-container .peek-open-actions:focus-within .peek-open-actions-menu {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0) scale(1);
 }
 
 .peek-container .peek-panel .peek-sidebar-controls {

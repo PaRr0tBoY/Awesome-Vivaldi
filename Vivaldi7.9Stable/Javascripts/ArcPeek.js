@@ -887,6 +887,10 @@
       );
     }
 
+    removeTab(tabIds) {
+      return new Promise((resolve) => chrome.tabs.remove(tabIds, resolve));
+    }
+
     parseVivExtData(tab) {
       if (!tab?.vivExtData) return {};
       try {
@@ -1015,6 +1019,10 @@
         backdropCleanup: null,
         previewCacheKey: previewCacheKey,
         previewCapturePromise,
+        initialUrl: pendingUrl,
+        currentUrl: pendingUrl,
+        navigationHistory: this.isUsablePeekUrl(pendingUrl) ? [String(pendingUrl).trim()] : [],
+        navigationIndex: this.isUsablePeekUrl(pendingUrl) ? 0 : -1,
         openingMode: previewAsset?.dataUrl ? "preview" : "live",
         openingState: "starting",
         pageStable: false,
@@ -1084,11 +1092,25 @@
       webview.setAttribute("src", "about:blank");
       webview.dataset.pendingSrc = pendingUrl;
 
-      webview.addEventListener("loadstart", () => {
+      const updateCurrentPeekUrl = (event) => {
+        const nextUrl = String(event?.url || webview.src || "").trim();
+        if (this.isUsablePeekUrl(nextUrl)) {
+          this.recordPeekNavigation(webviewId, nextUrl);
+        }
+      };
+      webview.addEventListener("loadstart", (event) => {
+        updateCurrentPeekUrl(event);
+        this.syncPeekNavigationControls(webviewId);
         const input = document.getElementById(`input-${webview.id}`);
         if (input !== null) {
           input.value = webview.src;
         }
+      });
+      ["loadcommit", "did-navigate", "did-navigate-in-page", "loadstop"].forEach((eventName) => {
+        webview.addEventListener(eventName, (event) => {
+          updateCurrentPeekUrl(event);
+          this.syncPeekNavigationControls(webviewId);
+        });
       });
       webview.addEventListener("newwindow", (event) => {
         const nextUrl = String(
@@ -2091,6 +2113,10 @@
     startPeekNavigation(webview, webviewId = "") {
       const pendingSrc = webview?.dataset?.pendingSrc;
       if (!webview || !pendingSrc) return;
+      const data = this.webviews.get(webviewId);
+      if (data && this.isUsablePeekUrl(pendingSrc)) {
+        data.currentUrl = pendingSrc;
+      }
       webview.setAttribute("src", pendingSrc);
       webview.src = pendingSrc;
       delete webview.dataset.pendingSrc;
@@ -2785,12 +2811,6 @@
           label: "Close",
         },
         {
-          content: this.iconUtils.newTab,
-          action: () => this.openNewTab(webviewId, true),
-          cls: "peek-sidebar-button expand-button",
-          label: "Expand",
-        },
-        {
           content: this.iconUtils.splitView,
           action: () => this.openInSplitView(webviewId),
           cls: "peek-sidebar-button split-button",
@@ -2811,9 +2831,114 @@
         element.setAttribute("aria-label", button.label);
         element.setAttribute("title", button.label);
         fragment.appendChild(element);
+        if (button.cls.includes("close-button")) {
+          fragment.appendChild(this.createOpenActionsGroup(webviewId, thisElement));
+        }
+        if (button.cls.includes("split-button")) {
+          fragment.appendChild(this.createNavigationActionsGroup(webviewId));
+        }
       });
 
       thisElement.appendChild(fragment);
+      this.syncPeekNavigationControls(webviewId);
+    }
+
+    createOpenActionsGroup(webviewId, controlsContainer) {
+      const group = document.createElement("div");
+      group.setAttribute("class", "peek-open-actions");
+
+      const createAction = (content, label, action, cls) => {
+        const element = this.createOptionsButton(
+          content,
+          () => {
+            this.hideSidebarControls(controlsContainer);
+            action();
+          },
+          `peek-sidebar-button ${cls}`
+        );
+        element.setAttribute("aria-label", label);
+        element.setAttribute("title", label);
+        return element;
+      };
+
+      const primaryButton = createAction(
+        this.iconUtils.newTab,
+        "Open in New Tab",
+        () => this.openNewTab(webviewId, true),
+        "expand-button"
+      );
+      const menu = document.createElement("div");
+      menu.setAttribute("class", "peek-open-actions-menu");
+      menu.appendChild(
+        createAction(
+          this.iconUtils.openHere,
+          "Open Here",
+          () => this.openInSourceTab(webviewId),
+          "open-here-button"
+        )
+      );
+      menu.appendChild(
+        createAction(
+          this.iconUtils.backgroundTab,
+          "Open in Background",
+          () => this.openNewTab(webviewId, false),
+          "background-button"
+        )
+      );
+
+      group.appendChild(primaryButton);
+      group.appendChild(menu);
+      return group;
+    }
+
+    createNavigationActionsGroup(webviewId) {
+      const group = document.createElement("div");
+      group.setAttribute("class", "peek-open-actions peek-navigation-actions");
+      group.dataset.peekWebviewId = webviewId;
+
+      const createAction = (content, label, action, cls) => {
+        const element = this.createOptionsButton(
+          content,
+          () => {
+            action();
+            this.syncPeekNavigationControls(webviewId);
+          },
+          `peek-sidebar-button ${cls}`
+        );
+        element.setAttribute("aria-label", label);
+        element.setAttribute("title", label);
+        return element;
+      };
+
+      const reloadButton = createAction(
+        this.iconUtils.reload,
+        "Reload",
+        () => this.reloadPeek(webviewId),
+        "reload-button"
+      );
+      const menu = document.createElement("div");
+      menu.setAttribute("class", "peek-open-actions-menu peek-navigation-actions-menu");
+
+      const backButton = createAction(
+        this.iconUtils.back,
+        "Back",
+        () => this.goPeekBack(webviewId),
+        "back-button"
+      );
+      const forwardButton = createAction(
+        this.iconUtils.forward,
+        "Forward",
+        () => this.goPeekForward(webviewId),
+        "forward-button"
+      );
+      backButton.hidden = true;
+      forwardButton.hidden = true;
+
+      menu.appendChild(backButton);
+      menu.appendChild(forwardButton);
+      group.appendChild(reloadButton);
+      group.appendChild(menu);
+      return group;
     }
 
     hideSidebarControls(container) {
@@ -2874,13 +2999,58 @@
       }
     }
 
+    isUsablePeekUrl(url) {
+      const normalized = String(url || "").trim();
+      return !!normalized && normalized !== "about:blank" && !normalized.startsWith("about:blank");
+    }
+
+    normalizePeekHistoryUrl(url) {
+      const normalized = String(url || "").trim();
+      return this.isUsablePeekUrl(normalized) ? normalized : "";
+    }
+
+    recordPeekNavigation(webviewId, url) {
+      const data = this.webviews.get(webviewId);
+      const nextUrl = this.normalizePeekHistoryUrl(url);
+      if (!data || !nextUrl) return;
+
+      if (!Array.isArray(data.navigationHistory)) {
+        data.navigationHistory = [];
+      }
+      if (typeof data.navigationIndex !== "number") {
+        data.navigationIndex = data.navigationHistory.length - 1;
+      }
+
+      const currentUrl = data.navigationHistory[data.navigationIndex] || "";
+      if (currentUrl === nextUrl) {
+        data.currentUrl = nextUrl;
+        return;
+      }
+
+      if (data.navigationIndex < data.navigationHistory.length - 1) {
+        data.navigationHistory = data.navigationHistory.slice(0, data.navigationIndex + 1);
+      }
+
+      data.navigationHistory.push(nextUrl);
+      data.navigationIndex = data.navigationHistory.length - 1;
+      data.currentUrl = nextUrl;
+    }
+
     getPeekUrl(webviewId) {
       const data = this.webviews.get(webviewId);
       if (!data?.webview) return "";
-      return data.webview.dataset.pendingSrc || data.webview.src || "";
+      const candidates = [
+        data.webview.dataset.pendingSrc,
+        data.currentUrl,
+        data.initialUrl,
+        data.webview.getAttribute("src"),
+        data.webview.src,
+      ];
+      return candidates.find((url) => this.isUsablePeekUrl(url)) || "";
     }
 
-    navigatePeekToUrl(webviewId, url) {
+    navigatePeekToUrl(webviewId, url, options = {}) {
+      const { recordHistory = true } = options;
       const nextUrl = String(url || "").trim();
       if (!nextUrl) return;
 
@@ -2889,8 +3059,74 @@
       if (!webview) return;
 
       webview.dataset.pendingSrc = nextUrl;
+      if (recordHistory) {
+        this.recordPeekNavigation(webviewId, nextUrl);
+      } else {
+        data.currentUrl = nextUrl;
+      }
       data.pageStable = false;
       this.startPeekNavigation(webview, webviewId);
+      this.syncPeekNavigationControls(webviewId);
+    }
+
+    canNavigatePeek(webviewId, direction) {
+      const data = this.webviews.get(webviewId);
+      const history = data?.navigationHistory;
+      const index = Number(data?.navigationIndex);
+      if (!Array.isArray(history) || !Number.isFinite(index)) return false;
+
+      if (direction === "back") return index > 0;
+      if (direction === "forward") return index >= 0 && index < history.length - 1;
+      return false;
+    }
+
+    syncPeekNavigationControls(webviewId) {
+      const data = this.webviews.get(webviewId);
+      const container = data?.divContainer;
+      if (!container?.isConnected) return;
+
+      const navigationGroup = container.querySelector(
+        `.peek-navigation-actions[data-peek-webview-id="${webviewId}"]`
+      );
+      if (!navigationGroup) return;
+
+      const backButton = navigationGroup.querySelector(".back-button");
+      const forwardButton = navigationGroup.querySelector(".forward-button");
+      if (backButton) backButton.hidden = !this.canNavigatePeek(webviewId, "back");
+      if (forwardButton) forwardButton.hidden = !this.canNavigatePeek(webviewId, "forward");
+    }
+
+    reloadPeek(webviewId) {
+      const webview = this.webviews.get(webviewId)?.webview;
+      if (!webview) return;
+
+      try {
+        if (typeof webview.reload === "function") {
+          webview.reload();
+          return;
+        }
+      } catch (_) {}
+
+      const url = this.getPeekUrl(webviewId);
+      if (url) this.navigatePeekToUrl(webviewId, url);
+    }
+
+    goPeekBack(webviewId) {
+      const data = this.webviews.get(webviewId);
+      if (!data || !this.canNavigatePeek(webviewId, "back")) return;
+
+      data.navigationIndex -= 1;
+      const targetUrl = data.navigationHistory[data.navigationIndex];
+      if (targetUrl) this.navigatePeekToUrl(webviewId, targetUrl, { recordHistory: false });
+    }
+
+    goPeekForward(webviewId) {
+      const data = this.webviews.get(webviewId);
+      if (!data || !this.canNavigatePeek(webviewId, "forward")) return;
+
+      data.navigationIndex += 1;
+      const targetUrl = data.navigationHistory[data.navigationIndex];
+      if (targetUrl) this.navigatePeekToUrl(webviewId, targetUrl, { recordHistory: false });
     }
 
     openNewTab(webviewId, active) {
@@ -2899,7 +3135,7 @@
 
       if (!active) {
         chrome.tabs.create({ url: url, active: false });
-        setTimeout(() => this.closeLastPeek(), 100);
+        this.disposePeek(webviewId, { animated: true, closeRuntimeTab: true });
         return;
       }
 
@@ -2960,6 +3196,43 @@
       });
     }
 
+    async openInSourceTab(webviewId) {
+      const url = this.getPeekUrl(webviewId);
+      if (!url) return;
+
+      const data = this.webviews.get(webviewId);
+      if (!data) return;
+
+      const sourceTabId = this.getOwningTabId(data);
+      if (!sourceTabId) return;
+
+      const closePromise = this.disposePeek(webviewId, {
+        animated: true,
+        closeRuntimeTab: true,
+      });
+      await this.updateTab(sourceTabId, { url, active: true });
+      await closePromise;
+    }
+
+    isArcPeekSplitTab(tab, ownerTabId = null) {
+      const viv = this.parseVivExtData(tab);
+      const marker = viv.arcPeekSplit;
+      if (!marker || marker.createdBy !== "ArcPeek") return false;
+      if (ownerTabId === null) return true;
+      return Number(marker.ownerTabId) === Number(ownerTabId);
+    }
+
+    async closeArcPeekSplitTabs(ownerTabId) {
+      const tabs = await this.queryTabs({ currentWindow: true });
+      const tabIds = tabs
+        .filter((tab) => tab?.id && tab.id !== ownerTabId)
+        .filter((tab) => this.isArcPeekSplitTab(tab, ownerTabId))
+        .map((tab) => tab.id);
+
+      if (!tabIds.length) return;
+      await this.removeTab(tabIds);
+    }
+
     async openInSplitView(webviewId) {
       const url = this.getPeekUrl(webviewId);
       if (!url) return;
@@ -2973,19 +3246,10 @@
         if (!currentTab?.id) return;
 
         const currentFresh = await this.getTab(currentTab.id);
-        const currentViv = this.parseVivExtData(currentFresh);
-        const existingTiling = currentViv.tiling;
-        const tileId = existingTiling?.id || crypto.randomUUID();
+        const tileId = crypto.randomUUID();
         const layout = "row";
 
-        let nextIndex = 1;
-        if (existingTiling?.id) {
-          const allTabs = await this.queryTabs({ currentWindow: true });
-          nextIndex = allTabs
-            .map((tab) => this.parseVivExtData(tab).tiling)
-            .filter((tiling) => tiling && tiling.id === tileId)
-            .reduce((maxIndex, tiling) => Math.max(maxIndex, tiling.index ?? -1), -1) + 1;
-        }
+        await this.closeArcPeekSplitTabs(currentFresh.id);
 
         const newTab = await this.createTab({
           url,
@@ -2998,19 +3262,21 @@
         // Remove the peek as soon as the split tab exists; the tiling metadata can finish in background.
         this.dismissPeekInstant(webviewId);
 
-        const tilingUpdates = [];
-        if (!existingTiling) {
-          tilingUpdates.push(this.updateTabVivExtData(currentFresh.id, (viv) => ({
+        await Promise.all([
+          this.updateTabVivExtData(currentFresh.id, (viv) => ({
             ...viv,
             tiling: { id: tileId, index: 0, layout, type: "selection" },
-          })));
-        }
-
-        tilingUpdates.push(this.updateTabVivExtData(newTab.id, (viv) => ({
-          ...viv,
-          tiling: { id: tileId, index: nextIndex, layout, type: "selection" },
-        })));
-        await Promise.all(tilingUpdates);
+          })),
+          this.updateTabVivExtData(newTab.id, (viv) => ({
+            ...viv,
+            arcPeekSplit: {
+              createdBy: "ArcPeek",
+              ownerTabId: currentFresh.id,
+              createdAt: Date.now(),
+            },
+            tiling: { id: tileId, index: 1, layout, type: "selection" },
+          })),
+        ]);
 
         await Promise.all([
           this.updateTab(currentFresh.id, { active: true, highlighted: true }),
@@ -3865,7 +4131,8 @@
       readerView: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path d="M3 4h10v1H3zM3 6h10v1H3zM3 8h10v1H3zM3 10h6v1H3z"></path></svg>',
       newTab: '<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><path d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"/></svg>',
       splitView: '<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><path d="M64 64C28.7 64 0 92.7 0 128V384c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64H64zm160 64V384H64V128H224zm64 256V128H448V384H288z"/></svg>',
-      backgroundTab: '<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><path d="M384 32c35.3 0 64 28.7 64 64V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96C0 60.7 28.7 32 64 32H384zM160 144c-13.3 0-24 10.7-24 24s10.7 24 24 24h94.1L119 327c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l135-135V328c0 13.3 10.7 24 24 24s24-10.7 24-24V168c0-13.3-10.7-24-24-24H160z"/></svg>',
+      openHere: '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M200-120q-33 0-56.5-23.5T120-200v-120h80v120h560v-480H200v120h-80v-200q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm260-140-56-56 83-84H120v-80h367l-83-84 56-56 180 180-180 180Z"/></svg>',
+      backgroundTab: '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M320-80q-33 0-56.5-23.5T240-160v-80h-80q-33 0-56.5-23.5T80-320v-80h80v80h80v-320q0-33 23.5-56.5T320-720h320v-80h-80v-80h80q33 0 56.5 23.5T720-800v80h80q33 0 56.5 23.5T880-640v480q0 33-23.5 56.5T800-80H320Zm0-80h480v-480H320v480ZM80-480v-160h80v160H80Zm0-240v-80q0-33 23.5-56.5T160-880h80v80h-80v80H80Zm240-80v-80h160v80H320Zm0 640v-480 480Z"/></svg>',
     };
 
     static VIVALDI_BUTTONS = [
@@ -3915,6 +4182,7 @@
     get close() { return this.getIcon("close"); }
     get newTab() { return this.getIcon("newTab"); }
     get splitView() { return this.getIcon("splitView"); }
+    get openHere() { return this.getIcon("openHere"); }
     get backgroundTab() { return this.getIcon("backgroundTab"); }
   }
 
