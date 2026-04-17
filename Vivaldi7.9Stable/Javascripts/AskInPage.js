@@ -1,9 +1,9 @@
-/*
- * Ask in Page Panel
- * Reworked to follow the successful GlobalMediaControls pattern:
- * register a WebPanel, hide native webpanel content, and render the real UI
- * directly inside the host panel DOM instead of relying on an iframe app.
- */
+// ==UserScript==
+// @name         Ask in Page Panel
+// @description  Registers a WebPanel and renders the ask-in-page UI directly inside the host panel DOM.
+// @version      2026.4.17
+// @author       PaRr0tBoY
+// ==/UserScript==
 
 (() => {
   'use strict';
@@ -31,7 +31,7 @@
   const name = 'Ask in Page';
   const nameAttribute = 'ask-in-page';
   const webPanelId = 'WEBPANEL_ask-in-page-a1b2c3d4e5f6';
-  const uiVersion = 'v73';
+  const uiVersion = 'v74';
   const code = 'data:text/html,' + encodeURIComponent('<title>' + name + '</title>');
   const panelIconSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><path d="M13.5 2.5 7.5 12h4l-1 9.5 6-9.5h-4l1-9.5Z" stroke="#8B949E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   const panelIcon = 'data:image/svg+xml,' + encodeURIComponent(panelIconSvg);
@@ -246,6 +246,9 @@
       noTabsOrFiles: 'No tabs or files available.',
       tabsFilesReadFailed: 'Failed to read tabs / files. Please try again.',
       noMatchingCommands: 'No matching commands.',
+      sendValidationEmpty: 'Add something to process, or type a message.',
+      sendValidationNeedsInfo: 'Add the information to process, or type a message.',
+      sendValidationNeedsInstruction: 'Add a command, format, or instruction for what to do.',
       apiKeyMissing: 'AI API key is not configured. Fill in apiKey in AI_CONFIG inside AskInPage.js.',
       noDisplayBody: 'The model finished, but returned no displayable answer.',
       aiRequestFailed: 'AI request failed: {message}',
@@ -286,6 +289,9 @@
       domainTabsSubtitle: '加入该域名下的全部标签页',
       chooseFileTitle: '选择文件...',
       chooseFileSubtitle: '从系统选择文件',
+      sendValidationEmpty: '请先添加要处理的信息，或直接输入一条消息。',
+      sendValidationNeedsInfo: '请先添加要处理的信息，或直接输入一条消息。',
+      sendValidationNeedsInstruction: '请添加命令、格式或说明要如何处理这些信息。',
     },
     'zh-TW': {
       newChat: '新增對話',
@@ -318,6 +324,9 @@
       domainTabsSubtitle: '加入這個網域下的全部分頁',
       chooseFileTitle: '選擇檔案...',
       chooseFileSubtitle: '從系統選擇檔案',
+      sendValidationEmpty: '請先加入要處理的資訊，或直接輸入一則訊息。',
+      sendValidationNeedsInfo: '請先加入要處理的資訊，或直接輸入一則訊息。',
+      sendValidationNeedsInstruction: '請加入命令、格式，或說明要如何處理這些資訊。',
     },
     ja: {
       newChat: '新しいチャット',
@@ -727,6 +736,9 @@
   }
 
   function getTokenVisibleText(item) {
+    if (item?.tokenRole === 'capability') {
+      return '';
+    }
     return String(item?.title || '');
   }
 
@@ -989,15 +1001,375 @@
       .replace(/'/g, '&#39;');
   }
 
+  const LATEX_SYMBOLS = {
+    alpha: 'α',
+    beta: 'β',
+    gamma: 'γ',
+    delta: 'δ',
+    epsilon: 'ε',
+    varepsilon: 'ε',
+    zeta: 'ζ',
+    eta: 'η',
+    theta: 'θ',
+    vartheta: 'ϑ',
+    iota: 'ι',
+    kappa: 'κ',
+    lambda: 'λ',
+    mu: 'μ',
+    nu: 'ν',
+    xi: 'ξ',
+    pi: 'π',
+    varpi: 'ϖ',
+    rho: 'ρ',
+    varrho: 'ϱ',
+    sigma: 'σ',
+    varsigma: 'ς',
+    tau: 'τ',
+    upsilon: 'υ',
+    phi: 'φ',
+    varphi: 'ϕ',
+    chi: 'χ',
+    psi: 'ψ',
+    omega: 'ω',
+    Gamma: 'Γ',
+    Delta: 'Δ',
+    Theta: 'Θ',
+    Lambda: 'Λ',
+    Xi: 'Ξ',
+    Pi: 'Π',
+    Sigma: 'Σ',
+    Upsilon: 'Υ',
+    Phi: 'Φ',
+    Psi: 'Ψ',
+    Omega: 'Ω',
+    pm: '±',
+    mp: '∓',
+    times: '×',
+    div: '÷',
+    cdot: '·',
+    ast: '*',
+    le: '≤',
+    leq: '≤',
+    ge: '≥',
+    geq: '≥',
+    ne: '≠',
+    neq: '≠',
+    approx: '≈',
+    sim: '∼',
+    equiv: '≡',
+    infty: '∞',
+    partial: '∂',
+    nabla: '∇',
+    forall: '∀',
+    exists: '∃',
+    in: '∈',
+    notin: '∉',
+    subset: '⊂',
+    subseteq: '⊆',
+    superset: '⊃',
+    supset: '⊃',
+    supseteq: '⊇',
+    cup: '∪',
+    cap: '∩',
+    emptyset: '∅',
+    varnothing: '∅',
+    angle: '∠',
+    degree: '°',
+    prime: '′',
+    to: '→',
+    rightarrow: '→',
+    leftarrow: '←',
+    leftrightarrow: '↔',
+    Rightarrow: '⇒',
+    Leftarrow: '⇐',
+    Leftrightarrow: '⇔',
+    mapsto: '↦',
+    cdots: '⋯',
+    ldots: '…',
+    dots: '…',
+    land: '∧',
+    lor: '∨',
+    neg: '¬',
+    top: '⊤',
+    bot: '⊥',
+    perp: '⊥',
+    propto: '∝',
+    therefore: '∴',
+    because: '∵',
+  };
+  const LATEX_OPERATORS = {
+    sin: 'sin',
+    cos: 'cos',
+    tan: 'tan',
+    cot: 'cot',
+    sec: 'sec',
+    csc: 'csc',
+    log: 'log',
+    ln: 'ln',
+    exp: 'exp',
+    lim: 'lim',
+    max: 'max',
+    min: 'min',
+    sup: 'sup',
+    inf: 'inf',
+    arg: 'arg',
+    det: 'det',
+    dim: 'dim',
+    gcd: 'gcd',
+  };
+
+  function splitLatexTopLevel(source, separator) {
+    const parts = [];
+    let depth = 0;
+    let current = '';
+    for (let index = 0; index < source.length; index += 1) {
+      const char = source[index];
+      if (char === '\\') {
+        if (separator === '\\\\' && source[index + 1] === '\\' && depth === 0) {
+          parts.push(current);
+          current = '';
+          index += 1;
+          continue;
+        }
+        current += char + (source[index + 1] || '');
+        index += 1;
+        continue;
+      }
+      if (char === '{') depth += 1;
+      if (char === '}') depth = Math.max(0, depth - 1);
+      if (separator === char && depth === 0) {
+        parts.push(current);
+        current = '';
+        continue;
+      }
+      current += char;
+    }
+    parts.push(current);
+    return parts;
+  }
+
+  function renderLatexMatrix(source, displayMode) {
+    const matrixMatch = String(source || '').match(/\\begin\{(p|b|v|V)?matrix\}([\s\S]*?)\\end\{(?:p|b|v|V)?matrix\}/);
+    if (!matrixMatch) {
+      return '';
+    }
+    const kind = matrixMatch[1] || '';
+    const body = matrixMatch[2] || '';
+    const rows = splitLatexTopLevel(body, '\\\\')
+      .map((row) => splitLatexTopLevel(row, '&').map((cell) => cell.trim()))
+      .filter((row) => row.some(Boolean));
+    const fences = {
+      p: ['(', ')'],
+      b: ['[', ']'],
+      v: ['|', '|'],
+      V: ['‖', '‖'],
+    }[kind] || ['', ''];
+    const columnCount = Math.max(1, ...rows.map((row) => row.length));
+    return (
+      '<span class="ask-latex-matrix-wrap' + (displayMode ? ' display' : '') + '">' +
+      (fences[0] ? '<span class="ask-latex-matrix-fence">' + escapeHtml(fences[0]) + '</span>' : '') +
+      '<span class="ask-latex-matrix" style="grid-template-columns:repeat(' + columnCount + ', max-content)">' +
+      rows.map((row) => (
+        '<span class="ask-latex-matrix-row">' +
+        row.map((cell) => '<span class="ask-latex-matrix-cell">' + renderLatexToHtml(cell, false) + '</span>').join('') +
+        '</span>'
+      )).join('') +
+      '</span>' +
+      (fences[1] ? '<span class="ask-latex-matrix-fence">' + escapeHtml(fences[1]) + '</span>' : '') +
+      '</span>'
+    );
+  }
+
+  function renderLatexToHtml(source, displayMode) {
+    const raw = String(source || '').trim();
+    if (!raw) {
+      return '';
+    }
+    const matrix = renderLatexMatrix(raw, displayMode);
+    if (matrix) {
+      return matrix;
+    }
+    let index = 0;
+
+    const readCommand = () => {
+      index += 1;
+      const start = index;
+      while (index < raw.length && /[A-Za-z]/.test(raw[index])) {
+        index += 1;
+      }
+      if (index === start && index < raw.length) {
+        index += 1;
+      }
+      return raw.slice(start, index);
+    };
+
+    const skipWhitespace = () => {
+      while (index < raw.length && /\s/.test(raw[index])) {
+        index += 1;
+      }
+    };
+
+    const parseGroup = () => {
+      skipWhitespace();
+      if (raw[index] !== '{') {
+        return parseAtom();
+      }
+      index += 1;
+      const html = parseExpression('}');
+      if (raw[index] === '}') {
+        index += 1;
+      }
+      return html;
+    };
+
+    const parseOptionalGroup = () => {
+      skipWhitespace();
+      if (raw[index] !== '[') {
+        return '';
+      }
+      index += 1;
+      const start = index;
+      let depth = 1;
+      while (index < raw.length && depth > 0) {
+        if (raw[index] === '\\') {
+          index += 2;
+          continue;
+        }
+        if (raw[index] === '[') depth += 1;
+        if (raw[index] === ']') depth -= 1;
+        if (depth > 0) index += 1;
+      }
+      const value = raw.slice(start, index);
+      if (raw[index] === ']') {
+        index += 1;
+      }
+      return value;
+    };
+
+    const parseCommand = (command) => {
+      if (command === 'frac' || command === 'dfrac' || command === 'tfrac') {
+        const numerator = parseGroup();
+        const denominator = parseGroup();
+        return '<span class="ask-latex-frac"><span class="ask-latex-num">' + numerator + '</span><span class="ask-latex-den">' + denominator + '</span></span>';
+      }
+      if (command === 'sqrt') {
+        const degree = parseOptionalGroup();
+        const radicand = parseGroup();
+        return '<span class="ask-latex-sqrt">' + (degree ? '<span class="ask-latex-root-index">' + renderLatexToHtml(degree, false) + '</span>' : '') + '<span class="ask-latex-radicand">' + radicand + '</span></span>';
+      }
+      if (command === 'sum' || command === 'prod' || command === 'int' || command === 'oint') {
+        const symbols = { sum: '∑', prod: '∏', int: '∫', oint: '∮' };
+        return '<span class="ask-latex-largeop">' + symbols[command] + '</span>';
+      }
+      if (command === 'left' || command === 'right' || command === 'big' || command === 'Big' || command === 'bigl' || command === 'bigr' || command === 'Bigl' || command === 'Bigr') {
+        skipWhitespace();
+        if (raw[index] === '\\') {
+          return escapeHtml(LATEX_SYMBOLS[readCommand()] || '');
+        }
+        const delimiter = raw[index] || '';
+        index += delimiter ? 1 : 0;
+        return delimiter === '.' ? '' : '<span class="ask-latex-delim">' + escapeHtml(delimiter) + '</span>';
+      }
+      if (command === 'overline' || command === 'bar') {
+        return '<span class="ask-latex-overline">' + parseGroup() + '</span>';
+      }
+      if (command === 'underline') {
+        return '<span class="ask-latex-underline">' + parseGroup() + '</span>';
+      }
+      if (command === 'vec') {
+        return '<span class="ask-latex-vector">' + parseGroup() + '</span>';
+      }
+      if (command === 'text' || command === 'mathrm' || command === 'operatorname') {
+        return '<span class="ask-latex-text">' + parseGroup() + '</span>';
+      }
+      if (command === ',' || command === ';') return '<span class="ask-latex-space"></span>';
+      if (command === 'quad') return '<span class="ask-latex-quad"></span>';
+      if (command === 'qquad') return '<span class="ask-latex-qquad"></span>';
+      if (LATEX_OPERATORS[command]) {
+        return '<span class="ask-latex-op">' + escapeHtml(LATEX_OPERATORS[command]) + '</span>';
+      }
+      if (LATEX_SYMBOLS[command]) {
+        return escapeHtml(LATEX_SYMBOLS[command]);
+      }
+      return '<span class="ask-latex-cmd">' + escapeHtml(command) + '</span>';
+    };
+
+    const parseAtom = () => {
+      if (index >= raw.length) {
+        return '';
+      }
+      const char = raw[index];
+      if (char === '{') {
+        return parseGroup();
+      }
+      if (char === '\\') {
+        const command = readCommand();
+        return parseCommand(command);
+      }
+      if (char === '}') {
+        return '';
+      }
+      index += 1;
+      if (/\s/.test(char)) {
+        return '<span class="ask-latex-thinspace"></span>';
+      }
+      return escapeHtml(char);
+    };
+
+    const applyScripts = (base) => {
+      let sup = '';
+      let sub = '';
+      while (raw[index] === '^' || raw[index] === '_') {
+        const kind = raw[index];
+        index += 1;
+        const value = parseGroup();
+        if (kind === '^') {
+          sup = value;
+        } else {
+          sub = value;
+        }
+      }
+      if (!sup && !sub) {
+        return base;
+      }
+      return '<span class="ask-latex-scripted"><span class="ask-latex-script-base">' + base + '</span><span class="ask-latex-scripts">' + (sup ? '<sup>' + sup + '</sup>' : '') + (sub ? '<sub>' + sub + '</sub>' : '') + '</span></span>';
+    };
+
+    const parseExpression = (stopChar) => {
+      let html = '';
+      while (index < raw.length && raw[index] !== stopChar) {
+        if (raw[index] === '^' || raw[index] === '_') {
+          html += applyScripts('');
+          continue;
+        }
+        html += applyScripts(parseAtom());
+      }
+      return html;
+    };
+
+    return '<span class="ask-latex ask-latex-' + (displayMode ? 'display' : 'inline') + '">' + parseExpression('') + '</span>';
+  }
+
   function renderInlineMarkdown(text) {
-    let output = escapeHtml(text);
+    const latexPlaceholders = [];
+    const stashLatex = (html) => {
+      const key = '%%AIP_LATEX_' + latexPlaceholders.length + '%%';
+      latexPlaceholders.push(html);
+      return key;
+    };
+    let source = String(text || '');
+    source = source.replace(/\\\(([\s\S]+?)\\\)/g, (_, latex) => stashLatex('<span class="ask-latex-inline">' + renderLatexToHtml(latex, false) + '</span>'));
+    source = source.replace(/\$\$([\s\S]+?)\$\$/g, (_, latex) => stashLatex('<span class="ask-latex-block">' + renderLatexToHtml(latex, true) + '</span>'));
+    source = source.replace(/\$([^$\n]+)\$/g, (_, latex) => stashLatex('<span class="ask-latex-inline">' + renderLatexToHtml(latex, false) + '</span>'));
+    let output = escapeHtml(source);
     output = output.replace(/`([^`]+)`/g, '<code>$1</code>');
     output = output.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer noopener">$1</a>');
     output = output.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
     output = output.replace(/(^|[\s(])\*([^*]+)\*(?=$|[\s).,!?:;])/g, '$1<em>$2</em>');
     output = output.replace(/==([^=]+)==/g, '<mark>$1</mark>');
-    output = output.replace(/\$\$([\s\S]+?)\$\$/g, '<div class="ask-latex-block"><code>$1</code></div>');
-    output = output.replace(/\$([^$\n]+)\$/g, '<span class="ask-latex-inline"><code>$1</code></span>');
+    latexPlaceholders.forEach((html, index) => {
+      output = output.replaceAll('%%AIP_LATEX_' + index + '%%', html);
+    });
     return output;
   }
 
@@ -1183,6 +1555,20 @@
             i += 1;
           }
           blocks.push('<pre><code' + (language ? (' data-lang="' + escapeHtml(language) + '"') : '') + '>' + escapeHtml(codeLines.join('\n')) + '</code></pre>');
+          continue;
+        }
+        if (line.trim() === '$$' || line.trim() === '\\[') {
+          const closeMarker = line.trim() === '$$' ? '$$' : '\\]';
+          const latexLines = [];
+          i += 1;
+          while (i < blockLines.length && stripIndent(blockLines[i], baseIndent).trim() !== closeMarker) {
+            latexLines.push(stripIndent(blockLines[i], baseIndent));
+            i += 1;
+          }
+          if (i < blockLines.length) {
+            i += 1;
+          }
+          blocks.push('<div class="ask-latex-block">' + renderLatexToHtml(latexLines.join('\n'), true) + '</div>');
           continue;
         }
         const heading = line.match(/^(#{1,4})\s+(.*)$/);
@@ -1498,7 +1884,7 @@
       return '';
     }
     const url = String(tab.url || tab.pendingUrl || '');
-    if (!url || url === code || url.startsWith('chrome://ask-in-page') || url.startsWith('chrome://')) {
+    if (!url || url === code || url.startsWith('chrome://ask-in-page') || url.startsWith('chrome://') || url.startsWith('vivaldi://')) {
       return '';
     }
     const results = await promisifyChrome(chrome.scripting, 'executeScript', [{
@@ -1531,6 +1917,37 @@
       .map((item) => String(item?.result || '').replace(/\s+/g, ' ').trim())
       .filter(Boolean)
       .sort((a, b) => b.length - a.length)[0] || '';
+  }
+
+  async function clearCurrentTabSelection() {
+    const tab = await getCurrentTab();
+    if (!tab?.id) {
+      return;
+    }
+    const url = String(tab.url || tab.pendingUrl || '');
+    if (!url || url === code || url.startsWith('chrome://ask-in-page') || url.startsWith('chrome://') || url.startsWith('vivaldi://')) {
+      return;
+    }
+    await promisifyChrome(chrome.scripting, 'executeScript', [{
+      target: {
+        tabId: tab.id,
+        allFrames: true,
+      },
+      injectImmediately: true,
+      func: () => {
+        try {
+          const active = document.activeElement;
+          if (
+            active &&
+            (active.tagName === 'TEXTAREA' ||
+            (active.tagName === 'INPUT' && /^(?:text|search|url|tel|password|email)$/i.test(active.type || 'text')))
+          ) {
+            active.selectionStart = active.selectionEnd;
+          }
+          document.getSelection?.()?.removeAllRanges?.();
+        } catch (error) {}
+      },
+    }]);
   }
 
   async function getTabContentSnapshot(tabLike, options) {
@@ -2082,7 +2499,6 @@
                   <div class="ask-ref-chip-title" id="askContextTitle">${t('currentPage')}</div>
                   <div class="ask-ref-chip-subtitle" id="askContextUrl"></div>
                 </div>
-                <button class="ask-context-close ask-chip-close" id="askContextClose" type="button" title="${t('close')}">×</button>
               </div>
               <div class="ask-context-card ask-context-card-selection ask-ref-chip hidden" id="askSelectionCard">
                 <div class="ask-ref-chip-icon ask-context-favicon-selection" id="askSelectionFavicon">AI</div>
@@ -2090,7 +2506,6 @@
                   <div class="ask-ref-chip-title" id="askSelectionTitle"></div>
                   <div class="ask-ref-chip-subtitle">${t('selectedText')}</div>
                 </div>
-                <button class="ask-context-close ask-chip-close" id="askSelectionClose" type="button" title="${t('close')}">×</button>
               </div>
               <div class="ask-ref-row-inline" id="askRefRowInline"></div>
               </div>
@@ -2099,6 +2514,7 @@
               <div class="ask-inline-ref-row" id="askInlineRefRow"></div>
               <div class="ask-input-field" contenteditable="true" id="askInputField" data-placeholder="${t('inputPlaceholder')}" spellcheck="false" role="textbox" aria-label="${t('inputMessage')}"></div>
             </div>
+            <div class="ask-send-validation hidden" id="askSendValidation" role="status" aria-live="polite"></div>
             <div class="ask-input-toolbar">
               <button class="ask-btn-tool" type="button" title="${t('attachments')}" aria-label="${t('addAttachments')}">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
@@ -2136,6 +2552,8 @@
       'button[data-name="' + webPanelId + '"]:before { position:absolute; left:50%; top:50%; width:18px; height:18px; margin:0; content:""; background-color:var(--colorFg); transform:translate(-50%,-50%); -webkit-mask-image:url(' + JSON.stringify(panelIconMask) + '); -webkit-mask-repeat:no-repeat; -webkit-mask-position:center; -webkit-mask-size:contain; mask-image:url(' + JSON.stringify(panelIconMask) + '); mask-repeat:no-repeat; mask-position:center; mask-size:contain; }',
       '.ask-in-page-content { --aip-bg:var(--colorBg); --aip-surface:color-mix(in srgb, var(--colorBgLight) 82%, transparent); --aip-surface-strong:color-mix(in srgb, var(--colorBgLighter) 88%, transparent); --aip-elevated:color-mix(in srgb, var(--colorBgLightIntense) 92%, var(--colorAccentBgAlpha)); --aip-border:var(--colorBorderSubtle); --aip-border-hover:var(--colorBorderIntense); --aip-accent:var(--colorHighlightBg); --aip-accent-dim:var(--colorHighlightBgAlpha); --aip-text-primary:var(--colorFg); --aip-text-secondary:var(--colorFgFaded); --aip-text-muted:var(--colorFgFadedMost); --aip-chip-bg:color-mix(in srgb, var(--colorAccentBgAlphaHeavy) 68%, var(--colorBgLight)); --aip-r-xs:var(--radiusRounded); --aip-r-sm:var(--radiusHalf); --aip-r-md:var(--radiusCap); --aip-r-lg:var(--radius); --aip-r-pill:var(--radiusRound); --aip-r-full:50%; --radius:var(--aip-r-sm); --aip-shadow-base:0 8px 18px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.02); --aip-shadow-mid:0 14px 28px rgba(0,0,0,0.17), inset 0 1px 0 rgba(255,255,255,0.03); --aip-shadow-strong:0 18px 40px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.04); width:100%; flex:1 1 auto; min-height:0; background:linear-gradient(180deg, color-mix(in srgb, var(--colorBgLight) 90%, transparent) 0%, var(--aip-bg) 18%, var(--colorBgDark) 100%); color:var(--aip-text-primary); font-family:var(--sansSerifFont), sans-serif; -webkit-font-smoothing:antialiased; }',
       '.ask-in-page-content *, .ask-in-page-content *::before, .ask-in-page-content *::after { box-sizing:border-box; }',
+      '.ask-in-page-content *:not(.ask-messages) { scrollbar-width:none; }',
+      '.ask-in-page-content *:not(.ask-messages)::-webkit-scrollbar { width:0 !important; height:0 !important; display:none !important; }',
       '.ask-in-page-shell { width:100%; height:100%; display:flex; flex:1; flex-direction:column; min-height:0; background:transparent; position:relative; }',
       '.ask-in-page-shell::before { content:""; position:absolute; inset:0 0 auto; height:92px; background:linear-gradient(180deg, color-mix(in srgb, var(--colorAccentBgAlpha) 42%, transparent) 0%, transparent 100%); opacity:.75; pointer-events:none; }',
       '.ask-top-bar { display:flex; align-items:center; padding:10px 12px 6px; flex-shrink:0; position:relative; z-index:1; }',
@@ -2145,17 +2563,19 @@
       '.ask-btn-new:active, .ask-btn-tool:active { transform:scale(.96); }',
       '.ask-btn-new svg, .ask-btn-tool svg { width:18px; height:18px; }',
       '.ask-messages { display:flex !important; flex-direction:column !important; flex:1 1 auto !important; min-height:0 !important; overflow-y:auto !important; overflow-x:hidden !important; overflow-anchor:auto; padding:10px 12px 156px; position:relative; z-index:1; }',
-      '.ask-messages::-webkit-scrollbar, .ask-suggestion-body::-webkit-scrollbar { width:var(--scrollbarWidth); }',
-      '.ask-messages::-webkit-scrollbar-thumb, .ask-suggestion-body::-webkit-scrollbar-thumb { background:color-mix(in srgb, var(--colorFgAlpha) 70%, transparent); border:4px solid transparent; border-radius:999px; background-clip:padding-box; }',
+      '.ask-messages::-webkit-scrollbar { width:var(--scrollbarWidth); }',
+      '.ask-messages::-webkit-scrollbar-thumb { background:color-mix(in srgb, var(--colorFgAlpha) 70%, transparent); border:4px solid transparent; border-radius:999px; background-clip:padding-box; }',
       '.ask-empty { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:24px 0; text-align:center; }',
       '.ask-empty-text { max-width:220px; color:var(--aip-text-secondary); font-size:13px; font-weight:600; line-height:1.45; }',
       '.ask-empty-subtext { max-width:240px; color:var(--aip-text-muted); font-size:12px; line-height:1.45; }',
       '.ask-commands-row { display:flex; gap:6px; padding:2px 12px 10px; flex-shrink:0; overflow:hidden; max-height:40px; opacity:1; transition:max-height .24s, opacity .18s, padding-bottom .24s; position:relative; z-index:1; }',
       '.ask-commands-row.hidden { max-height:0; opacity:0; padding-bottom:0; pointer-events:none; }',
+      '.ask-commands-row.commands-hidden .ask-btn-cmd[data-cmd] { display:none; }',
       '.ask-btn-cmd { display:inline-flex; align-items:center; gap:5px; padding:6px 12px; background:var(--aip-chip-bg); color:var(--aip-text-secondary); border:1px solid var(--aip-border); border-radius:var(--aip-r-pill) !important; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap; transition:color .15s, background .15s, border-color .15s, transform .1s, box-shadow .15s; }',
       '.ask-btn-cmd:hover { color:var(--aip-text-primary); background:color-mix(in srgb, var(--colorBgLighter) 82%, var(--colorAccentBgAlphaHeavy)); border-color:var(--aip-border-hover); box-shadow:inset 0 1px 0 rgba(255,255,255,0.03); }',
       '.ask-btn-cmd:active { transform:scale(.96); }',
       '.ask-btn-cmd svg { width:13px; height:13px; flex-shrink:0; }',
+      '.ask-btn-current-page-icon { width:13px; height:13px; border-radius:4px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; background:linear-gradient(180deg, var(--colorAccentBgFadedMore) 0%, var(--colorAccentBg) 100%); color:var(--colorAccentFg); font-size:9px; font-weight:800; line-height:1; }',
       '.ask-input-area { display:block !important; flex:0 0 auto !important; flex-shrink:0 !important; margin-top:auto; padding:0 12px 14px; position:relative; z-index:20; overflow:visible !important; }',
       '.ask-input-box { background:linear-gradient(180deg, color-mix(in srgb, var(--colorBgLight) 94%, transparent) 0%, color-mix(in srgb, var(--colorBgLightIntense) 96%, transparent) 100%); border:1px solid var(--aip-border); border-radius:calc(var(--aip-r-lg) + 2px); display:flex; flex-direction:column; overflow:hidden; box-shadow:var(--aip-shadow-mid); backdrop-filter:var(--backgroundBlur); transition:border-color .2s, box-shadow .2s, background .2s; }',
       '.ask-input-box.focused { border-color:var(--colorHighlightBg); box-shadow:0 0 0 1px var(--colorHighlightBgAlpha), var(--aip-shadow-mid); }',
@@ -2171,6 +2591,8 @@
       '.ask-context-track { display:flex; align-items:center; gap:8px; width:100%; padding:4px 4px 0 0; overflow:hidden; white-space:nowrap; }',
       '.ask-context-card, .ask-ref-chip { position:relative; display:flex; align-items:center; gap:10px; min-width:180px; width:180px; max-width:180px; height:52px; padding:0 18px 0 12px; border-radius:calc(var(--aip-r-md) + 2px); background:color-mix(in srgb, var(--colorBgLighter) 84%, transparent); border:1px solid var(--aip-border); box-shadow:var(--aip-shadow-base); overflow:visible; flex:0 0 180px; }',
       '.ask-context-card.hidden { display:none; }',
+      '.ask-context-card { cursor:pointer; }',
+      '.ask-context-card:hover, .ask-ref-chip:hover, .ask-cmd-chip:hover, .ask-composer-token[data-token-role="capability"]:hover { border-style:dashed; border-color:var(--colorHighlightBg); opacity:.86; }',
       '.ask-context-card-selection { background:color-mix(in srgb, var(--colorAccentBgAlpha) 55%, var(--colorBgLight)); }',
       '.ask-ref-chip-icon { width:32px; height:32px; border-radius:var(--aip-r-md); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:14px; font-weight:700; color:var(--colorAccentFg); background:linear-gradient(180deg, var(--colorAccentBgFadedMore) 0%, var(--colorAccentBg) 100%); }',
       '.ask-context-favicon-selection { background:color-mix(in srgb, var(--colorBgLighter) 88%, transparent); color:var(--aip-text-secondary); font-size:13px; letter-spacing:.02em; }',
@@ -2183,7 +2605,11 @@
       '.ask-input-main { display:flex; align-items:flex-start; gap:8px; padding:12px 14px 0; min-height:24px; flex-wrap:wrap; }',
       '.ask-inline-ref-row { display:none; }',
       '.ask-composer-token { display:inline-flex; align-items:center; gap:6px; min-width:0; max-width:180px; margin:0 2px; vertical-align:baseline; color:var(--aip-text-secondary); font-size:13px; line-height:1.35; border-radius:8px; user-select:none; }',
+      '.ask-composer-token[data-token-kind="context"], .ask-composer-token[data-token-kind="tab"] { max-width:none; width:auto; gap:0; margin:0 4px 0 2px; }',
+      '.ask-composer-token[data-token-kind="context"] .ask-composer-token-label, .ask-composer-token[data-token-kind="tab"] .ask-composer-token-label { display:none; }',
       '.ask-composer-token.focused { background:color-mix(in srgb, var(--colorBgLighter) 84%, transparent); box-shadow:0 0 0 1px var(--colorHighlightBgAlpha); padding:2px 6px; }',
+      '.ask-composer-token[data-token-role="capability"] { position:relative; display:inline-flex; align-items:center; gap:6px; max-width:none; font-size:12px; font-weight:600; user-select:none; animation:askChipPop .22s cubic-bezier(.22,1,.36,1); overflow:hidden; padding:6px 12px; background:color-mix(in srgb, var(--colorHighlightBgAlpha) 72%, transparent); border:1px solid color-mix(in srgb, var(--colorHighlightBgAlpha) 92%, transparent); border-radius:999px; color:var(--aip-text-primary); cursor:pointer; line-height:1.35; }',
+      '.ask-composer-token[data-token-role="capability"].focused { box-shadow:0 0 0 1px var(--aip-accent), 0 6px 16px color-mix(in srgb, var(--colorHighlightBgAlpha) 40%, transparent); padding:6px 12px; }',
       '.ask-composer-token-icon { width:14px; height:14px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--aip-accent); font-size:12px; line-height:1; }',
       '.ask-composer-token-label { min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }',
       '.ask-inline-ref-token { display:inline-flex; align-items:center; gap:6px; min-width:0; max-width:180px; color:var(--aip-text-secondary); font-size:13px; line-height:1.35; padding:2px 0; border-radius:8px; }',
@@ -2193,8 +2619,11 @@
       '.ask-input-field { flex:1; min-width:0; background:transparent; border:none; outline:none; color:var(--aip-text-primary); font-size:14px; line-height:1.5; caret-color:var(--aip-accent); word-break:break-word; max-height:100px; overflow-y:auto; position:relative; }',
       '.ask-input-field.disabled { opacity:.55; pointer-events:none; }',
       '.ask-input-field:empty::before { content:attr(data-placeholder); color:var(--aip-text-muted); pointer-events:none; }',
-      '.ask-cmd-chip { position:relative; display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; user-select:none; animation:askChipPop .22s cubic-bezier(.22,1,.36,1); overflow:hidden; padding:6px 12px; background:color-mix(in srgb, var(--colorHighlightBgAlpha) 72%, transparent); border:1px solid color-mix(in srgb, var(--colorHighlightBgAlpha) 92%, transparent); border-radius:999px; color:var(--aip-text-primary); }',
-      '.ask-ref-chip { position:relative; display:flex; align-items:center; font-size:13px; font-weight:500; user-select:none; animation:askChipPop .22s cubic-bezier(.22,1,.36,1); overflow:visible; }',
+      '.ask-send-validation { margin:2px 14px 0; color:var(--colorErrorBg); font-size:12px; line-height:1.35; font-weight:600; }',
+      '.ask-send-validation.hidden { display:none; }',
+      '.ask-cmd-chip { position:relative; display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; user-select:none; animation:askChipPop .22s cubic-bezier(.22,1,.36,1); overflow:hidden; padding:6px 12px; background:color-mix(in srgb, var(--colorHighlightBgAlpha) 72%, transparent); border:1px solid color-mix(in srgb, var(--colorHighlightBgAlpha) 92%, transparent); border-radius:999px; color:var(--aip-text-primary); cursor:pointer; }',
+      '.ask-ref-chip { position:relative; display:flex; align-items:center; font-size:13px; font-weight:500; user-select:none; overflow:visible; }',
+      '.ask-ref-chip.is-entering { animation:askChipPop .22s cubic-bezier(.22,1,.36,1); }',
       '.ask-cmd-chip.is-removing, .ask-ref-chip.is-removing, .ask-composer-token.is-removing { animation:askChipRemove .16s ease forwards; pointer-events:none; }',
       '.ask-cmd-chip.focused { box-shadow:0 0 0 1px var(--aip-accent), 0 6px 16px color-mix(in srgb, var(--colorHighlightBgAlpha) 40%, transparent); }',
       '.ask-ref-row-inline { display:flex; align-items:center; gap:8px; min-width:0; padding:4px 4px 0 0; overflow:hidden; flex:0 1 auto; }',
@@ -2203,6 +2632,7 @@
       '.ask-ref-chip::after, .ask-context-card::after { background:linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,0.04) 42%, rgba(255,255,255,0.08) 100%); }',
       '.ask-chip-close { position:absolute; top:50%; right:4px; z-index:2; width:18px; height:18px; margin-top:-9px; border-radius:var(--aip-r-xs); display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--aip-text-muted); font-size:15px; line-height:1; opacity:0; pointer-events:auto; transition:opacity .15s, color .12s, background .12s; }',
       '.ask-cmd-chip:hover::after, .ask-ref-chip:hover::after { opacity:1; }',
+      '.ask-cmd-chip:hover::after, .ask-ref-chip:hover::after, .ask-context-card:hover::after { opacity:0; }',
       '.ask-cmd-chip:hover .ask-chip-close { opacity:1; }',
       '.ask-chip-close:hover { color:var(--aip-text-primary); background:color-mix(in srgb, var(--colorBgLighter) 78%, transparent); }',
       '.ask-input-toolbar { display:flex; align-items:center; justify-content:space-between; padding:8px 10px 10px; }',
@@ -2230,11 +2660,13 @@
       '.ask-suggestion-item.active { box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--colorHighlightBgAlpha) 90%, transparent); }',
       '.ask-suggestion-item.active::before { opacity:1; transform:scaleY(1); }',
       '.ask-suggestion-item-action { border-top:1px solid color-mix(in srgb, var(--colorFgAlpha) 22%, transparent); }',
-      '.ask-suggestion-icon { width:28px; height:28px; border-radius:var(--aip-r-md); display:flex; align-items:center; justify-content:center; flex-shrink:0; overflow:hidden; background:color-mix(in srgb, var(--colorBgLighter) 88%, transparent); color:var(--aip-text-primary); font-size:12px; font-weight:700; transition:transform .14s ease, box-shadow .14s ease; }',
+      '.ask-suggestion-icon { width:28px; height:28px; border-radius:var(--aip-r-md); display:flex; align-items:center; justify-content:center; flex-shrink:0; overflow:hidden; white-space:nowrap; background:color-mix(in srgb, var(--colorBgLighter) 88%, transparent); color:var(--aip-text-primary); font-size:12px; font-weight:700; transition:transform .14s ease, box-shadow .14s ease; }',
+      '.ask-suggestion-icon span { white-space:nowrap; }',
       '.ask-suggestion-item.active .ask-suggestion-icon { transform:translateX(1px) scale(1.04); box-shadow:0 6px 16px color-mix(in srgb, var(--colorHighlightBgAlpha) 55%, transparent); }',
       '.ask-suggestion-icon img { width:100%; height:100%; object-fit:cover; }',
       '.ask-suggestion-text { flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }',
       '.ask-suggestion-title { display:block; color:var(--aip-text-primary); font-size:13px; line-height:1.35; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }',
+      '.ask-suggestion-current-badge { display:inline-flex; align-items:center; margin-left:6px; padding:1px 6px; border-radius:999px; border:1px solid color-mix(in srgb, var(--colorHighlightBg) 62%, transparent); color:var(--colorHighlightBg); font-size:10px; font-weight:700; line-height:1.2; vertical-align:1px; }',
       '.ask-suggestion-subtitle { display:block; color:var(--aip-text-secondary); font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }',
       '.ask-suggestion-meta { color:var(--aip-text-muted); font-size:11px; flex-shrink:0; }',
       '.ask-suggestion-divider { height:1px; margin:8px 14px; background:color-mix(in srgb, var(--colorFgAlpha) 28%, transparent); }',
@@ -2383,8 +2815,36 @@
       '.ask-task-box { width:16px; height:16px; margin-top:2px; border-radius:5px; border:1px solid var(--aip-border-hover); display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--aip-bg); font-size:12px; line-height:1; }',
       '.ask-task-box.checked { background:var(--aip-accent); border-color:var(--aip-accent); }',
       '.ask-task-content { min-width:0; flex:1; }',
-      '.ask-latex-inline code, .ask-latex-block code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-style:italic; }',
-      '.ask-latex-block { margin:0 0 12px; padding:10px 12px; border-radius:var(--aip-r-lg); background:color-mix(in srgb, var(--colorBgLight) 90%, transparent); border:1px solid var(--aip-border); overflow:auto; }',
+      '.ask-latex-inline { display:inline-flex; align-items:center; vertical-align:-0.22em; max-width:100%; }',
+      '.ask-latex-block { display:flex; align-items:center; justify-content:center; margin:0 0 12px; padding:12px 14px; border-radius:var(--aip-r-lg); background:color-mix(in srgb, var(--colorBgLight) 90%, transparent); border:1px solid var(--aip-border); overflow:auto; }',
+      '.ask-latex { display:inline-flex; align-items:center; gap:0.08em; max-width:100%; color:var(--aip-text-primary); font-family:Georgia, "Times New Roman", serif; font-style:italic; line-height:1.25; white-space:nowrap; }',
+      '.ask-latex-display { font-size:1.12em; padding:2px 0; }',
+      '.ask-latex-text, .ask-latex-op { font-family:var(--fontFamily, system-ui, sans-serif); font-style:normal; margin:0 0.08em; }',
+      '.ask-latex-cmd { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-style:normal; color:var(--aip-text-secondary); }',
+      '.ask-latex-frac { display:inline-grid; grid-template-rows:auto auto; align-items:center; justify-items:center; vertical-align:middle; margin:0 0.12em; line-height:1.05; }',
+      '.ask-latex-num { display:block; min-width:100%; padding:0 0.22em 0.08em; border-bottom:1px solid currentColor; text-align:center; }',
+      '.ask-latex-den { display:block; min-width:100%; padding:0.08em 0.22em 0; text-align:center; }',
+      '.ask-latex-sqrt { display:inline-flex; align-items:stretch; position:relative; margin:0 0.08em; }',
+      '.ask-latex-sqrt::before { content:"√"; font-size:1.32em; line-height:1; transform:translateY(.04em); }',
+      '.ask-latex-radicand { display:inline-block; border-top:1px solid currentColor; padding:0.04em 0.12em 0 0.16em; }',
+      '.ask-latex-root-index { position:absolute; left:-.35em; top:-.35em; font-size:.58em; }',
+      '.ask-latex-largeop { font-size:1.35em; line-height:1; margin:0 0.04em; }',
+      '.ask-latex-scripted { display:inline-flex; align-items:center; vertical-align:middle; }',
+      '.ask-latex-scripts { display:inline-flex; flex-direction:column; justify-content:center; margin-left:.04em; line-height:.85; }',
+      '.ask-latex-scripts sup, .ask-latex-scripts sub { font-size:.68em; line-height:.9; position:static; }',
+      '.ask-latex-overline { text-decoration:overline; }',
+      '.ask-latex-underline { text-decoration:underline; }',
+      '.ask-latex-vector { position:relative; padding-top:.1em; }',
+      '.ask-latex-vector::before { content:"→"; position:absolute; left:0; right:0; top:-.65em; text-align:center; font-size:.75em; font-style:normal; }',
+      '.ask-latex-space { display:inline-block; width:.22em; }',
+      '.ask-latex-thinspace { display:inline-block; width:.16em; }',
+      '.ask-latex-quad { display:inline-block; width:1em; }',
+      '.ask-latex-qquad { display:inline-block; width:2em; }',
+      '.ask-latex-delim, .ask-latex-matrix-fence { font-size:1.65em; line-height:1; font-style:normal; }',
+      '.ask-latex-matrix-wrap { display:inline-flex; align-items:center; gap:.18em; vertical-align:middle; }',
+      '.ask-latex-matrix { display:inline-grid; gap:.18em .72em; align-items:center; }',
+      '.ask-latex-matrix-row { display:contents; }',
+      '.ask-latex-matrix-cell { display:inline-flex; justify-content:center; min-width:1.2em; }',
       '.ask-msg-ai-error { color:var(--colorErrorBg); font-size:14px; line-height:1.6; }',
       '.ask-turn-ai-meta { display:flex; align-items:center; justify-content:flex-start; gap:10px; margin:4px 0 0; min-height:18px; width:100%; }',
       '@keyframes askChipPop { from { opacity:0; transform:scale(.8); } to { opacity:1; transform:scale(1); } }',
@@ -2449,6 +2909,7 @@
       iconText: title.slice(0, 1).toUpperCase(),
       iconUrl: tab.favIconUrl || '',
       color: '#2D3139',
+      isCurrentPage: Boolean(tab.active),
       raw: tab,
     };
   }
@@ -2483,7 +2944,6 @@
       refRowInline: root.querySelector('#askRefRowInline'),
       inlineRefRow: root.querySelector('#askInlineRefRow'),
       selectionCard: root.querySelector('#askSelectionCard'),
-      selectionClose: root.querySelector('#askSelectionClose'),
       selectionTitle: root.querySelector('#askSelectionTitle'),
       inputMain: root.querySelector('#askInputMain'),
       inputField: root.querySelector('#askInputField'),
@@ -2493,14 +2953,15 @@
       ctxFavicon: root.querySelector('#askContextFavicon'),
       ctxTitle: root.querySelector('#askContextTitle'),
       ctxUrl: root.querySelector('#askContextUrl'),
-      ctxClose: root.querySelector('#askContextClose'),
       suggestionDropdown: root.querySelector('#askSuggestionDropdown'),
       suggestionBody: root.querySelector('#askSuggestionBody'),
       suggestionSearchText: root.querySelector('#askSuggestionSearchText'),
+      sendValidation: root.querySelector('#askSendValidation'),
       activeCmd: null,
       cmdChipEl: null,
       cmdChipFocused: false,
       refs: [],
+      autoCurrentPageRefId: null,
       capabilities: [],
       nextRefId: 1,
       nextCapabilityId: 1,
@@ -2512,7 +2973,7 @@
       atTabsExpanded: false,
       atSuggestionData: null,
       currentContext: null,
-      contextCardVisible: true,
+      contextCardVisible: false,
       selectedText: '',
       selectionPollId: null,
       focusedComposerTokenKey: null,
@@ -2634,22 +3095,45 @@
       return ranked.slice(0, 3).map((item) => item.name);
     }
 
+    function shouldShowCurrentPageButton() {
+      return Boolean(state.currentContext && !state.contextCardVisible && !hasReferenceForTab(state.currentContext));
+    }
+
+    function addCurrentPageReference() {
+      setAutoCurrentPageReference(state.currentContext);
+    }
+
     function renderCommandButtons() {
       const topCommands = getTopCommandNames();
-      state.commandsRow.innerHTML = topCommands.map((name) => (
+      const commandMarkup = topCommands.map((name) => (
         '<button class="ask-btn-cmd" type="button" data-cmd="' + escapeHtml(name) + '">' +
           getCommandIconSvg(name) +
           escapeHtml(name) +
         '</button>'
       )).join('');
+      const currentPageMarkup = shouldShowCurrentPageButton()
+        ? (
+          '<button class="ask-btn-cmd ask-btn-current-page" type="button" data-current-page="true" title="' + escapeHtml(state.currentContext.title || t('currentPage')) + '">' +
+            '<span class="ask-btn-current-page-icon">' + escapeHtml(state.currentContext.iconText || 'A') + '</span>' +
+            escapeHtml(t('currentPage')) +
+          '</button>'
+        )
+        : '';
+      state.commandsRow.innerHTML = commandMarkup + currentPageMarkup;
       state.commandsRow.querySelectorAll('.ask-btn-cmd').forEach((button) => {
+        if (button.dataset.currentPage === 'true') {
+          button.addEventListener('click', () => addCurrentPageReference());
+          return;
+        }
         button.addEventListener('click', () => selectCommand(button.dataset.cmd));
       });
     }
 
     function syncCommandsRow() {
       renderCommandButtons();
-      state.commandsRow.classList.toggle('hidden', Boolean(state.activeCmd));
+      const hasCurrentPageButton = shouldShowCurrentPageButton();
+      state.commandsRow.classList.toggle('commands-hidden', Boolean(state.activeCmd));
+      state.commandsRow.classList.toggle('hidden', Boolean(state.activeCmd) && !hasCurrentPageButton);
     }
 
     function syncEditingBanner() {
@@ -2702,6 +3186,17 @@
           (currentSubtitle && item.subtitle && currentSubtitle === item.subtitle)
         );
       }
+      if (item.kind === 'tab') {
+        const currentContextId = String(state.currentContext?.id || state.currentContext?.raw?.id || '');
+        const itemId = String(item.id || item.raw?.id || '');
+        const currentSubtitle = String(state.currentContext?.subtitle || '');
+        if (state.contextCardVisible && (
+          (currentContextId && itemId && currentContextId === itemId) ||
+          (currentSubtitle && item.subtitle && currentSubtitle === item.subtitle)
+        )) {
+          return true;
+        }
+      }
       return state.refs.some((ref) => {
         const sameRefId = ref.id && item.id && ('ref:' + ref.id === item.id || ref.id === item.id);
         const sameTitle = ref.title === item.title;
@@ -2714,43 +3209,68 @@
       state.inlineRefRow.innerHTML = '';
     }
 
-    function renderReferenceCards() {
-      state.refRowInline.innerHTML = '';
-      state.refs.forEach((ref) => {
-        const chip = document.createElement('div');
-        chip.className = 'ask-ref-chip';
-        chip.dataset.refId = ref.id;
-        const icon = document.createElement('span');
-        icon.className = 'ask-ref-chip-icon';
+    function createReferenceCard(ref) {
+      const chip = document.createElement('div');
+      chip.className = 'ask-ref-chip is-entering';
+      chip.dataset.refId = ref.id;
+      const icon = document.createElement('span');
+      icon.className = 'ask-ref-chip-icon';
+      const info = document.createElement('span');
+      info.className = 'ask-ref-chip-info';
+      const title = document.createElement('span');
+      title.className = 'ask-ref-chip-title';
+      const subtitle = document.createElement('span');
+      subtitle.className = 'ask-ref-chip-subtitle';
+      info.append(title, subtitle);
+      ['pointerdown', 'mousedown', 'click'].forEach((eventName) => {
+        chip.addEventListener(eventName, (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        });
+      });
+      chip.addEventListener('click', (event) => {
+        event.preventDefault();
+        removeReference(chip.dataset.refId || '');
+      });
+      chip.append(icon, info);
+      updateReferenceCard(chip, ref);
+      window.setTimeout(() => {
+        chip.classList.remove('is-entering');
+      }, 240);
+      return chip;
+    }
+
+    function updateReferenceCard(chip, ref) {
+      chip.classList.toggle('ask-ref-chip-auto-current', Boolean(ref.autoCurrentPage));
+      chip.dataset.refId = ref.id;
+      chip.title = ref.title || '';
+      const icon = chip.querySelector('.ask-ref-chip-icon');
+      const title = chip.querySelector('.ask-ref-chip-title');
+      const subtitle = chip.querySelector('.ask-ref-chip-subtitle');
+      if (icon) {
         icon.textContent = ref.kind === 'file' ? 'D' : ref.iconText;
-        const info = document.createElement('span');
-        info.className = 'ask-ref-chip-info';
-        const title = document.createElement('span');
-        title.className = 'ask-ref-chip-title';
+      }
+      if (title) {
         title.textContent = ref.title;
-        const subtitle = document.createElement('span');
-        subtitle.className = 'ask-ref-chip-subtitle';
+      }
+      if (subtitle) {
         subtitle.textContent = ref.kind === 'file'
           ? ((ref.title.split('.').pop() || '').toLowerCase() || 'file')
           : (ref.subtitle || '');
-        info.append(title, subtitle);
-        const close = document.createElement('button');
-        close.type = 'button';
-        close.className = 'ask-context-close ask-chip-close';
-        close.textContent = '×';
-        ['pointerdown', 'mousedown', 'click'].forEach((eventName) => {
-          close.addEventListener(eventName, (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-          });
-        });
-        close.addEventListener('click', (event) => {
-          event.preventDefault();
-          removeReference(ref.id);
-        });
-        chip.append(icon, info, close);
-        state.refRowInline.append(chip);
+      }
+    }
+
+    function renderReferenceCards() {
+      const existingById = new Map(
+        Array.from(state.refRowInline.querySelectorAll('.ask-ref-chip[data-ref-id]'))
+          .map((chip) => [chip.dataset.refId, chip])
+      );
+      const nextChips = state.refs.map((ref) => {
+        const chip = existingById.get(ref.id) || createReferenceCard(ref);
+        updateReferenceCard(chip, ref);
+        return chip;
       });
+      state.refRowInline.replaceChildren(...nextChips);
     }
 
     function getComposerTokenEntries() {
@@ -2776,7 +3296,7 @@
               return;
             }
             if (item.key === 'selection') {
-              setSelectedText('');
+              clearSelectedTextContext();
               return;
             }
             if (item.key && item.key.startsWith('cap:')) {
@@ -2796,7 +3316,7 @@
       state.focusedComposerTokenKey = null;
       state.cmdChipFocused = false;
       state.cmdChipEl?.classList.remove('focused');
-      state.inputField.querySelectorAll('.ask-composer-token.focused').forEach((node) => {
+      state.inputMain.querySelectorAll('.ask-composer-token.focused').forEach((node) => {
         node.classList.remove('focused');
       });
     }
@@ -2806,6 +3326,7 @@
         showDefaultContext: false,
         keepEditing: false,
       }, options || {});
+      hideSendValidation();
       clearFocusedComposerToken();
       state.inputField.innerHTML = '';
       state.inlineRefRow.innerHTML = '';
@@ -2813,10 +3334,12 @@
         removeCommand();
       }
       state.refs = [];
+      state.autoCurrentPageRefId = null;
       state.capabilities = [];
       state.selectedText = '';
       state.selectionTitle.textContent = '';
       state.contextCardVisible = Boolean(settings.showDefaultContext);
+      getComposerTokenNodes().forEach((node) => node.remove());
       syncReferenceStrip();
       hideSuggestions();
       if (!settings.keepEditing) {
@@ -2936,6 +3459,27 @@
       }
     }
 
+    function focusComposerTokenEntry(entry) {
+      if (!entry) {
+        return false;
+      }
+      clearFocusedComposerToken();
+      state.focusedComposerTokenKey = entry.key;
+      if (entry.key === 'cmd') {
+        state.cmdChipFocused = true;
+        state.cmdChipEl?.classList.add('focused');
+      } else {
+        entry.el.classList.add('focused');
+      }
+      return true;
+    }
+
+    function getLastStatusTokenEntry() {
+      const entries = getComposerTokenEntries()
+        .filter((entry) => entry.key === 'cmd' || String(entry.key || '').startsWith('cap:'));
+      return entries[entries.length - 1] || null;
+    }
+
     function moveComposerTokenFocus(step) {
       const entries = getComposerTokenEntries();
       if (!entries.length) {
@@ -3022,7 +3566,7 @@
             return;
           }
           if (key === 'selection') {
-            setSelectedText('');
+            clearSelectedTextContext();
             return;
           }
           if (key.startsWith('cap:')) {
@@ -3071,6 +3615,19 @@
       return token;
     }
 
+    function bindCapabilityTokenRemoval(token, capabilityId) {
+      ['pointerdown', 'mousedown', 'click'].forEach((eventName) => {
+        token.addEventListener(eventName, (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        });
+      });
+      token.addEventListener('click', (event) => {
+        event.preventDefault();
+        removeCapability(capabilityId);
+      });
+    }
+
     function placeCaretAfterNode(node) {
       const range = document.createRange();
       const selection = window.getSelection();
@@ -3109,11 +3666,11 @@
     }
 
     function getComposerTokenNodes() {
-      return Array.from(state.inputField.querySelectorAll('.ask-composer-token'));
+      return Array.from(state.inputMain.querySelectorAll('.ask-composer-token'));
     }
 
     function findComposerTokenNode(key) {
-      return state.inputField.querySelector('.ask-composer-token[data-token-key="' + key + '"]');
+      return state.inputMain.querySelector('.ask-composer-token[data-token-key="' + key + '"]');
     }
 
     function syncComposerTokenDom() {
@@ -3158,9 +3715,9 @@
 
     function getComposerSequenceParts() {
       const parts = [];
-      state.inputField.childNodes.forEach((node) => {
+      const collect = (node) => {
         if (node.nodeType === Node.TEXT_NODE) {
-          if (node.textContent) {
+          if (node.textContent && state.inputField.contains(node.parentNode)) {
             parts.push({
               type: 'text',
               text: node.textContent,
@@ -3185,8 +3742,16 @@
             capabilityCategory: node.dataset.capabilityCategory || '',
             capabilityContent: node.dataset.capabilityContent || '',
           });
+          return;
         }
-      });
+        if (node === state.inlineRefRow) {
+          return;
+        }
+        if (node === state.inputField || state.inputField.contains(node)) {
+          Array.from(node.childNodes).forEach(collect);
+        }
+      };
+      state.inputMain.childNodes.forEach(collect);
       return parts;
     }
 
@@ -3320,7 +3885,7 @@
             content: payload.capabilityContent || '',
           });
         }
-        insertNodeAtComposerCaret(createComposerTokenElement({
+        const token = createComposerTokenElement({
           key: payload.key || ('cap:' + capabilityInstanceId),
           kind: payload.kind || 'capability',
           title: payload.title || '',
@@ -3330,7 +3895,9 @@
           capabilityType: payload.capabilityType || '',
           capabilityCategory: payload.capabilityCategory || 'format',
           capabilityContent: payload.capabilityContent || '',
-        }));
+        });
+        bindCapabilityTokenRemoval(token, capabilityInstanceId);
+        state.inputMain.insertBefore(token, state.inlineRefRow);
         return;
       }
       if (payload.refId) {
@@ -3377,6 +3944,14 @@
       syncReferenceStrip();
     }
 
+    function insertPlainComposerText(text) {
+      const normalized = String(text || '').replace(/\r\n?/g, '\n');
+      if (!normalized) {
+        return;
+      }
+      insertNodeAtComposerCaret(document.createTextNode(normalized));
+    }
+
     function insertClipboardHtmlWithTokens(html) {
       const template = document.createElement('template');
       template.innerHTML = String(html || '');
@@ -3415,6 +3990,7 @@
       renderReferenceCards();
       syncInlineReferenceTokens();
       syncComposerTokenDom();
+      syncCommandsRow();
     }
 
     function setContextCardVisible(visible) {
@@ -3429,12 +4005,27 @@
       const tabId = String(tabLike?.id || tabLike?.raw?.id || '');
       const url = String(tabLike?.url || tabLike?.raw?.url || tabLike?.raw?.pendingUrl || '');
       return state.refs.some((ref) => {
+        return refMatchesTab(ref, tabLike);
+      });
+    }
+
+    function refMatchesTab(ref, tabLike) {
+      if (!ref || ref.kind !== 'tab') {
+        return false;
+      }
+      const tabId = String(tabLike?.id || tabLike?.raw?.id || '');
+      const url = String(tabLike?.url || tabLike?.raw?.url || tabLike?.raw?.pendingUrl || '');
+      const refTabId = String(ref.raw?.id || '');
+      const refUrl = String(ref.raw?.url || ref.raw?.pendingUrl || '');
+      return (tabId && refTabId && tabId === refTabId) || (url && refUrl && url === refUrl);
+    }
+
+    function findReferenceForTab(tabLike) {
+      return state.refs.find((ref) => {
         if (ref.kind !== 'tab') {
           return false;
         }
-        const refTabId = String(ref.raw?.id || '');
-        const refUrl = String(ref.raw?.url || ref.raw?.pendingUrl || '');
-        return (tabId && refTabId && tabId === refTabId) || (url && refUrl && url === refUrl);
+        return refMatchesTab(ref, tabLike);
       });
     }
 
@@ -3451,12 +4042,15 @@
       syncReferenceStrip();
     }
 
-    async function syncContext() {
+    async function syncContext(options) {
+      const settings = Object.assign({
+        addCurrentPageReference: false,
+      }, options || {});
       try {
         const tab = await getCurrentTab();
         setContextFromTab(tab);
-        if (tab && !hasReferenceForTab(tab)) {
-          setContextCardVisible(true);
+        if (settings.addCurrentPageReference && state.currentContext) {
+          setAutoCurrentPageReference(state.currentContext);
         }
       } catch (error) {
         if (!state.currentContext) {
@@ -3473,12 +4067,20 @@
       if (normalized === state.selectedText) {
         return;
       }
+      hideSendValidation();
       if (!normalized && state.focusedComposerTokenKey === 'selection') {
         clearFocusedComposerToken();
       }
       state.selectedText = normalized;
       state.selectionTitle.textContent = normalized;
       syncReferenceStrip();
+    }
+
+    async function clearSelectedTextContext() {
+      setSelectedText('');
+      try {
+        await clearCurrentTabSelection();
+      } catch (error) {}
     }
 
     async function syncSelectedText() {
@@ -3526,6 +4128,43 @@
         .map((node) => node.textContent || '')
         .join('')
         .replace(/[\s\u200B\uFEFF]/g, '').length === 0;
+    }
+
+    function hideSendValidation() {
+      if (!state.sendValidation) {
+        return;
+      }
+      state.sendValidation.textContent = '';
+      state.sendValidation.classList.add('hidden');
+    }
+
+    function showSendValidation(message) {
+      if (!state.sendValidation) {
+        return;
+      }
+      state.sendValidation.textContent = message;
+      state.sendValidation.classList.remove('hidden');
+      state.inputField.focus();
+    }
+
+    function getSendValidationMessage(sequenceParts, text) {
+      const hasManualText = Boolean(String(text || '').trim());
+      const hasInformation =
+        hasManualText ||
+        state.refs.length > 0 ||
+        Boolean(state.selectedText) ||
+        Boolean(state.contextCardVisible && state.currentContext);
+      const hasInstruction =
+        hasManualText ||
+        Boolean(state.activeCmd) ||
+        sequenceParts.some((part) => part.type === 'ref' && part.tokenRole === 'capability');
+      if (hasInformation && hasInstruction) {
+        return '';
+      }
+      if (!hasInformation && !hasInstruction) {
+        return t('sendValidationEmpty');
+      }
+      return hasInformation ? t('sendValidationNeedsInstruction') : t('sendValidationNeedsInfo');
     }
 
     function hideSuggestions() {
@@ -3676,6 +4315,7 @@
         rawBlob: ref.rawBlob || null,
         rawFile: ref.rawFile || null,
         mime: ref.mime || '',
+        autoCurrentPage: Boolean(ref.autoCurrentPage),
       }));
       const headerCards = [];
       if (contextSnapshot) {
@@ -3870,7 +4510,7 @@
       const processing = document.createElement('div');
       processing.className = 'ask-msg-ai-processing';
       const thinking = document.createElement('div');
-      thinking.className = 'ask-msg-ai-thinking';
+      thinking.className = 'ask-msg-ai-thinking hidden';
       thinking.textContent = 'Thinking...';
       processing.appendChild(thinking);
       if (turnData.aiReadItems.length) {
@@ -3914,6 +4554,9 @@
       const answer = document.createElement('div');
       answer.className = 'ask-msg-ai-answer';
       aiMsg.append(processing, thoughtWrap, answer);
+      if (!turnData.aiReadItems.length) {
+        processing.classList.add('hidden');
+      }
       return {
         aiMsg,
         processing,
@@ -4428,6 +5071,11 @@
       applyReasoningUi(scaffold, reasoningText, elapsedSeconds);
     }
 
+    function showThinkingAnimation(scaffold) {
+      scaffold.thinking.classList.remove('hidden');
+      scaffold.processing.classList.remove('hidden');
+    }
+
     function startReadingQueue(scaffold) {
       if (state.readingQueueTimer) {
         clearInterval(state.readingQueueTimer);
@@ -4709,6 +5357,9 @@
           const normalizedResult = finalizeNormalizedResponse(normalizationState);
           reasoningText = normalizedResult.thinkingText;
           answerText = normalizedResult.visibleText;
+          if (reasoningText) {
+            showThinkingAnimation(scaffold);
+          }
           scheduleAnswerPlayback();
           streamCompleted = true;
           finalizeThoughtUi(scaffold, reasoningText, Math.round((Date.now() - startedAt) / 1000));
@@ -4763,10 +5414,16 @@
             const contentDelta = delta.content || parsed.choices?.[0]?.message?.content || '';
             appendNormalizedChunk(normalizationState, 'reasoning', reasoningFieldDelta);
             appendNormalizedChunk(normalizationState, 'visible', contentDelta);
+            if (reasoningFieldDelta) {
+              showThinkingAnimation(scaffold);
+            }
             if (contentDelta) {
               const normalizedResult = finalizeNormalizedResponse(normalizationState);
               answerText = normalizedResult.visibleText;
               reasoningText = normalizedResult.thinkingText;
+              if (reasoningText) {
+                showThinkingAnimation(scaffold);
+              }
               scheduleAnswerPlayback();
             }
           }
@@ -4871,8 +5528,9 @@
       const body = document.createElement('div');
       body.className = 'ask-msg-user-body';
       const hasBodyText = turnData.sequenceParts.some((part) => part.type === 'text' && String(part.text || '').trim());
-      const hasInlineRefs = turnData.sequenceParts.some((part) => part.type === 'ref');
-      const isCommandOnlyTurn = Boolean(turnData.activeCmd && !hasBodyText && !hasInlineRefs);
+      const hasInlineRefs = turnData.sequenceParts.some((part) => part.type === 'ref' && part.tokenRole !== 'capability');
+      const hasStatusChips = Boolean(turnData.activeCmd) || turnData.sequenceParts.some((part) => part.type === 'ref' && part.tokenRole === 'capability');
+      const isCommandOnlyTurn = Boolean(hasStatusChips && !hasBodyText && !hasInlineRefs);
       if (isCommandOnlyTurn) {
         userMsg.classList.add('ask-msg-user-command-only');
         body.classList.add('ask-msg-user-body-command-only');
@@ -4885,6 +5543,17 @@
       }
       turnData.sequenceParts.forEach((part) => {
         if (part.type === 'ref') {
+          if (part.tokenRole === 'capability') {
+            const formatTag = document.createElement('div');
+            formatTag.className = 'ask-msg-cmd-tag ask-msg-format-tag';
+            const icon = document.createElement('span');
+            icon.textContent = part.iconText || '';
+            const label = document.createElement('span');
+            label.textContent = part.title;
+            formatTag.append(icon, label);
+            body.appendChild(formatTag);
+            return;
+          }
           const refEl = document.createElement('span');
           refEl.className = 'ask-msg-inline-ref';
           const icon = document.createElement('span');
@@ -4994,6 +5663,7 @@
     }
 
     function selectCommand(cmdName) {
+      hideSendValidation();
       if (state.cmdChipEl?.parentNode) {
         state.cmdChipEl.remove();
       }
@@ -5002,21 +5672,17 @@
       const chip = document.createElement('span');
       chip.className = 'ask-cmd-chip';
       chip.append(document.createTextNode(cmdName));
-      const close = document.createElement('span');
-      close.className = 'ask-chip-close';
-      close.textContent = '×';
       ['pointerdown', 'mousedown', 'click'].forEach((eventName) => {
-        close.addEventListener(eventName, (event) => {
+        chip.addEventListener(eventName, (event) => {
           event.preventDefault();
           event.stopPropagation();
         });
       });
-      close.addEventListener('click', (event) => {
+      chip.addEventListener('click', (event) => {
         event.preventDefault();
         removeCommand();
       });
-      chip.append(close);
-      state.inputMain.insertBefore(chip, state.inlineRefRow);
+      state.inputMain.insertBefore(chip, state.inputMain.querySelector('.ask-composer-token[data-token-role="capability"]') || state.inlineRefRow);
       state.cmdChipEl = chip;
       syncCommandsRow();
       state.inputField.focus();
@@ -5047,6 +5713,9 @@
     function removeReference(refId) {
       const composerToken = findComposerTokenNode('ref:' + refId);
       state.refs = state.refs.filter((item) => item.id !== refId);
+      if (state.autoCurrentPageRefId === refId) {
+        state.autoCurrentPageRefId = null;
+      }
       animateNodeRemoval(composerToken, () => {
         composerToken?.remove();
         syncReferenceStrip();
@@ -5055,6 +5724,82 @@
         clearFocusedComposerToken();
       }
       state.inputField.focus();
+    }
+
+    function makeReferenceFromItem(item, options) {
+      const ref = {
+        id: String(options?.id || state.nextRefId++),
+        kind: item.kind,
+        title: item.title,
+        subtitle: item.subtitle || '',
+        meta: item.meta || '',
+        iconText: item.iconText || item.title.slice(0, 1).toUpperCase(),
+        source: item.kind,
+        raw: item.raw || null,
+        rawBlob: item.rawBlob || item.blob || null,
+        rawFile: item.rawFile || null,
+        mime: item.mime || item.raw?.mime || item.raw?.type || '',
+        autoCurrentPage: Boolean(options?.autoCurrentPage),
+      };
+      return ref;
+    }
+
+    function insertReferenceToken(ref, options) {
+      const token = createComposerTokenElement({
+        key: 'ref:' + ref.id,
+        kind: ref.kind,
+        iconText: ref.kind === 'file' ? 'D' : ref.iconText,
+        title: ref.title,
+        refId: ref.id,
+      });
+      if (options?.prepend) {
+        state.inputField.prepend(token);
+      } else {
+        insertNodeAtComposerCaret(token);
+      }
+      return token;
+    }
+
+    function setAutoCurrentPageReference(item) {
+      if (!item) {
+        return;
+      }
+      hideSendValidation();
+      const existingRef = state.autoCurrentPageRefId
+        ? state.refs.find((ref) => ref.id === state.autoCurrentPageRefId)
+        : null;
+      const matchingRef = findReferenceForTab(item);
+      if (matchingRef && matchingRef.id !== existingRef?.id) {
+        if (existingRef) {
+          const oldToken = findComposerTokenNode('ref:' + existingRef.id);
+          oldToken?.remove();
+          state.refs = state.refs.filter((ref) => ref.id !== existingRef.id);
+        }
+        state.autoCurrentPageRefId = null;
+        syncReferenceStrip();
+        return;
+      }
+      const ref = makeReferenceFromItem(item, {
+        id: existingRef?.id || undefined,
+        autoCurrentPage: true,
+      });
+      ref.kind = 'tab';
+      if (existingRef) {
+        Object.assign(existingRef, ref);
+        const token = findComposerTokenNode('ref:' + existingRef.id);
+        if (token) {
+          token.dataset.tokenKind = existingRef.kind;
+          token.dataset.tokenTitle = existingRef.title;
+          token.dataset.tokenIcon = existingRef.iconText || '';
+          token.querySelector('.ask-composer-token-icon').textContent = existingRef.iconText || 'A';
+          token.querySelector('.ask-composer-token-label').textContent = existingRef.title;
+        }
+      } else {
+        state.refs.unshift(ref);
+        state.autoCurrentPageRefId = ref.id;
+        insertReferenceToken(ref, { prepend: true });
+      }
+      syncReferenceStrip();
     }
 
     function removeCapability(capabilityInstanceId) {
@@ -5071,31 +5816,15 @@
     }
 
     function addReference(item) {
-      const ref = {
-        id: String(state.nextRefId++),
-        kind: item.kind,
-        title: item.title,
-        subtitle: item.subtitle || '',
-        meta: item.meta || '',
-        iconText: item.iconText || item.title.slice(0, 1).toUpperCase(),
-        source: item.kind,
-        raw: item.raw || null,
-        rawBlob: item.rawBlob || item.blob || null,
-        rawFile: item.rawFile || null,
-        mime: item.mime || item.raw?.mime || item.raw?.type || '',
-      };
+      hideSendValidation();
+      const ref = makeReferenceFromItem(item);
       state.refs.push(ref);
-      insertNodeAtComposerCaret(createComposerTokenElement({
-        key: 'ref:' + ref.id,
-        kind: ref.kind,
-        iconText: ref.kind === 'file' ? 'D' : ref.iconText,
-        title: ref.title,
-        refId: ref.id,
-      }));
+      insertReferenceToken(ref);
       syncReferenceStrip();
     }
 
     function addCapability(item) {
+      hideSendValidation();
       const capability = {
         id: 'cap-' + state.nextCapabilityId++,
         type: item.capabilityType || item.capabilityId || item.id || '',
@@ -5105,7 +5834,7 @@
         content: item.capabilityContent || item.content || '',
       };
       state.capabilities.push(capability);
-      insertNodeAtComposerCaret(createComposerTokenElement({
+      const token = createComposerTokenElement({
         key: 'cap:' + capability.id,
         kind: 'capability',
         title: capability.title,
@@ -5115,7 +5844,9 @@
         capabilityType: capability.type,
         capabilityCategory: capability.category,
         capabilityContent: capability.content,
-      }));
+      });
+      bindCapabilityTokenRemoval(token, capability.id);
+      state.inputMain.insertBefore(token, state.inlineRefRow);
       syncReferenceStrip();
     }
 
@@ -5213,7 +5944,7 @@
         '<button class="ask-suggestion-item' + (index === state.suggestionSelectedIndex ? ' active' : '') + '" type="button" data-index="' + index + '">',
         '<span class="ask-suggestion-icon" style="background:' + escapeHtml(item.color || '#2D3139') + ';">' + icon + '</span>',
         '<span class="ask-suggestion-text">',
-        '<span class="ask-suggestion-title">' + escapeHtml(item.title) + '</span>',
+        '<span class="ask-suggestion-title">' + escapeHtml(item.title) + (item.isCurrentPage ? '<span class="ask-suggestion-current-badge">' + escapeHtml(t('currentPage')) + '</span>' : '') + '</span>',
         '<span class="ask-suggestion-subtitle">' + escapeHtml(item.subtitle || '') + '</span>',
         '</span>',
         '<span class="ask-suggestion-meta">' + escapeHtml(item.meta || '') + '</span>',
@@ -5280,14 +6011,7 @@
         return;
       }
       if (item.kind === 'context') {
-        const currentContextId = String(state.currentContext?.id || state.currentContext?.raw?.id || '');
-        const selectedId = String(item.id || item.raw?.id || '');
-        const currentSubtitle = String(state.currentContext?.subtitle || '');
-        if ((currentContextId && currentContextId === selectedId) || (currentSubtitle && currentSubtitle === item.subtitle)) {
-          setContextCardVisible(true);
-        } else {
-          addReference(item);
-        }
+        setAutoCurrentPageReference(Object.assign({}, item, { kind: 'tab' }));
         state.inputField.focus();
         return;
       }
@@ -5310,6 +6034,11 @@
       }
       if (item.kind === 'tab-group') {
         addReferences(item.tabs || []);
+        state.inputField.focus();
+        return;
+      }
+      if (item.kind === 'tab' && item.isCurrentPage) {
+        setAutoCurrentPageReference(item);
         state.inputField.focus();
         return;
       }
@@ -5578,9 +6307,12 @@
       }
       const sequenceParts = getComposerSequenceParts();
       const text = sequenceParts.filter((part) => part.type === 'text').map((part) => part.text).join('').trim();
-      if (!text && !state.activeCmd && !state.refs.length && !state.selectedText) {
+      const validationMessage = getSendValidationMessage(sequenceParts, text);
+      if (validationMessage) {
+        showSendValidation(validationMessage);
         return;
       }
+      hideSendValidation();
       if (state.activeCmd) {
         state.commandUsage.set(state.activeCmd, (state.commandUsage.get(state.activeCmd) || 0) + 1);
       }
@@ -5613,18 +6345,18 @@
       syncBusyState();
       state.messages.innerHTML = '';
       state.empty.style.display = '';
-      clearComposer({ showDefaultContext: true });
+      clearComposer({ showDefaultContext: false });
       syncContext();
       syncSelectedText();
     });
     state.editClose.addEventListener('click', () => {
       clearComposer({ showDefaultContext: false });
     });
-    state.ctxClose.addEventListener('click', () => {
+    state.contextCard.addEventListener('click', () => {
       setContextCardVisible(false);
     });
-    state.selectionClose.addEventListener('click', () => {
-      setSelectedText('');
+    state.selectionCard.addEventListener('click', () => {
+      clearSelectedTextContext();
     });
     state.btnTool.addEventListener('click', () => {
       openReferenceSuggestions();
@@ -5640,6 +6372,7 @@
       state.inputBox.classList.remove('focused');
     });
     state.inputField.addEventListener('input', () => {
+      hideSendValidation();
       syncStateFromComposerDom();
       if (state.focusedComposerTokenKey) {
         clearFocusedComposerToken();
@@ -5698,6 +6431,7 @@
       syncStateFromComposerDom();
     });
     state.inputField.addEventListener('paste', (event) => {
+      hideSendValidation();
       const internal = event.clipboardData?.getData(INTERNAL_CLIPBOARD_MIME) || '';
       if (internal) {
         event.preventDefault();
@@ -5713,11 +6447,12 @@
         return;
       }
       const text = event.clipboardData?.getData('text/plain') || '';
-      if (!text.includes('[[aip:')) {
-        return;
-      }
       event.preventDefault();
-      insertSerializedComposerText(text);
+      if (text.includes('[[aip:')) {
+        insertSerializedComposerText(text);
+      } else {
+        insertPlainComposerText(text);
+      }
       syncStateFromComposerDom();
     });
       state.inputField.addEventListener('keydown', (event) => {
@@ -5778,25 +6513,36 @@
       }
       if (event.key === 'Backspace' && state.activeCmd && state.cmdChipEl && isInputEmpty()) {
         const focusedEntry = getComposerTokenEntries().find((entry) => entry.key === state.focusedComposerTokenKey);
-        if (focusedEntry?.key === 'cmd') {
+        if (focusedEntry?.key === 'cmd' || String(focusedEntry?.key || '').startsWith('cap:')) {
           event.preventDefault();
           focusedEntry.remove();
           return;
         }
-        if (!focusedEntry && isCaretAtComposerStart()) {
+        const lastStatusEntry = getLastStatusTokenEntry();
+        if (!focusedEntry && lastStatusEntry && isCaretAtComposerStart()) {
           event.preventDefault();
-          clearFocusedComposerToken();
-          state.focusedComposerTokenKey = 'cmd';
-          state.cmdChipFocused = true;
-          state.cmdChipEl?.classList.add('focused');
+          focusComposerTokenEntry(lastStatusEntry);
           return;
         }
       }
       if (event.key === 'Backspace') {
+        const focusedEntry = getComposerTokenEntries().find((entry) => entry.key === state.focusedComposerTokenKey);
+        if (focusedEntry && (focusedEntry.key === 'cmd' || String(focusedEntry.key || '').startsWith('cap:'))) {
+          event.preventDefault();
+          focusedEntry.remove();
+          return;
+        }
+        if (!focusedEntry && isInputEmpty() && isCaretAtComposerStart()) {
+          const lastStatusEntry = getLastStatusTokenEntry();
+          if (lastStatusEntry) {
+            event.preventDefault();
+            focusComposerTokenEntry(lastStatusEntry);
+            return;
+          }
+        }
         const adjacent = getAdjacentComposerTokenEntry(-1);
         if (adjacent) {
           event.preventDefault();
-          const focusedEntry = getComposerTokenEntries().find((entry) => entry.key === state.focusedComposerTokenKey);
           if (!focusedEntry || focusedEntry.key !== adjacent.key) {
             clearFocusedComposerToken();
             state.focusedComposerTokenKey = adjacent.key;
@@ -5812,12 +6558,22 @@
         }
       }
       if (event.key === 'ArrowLeft' && getCaretOffset(state.inputField) === 0) {
+        if (state.focusedComposerTokenKey && moveComposerTokenFocus(-1)) {
+          event.preventDefault();
+          return;
+        }
         const adjacent = getAdjacentComposerTokenEntry(-1);
         if (adjacent) {
           event.preventDefault();
           clearFocusedComposerToken();
           state.focusedComposerTokenKey = adjacent.key;
           adjacent.el.classList.add('focused');
+          return;
+        }
+        const lastStatusEntry = getLastStatusTokenEntry();
+        if (lastStatusEntry && isCaretAtComposerStart()) {
+          event.preventDefault();
+          focusComposerTokenEntry(lastStatusEntry);
           return;
         }
         if (state.activeCmd && state.cmdChipEl && isCaretAtComposerStart()) {
@@ -6075,7 +6831,7 @@
 
     chrome.tabs?.onActivated?.addListener(() => {
       if (panelState) {
-        panelState.syncContext?.();
+        panelState.syncContext?.({ addCurrentPageReference: true });
         panelState.syncSelectedText?.();
       }
     });
@@ -6088,7 +6844,8 @@
         return;
       }
       if (changeInfo.title || changeInfo.url || changeInfo.status === 'complete') {
-        panelState.syncContext?.();
+        const previousUrl = String(panelState.currentContext?.raw?.url || panelState.currentContext?.raw?.pendingUrl || '');
+        panelState.syncContext?.({ addCurrentPageReference: Boolean(changeInfo.url && changeInfo.url !== previousUrl) });
         panelState.syncSelectedText?.();
       }
     });
