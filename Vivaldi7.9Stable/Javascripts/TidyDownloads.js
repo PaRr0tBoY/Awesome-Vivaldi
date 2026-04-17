@@ -1,7 +1,11 @@
+// ==UserScript==
+// @name         TidyDownloads
+// @description  Uses chrome.downloads.onDeterminingFilename to dynamically rename downloads.
+// @version      2026.4.17
+// @author       PaRr0tBoY
+// ==/UserScript==
+
 /*
- * TidyDownloads - AI-Powered Download Renaming Module
- * Uses chrome.downloads.onDeterminingFilename to dynamically set filenames during download
- *
  * Usage:
  * 1. Modify AI_CONFIG below, then adjust CONFIG if needed
  * 2. Copy to <Vivaldi Dir>/Application/<Version>/resources/vivaldi/

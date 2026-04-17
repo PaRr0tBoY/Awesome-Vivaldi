@@ -1,3 +1,10 @@
+// ==UserScript==
+// @name         Workspace Tab Manager
+// @description  Cross-workspace virtual tab board for Vivaldi.
+// @version      2026.4.17
+// @author       PaRr0tBoY
+// ==/UserScript==
+
 /*
  * Workspace Tab Manager
  * Cross-workspace virtual tab board for Vivaldi.

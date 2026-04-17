@@ -1,8 +1,9 @@
-
-/*
- * Global Media Controls Panel
- * Written by Tam710562
- */
+// ==UserScript==
+// @name         Global Media Controls Panel
+// @description  Adds a Global Media Controls panel for Vivaldi.
+// @version      2026.4.17
+// @author       Tam710562
+// ==/UserScript==
 
 (() => {
   'use strict';

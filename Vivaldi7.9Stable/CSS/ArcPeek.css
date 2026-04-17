@@ -1,10 +1,12 @@
-/*
-Peek
-version 2026.04.14
-Author biruktes,tam710562,oudstand,PaRr0tBoY
-https://forum.vivaldi.net/topic/29845/web-page-link-previews/1
-Preview link content before opening
-*/
+/* ==UserStyle==
+ * @name         Peek
+ * @description  Preview link content before opening.
+ * @requirement  ArcPeek.js
+ * @version      2026.04.14
+ * @author       biruktes, tam710562, oudstand, PaRr0tBoY
+ * @website      https://forum.vivaldi.net/post/897615
+ * ==/UserStyle==
+ */
 
 @keyframes peek-pop-in {
   0% {
@@ -106,8 +108,8 @@ body.peek-open #browser #webpage-stack {
   background: rgba(8, 12, 18, 0.44);
   opacity: 0;
   pointer-events: none;
-  backdrop-filter: blur(3px) saturate(0.92);
-  -webkit-backdrop-filter: blur(3px) saturate(0.92);
+  /*backdrop-filter: blur(3px) saturate(0.92);
+  -webkit-backdrop-filter: blur(3px) saturate(0.92);*/
   transition: opacity var(--peek-backdrop-duration, 320ms)
     cubic-bezier(0.16, 0.88, 0.22, 1);
 }

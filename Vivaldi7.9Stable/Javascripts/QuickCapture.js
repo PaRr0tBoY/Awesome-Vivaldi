@@ -1,6 +1,14 @@
+// ==UserScript==
+// @name         Quick Capture
+// @description  Captures the hovered element region using clipboard, file, or Vivaldi screenshot selection modes.
+// @version      2026.4.17
+// @author       Tam710562, maubg, PaRr0tBoY
+// ==/UserScript==
+
 /*
  * Quick Capture
  * Based on Element Capture by Tam710562
+ * Animation is based on Zen Browser by maubg
  */
 
 (() => {
@@ -138,6 +146,8 @@
   let pointerDownEvent = null;
   let isCapturing = false;
   let activeCaptureArea = null;
+  let nativeSelectorCaptureArea = null;
+  let nativeSelectorMonitor = null;
   let captureSessionId = 0;
   const captureAreaId = 'capture-area';
   const captureOverlayId = 'quick-capture-overlay';
@@ -326,16 +336,64 @@
     }
   }
 
+  function getCaptureAreaFromEvent(event) {
+    const path = typeof event.composedPath === 'function' ? event.composedPath() : [];
+    const captureArea = path.find((element) => element?.id === captureAreaId);
+    if (captureArea) {
+      return captureArea;
+    }
+
+    return event.target?.closest?.(`#${captureAreaId}`);
+  }
+
+  function armCaptureArea(captureArea) {
+    if (!captureArea || nativeSelectorCaptureArea === captureArea || activeCaptureArea === captureArea) {
+      return;
+    }
+
+    cleanupCaptureListeners(activeCaptureArea);
+    rect = null;
+    pointerDownEvent = null;
+    isCapturing = false;
+    activeCaptureArea = captureArea;
+    captureSessionId += 1;
+    hideCaptureOverlay();
+    restoreCaptureOverlayShade();
+
+    document.addEventListener('keydown', keyDownEventHandler, true);
+    captureArea.addEventListener('pointermove', pointerMoveEventHandler, true);
+    captureArea.addEventListener('pointerup', pointerUpEventHandler, true);
+    captureArea.addEventListener('pointerleave', pointerLeaveEventHandler, true);
+  }
+
+  function isCaptureAreaInactive(captureArea) {
+    if (!captureArea?.isConnected || captureArea.hidden) {
+      return true;
+    }
+
+    const style = window.getComputedStyle(captureArea);
+    return style.visibility === 'hidden' || style.display === 'none';
+  }
+
   function isActiveCaptureSession(captureArea, sessionId) {
     return activeCaptureArea === captureArea && captureSessionId === sessionId;
   }
 
   function monitorNativeCaptureEnd(captureArea) {
     let attempts = 0;
-    const interval = setInterval(() => {
+    nativeSelectorCaptureArea = captureArea;
+    if (nativeSelectorMonitor) {
+      clearInterval(nativeSelectorMonitor);
+    }
+
+    nativeSelectorMonitor = setInterval(() => {
       attempts += 1;
-      if (!captureArea?.isConnected || captureArea.style.visibility === 'hidden' || attempts > 1200) {
-        clearInterval(interval);
+      if (isCaptureAreaInactive(captureArea) || attempts > 1200) {
+        clearInterval(nativeSelectorMonitor);
+        nativeSelectorMonitor = null;
+        if (nativeSelectorCaptureArea === captureArea) {
+          nativeSelectorCaptureArea = null;
+        }
         hideCaptureOverlay();
         restoreCaptureOverlayShade();
       } else {
@@ -517,6 +575,20 @@
     event.stopPropagation();
   }
 
+  function documentPointerDownEventHandler(event) {
+    if (getCaptureMode() !== 'area') {
+      return;
+    }
+
+    const captureArea = getCaptureAreaFromEvent(event);
+    if (!captureArea || nativeSelectorCaptureArea === captureArea) {
+      return;
+    }
+
+    armCaptureArea(captureArea);
+    pointerDownEventHandler(event);
+  }
+
   async function updateCaptureRect(captureArea, clientX, clientY, sessionId = captureSessionId) {
     if (!isActiveCaptureSession(captureArea, sessionId)) {
       return false;
@@ -656,19 +728,9 @@
 
   gnoh.override(HTMLDivElement.prototype, 'appendChild', async (element) => {
     if (element.id === captureAreaId) {
-      rect = null;
-      pointerDownEvent = null;
-      isCapturing = false;
-      activeCaptureArea = element;
-      captureSessionId += 1;
-      hideCaptureOverlay();
-      restoreCaptureOverlayShade();
-
-      document.addEventListener('keydown', keyDownEventHandler, true);
-      element.addEventListener('pointerdown', pointerDownEventHandler, { once: true, capture: true });
-      element.addEventListener('pointermove', pointerMoveEventHandler, true);
-      element.addEventListener('pointerup', pointerUpEventHandler, true);
-      element.addEventListener('pointerleave', pointerLeaveEventHandler, true);
+      armCaptureArea(element);
     }
   });
+
+  document.addEventListener('pointerdown', documentPointerDownEventHandler, true);
 })();

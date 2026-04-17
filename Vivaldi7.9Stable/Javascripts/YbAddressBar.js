@@ -1,3 +1,11 @@
+// ==UserScript==
+// @name         YB Address Bar
+// @description  Simplifies the Vivaldi address field by emphasizing domain/title fragments and hiding low-priority URL parts.
+// @version      2026.4.17
+// @author       aminought, PaRr0tBoY 
+// @website      https://forum.vivaldi.net/post/740759
+// ==/UserScript==
+
 (function yb_address_bar() {
   "use strict";
 

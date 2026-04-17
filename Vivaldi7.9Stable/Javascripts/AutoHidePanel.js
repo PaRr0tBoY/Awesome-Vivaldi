@@ -1,5 +1,11 @@
-// https://forum.vivaldi.net/topic/28413/open-panels-on-mouse-over/22?_=1593504963587
-// @author MasterLeo29,mbuch,nafumofu
+// ==UserScript==
+// @name         Auto Hide Panel
+// @description  Opens Vivaldi panels on mouse over and optionally closes them when focus returns to the page.
+// @version      2026.4.17
+// @author       MasterLeo29, mbuch, nafumofu, PaRr0tBoY
+// @website https://forum.vivaldi.net/topic/28413/open-panels-on-mouse-over/22?_=1593504963587
+// ==/UserScript==
+
 (async () => {
   "use strict";
 
@@ -94,16 +100,18 @@
     }, config.close_delay);
   };
 
-  const isPanelButton = (element) =>
-    element.matches(
-      'button:is([name^="Panel"], [name^="WEBPANEL_"]):not([name="PanelWeb"])'
+  const getPanelButton = (element) =>
+    element.closest?.(
+      'button:is([data-name^="Panel"], [data-name^="WEBPANEL_"], [name^="Panel"], [name^="WEBPANEL_"]):not([data-name="PanelWeb"]):not([name="PanelWeb"])'
     );
 
   let showToken;
   const panelMouseOver = () => {
     const eventHandler = (event) => {
+      const button = getPanelButton(event.target);
+
       if (
-        isPanelButton(event.target) &&
+        button &&
         !event.altKey &&
         !event.ctrlKey &&
         !event.shiftKey &&
@@ -111,32 +119,29 @@
       ) {
         switch (event.type) {
           case "mouseenter":
-            togglePanel(event.target, true);
+            togglePanel(button, true);
             break;
           case "mouseleave":
             clearTimeout(showToken);
             break;
           case "dragenter":
-            togglePanel(event.target, false);
+            togglePanel(button, false);
             break;
         }
       }
     };
 
     if (config.auto_close) {
-      document
-        .querySelector("#webview-container")
-        .addEventListener("mouseenter", closePanel);
-      document
-        .querySelector("#webview-container")
-        .addEventListener("animationstart", (event) => {
-          if (
-            event.target.matches("webview") &&
-            event.animationName === "delay_visibility"
-          ) {
-            closePanel();
-          }
-        });
+      const webviewContainer = document.querySelector("#webview-container");
+      webviewContainer.addEventListener("mouseenter", closePanel);
+      webviewContainer.addEventListener("animationstart", (event) => {
+        if (
+          event.target.matches("webview") &&
+          event.animationName === "delay_visibility"
+        ) {
+          closePanel();
+        }
+      });
     }
 
     const panels = document.querySelector("#panels");
@@ -146,6 +151,8 @@
   };
 
   await waitForElement("#browser");
+  await waitForElement("#panels");
+  await waitForElement("#webview-container");
   fixWebViewMouseEvent();
   panelMouseOver();
 })();

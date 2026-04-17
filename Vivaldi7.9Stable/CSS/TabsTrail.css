@@ -1,16 +1,14 @@
-/*
-TabsTrail
-version 2025.10.31
-Author PaRr0tBoY
-https://github.com/PaRr0tBoY/Awesome-Vivaldi
-Show trail on tab to highlight mouse hover action and active tabs
-- When hover on close button on tab -> red trail
-- When hover on tab except close button -> green trail
-- Active tabs -> green trail
-*/
+/* ==UserStyle==
+ * @name         TabsTrail
+ * @description  Shows trails on tabs to highlight hover, close-button hover, and active-tab states.
+ * @version      2025.10.31
+ * @author       PaRr0tBoY
+ * @website      https://github.com/PaRr0tBoY/Awesome-Vivaldi
+ * ==/UserStyle==
+ */
 
 /* ========================================
-   TAB TRAIL EFFECTS - GREEN FOR TAB, RED FOR CLOSE BUTTON
+   TAB TRAIL EFFECTS - THEME COLOR FOR TAB, RED FOR CLOSE BUTTON
    ======================================== */
 
 /* Ensure tab-header is positioned relative for the absolute positioned trail */
@@ -19,7 +17,7 @@ Show trail on tab to highlight mouse hover action and active tabs
   overflow: hidden;
 }
 
-/* Green trail element */
+/* Theme color trail element */
 .tab-position .tab .tab-header::before {
   content: "";
   position: absolute;
@@ -29,10 +27,10 @@ Show trail on tab to highlight mouse hover action and active tabs
   height: 100%;
   background: linear-gradient(
     to left,
-    rgba(0, 128, 0, 0.7) 0%,
-    rgba(0, 128, 0, 0.5) 30%,
-    rgba(0, 128, 0, 0.2) 60%,
-    rgba(0, 128, 0, 0) 100%
+    color-mix(in srgb, var(--colorHighlightBg) 70%, transparent) 0%,
+    color-mix(in srgb, var(--colorHighlightBg) 50%, transparent) 30%,
+    color-mix(in srgb, var(--colorHighlightBg) 20%, transparent) 60%,
+    transparent 100%
   );
   transform: translateX(100%);
   opacity: 0;
@@ -65,7 +63,7 @@ Show trail on tab to highlight mouse hover action and active tabs
   /* border-radius: 12px !important; */
 }
 
-/* Green trail show when tab is hovered (but not close button) */
+/* Theme color trail show when tab is hovered (but not close button) */
 
 .tab-position .tab:hover:not(:has(.close:hover)) .tab-header::before {
   /* border-radius: 12px !important; */
@@ -73,7 +71,7 @@ Show trail on tab to highlight mouse hover action and active tabs
   opacity: 1;
 }
 
-/* Green trail show for active tab */
+/* Theme color trail show for active tab */
 .tab-position .tab.active:not(:has(.close:hover)) .tab-header::before,
 .tab-position .tab.active:hover:not(:has(.close:hover)) .tab-header::before {
   /* border-radius: 12px !important; */
@@ -91,7 +89,7 @@ Show trail on tab to highlight mouse hover action and active tabs
   opacity: 1;
 }
 
-/* Hide green trail when red trail is active - slide out to left */
+/* Hide theme color trail when red trail is active - slide out to left */
 .tab-position .tab:has(.close:hover) .tab-header::before {
   /* border-radius: 12px !important; */
   transform: translateX(100%);
@@ -99,7 +97,7 @@ Show trail on tab to highlight mouse hover action and active tabs
   transition: transform 150ms ease-out, opacity 150ms ease-out;
 }
 
-/* Red trail return to base state when green trail is active */
+/* Red trail return to base state when theme color trail is active */
 .tab-position .tab:hover:not(:has(.close:hover)) .tab-header::after {
   /* border-radius: 12px !important; */
   transform: translateX(100%);

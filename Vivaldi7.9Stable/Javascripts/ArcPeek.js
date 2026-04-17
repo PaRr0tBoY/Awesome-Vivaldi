@@ -1,7 +1,12 @@
-/**
- * Opens links in a peek panel, either by holding the middle/right mouse button or alt/ctrl/shift/meta+click on links.
- * Forum link: https://forum.vivaldi.net/post/897615
-**/
+// ==UserScript==
+// @name         Arc Peek
+// @description  Opens links in a peek panel by holding the middle/right mouse button or modifier-clicking links.
+// @requirement  ArcPeek.css
+// @version      2026.4.17
+// @author       biruktes, tam710562, oudstand, PaRr0tBoY
+// @website      https://forum.vivaldi.net/post/897615
+// ==/UserScript==
+
 (() => {
   // =========================
   // Trigger Config

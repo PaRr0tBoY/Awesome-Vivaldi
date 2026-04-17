@@ -1,10 +1,11 @@
-/*
-Floating Find In Page Panel
-version 2025.10.31
-Author PaRr0tBoY
-https://github.com/PaRr0tBoY/Awesome-Vivaldi
-Floating find in page panel, as it should be.
-*/
+/* ==UserStyle==
+ * @name         Floating Find In Page Panel
+ * @description  Floating find-in-page panel, as it should be.
+ * @version      2025.10.31
+ * @author       PaRr0tBoY
+ * @website      https://github.com/PaRr0tBoY/Awesome-Vivaldi
+ * ==/UserStyle==
+ */
 
 .find-in-page-wrapper {
   position: absolute;

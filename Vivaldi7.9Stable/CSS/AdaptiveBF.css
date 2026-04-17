@@ -1,23 +1,24 @@
-/*
-Adaptive Back & Forward
-version 2025.10.31
-Author PaRr0tBoY
-https://github.com/PaRr0tBoY/Awesome-Vivaldi
-Auto Hide Disabled Back Forward Button
-*/
+/* ==UserStyle==
+ * @name         Adaptive Back & Forward
+ * @description  Auto-hide disabled Back and Forward navigation buttons.
+ * @version      2025.10.31
+ * @author       PaRr0tBoY
+ * @website      https://github.com/PaRr0tBoY/Awesome-Vivaldi
+ * ==/UserStyle==
+ */
 
 /* ========================================
    HIDE DISABLED NAVIGATION BUTTONS
    ======================================== */
 
 /* Hide disabled forward/back navigation buttons */
-button[name="Forward"][disabled],
-button[name="Back"][disabled] {
+button[data-name="Forward"][disabled],
+button[data-name="Back"][disabled] {
   display: none !important;
 }
 
 /* Show only enabled navigation buttons */
-button[name="Forward"]:not([disabled]),
-button[name="Back"]:not([disabled]) {
+button[data-name="Forward"]:not([disabled]),
+button[data-name="Back"]:not([disabled]) {
   display: inline-flex !important;
 }

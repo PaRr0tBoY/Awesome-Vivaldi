@@ -1,7 +1,9 @@
-/*
- * Easy Files
- * Written by Tam710562
- */
+// ==UserScript==
+// @name         Easy Files
+// @description  Adds Easy Files functionality for Vivaldi.
+// @version      2026.4.17
+// @author       Tam710562
+// ==/UserScript==
 
 (() => {
   "use strict";

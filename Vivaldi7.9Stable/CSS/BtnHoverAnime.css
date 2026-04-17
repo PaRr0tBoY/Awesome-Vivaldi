@@ -1,11 +1,12 @@
-/*
-Button Highlight
-version 2020.07.11
-Author dude99
-https://forum.vivaldi.net/topic/48904/mainbar-buttons-highlight-animation-css-mod
-Simple highlight animation CSS mod to make the Mainbar buttons more interactive.
-I modified it a little bit so it affects toolbar everywhere.
-*/
+/* ==UserStyle==
+ * @name         Button Highlight
+ * @description  Simple highlight animation CSS mod to make toolbar buttons more interactive.
+ * @version      2020.07.11
+ * @author       dude99
+ * @website      https://forum.vivaldi.net/topic/48904/mainbar-buttons-highlight-animation-css-mod
+ * ==/UserStyle==
+ */
+
 :is(.toolbar-mainbar, .toolbar-extensions, .toolbar-panel, .toolbar-statusbar)
   > .button-toolbar
   > button:hover {

@@ -1,9 +1,10 @@
-// Tab Scroll
-// version 2024.9.2
-// https://forum.vivaldi.net/post/214898
-// Clicking on an active tab scrolls page to top, clicking it again returns to
-// previous scroll position. Credits to tam710562 from Vivaldi Forum for coming
-// up with the sessionStorage solution, which made this possible.
+// ==UserScript==
+// @name         Tab Scroll
+// @description  Clicking an active tab scrolls the page to top; clicking it again returns to the previous scroll position.
+// @version      2024.9.2
+// @author       luetage
+// @website      https://forum.vivaldi.net/post/214898
+// ==/UserScript==
 
 (function tabScroll() {
   "use strict";

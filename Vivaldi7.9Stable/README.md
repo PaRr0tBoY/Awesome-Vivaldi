@@ -47,7 +47,7 @@
 
 | Demo                                                | Mods                                                              |
 | --------------------------------------------------- | ----------------------------------------------------------------- |
-| ![ArcPeek](./Others/assets/ArcPeek.gif)             | `ArcPeek.css` + `ArcPeek.js`                                      |
+| ![ArcPeek](../Others/assets/ArcPeek.gif)             | `ArcPeek.css` + `ArcPeek.js`                                      |
 | ![AskInPage](../Others/assets/AskInPage.png) | `AskInPage.js`                                                |
 | ![TidyDownloads](../Others/assets/TidyDownloads.gif) | `TidyDownloads.js`                                                |
 
@@ -57,7 +57,7 @@
 | Showcase                                             | Mods                                                              |
 | :--------------------------------------------------- | :---------------------------------------------------------------- |
 | ![FavouriteTabs](../Others/assets/FavouriteTabs.gif) | `FavouriteTabs.css`                                               |
-| ![VivaldiMax](../Others/assets/VivaldiMax.gif)       | `TidyTabs.css` + `TidyTabs.js` + `TidyTitles.js` |
+| ![VivaldiMax](../Others/assets/VivaldiMax.gif)       | `TidyTabs.css` + `TidyTabs.js` + `TidyTitles.js`                 |
 | ![PeekTabbar](../Others/assets/PeekTabbar.gif)       | `PeekTabbar.css`                                                  |
 | ![Quietify](../Others/assets/Quietify.gif)           | `Quietify.css`                                                    |
 
@@ -81,25 +81,27 @@
 | `Quietify.css`        | Sleeker audio indicator                                     |
 | `RemoveClutter.css`   | Hide scrollbars & visual clutter                            |
 | `TabsTrail.css`       | Green trail on active/hovered tabs                          |
-| `TidyTabs.css`        | AI tab grouping _(requires `TidyTabs.js` + `ClearTabs.js`)_ |
+| `TidyTabs.css`        | AI tab grouping _(requires `TidyTabs.js`)_                    |
 | `VivalArc.css`        | Arc theme port _(incompatible with this modpack)_           |
 
 ### Javascripts
 
-| File                     | Description                                              |
-| ------------------------ | -------------------------------------------------------- |
-| `AutoHidePanel.js`       | Auto-hide side panel                                     |
-| `ClearTabs.js`           | Clean tab separators _(pairs with `TidyTabs.css`)_       |
-| `ArcPeek.js`             | Arc peek dialog support _(pairs with `ArcPeek.css`)_     |
-| `EasyFiles.js`           | Opera-inspired file attachment via clipboard & downloads |
-| `ElementCapture.js`      | Auto-select capture area for screenshots                 |
-| `GlobalMediaControls.js` | Global Media Controls panel (Chrome-like)                |
-| `MonochromeIcons.js`     | Monochrome web panel icons to reduce visual noise        |
-| `QuickCapture.js`        | Auto-select capture area with clipboard/file/default modes |
-| `TabScroll.js`           | Click active tab: scroll to top / previous position      |
-| `TidyTabs.js`            | AI tab grouping _(pairs with `TidyTabs.css`)_            |
-| `TidyTitles.js`          | AI tab title cleanup                                     |
-| `YbAddressBar.js`        | Address bar enhancements(buggy)                          |
+| File                     | Description                                                     |
+| ------------------------ | --------------------------------------------------------------- |
+| `ArcPeek.js`             | Arc peek dialog support _(pairs with `ArcPeek.css`)_            |
+| `AskInPage.js`           | AI side panel for page questions, summaries, and rewrites       |
+| `AutoHidePanel.js`       | Auto-hide side panel                                            |
+| `EasyFiles.js`           | Opera-inspired file attachment via clipboard & downloads        |
+| `GlobalMediaControls.js` | Global Media Controls panel (Chrome-like)                       |
+| `MonochromeIcons.js`     | Monochrome web panel icons to reduce visual noise               |
+| `QuickCapture.js`        | Auto-select capture area with clipboard/file/default modes      |
+| `SelectCloseTabs.js`     | Mark tabs in the tab cycler, then close them in one batch       |
+| `TabScroll.js`           | Click active tab: scroll to top / previous position             |
+| `TidyDownloads.js`       | AI download filename cleanup                                    |
+| `TidyTabs.js`            | AI tab grouping _(pairs with `TidyTabs.css`)_                   |
+| `TidyTitles.js`          | AI tab title cleanup                                            |
+| `WorkspaceTabManager.js` | Workspace Board panel for viewing and managing workspace tabs   |
+| `YbAddressBar.js`        | Address bar enhancements (buggy)                                |
 
 ## How to install
 
@@ -171,17 +173,17 @@ To install, Just copy all the content under ./Javascripts/ to your `<YOURVIVALDI
   </head>
 
   <body>
-    <script src="tidyTitles.js"></script>
-    <script src="tidyTabs.js"></script>
-    <script src="clearTabs.js"></script>
-    <script src="tabScroll.js"></script>
-    <script src="monochromeIcons.js"></script>
-    <script src="ybAddressBar.js"></script>
+    <script src="TidyTitles.js"></script>
+    <script src="TidyTabs.js"></script>
+    <script src="TidyDownloads.js"></script>
+    <script src="AskInPage.js"></script>
+    <script src="TabScroll.js"></script>
+    <script src="MonochromeIcons.js"></script>
+    <script src="YbAddressBar.js"></script>
     <script src="QuickCapture.js"></script>
-    <script src="globalMediaControls.js"></script>
-    <script src="easyFiles.js"></script>
-    <script src="dialogTab.js"></script>
-    <script src="autoHidePanel.js"></script>
+    <script src="GlobalMediaControls.js"></script>
+    <script src="EasyFiles.js"></script>
+    <script src="ArcPeek.js"></script>
   </body>
 </html>
 ```

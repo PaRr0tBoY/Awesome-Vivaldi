@@ -1,3 +1,10 @@
+// ==UserScript==
+// @name         Vivaldi AI Title
+// @description  AI-assisted title generation for Vivaldi tabs.
+// @version      2026.4.17
+// @author       PaRr0tBoY
+// ==/UserScript==
+
 // Vivaldi AI Title
 (function () {
   "use strict";

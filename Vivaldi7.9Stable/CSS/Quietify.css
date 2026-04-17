@@ -1,3 +1,12 @@
+/* ==UserStyle==
+ * @name         Quietify
+ * @description  Styles Vivaldi audio indicators for playing and muted states.
+ * @version      2026.4.17
+ * @author       PaRr0tBoY
+ * @website      https://github.com/PaRr0tBoY/Awesome-Vivaldi
+ * ==/UserStyle==
+ */
+
 /* This mod only works when the Vivaldi UI language is set to English/Chinese.
    Add your own language support by editing the selectors below. */
 
@@ -22,10 +31,15 @@
 }
 
 /* Make the original canvas icon transparent and remove its dimensions */
-/* Exclude PiP mode: canvas[title="Exit PiP"] / canvas[title="Enter PiP"] should not be hidden */
-.tab-audio canvas.audioicon:not([title="Exit PiP"]):not([title="Enter PiP"]),
+/* Exclude PiP mode: canvas[title="Exit PiP"] / canvas[title="Enter PiP"] / canvas[title="退出画中画"] / canvas[title="进入画中画"] should not be hidden */
+.tab-audio
+  canvas.audioicon:not([title="Exit PiP"]):not([title="Enter PiP"]):not(
+    [title="退出画中画"]
+  ):not([title="进入画中画"]),
 .tooltip-audio-button
-  canvas.audioicon:not([title="Exit PiP"]):not([title="Enter PiP"]),
+  canvas.audioicon:not([title="Exit PiP"]):not([title="Enter PiP"]):not(
+    [title="退出画中画"]
+  ):not([title="进入画中画"]),
 .audio-container canvas.audioicon,
 .button-icon.audio canvas.audioicon,
 .panel-audio canvas.audioicon {
@@ -130,33 +144,78 @@
 
 .audio-container:has(.audioicon[title*="Mute"]):not(
     :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
   ),
 .audio-container:has(.audioicon[title="Mute Tab"]):not(
     :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
+  ),
+.audio-container:has(.audioicon[title="标签静音"]):not(
+    :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
   ),
 .tooltip-audio-button:has(.audioicon[title*="Mute"]):not(
     :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
   ),
 .tooltip-audio-button:has(.audioicon[title="Mute Tab"]):not(
     :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
+  ),
+.tooltip-audio-button:has(.audioicon[title="标签静音"]):not(
+    :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
   ),
 .button-icon.audio:has(.audioicon[title*="Mute"]):not(
     :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
   ),
 .button-icon.audio:has(.audioicon[title="Mute Tab"]):not(
     :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
+  ),
+.button-icon.audio:has(.audioicon[title="标签静音"]):not(
+    :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
   ),
 .tab-audio:has(.audioicon[title*="Mute"]):not(
     :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
   ),
 .tab-audio:has(.audioicon[title="Mute Tab"]):not(
     :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
+  ),
+.tab-audio:has(.audioicon[title="标签静音"]):not(
+    :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
   ),
 .panel-audio:has(.audioicon[title*="Mute"]):not(
     :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
   ),
 .panel-audio:has(.audioicon[title="Mute Panel"]):not(
     :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
+  ),
+.panel-audio:has(.audioicon[title="面板静音"]):not(
+    :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
   ) {
   /* Apply the animated icon */
   &::after {
@@ -169,33 +228,78 @@
 /* Exclude PiP mode so the native PiP button is not styled */
 .audio-container:has(.audioicon[title*="Unmute"]):not(
     :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
   ),
 .audio-container:has(.audioicon[title="Unmute Tab"]):not(
     :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
+  ),
+.audio-container:has(.audioicon[title="取消标签静音"]):not(
+    :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
   ),
 .tooltip-audio-button:has(.audioicon[title*="Unmute"]):not(
     :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
   ),
 .tooltip-audio-button:has(.audioicon[title="Unmute Tab"]):not(
     :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
+  ),
+.tooltip-audio-button:has(.audioicon[title="取消标签静音"]):not(
+    :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
   ),
 .button-icon.audio:has(.audioicon[title*="Unmute"]):not(
     :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
   ),
 .button-icon.audio:has(.audioicon[title="Unmute Tab"]):not(
     :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
+  ),
+.button-icon.audio:has(.audioicon[title="取消标签静音"]):not(
+    :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
   ),
 .tab-audio:has(.audioicon[title*="Unmute"]):not(
     :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
   ),
 .tab-audio:has(.audioicon[title*="Unmute Tab"]):not(
     :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
+  ),
+.tab-audio:has(.audioicon[title*="取消标签静音"]):not(
+    :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
   ),
 .panel-audio:has(.audioicon[title*="Unmute"]):not(
     :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
   ),
 .panel-audio:has(.audioicon[title*="Unmute Panel"]):not(
     :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
+  ),
+.panel-audio:has(.audioicon[title*="取消面板静音"]):not(
+    :has(.audioicon[title="Exit PiP"])
+  ):not(
+    :has(.audioicon[title="退出画中画"])
   ) {
   /* Apply the static icon */
   &::after {

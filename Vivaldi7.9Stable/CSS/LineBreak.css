@@ -1,3 +1,11 @@
+/* ==UserStyle==
+ * @name         Line Break
+ * @description  Adds line-break behavior for toolbar command buttons in vertical or tabless layouts.
+ * @version      2026.4.17
+ * @author       PaRr0tBoY
+ * ==/UserStyle==
+ */
+
 :root:has(
     #browser:is(.tabs-left, .tabs-right):not(.minimal-ui),
     #browser.tabs-off:not(.minimal-ui) #panels-container:not(.switcher)
