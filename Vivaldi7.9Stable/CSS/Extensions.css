@@ -32,14 +32,18 @@
 
 .extensionIconPopupMenu {
   --popupWidth: 280px !important;
+  align-items: flex-start !important;
 }
 
 .extensionIconPopupMenu > .toolbar {
   max-height: 50vh;
-  overflow: hidden auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   flex-direction: column;
   flex-wrap: nowrap;
   align-items: stretch;
+  justify-content: flex-start;
+  align-self: flex-start;
 }
 
 .extensionIconPopupMenu .ExtensionDropdownIcon > button {
