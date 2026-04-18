@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Ask in Page Panel
 // @description  Registers a WebPanel and renders the ask-in-page UI directly inside the host panel DOM.
-// @version      2026.4.17
+// @version      2026.4.18
 // @author       PaRr0tBoY
 // ==/UserScript==
 
@@ -33,6 +33,16 @@
   const webPanelId = 'WEBPANEL_ask-in-page-a1b2c3d4e5f6';
   const uiVersion = 'v74';
   const code = 'data:text/html,' + encodeURIComponent('<title>' + name + '</title>');
+  const ASK_IN_PAGE_CONTEXT_MENU = {
+    selectionId: 'ask-in-page-selection',
+    pageId: 'ask-in-page-page',
+    selectionTitle: 'Ask About Selection',
+    pageTitle: 'Ask About Page',
+  };
+  const ASK_IN_PAGE_RUNTIME_MESSAGE = {
+    openPanel: 'ask-in-page-open-panel',
+  };
+  const ASK_IN_PAGE_SELECTION_BUTTON_LABEL = 'Ask';
   const panelIconSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><path d="M13.5 2.5 7.5 12h4l-1 9.5 6-9.5h-4l1-9.5Z" stroke="#8B949E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   const panelIcon = 'data:image/svg+xml,' + encodeURIComponent(panelIconSvg);
   const panelIconMask = 'data:image/svg+xml,' + encodeURIComponent(
@@ -664,6 +674,186 @@
     return Object.entries(replacements || {}).reduce((message, [token, value]) => {
       return message.replace(new RegExp('\\{' + token + '\\}', 'g'), String(value));
     }, t(key));
+  }
+
+  function simulateClick(element) {
+    if (!element) {
+      return;
+    }
+    element.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, pointerId: 1 }));
+    element.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, detail: 1 }));
+    element.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerId: 1 }));
+    element.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, detail: 1 }));
+    element.dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 1 }));
+  }
+
+  function isAskInPageTabUrl(url) {
+    const normalized = String(url || '');
+    return Boolean(normalized && (normalized === code || normalized.startsWith('chrome://ask-in-page')));
+  }
+
+  function isScriptableTabUrl(url) {
+    const normalized = String(url || '');
+    if (!normalized || isAskInPageTabUrl(normalized)) {
+      return false;
+    }
+    return !normalized.startsWith('chrome://') && !normalized.startsWith('vivaldi://');
+  }
+
+  function getAskInPageToolbarButton() {
+    return document.querySelector(
+      '.toolbar > .button-toolbar > .ToolbarButton-Button[data-name*="' + webPanelId + '"], #panels button[data-name="' + webPanelId + '"], #panels button[name="' + webPanelId + '"]'
+    );
+  }
+
+  function isAskInPagePanelOpen() {
+    const button = getAskInPageToolbarButton();
+    return Boolean(button?.closest('.active'));
+  }
+
+  function waitForCondition(getValue, options) {
+    const timeoutMs = Number(options?.timeoutMs) || 2000;
+    const intervalMs = Number(options?.intervalMs) || 50;
+    const startedAt = Date.now();
+    return new Promise((resolve) => {
+      const poll = () => {
+        let value = null;
+        try {
+          value = getValue();
+        } catch (error) {}
+        if (value) {
+          resolve(value);
+          return;
+        }
+        if (Date.now() - startedAt >= timeoutMs) {
+          resolve(null);
+          return;
+        }
+        window.setTimeout(poll, intervalMs);
+      };
+      poll();
+    });
+  }
+
+  async function openAskInPagePanel(options) {
+    const settings = {
+      focus: options?.focus !== false,
+      selectionText: typeof options?.selectionText === 'string' ? options.selectionText : null,
+    };
+    createWebPanel();
+    scheduleUpdatePanel();
+
+    let button = getAskInPageToolbarButton();
+    if (!button) {
+      button = await waitForCondition(() => {
+        scheduleUpdatePanel();
+        return getAskInPageToolbarButton();
+      }, { timeoutMs: 2500, intervalMs: 60 });
+    }
+    if (!button) {
+      return false;
+    }
+
+    if (!isAskInPagePanelOpen()) {
+      simulateClick(button);
+    }
+
+    scheduleUpdatePanel();
+    const state = await waitForCondition(() => {
+      scheduleUpdatePanel();
+      return panelState?.inputField ? panelState : null;
+    }, { timeoutMs: 2500, intervalMs: 60 });
+    if (!state) {
+      return false;
+    }
+
+    state.syncContext?.({ addCurrentPageReference: true });
+    if (settings.selectionText !== null) {
+      state.setSelectedTextContext?.(settings.selectionText);
+    } else {
+      state.syncSelectedText?.();
+    }
+    if (settings.focus) {
+      requestAnimationFrame(() => {
+        state.focusComposer?.();
+      });
+    }
+    return true;
+  }
+
+  function handleAskInPageContextMenuClick(itemInfo) {
+    if (!itemInfo) {
+      return;
+    }
+    if (itemInfo.menuItemId === ASK_IN_PAGE_CONTEXT_MENU.selectionId) {
+      openAskInPagePanel({
+        focus: true,
+        selectionText: String(itemInfo.selectionText || ''),
+      }).catch(() => {});
+      return;
+    }
+    if (itemInfo.menuItemId === ASK_IN_PAGE_CONTEXT_MENU.pageId) {
+      openAskInPagePanel({ focus: true }).catch(() => {});
+    }
+  }
+
+  function registerAskInPageContextMenus() {
+    if (!chrome.contextMenus?.create) {
+      return;
+    }
+    const menuItems = [
+      {
+        id: ASK_IN_PAGE_CONTEXT_MENU.selectionId,
+        title: ASK_IN_PAGE_CONTEXT_MENU.selectionTitle,
+        contexts: ['selection'],
+      },
+      {
+        id: ASK_IN_PAGE_CONTEXT_MENU.pageId,
+        title: ASK_IN_PAGE_CONTEXT_MENU.pageTitle,
+        contexts: ['page'],
+      },
+    ];
+    menuItems.forEach((item) => {
+      try {
+        chrome.contextMenus.remove(item.id, () => {
+          void chrome.runtime?.lastError;
+          chrome.contextMenus.create(item, () => {
+            void chrome.runtime?.lastError;
+          });
+        });
+      } catch (error) {
+        chrome.contextMenus.create(item, () => {
+          void chrome.runtime?.lastError;
+        });
+      }
+    });
+    if (
+      chrome.contextMenus.onClicked &&
+      typeof chrome.contextMenus.onClicked.hasListener === 'function' &&
+      !chrome.contextMenus.onClicked.hasListener(handleAskInPageContextMenuClick)
+    ) {
+      chrome.contextMenus.onClicked.addListener(handleAskInPageContextMenuClick);
+    }
+  }
+
+  function handleAskInPageRuntimeMessage(message) {
+    if (message?.type !== ASK_IN_PAGE_RUNTIME_MESSAGE.openPanel) {
+      return;
+    }
+    openAskInPagePanel({
+      focus: true,
+      selectionText: typeof message.selectionText === 'string' ? message.selectionText : null,
+    }).catch(() => {});
+  }
+
+  function registerAskInPageRuntimeBridge() {
+    if (
+      chrome.runtime?.onMessage &&
+      typeof chrome.runtime.onMessage.hasListener === 'function' &&
+      !chrome.runtime.onMessage.hasListener(handleAskInPageRuntimeMessage)
+    ) {
+      chrome.runtime.onMessage.addListener(handleAskInPageRuntimeMessage);
+    }
   }
 
   function getCommandDefinition(name) {
@@ -1884,7 +2074,7 @@
       return '';
     }
     const url = String(tab.url || tab.pendingUrl || '');
-    if (!url || url === code || url.startsWith('chrome://ask-in-page') || url.startsWith('chrome://') || url.startsWith('vivaldi://')) {
+    if (!isScriptableTabUrl(url)) {
       return '';
     }
     const results = await promisifyChrome(chrome.scripting, 'executeScript', [{
@@ -1925,7 +2115,7 @@
       return;
     }
     const url = String(tab.url || tab.pendingUrl || '');
-    if (!url || url === code || url.startsWith('chrome://ask-in-page') || url.startsWith('chrome://') || url.startsWith('vivaldi://')) {
+    if (!isScriptableTabUrl(url)) {
       return;
     }
     await promisifyChrome(chrome.scripting, 'executeScript', [{
@@ -1948,6 +2138,218 @@
         } catch (error) {}
       },
     }]);
+  }
+
+  async function ensureSelectionAskButton(tabLike) {
+    const tab = tabLike?.id ? tabLike : await getCurrentTab();
+    if (!tab?.id) {
+      return;
+    }
+    const url = String(tab.url || tab.pendingUrl || '');
+    if (!isScriptableTabUrl(url)) {
+      return;
+    }
+    try {
+      await promisifyChrome(chrome.scripting, 'executeScript', [{
+        target: {
+          tabId: tab.id,
+          allFrames: true,
+        },
+        injectImmediately: true,
+        args: [{
+          buttonLabel: ASK_IN_PAGE_SELECTION_BUTTON_LABEL,
+          messageType: ASK_IN_PAGE_RUNTIME_MESSAGE.openPanel,
+        }],
+        func: (config) => {
+          try {
+            const state = window.__askInPageSelectionAskState || (window.__askInPageSelectionAskState = {});
+            if (state.installed) {
+              state.buttonLabel = String(config?.buttonLabel || 'Ask');
+              if (state.button) {
+                state.button.textContent = state.buttonLabel;
+              }
+              state.scheduleUpdate?.();
+              return;
+            }
+
+            const BUTTON_ID = 'ask-in-page-selection-button';
+            const EDGE_PADDING = 12;
+
+            const readSelectionData = () => {
+              try {
+                const active = document.activeElement;
+                if (
+                  active &&
+                  (active.tagName === 'TEXTAREA' ||
+                  (active.tagName === 'INPUT' && /^(?:text|search|url|tel|password|email)$/i.test(active.type || 'text')))
+                ) {
+                  const start = Number(active.selectionStart);
+                  const end = Number(active.selectionEnd);
+                  if (Number.isFinite(start) && Number.isFinite(end) && end > start) {
+                    return {
+                      text: String(active.value || '').slice(start, end).replace(/\s+/g, ' ').trim(),
+                      rect: active.getBoundingClientRect(),
+                    };
+                  }
+                }
+                const selection = document.getSelection?.();
+                if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
+                  return null;
+                }
+                const text = String(selection.toString?.() || '').replace(/\s+/g, ' ').trim();
+                if (!text) {
+                  return null;
+                }
+                const range = selection.getRangeAt(0);
+                let rect = range.getBoundingClientRect();
+                if ((!rect || (!rect.width && !rect.height)) && range.getClientRects().length) {
+                  const rects = Array.from(range.getClientRects()).filter((item) => item.width || item.height);
+                  rect = rects[0] || rect;
+                }
+                if (!rect || (!rect.width && !rect.height)) {
+                  return null;
+                }
+                return { text, rect };
+              } catch (error) {
+                return null;
+              }
+            };
+
+            const ensureButton = () => {
+              let button = document.getElementById(BUTTON_ID);
+              if (button) {
+                return button;
+              }
+              button = document.createElement('button');
+              button.id = BUTTON_ID;
+              button.type = 'button';
+              button.textContent = String(config?.buttonLabel || 'Ask');
+              button.tabIndex = -1;
+              Object.assign(button.style, {
+                position: 'fixed',
+                left: '0',
+                top: '0',
+                transform: 'translate3d(-9999px,-9999px,0)',
+                zIndex: '2147483647',
+                padding: '7px 12px',
+                borderRadius: '999px',
+                border: '1px solid rgba(31, 35, 40, 0.18)',
+                background: 'rgba(255, 255, 255, 0.96)',
+                color: '#111827',
+                boxShadow: '0 10px 25px rgba(15, 23, 42, 0.18)',
+                font: '600 13px/1.1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+                letterSpacing: '0',
+                pointerEvents: 'auto',
+                cursor: 'pointer',
+                userSelect: 'none',
+                WebkitUserSelect: 'none',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+              });
+              ['pointerdown', 'mousedown'].forEach((eventName) => {
+                button.addEventListener(eventName, (event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                });
+              });
+              button.addEventListener('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                const data = readSelectionData();
+                if (!data?.text) {
+                  hideButton();
+                  return;
+                }
+                try {
+                  chrome.runtime?.sendMessage?.({
+                    type: config?.messageType,
+                    selectionText: data.text,
+                  });
+                } catch (error) {}
+                hideButton();
+              });
+              (document.documentElement || document.body || document).appendChild(button);
+              return button;
+            };
+
+            const hideButton = () => {
+              const button = ensureButton();
+              button.hidden = true;
+              button.style.transform = 'translate3d(-9999px,-9999px,0)';
+            };
+
+            const updateButton = () => {
+              if (state.leftMouseSelecting) {
+                hideButton();
+                return;
+              }
+              const data = readSelectionData();
+              if (!data?.text) {
+                hideButton();
+                return;
+              }
+              const button = ensureButton();
+              button.hidden = false;
+              button.textContent = state.buttonLabel;
+              button.dataset.selectionText = data.text;
+              const width = button.offsetWidth || 44;
+              const height = button.offsetHeight || 32;
+              const left = Math.min(
+                Math.max(EDGE_PADDING, data.rect.left + (data.rect.width / 2) - (width / 2)),
+                Math.max(EDGE_PADDING, window.innerWidth - width - EDGE_PADDING)
+              );
+              const preferredTop = data.rect.top - height - 10;
+              const top = preferredTop >= EDGE_PADDING
+                ? preferredTop
+                : Math.min(window.innerHeight - height - EDGE_PADDING, data.rect.bottom + 10);
+              button.style.transform = 'translate3d(' + Math.round(left) + 'px,' + Math.round(Math.max(EDGE_PADDING, top)) + 'px,0)';
+            };
+
+            const scheduleUpdate = () => {
+              if (state.frameRequested) {
+                return;
+              }
+              state.frameRequested = true;
+              requestAnimationFrame(() => {
+                state.frameRequested = false;
+                updateButton();
+              });
+            };
+
+            state.installed = true;
+            state.leftMouseSelecting = false;
+            state.buttonLabel = String(config?.buttonLabel || 'Ask');
+            state.scheduleUpdate = scheduleUpdate;
+            state.button = ensureButton();
+            hideButton();
+
+            window.addEventListener('mousedown', (event) => {
+              if (event.button !== 0) {
+                return;
+              }
+              state.leftMouseSelecting = true;
+              hideButton();
+            }, { passive: true });
+            document.addEventListener('selectionchange', scheduleUpdate, { passive: true });
+            document.addEventListener('scroll', scheduleUpdate, { passive: true, capture: true });
+            window.addEventListener('mouseup', (event) => {
+              if (event.button === 0) {
+                state.leftMouseSelecting = false;
+              }
+              scheduleUpdate();
+            }, { passive: true });
+            window.addEventListener('keyup', scheduleUpdate, { passive: true });
+            window.addEventListener('scroll', scheduleUpdate, { passive: true });
+            window.addEventListener('resize', scheduleUpdate, { passive: true });
+            window.addEventListener('blur', () => {
+              state.leftMouseSelecting = false;
+              hideButton();
+            }, { passive: true });
+            window.setTimeout(scheduleUpdate, 0);
+          } catch (error) {}
+        },
+      }]);
+    } catch (error) {}
   }
 
   async function getTabContentSnapshot(tabLike, options) {
@@ -3652,6 +4054,26 @@
       state.inputField.focus();
     }
 
+    function focusComposer() {
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0 && state.inputField.contains(selection.anchorNode)) {
+        state.inputField.focus();
+        return;
+      }
+      const lastNode = state.inputField.lastChild;
+      if (!lastNode) {
+        const emptyNode = document.createTextNode('');
+        state.inputField.append(emptyNode);
+        placeCaretInTextNode(emptyNode, 0);
+        return;
+      }
+      if (lastNode.nodeType === Node.TEXT_NODE) {
+        placeCaretInTextNode(lastNode, (lastNode.textContent || '').length);
+        return;
+      }
+      placeCaretAfterNode(lastNode);
+    }
+
     function insertNodeAtComposerCaret(node) {
       const selection = window.getSelection();
       if (!selection || selection.rangeCount === 0 || !state.inputField.contains(selection.anchorNode)) {
@@ -4093,6 +4515,8 @@
 
     state.syncContext = syncContext;
     state.syncSelectedText = syncSelectedText;
+    state.setSelectedTextContext = setSelectedText;
+    state.focusComposer = focusComposer;
 
     function startSelectionPolling() {
       if (state.selectionPollId) {
@@ -6818,7 +7242,10 @@
   waitForBrowser(() => {
     injectStyles();
     createWebPanel();
+    registerAskInPageRuntimeBridge();
+    registerAskInPageContextMenus();
     scheduleUpdatePanel();
+    ensureSelectionAskButton().catch(() => {});
 
     const observer = new MutationObserver(() => {
       scheduleUpdatePanel();
@@ -6830,6 +7257,7 @@
     });
 
     chrome.tabs?.onActivated?.addListener(() => {
+      ensureSelectionAskButton().catch(() => {});
       if (panelState) {
         panelState.syncContext?.({ addCurrentPageReference: true });
         panelState.syncSelectedText?.();
@@ -6839,6 +7267,9 @@
     chrome.tabs?.onUpdated?.addListener((tabId, changeInfo, tab) => {
       if (changeInfo.status === 'complete' && tab) {
         prefetchLightTabSnapshot(tab).catch(() => {});
+        if (tab.active) {
+          ensureSelectionAskButton(tab).catch(() => {});
+        }
       }
       if (!panelState || !tab?.active) {
         return;
