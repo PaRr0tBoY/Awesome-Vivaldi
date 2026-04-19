@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         VividPlayer
 // @description  Sidebar bottom media controller inspired by Zen Browser.
-// @version      2026.4.18.2
+// @version      2026.4.19.1
 // @author       Codex
 // ==/UserScript==
 
@@ -25,7 +25,6 @@
   };
 
   const MESSAGE_TYPE = 'vivid-player';
-  const CONTROL_MESSAGE_TYPE = 'global-media-controls';
   const ROOT_ID = 'vivid-player';
   const INJECT_MAIN_FLAG = '__vividPlayerMainInjected';
   const INJECT_BRIDGE_FLAG = '__vividPlayerBridgeInjected';
@@ -1271,7 +1270,11 @@
   function sendCommand(tabId, frameId, command) {
     return new Promise((resolve) => {
       try {
-        const message = { type: CONTROL_MESSAGE_TYPE, tabId, frameId, ...command };
+        const message = {
+          type: MESSAGE_TYPE,
+          action: 'command',
+          command: { ...command, frameId },
+        };
         chrome.tabs.sendMessage(
           tabId,
           message,
@@ -1290,9 +1293,9 @@
 
   // ─── 页面注入 ─────────────────────────────────────────────────────────────
 
-  function injectBridge(messageType) {
-    if (window[INJECT_BRIDGE_FLAG]) return;
-    window[INJECT_BRIDGE_FLAG] = true;
+  function injectBridge(messageType, bridgeFlag) {
+    if (window[bridgeFlag]) return;
+    window[bridgeFlag] = true;
 
     chrome.runtime.onMessage.addListener((info, _sender, _sendResponse) => {
       if (!info || info.type !== messageType || info.action !== 'command') return;
@@ -1305,9 +1308,9 @@
     });
   }
 
-  function injectMain(messageType) {
-    if (window[INJECT_MAIN_FLAG]) return;
-    window[INJECT_MAIN_FLAG] = true;
+  function injectMain(messageType, mainFlag) {
+    if (window[mainFlag]) return;
+    window[mainFlag] = true;
 
     const observedFlag = 'vividPlayerObserved';
     let currentMedia = null;
@@ -1657,12 +1660,12 @@
         target,
         world: 'MAIN',
         func: injectMain,
-        args: [MESSAGE_TYPE],
+        args: [MESSAGE_TYPE, INJECT_MAIN_FLAG],
       });
       await chrome.scripting.executeScript({
         target,
         func: injectBridge,
-        args: [MESSAGE_TYPE],
+        args: [MESSAGE_TYPE, INJECT_BRIDGE_FLAG],
       });
       injectedTabIds.add(tabId);
     } catch (_error) {
@@ -1720,7 +1723,7 @@
 
   async function handleRuntimeMessage(info, sender) {
     if (!info || !sender.tab) return;
-    if (info.type !== MESSAGE_TYPE && info.type !== CONTROL_MESSAGE_TYPE) return;
+    if (info.type !== MESSAGE_TYPE) return;
 
     const tabId = sender.tab.id;
     const tabState = getTabState(tabId);
