@@ -10,6 +10,7 @@
 @import "CSS/RemoveClutter.css";
 @import "CSS/Quietify.css";
 @import "CSS/PeekTabbar.css";
+@import "CSS/VividPlayer.css";
 
 /* Community Mods */
 @import "CSS/DownloadPanel.css";
@@ -20,6 +21,7 @@
 /* underActiveDev */
 /*@import "CSS/VivalArc.css";*/
 /*@import "CSS/FavouriteTabs.css";*/
+/*@import "CSS/SmoothPanel.css";*/
 
 /* Abandoned */
 /*@import "CSS/ArcFolder.css";*/
