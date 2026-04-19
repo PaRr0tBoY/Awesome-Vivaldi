@@ -7139,8 +7139,20 @@
   }
 
   function createWebPanel() {
+    function normalizePrefValue(raw) {
+      if (raw && typeof raw === 'object') {
+        if (raw.value !== undefined) {
+          return raw.value;
+        }
+        if (raw.defaultValue !== undefined) {
+          return raw.defaultValue;
+        }
+      }
+      return raw;
+    }
+
     vivaldi.prefs.get('vivaldi.panels.web.elements', (elements) => {
-      const elementsArr = (elements && elements.value !== undefined) ? elements.value : elements;
+      const elementsArr = normalizePrefValue(elements);
       let element = elementsArr.find((item) => item.id === webPanelId);
       if (!element) {
         element = {
@@ -7177,12 +7189,12 @@
         'vivaldi.toolbars.mail_composer',
       ].map((path) => vivaldi.prefs.get(path))).then((toolbars) => {
         const hasPanel = toolbars.some((toolbar) => {
-          const arr = (toolbar && toolbar.value !== undefined) ? toolbar.value : toolbar;
+          const arr = normalizePrefValue(toolbar);
           return arr.some((entry) => entry === webPanelId);
         });
         if (!hasPanel) {
           const panels = toolbars[0];
-          const panelsArr = (panels && panels.value !== undefined) ? panels.value : panels;
+          const panelsArr = normalizePrefValue(panels);
           const panelIndex = panelsArr.findIndex((entry) => entry.startsWith('WEBPANEL_'));
           panelsArr.splice(panelIndex, 0, webPanelId);
           vivaldi.prefs.set({
