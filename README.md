@@ -43,9 +43,9 @@
 
 | Demo                                                | Mods                                                              |
 | --------------------------------------------------- | ----------------------------------------------------------------- |
+| ![VividPlayer](./Others/assets/VividPlayer.gif)             | `VidPlayer.css` + `VividPlayer.js`                                      |
 | ![ArcPeek](./Others/assets/ArcPeek.gif)             | `ArcPeek.css` + `ArcPeek.js`                                      |
 | ![AskInPage](./Others/assets/AskInPage.png) | `AskInPage.js`                                                |
-| ![TidyDownloads](./Others/assets/TidyDownloads.gif) | `TidyDownloads.js`                                                |
 
 ## Introduction
 
@@ -62,6 +62,7 @@ Please choose the modpack that matches your Vivaldi Version. Which version of Vi
 | --------------------------------------------------- | ----------------------------------------------------------------- |
 | ![FavouriteTabs](./Others/assets/FavouriteTabs.gif) | `FavouriteTabs.css`                                               |
 | ![VivaldiMax](./Others/assets/VivaldiMax.gif)       | `TidyTabs.css` + `TidyTabs.js` + `TidyTitles.js` |
+| ![TidyDownloads](./Others/assets/TidyDownloads.gif) | `TidyDownloads.js`                                                |
 | ![PeekTabbar](./Others/assets/PeekTabbar.gif)       | `PeekTabbar.css`                                                  |
 | ![Quietify](./Others/assets/Quietify.gif)           | `Quietify.css`                                                    |
 
