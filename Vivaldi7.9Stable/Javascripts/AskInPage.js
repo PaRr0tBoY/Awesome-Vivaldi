@@ -20,13 +20,15 @@
   // OpenRouter: https://openrouter.ai/api/v1/chat/completions
   // DeepSeek: https://api.deepseek.com/chat/completions
   const AI_CONFIG = {
-    apiEndpoint: 'https://api.groq.com/openai/v1/chat/completions',
-    apiKey: '',
-    model: 'groq/compound',
+    apiEndpoint: "https://api.xiaomimimo.com/v1/chat/completions",
+    apiKey: "sk-c5di1e0iq3iweq4pyna8meyfr68grs0660hwnyi68u1201lg",
+    model: "mimo-v2-flash",
     timeout: 90000,
     temperature: 0.5,
     maxTokens: 4096,
   };
+  const ASK_IN_PAGE_CONFIG_FILE = 'config.json';
+  const MOD_AI_CONFIG_KEY = 'askInPage';
 
   const name = 'Ask in Page';
   const nameAttribute = 'ask-in-page';
@@ -170,7 +172,7 @@
   };
   const TAB_SUGGESTION_LIMITS = {
     collapsed: 5,
-    expanded: 15,
+    increment: 5,
   };
   const CONVERSATION_MEMORY_CONFIG = {
     recentTurns: 6,
@@ -217,6 +219,16 @@
   const UI_STRINGS = {
     en: {
       newChat: 'New chat',
+      history: 'History',
+      historyEmpty: 'No saved conversations yet.',
+      currentPageHistory: 'This page',
+      recentHistory: 'Recent conversations',
+      openInTab: 'Open in tab',
+      openHistory: 'Open history',
+      closeHistory: 'Close history',
+      deleteConversation: 'Delete conversation',
+      untitledConversation: 'Untitled conversation',
+      chooseStorageDir: 'Choose storage folder',
       commandShortcuts: 'Quick commands',
       emptyHint: 'Use @ to add tabs or files',
       emptySubhint: 'Use / to run commands like Analyze, Summarize, and Explain',
@@ -237,13 +249,18 @@
       commandsSection: 'Commands',
       tabsSection: 'Tabs',
       filesSection: 'Files',
+      notesSection: 'Notes',
       formatsSection: 'Formats',
       showMoreTabs: 'Show more',
       showMoreTabsSubtitle: 'Show {count} more tabs',
       allOpenTabsTitle: 'All open tabs ({count})',
-      allOpenTabsSubtitle: 'Add all open tabs in this window',
+      allOpenTabsSubtitle: 'Add all open tabs in the browser',
       domainTabsTitle: 'All open {host} tabs ({count})',
       domainTabsSubtitle: 'Add all tabs from this domain',
+      stackTabsTitle: 'Tab stack: {title} ({count})',
+      stackTabsSubtitle: 'Add all tabs in this stack',
+      workspaceTabsTitle: 'Workspace: {name} ({count})',
+      workspaceTabsSubtitle: 'Add all tabs in this workspace',
       chooseFileTitle: 'Choose a File...',
       chooseFileSubtitle: 'Choose a file from your system',
       untitledTab: 'Untitled tab',
@@ -267,9 +284,29 @@
       editMessage: 'Edit message',
       copyReply: 'Copy reply',
       retryReply: 'Retry reply',
+      saveReplyToNote: 'Save reply to note',
+      createNewNote: 'Create new note',
+      createNewNoteSubtitle: 'Save this reply as a new note',
+      appendToNote: 'Append to existing note',
+      appendToExistingNoteTitle: 'Append to: {title}',
+      notesUnavailable: 'Vivaldi notes API is not available.',
+      noteSaveFailed: 'Failed to save note.',
+      loading: 'Loading...',
+      noPageContent: 'No preview text is available for this page yet.',
+      pageContentUnavailable: 'Preview unavailable for this page.',
     },
     'zh-CN': {
       newChat: '新建对话',
+      history: '历史对话',
+      historyEmpty: '还没有已保存的对话。',
+      currentPageHistory: '当前页面',
+      recentHistory: '最近对话',
+      openInTab: '在标签页中打开',
+      openHistory: '打开历史栏',
+      closeHistory: '关闭历史栏',
+      deleteConversation: '删除对话',
+      untitledConversation: '未命名对话',
+      chooseStorageDir: '选择存储文件夹',
       commandShortcuts: '快捷命令',
       emptyHint: '使用 @ 添加标签页或文件',
       emptySubhint: '使用 / 运行 Analyze、Summarize、Explain 等命令',
@@ -290,18 +327,33 @@
       commandsSection: '命令',
       tabsSection: '标签页',
       filesSection: '文件',
+      notesSection: '笔记',
       formatsSection: '格式',
       showMoreTabs: '显示更多',
       showMoreTabsSubtitle: '再展开 {count} 个标签页',
       allOpenTabsTitle: '全部打开的标签页 ({count})',
-      allOpenTabsSubtitle: '一次性加入当前窗口中的全部标签页',
+      allOpenTabsSubtitle: '一次性加入整个浏览器中的全部标签页',
       domainTabsTitle: '全部打开的 {host} 标签页 ({count})',
       domainTabsSubtitle: '加入该域名下的全部标签页',
+      stackTabsTitle: '标签栈：{title} ({count})',
+      stackTabsSubtitle: '加入这个标签栈中的全部标签页',
+      workspaceTabsTitle: '工作区：{name} ({count})',
+      workspaceTabsSubtitle: '加入这个工作区中的全部标签页',
       chooseFileTitle: '选择文件...',
       chooseFileSubtitle: '从系统选择文件',
       sendValidationEmpty: '请先添加要处理的信息，或直接输入一条消息。',
       sendValidationNeedsInfo: '请先添加要处理的信息，或直接输入一条消息。',
       sendValidationNeedsInstruction: '请添加命令、格式或说明要如何处理这些信息。',
+      loading: '正在载入...',
+      saveReplyToNote: '保存回复到笔记',
+      createNewNote: '新建笔记',
+      createNewNoteSubtitle: '将这条回复保存为新笔记',
+      appendToNote: '追加到已有笔记',
+      appendToExistingNoteTitle: '追加到：{title}',
+      notesUnavailable: 'Vivaldi 笔记 API 不可用。',
+      noteSaveFailed: '保存笔记失败。',
+      noPageContent: '这个页面暂时没有可预览的正文。',
+      pageContentUnavailable: '暂时无法预览这个页面的内容。',
     },
     'zh-TW': {
       newChat: '新增對話',
@@ -568,9 +620,490 @@
   let panelRoot = null;
   let panelState = null;
   let panelResizeObserver = null;
+  let standaloneRoot = null;
+  let standaloneState = null;
+  let currentAppState = null;
   const tabSnapshotCache = new Map();
   const pendingLightSnapshots = new Map();
   const INTERNAL_CLIPBOARD_MIME = 'application/x-vivaldi-ask-in-page';
+  const ASK_IN_PAGE_ROUTE_BASE = '#/ask-in-page';
+  const ASK_IN_PAGE_STORAGE = {
+    dbName: 'ask-in-page-storage',
+    storeName: 'keyval',
+    dirHandleKey: 'ask-in-page-dir-handle',
+    manifestVersion: 1,
+    defaultDirName: '.askonpage',
+    manifestName: 'manifest.json',
+    tabsIndexName: 'tabs.json',
+    pagesIndexName: 'pages.json',
+  };
+  const ASK_IN_PAGE_STORAGE_RUNTIME = {
+    dbPromise: null,
+    dirHandle: null,
+    migrationPromise: null,
+    persistPromise: null,
+  };
+
+  function sanitizeAiConfig(raw) {
+    const aiRoot = raw?.ai && typeof raw.ai === 'object' ? raw.ai : raw || {};
+    const base = aiRoot.default && typeof aiRoot.default === 'object' ? aiRoot.default : aiRoot;
+    const override = aiRoot.overrides?.[MOD_AI_CONFIG_KEY] && typeof aiRoot.overrides[MOD_AI_CONFIG_KEY] === 'object'
+      ? aiRoot.overrides[MOD_AI_CONFIG_KEY]
+      : {};
+    const source = Object.assign({}, base, override);
+    const nextConfig = {};
+    if (typeof source.apiEndpoint === 'string') {
+      nextConfig.apiEndpoint = source.apiEndpoint.trim();
+    }
+    if (typeof source.apiKey === 'string') {
+      nextConfig.apiKey = source.apiKey.trim();
+    }
+    if (typeof source.model === 'string') {
+      nextConfig.model = source.model.trim();
+    }
+    return nextConfig;
+  }
+
+  async function loadAskInPageConfig() {
+    const storageHandle = await ensureAskInPageStorageHandle({ interactive: false });
+    if (!storageHandle) {
+      return;
+    }
+    const config = await readJsonFromHandle(storageHandle, ASK_IN_PAGE_CONFIG_FILE);
+    applyAskInPageConfig(config);
+  }
+
+  function applyAskInPageConfig(config) {
+    const aiConfig = sanitizeAiConfig(config);
+    Object.keys(aiConfig).forEach((key) => {
+      if (aiConfig[key] !== undefined) {
+        AI_CONFIG[key] = aiConfig[key];
+      }
+    });
+  }
+
+  function createSessionId() {
+    return 'aip_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+  }
+
+  function getAskInPageRouteUrl(options) {
+    const params = new URLSearchParams();
+    if (Number.isFinite(Number(options?.targetTabId)) && Number(options.targetTabId) > 0) {
+      params.set('targetTabId', String(Number(options.targetTabId)));
+    }
+    if (options?.sessionId) {
+      params.set('sessionId', String(options.sessionId));
+    }
+    const query = params.toString();
+    return String(location.origin || '') + '/main.html' + ASK_IN_PAGE_ROUTE_BASE + (query ? ('?' + query) : '');
+  }
+
+  function parseRouteSearch(routeSearch) {
+    const params = new URLSearchParams(String(routeSearch || '').replace(/^\?/, ''));
+    return {
+      targetTabId: Number(params.get('targetTabId') || 0) || null,
+      sessionId: params.get('sessionId') || '',
+    };
+  }
+
+  function resolveAskInPageRoute(urlLike) {
+    const normalized = String(urlLike || '');
+    if (!normalized) {
+      return {
+        isAskInPage: false,
+        targetTabId: null,
+        sessionId: '',
+      };
+    }
+    if (normalized.startsWith('chrome://ask-in-page') || normalized.startsWith('vivaldi://ask-in-page')) {
+      const syntheticSearch = normalized.split('?')[1] || '';
+      const parsed = parseRouteSearch(syntheticSearch);
+      return {
+        isAskInPage: true,
+        targetTabId: parsed.targetTabId,
+        sessionId: parsed.sessionId,
+      };
+    }
+    let url = null;
+    try {
+      url = new URL(normalized, String(location.href || ''));
+    } catch (_error) {
+      return {
+        isAskInPage: false,
+        targetTabId: null,
+        sessionId: '',
+      };
+    }
+    const hash = String(url.hash || '');
+    if (!hash.startsWith(ASK_IN_PAGE_ROUTE_BASE)) {
+      return {
+        isAskInPage: false,
+        targetTabId: null,
+        sessionId: '',
+      };
+    }
+    const parsed = parseRouteSearch(hash.slice(ASK_IN_PAGE_ROUTE_BASE.length));
+    return {
+      isAskInPage: true,
+      targetTabId: parsed.targetTabId,
+      sessionId: parsed.sessionId,
+    };
+  }
+
+  function normalizePageUrl(url) {
+    const raw = String(url || '').trim();
+    if (!raw || isAskInPageTabUrl(raw)) {
+      return '';
+    }
+    try {
+      const parsed = new URL(raw);
+      parsed.searchParams.delete('_');
+      parsed.hash = '';
+      return parsed.toString();
+    } catch (_error) {
+      return raw.replace(/([?&])_=([^&#]*)/g, '$1').replace(/[?&]$/, '').replace(/#.*$/, '');
+    }
+  }
+
+  function getTabBindingKey(tabLike) {
+    const windowId = Number(tabLike?.windowId || tabLike?.raw?.windowId || 0);
+    const tabId = Number(tabLike?.id || tabLike?.raw?.id || 0);
+    if (!windowId || !tabId) {
+      return '';
+    }
+    return windowId + ':' + tabId;
+  }
+
+  function sanitizeTabSnapshot(tabLike) {
+    const raw = tabLike?.raw || tabLike || {};
+    const url = String(raw.url || raw.pendingUrl || tabLike?.url || '');
+    return {
+      id: Number(raw.id || tabLike?.id || 0) || null,
+      windowId: Number(raw.windowId || tabLike?.windowId || 0) || null,
+      title: String(raw.title || tabLike?.title || ''),
+      url,
+      pageKey: normalizePageUrl(url),
+      bindingKey: getTabBindingKey(raw || tabLike),
+    };
+  }
+
+  function sanitizeTurnSnapshot(turnData) {
+    const snapshot = turnData || {};
+      return {
+        id: snapshot.id,
+        timestamp: snapshot.timestamp || '',
+      visibleText: snapshot.visibleText || '',
+      serialized: snapshot.serialized || '',
+      activeCmd: snapshot.activeCmd || '',
+      activeCmdPrompt: snapshot.activeCmdPrompt || '',
+      sequenceParts: Array.isArray(snapshot.sequenceParts) ? snapshot.sequenceParts.map((part) => ({
+        type: part.type,
+        kind: part.kind || '',
+        text: part.text || '',
+        key: part.key || '',
+        title: part.title || '',
+        iconText: part.iconText || '',
+        subtitle: part.subtitle || '',
+        content: part.content || '',
+        textContextId: part.textContextId || '',
+        refId: part.refId || '',
+        tokenRole: part.tokenRole || '',
+        capabilityId: part.capabilityId || '',
+        capabilityType: part.capabilityType || '',
+        capabilityCategory: part.capabilityCategory || '',
+        capabilityContent: part.capabilityContent || '',
+      })) : [],
+      capabilitySnapshots: Array.isArray(snapshot.capabilitySnapshots) ? snapshot.capabilitySnapshots.map((item) => ({
+        id: item.id || '',
+        type: item.type || '',
+        category: item.category || '',
+        title: item.title || '',
+        iconText: item.iconText || '',
+        content: item.content || '',
+      })) : [],
+      contextSnapshot: snapshot.contextSnapshot ? {
+        kind: snapshot.contextSnapshot.kind || 'context',
+        title: snapshot.contextSnapshot.title || '',
+        subtitle: snapshot.contextSnapshot.subtitle || '',
+        iconText: snapshot.contextSnapshot.iconText || '',
+        raw: sanitizeTabSnapshot(snapshot.contextSnapshot.raw || snapshot.contextSnapshot),
+      } : null,
+      selectedTextSnapshot: snapshot.selectedTextSnapshot ? {
+        kind: snapshot.selectedTextSnapshot.kind || 'selection',
+        title: snapshot.selectedTextSnapshot.title || '',
+        subtitle: snapshot.selectedTextSnapshot.subtitle || '',
+        iconText: snapshot.selectedTextSnapshot.iconText || '',
+        content: snapshot.selectedTextSnapshot.content || snapshot.selectedTextSnapshot.title || '',
+        source: snapshot.selectedTextSnapshot.source || '',
+      } : null,
+      textContextSnapshots: Array.isArray(snapshot.textContextSnapshots) ? snapshot.textContextSnapshots.map((item) => ({
+        id: item.id || '',
+        kind: item.kind || 'text',
+        title: item.title || '',
+        subtitle: item.subtitle || '',
+        iconText: item.iconText || '',
+        content: item.content || item.title || '',
+        sourceId: item.sourceId || '',
+      })) : [],
+      refSnapshots: Array.isArray(snapshot.refSnapshots) ? snapshot.refSnapshots.map((ref) => ({
+        id: ref.id,
+        kind: ref.kind,
+        title: ref.title || '',
+        subtitle: ref.subtitle || '',
+        meta: ref.meta || '',
+        iconText: ref.iconText || '',
+        mime: ref.mime || '',
+        autoCurrentPage: Boolean(ref.autoCurrentPage),
+        raw: ref.kind === 'file'
+          ? {
+            id: ref.raw?.id || null,
+            filename: ref.raw?.filename || ref.subtitle || ref.title || '',
+            fileSize: ref.raw?.fileSize || 0,
+            mime: ref.mime || ref.raw?.mime || '',
+          }
+          : sanitizeTabSnapshot(ref.raw || ref),
+      })) : [],
+      headerCards: Array.isArray(snapshot.headerCards) ? snapshot.headerCards.map((card) => ({
+        kind: card.kind || '',
+        title: card.title || '',
+        subtitle: card.subtitle || '',
+        iconText: card.iconText || '',
+      })) : [],
+      aiReadItems: Array.isArray(snapshot.aiReadItems) ? snapshot.aiReadItems.map((item) => ({
+        kind: item.kind || '',
+        title: item.title || '',
+      })) : [],
+        aiReplyText: snapshot.aiReplyText || '',
+        aiReasoningText: snapshot.aiReasoningText || '',
+        persistEligible: snapshot.persistEligible !== false && Boolean(snapshot.aiReplyText || snapshot.persistEligible),
+        aiReplyError: Boolean(snapshot.aiReplyError),
+        apiUserMessages: Array.isArray(snapshot.apiUserMessages) ? snapshot.apiUserMessages.slice() : [],
+        apiUserMessage: snapshot.apiUserMessage || '',
+      };
+  }
+
+    function hydrateTurnSnapshot(snapshot) {
+      const turnData = Object.assign({}, snapshot || {});
+    turnData.sequenceParts = Array.isArray(turnData.sequenceParts) ? turnData.sequenceParts : [];
+      turnData.capabilitySnapshots = Array.isArray(turnData.capabilitySnapshots) ? turnData.capabilitySnapshots : [];
+      turnData.textContextSnapshots = Array.isArray(turnData.textContextSnapshots) ? turnData.textContextSnapshots : [];
+      turnData.refSnapshots = Array.isArray(turnData.refSnapshots) ? turnData.refSnapshots : [];
+      turnData.headerCards = Array.isArray(turnData.headerCards) ? turnData.headerCards : [];
+      turnData.aiReadItems = Array.isArray(turnData.aiReadItems) ? turnData.aiReadItems : [];
+      turnData.persistEligible = turnData.persistEligible !== false && Boolean(turnData.aiReplyText || turnData.persistEligible);
+      turnData.aiReplyError = Boolean(turnData.aiReplyError);
+      return turnData;
+    }
+
+  function openAskInPageStorageDb() {
+    if (ASK_IN_PAGE_STORAGE_RUNTIME.dbPromise) {
+      return ASK_IN_PAGE_STORAGE_RUNTIME.dbPromise;
+    }
+    ASK_IN_PAGE_STORAGE_RUNTIME.dbPromise = new Promise((resolve, reject) => {
+      const request = indexedDB.open(ASK_IN_PAGE_STORAGE.dbName, 1);
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains(ASK_IN_PAGE_STORAGE.storeName)) {
+          db.createObjectStore(ASK_IN_PAGE_STORAGE.storeName);
+        }
+      };
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error || new Error('Failed to open AskInPage storage DB'));
+    });
+    return ASK_IN_PAGE_STORAGE_RUNTIME.dbPromise;
+  }
+
+  async function idbGet(key) {
+    const db = await openAskInPageStorageDb();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(ASK_IN_PAGE_STORAGE.storeName, 'readonly');
+      const request = tx.objectStore(ASK_IN_PAGE_STORAGE.storeName).get(key);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error || new Error('IndexedDB read failed'));
+    });
+  }
+
+  async function idbSet(key, value) {
+    const db = await openAskInPageStorageDb();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(ASK_IN_PAGE_STORAGE.storeName, 'readwrite');
+      tx.objectStore(ASK_IN_PAGE_STORAGE.storeName).put(value, key);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error || new Error('IndexedDB write failed'));
+    });
+  }
+
+  async function queryDirectoryPermission(handle, interactive) {
+    if (!handle) {
+      return 'denied';
+    }
+    let permission = 'prompt';
+    try {
+      permission = await handle.queryPermission({ mode: 'readwrite' });
+    } catch (_error) {}
+    if (permission !== 'granted' && interactive) {
+      try {
+        permission = await handle.requestPermission({ mode: 'readwrite' });
+      } catch (_error) {}
+    }
+    return permission;
+  }
+
+  async function getStoredAskInPageDirHandle() {
+    if (ASK_IN_PAGE_STORAGE_RUNTIME.dirHandle) {
+      return ASK_IN_PAGE_STORAGE_RUNTIME.dirHandle;
+    }
+    const handle = await idbGet(ASK_IN_PAGE_STORAGE.dirHandleKey).catch(() => null);
+    ASK_IN_PAGE_STORAGE_RUNTIME.dirHandle = handle || null;
+    return ASK_IN_PAGE_STORAGE_RUNTIME.dirHandle;
+  }
+
+  async function persistAskInPageDirHandle(handle) {
+    ASK_IN_PAGE_STORAGE_RUNTIME.dirHandle = handle || null;
+    await idbSet(ASK_IN_PAGE_STORAGE.dirHandleKey, handle || null);
+  }
+
+  async function copyJsonTreeBetweenHandles(sourceDir, targetDir) {
+    for await (const [name, handle] of sourceDir.entries()) {
+      if (handle.kind === 'directory') {
+        const nextTarget = await targetDir.getDirectoryHandle(name, { create: true });
+        await copyJsonTreeBetweenHandles(handle, nextTarget);
+        continue;
+      }
+      const file = await handle.getFile();
+      const text = await file.text();
+      const fileHandle = await targetDir.getFileHandle(name, { create: true });
+      const writable = await fileHandle.createWritable();
+      await writable.write(text);
+      await writable.close();
+    }
+  }
+
+  async function maybeMigrateStoredAskInPageData(defaultHandle, storedHandle) {
+    if (!defaultHandle || !storedHandle) {
+      return;
+    }
+    if (ASK_IN_PAGE_STORAGE_RUNTIME.migrationPromise) {
+      return ASK_IN_PAGE_STORAGE_RUNTIME.migrationPromise;
+    }
+    ASK_IN_PAGE_STORAGE_RUNTIME.migrationPromise = (async () => {
+      const defaultManifest = await readJsonFromHandle(defaultHandle, ASK_IN_PAGE_STORAGE.manifestName);
+      if (defaultManifest) {
+        return;
+      }
+      const storedManifest = await readJsonFromHandle(storedHandle, ASK_IN_PAGE_STORAGE.manifestName);
+      if (!storedManifest) {
+        return;
+      }
+      await copyJsonTreeBetweenHandles(storedHandle, defaultHandle);
+    })().catch(() => {}).finally(() => {
+      ASK_IN_PAGE_STORAGE_RUNTIME.migrationPromise = null;
+    });
+    return ASK_IN_PAGE_STORAGE_RUNTIME.migrationPromise;
+  }
+
+  async function getDefaultAskInPageStorageHandle() {
+    if (typeof navigator?.storage?.getDirectory !== 'function') {
+      return null;
+    }
+    try {
+      await ensureAskInPagePersistentStorage();
+      const rootHandle = await navigator.storage.getDirectory();
+      return await rootHandle.getDirectoryHandle(ASK_IN_PAGE_STORAGE.defaultDirName, { create: true });
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  async function ensureAskInPagePersistentStorage() {
+    if (ASK_IN_PAGE_STORAGE_RUNTIME.persistPromise) {
+      return ASK_IN_PAGE_STORAGE_RUNTIME.persistPromise;
+    }
+    ASK_IN_PAGE_STORAGE_RUNTIME.persistPromise = (async () => {
+      try {
+        if (typeof navigator?.storage?.persisted === 'function' && await navigator.storage.persisted()) {
+          return true;
+        }
+        if (typeof navigator?.storage?.persist === 'function') {
+          return Boolean(await navigator.storage.persist());
+        }
+      } catch (_error) {}
+      return false;
+    })();
+    return ASK_IN_PAGE_STORAGE_RUNTIME.persistPromise;
+  }
+
+  async function ensureAskInPageStorageHandle(options) {
+    const settings = Object.assign({ interactive: false }, options || {});
+    const defaultHandle = await getDefaultAskInPageStorageHandle();
+    if (defaultHandle) {
+      const storedHandle = await getStoredAskInPageDirHandle();
+      await maybeMigrateStoredAskInPageData(defaultHandle, storedHandle);
+      return defaultHandle;
+    }
+    let handle = await getStoredAskInPageDirHandle();
+    let permission = await queryDirectoryPermission(handle, settings.interactive);
+    if (handle && permission === 'granted') {
+      return handle;
+    }
+    if (handle && !settings.interactive && permission !== 'denied') {
+      return handle;
+    }
+    if (!settings.interactive || typeof window.showDirectoryPicker !== 'function') {
+      return null;
+    }
+    handle = await window.showDirectoryPicker({ mode: 'readwrite' });
+    permission = await queryDirectoryPermission(handle, true);
+    if (permission !== 'granted') {
+      return null;
+    }
+    await persistAskInPageDirHandle(handle);
+    return handle;
+  }
+
+  async function getNestedDirectoryHandle(rootHandle, pathParts, create) {
+    let current = rootHandle;
+    for (const part of pathParts || []) {
+      current = await current.getDirectoryHandle(part, { create: Boolean(create) });
+    }
+    return current;
+  }
+
+  async function writeJsonToHandle(rootHandle, pathParts, payload) {
+    const parts = Array.isArray(pathParts) ? pathParts.slice() : [pathParts];
+    const fileName = parts.pop();
+    const dir = await getNestedDirectoryHandle(rootHandle, parts, true);
+    const fileHandle = await dir.getFileHandle(fileName, { create: true });
+    const writable = await fileHandle.createWritable();
+    await writable.write(JSON.stringify(payload, null, 2));
+    await writable.close();
+  }
+
+  async function readJsonFromHandle(rootHandle, pathParts) {
+    try {
+      const parts = Array.isArray(pathParts) ? pathParts.slice() : [pathParts];
+      const fileName = parts.pop();
+      const dir = await getNestedDirectoryHandle(rootHandle, parts, false);
+      const fileHandle = await dir.getFileHandle(fileName, { create: false });
+      const file = await fileHandle.getFile();
+      const text = await file.text();
+      return JSON.parse(text);
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  async function removePathFromHandle(rootHandle, pathParts) {
+    try {
+      const parts = Array.isArray(pathParts) ? pathParts.slice() : [pathParts];
+      const fileName = parts.pop();
+      const dir = await getNestedDirectoryHandle(rootHandle, parts, false);
+      await dir.removeEntry(fileName);
+      return true;
+    } catch (_error) {
+      return false;
+    }
+  }
 
   function getReactProps(element) {
     if (typeof element === 'string') {
@@ -689,7 +1222,12 @@
 
   function isAskInPageTabUrl(url) {
     const normalized = String(url || '');
-    return Boolean(normalized && (normalized === code || normalized.startsWith('chrome://ask-in-page')));
+    return Boolean(normalized && (
+      normalized === code ||
+      normalized.startsWith('chrome://ask-in-page') ||
+      normalized.startsWith('vivaldi://ask-in-page') ||
+      resolveAskInPageRoute(normalized).isAskInPage
+    ));
   }
 
   function isScriptableTabUrl(url) {
@@ -769,7 +1307,10 @@
 
     state.syncContext?.({ addCurrentPageReference: true });
     if (settings.selectionText !== null) {
-      state.setSelectedTextContext?.(settings.selectionText);
+      state.setSelectedTextContext?.(settings.selectionText, { pinned: true });
+      try {
+        await clearCurrentTabSelection();
+      } catch (error) {}
     } else {
       state.syncSelectedText?.();
     }
@@ -905,6 +1446,9 @@
       title: item.title || '',
       iconText: item.iconText || '',
       refId: item.refId || '',
+      subtitle: item.subtitle || '',
+      content: item.content || '',
+      textContextId: item.textContextId || '',
       tokenRole: item.tokenRole || '',
       capabilityId: item.capabilityId || '',
       capabilityType: item.capabilityType || '',
@@ -1060,10 +1604,13 @@
       return {
         thinking: '',
         visible: '',
+        hasTaggedThinking: false,
       };
     }
     let thinking = '';
+    let hasTaggedThinking = false;
     const visible = raw.replace(/<\s*(?:think|thinking|thought|reasoning)\b[^>]*>([\s\S]*?)<\s*\/\s*(?:think|thinking|thought|reasoning)\s*>/gi, (_, captured) => {
+      hasTaggedThinking = true;
       const normalized = String(captured || '').trim();
       if (normalized) {
         thinking += (thinking ? '\n' : '') + normalized;
@@ -1073,6 +1620,7 @@
     return {
       thinking: thinking.trim(),
       visible: visible.trim(),
+      hasTaggedThinking,
     };
   }
 
@@ -1088,9 +1636,11 @@
     let fallbackMode = 'none';
 
     const reasoningSplit = splitTaggedThinkingContent(finalThinking);
-    finalThinking = reasoningSplit.thinking || finalThinking;
+    if (reasoningSplit.hasTaggedThinking) {
+      finalThinking = reasoningSplit.thinking || finalThinking;
+    }
 
-    if (reasoningSplit.visible) {
+    if (reasoningSplit.hasTaggedThinking && reasoningSplit.visible) {
       finalVisible = [finalVisible, reasoningSplit.visible].filter(Boolean).join('\n').trim();
       fallbackMode = 'promoted_reasoning_trailing_visible';
       confidence = 'medium';
@@ -1553,6 +2103,7 @@
     source = source.replace(/\$([^$\n]+)\$/g, (_, latex) => stashLatex('<span class="ask-latex-inline">' + renderLatexToHtml(latex, false) + '</span>'));
     let output = escapeHtml(source);
     output = output.replace(/`([^`]+)`/g, '<code>$1</code>');
+    output = output.replace(/\[\[([^\]]+)\]\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer noopener">[[$1]]</a>');
     output = output.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer noopener">$1</a>');
     output = output.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
     output = output.replace(/(^|[\s(])\*([^*]+)\*(?=$|[\s).,!?:;])/g, '$1<em>$2</em>');
@@ -2041,31 +2592,165 @@
     });
   }
 
+  async function getTabById(tabId) {
+    const numericTabId = Number(tabId || 0);
+    if (!numericTabId) {
+      return null;
+    }
+    try {
+      return await promisifyChrome(chrome.tabs, 'get', [numericTabId]);
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  async function getAllTabs() {
+    try {
+      return await promisifyChrome(chrome.tabs, 'query', [{}]);
+    } catch (_error) {
+      return [];
+    }
+  }
+
+  async function getVivaldiPref(path) {
+    if (!globalThis.vivaldi?.prefs?.get) {
+      return undefined;
+    }
+    try {
+      const value = await vivaldi.prefs.get(path);
+      return value && value.value !== undefined ? value.value : value;
+    } catch (_error) {
+      try {
+        const value = await promisifyChrome(vivaldi.prefs, 'get', [path]);
+        return value && value.value !== undefined ? value.value : value;
+      } catch (__error) {
+        return undefined;
+      }
+    }
+  }
+
+  async function getTabPrivateExtra(tabId) {
+    if (!globalThis.vivaldi?.tabsPrivate?.get || !tabId) {
+      return {};
+    }
+    try {
+      return (await vivaldi.tabsPrivate.get(tabId)) || {};
+    } catch (_error) {
+      try {
+        return (await promisifyChrome(vivaldi.tabsPrivate, 'get', [tabId])) || {};
+      } catch (__error) {
+        return {};
+      }
+    }
+  }
+
+  function parseVivExtData(value) {
+    if (!value) {
+      return {};
+    }
+    if (typeof value === 'object') {
+      return value;
+    }
+    if (typeof value === 'string') {
+      try {
+        return JSON.parse(value);
+      } catch (_error) {
+        return {};
+      }
+    }
+    return {};
+  }
+
+  function getTabDisplayTitle(tab) {
+    return tab.fixedTitle || tab.title || tab.extra?.fixedTitle || tab.extra?.title || tab.pendingUrl || tab.url || t('untitledTab');
+  }
+
+  async function getWorkspaceTabData() {
+    const [workspacesResult, tabs] = await Promise.all([
+      getVivaldiPref('vivaldi.workspaces.list'),
+      getAllTabs(),
+    ]);
+    const workspaces = Array.isArray(workspacesResult) ? workspacesResult : [];
+    const enrichedTabs = await Promise.all((tabs || []).map(async (tab) => {
+      const extra = await getTabPrivateExtra(tab.id);
+      const ext = parseVivExtData(extra.vivExtData ?? tab.vivExtData);
+      return Object.assign({}, tab, {
+        extra,
+        ext,
+        workspaceId: ext.workspaceId,
+        groupId: ext.group || '',
+        fixedTitle: ext.fixedTitle || extra.fixedTitle || '',
+        fixedGroupTitle: ext.fixedGroupTitle || '',
+        groupColor: ext.groupColor || extra.groupColor || '',
+        parentFollowerTabExtId: ext.parentFollowerTabExtId || '',
+        followerTabExtId: ext.followerTabExtId || '',
+        extId: ext.ext_id || '',
+      });
+    }));
+    const byWorkspace = new Map();
+    workspaces.forEach((workspace) => {
+      byWorkspace.set(workspace.id, Object.assign({}, workspace, {
+        tabs: [],
+      }));
+    });
+    enrichedTabs.forEach((tab) => {
+      if (tab.workspaceId == null) {
+        return;
+      }
+      if (!byWorkspace.has(tab.workspaceId)) {
+        byWorkspace.set(tab.workspaceId, {
+          id: tab.workspaceId,
+          name: 'Unknown ' + tab.workspaceId,
+          icon: '',
+          emoji: '',
+          tabs: [],
+        });
+      }
+      byWorkspace.get(tab.workspaceId).tabs.push(tab);
+    });
+    return {
+      tabs: enrichedTabs,
+      workspaces: Array.from(byWorkspace.values()),
+    };
+  }
+
+  function isAskInPageInternalTab(tab) {
+    const url = String(tab?.url || tab?.pendingUrl || '');
+    const title = String(tab?.title || '');
+    return !tab || !tab.id || url === code || url.startsWith('chrome://ask-in-page') || url.startsWith('vivaldi://ask-in-page') || title === name;
+  }
+
   async function getCurrentTab() {
+    const preferredTabId = Number(currentAppState?.targetTabId || 0);
+    if (currentAppState?.hostMode === 'tab' && preferredTabId) {
+      const preferredTab = await getTabById(preferredTabId);
+      const preferredUrl = String(preferredTab?.url || preferredTab?.pendingUrl || '');
+      if (preferredTab?.id && !isAskInPageTabUrl(preferredUrl)) {
+        return preferredTab;
+      }
+    }
     const tabs = await promisifyChrome(chrome.tabs, 'query', [{ active: true, currentWindow: true }]);
-    return tabs?.[0] || null;
+    const direct = tabs?.find((tab) => !isAskInPageTabUrl(tab?.url || tab?.pendingUrl || ''));
+    if (direct) {
+      return direct;
+    }
+    const windowTabs = await promisifyChrome(chrome.tabs, 'query', [{ currentWindow: true }]).catch(() => []);
+    return (windowTabs || [])
+      .filter((tab) => !isAskInPageTabUrl(tab?.url || tab?.pendingUrl || ''))
+      .sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0))[0] || tabs?.[0] || null;
   }
 
   async function getPanelTabs() {
-    const tabs = await promisifyChrome(chrome.tabs, 'query', [{ currentWindow: true }]);
+    const { tabs } = await getWorkspaceTabData();
     return (tabs || [])
-      .filter((tab) => {
-        if (!tab || !tab.id) {
-          return false;
-        }
-        const url = String(tab.url || tab.pendingUrl || '');
-        const title = String(tab.title || '');
-        if (url === code || url.startsWith('chrome://ask-in-page') || title === name) {
-          return false;
-        }
-        return true;
-      })
+      .filter((tab) => !isAskInPageInternalTab(tab))
       .sort((a, b) => {
         if (a.active && !b.active) return -1;
         if (!a.active && b.active) return 1;
+        if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+        if (a.windowId !== b.windowId) return (a.windowId || 0) - (b.windowId || 0);
         return (b.lastAccessed || 0) - (a.lastAccessed || 0);
-      })
-      .slice(0, TAB_SUGGESTION_LIMITS.expanded);
+      });
   }
 
   async function getCurrentTabSelection() {
@@ -2265,6 +2950,9 @@
                     type: config?.messageType,
                     selectionText: data.text,
                   });
+                } catch (error) {}
+                try {
+                  window.getSelection?.()?.removeAllRanges?.();
                 } catch (error) {}
                 hideButton();
               });
@@ -2860,13 +3548,37 @@
   function buildMarkup() {
     return `
       <div class="ask-in-page-shell" role="main">
+        <div class="ask-history-backdrop" id="askHistoryBackdrop" hidden></div>
+        <aside class="ask-history-drawer" id="askHistoryDrawer" aria-hidden="true">
+          <div class="ask-history-header">
+            <div class="ask-history-heading">${t('history')}</div>
+            <div class="ask-history-actions">
+              <button class="ask-history-close" id="askHistoryClose" type="button" title="${t('closeHistory')}" aria-label="${t('closeHistory')}">×</button>
+            </div>
+          </div>
+          <div class="ask-history-body">
+            <section class="ask-history-group" id="askHistoryCurrentGroup">
+              <div class="ask-history-group-title">${t('currentPageHistory')}</div>
+              <div class="ask-history-group-list" id="askHistoryCurrentList"></div>
+            </section>
+            <section class="ask-history-group">
+              <div class="ask-history-group-title">${t('recentHistory')}</div>
+              <div class="ask-history-group-list" id="askHistoryRecentList"></div>
+            </section>
+          </div>
+        </aside>
         <header class="ask-top-bar">
-          <button class="ask-btn-new" type="button" title="${t('newChat')}" aria-label="${t('newChat')}">
+          <button class="ask-btn-menu" type="button" title="${t('openHistory')}" aria-label="${t('openHistory')}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/>
+            </svg>
+          </button>
+          <div class="ask-top-spacer"></div>
+          <button class="ask-btn-new ask-btn-new-primary" type="button" title="${t('newChat')}" aria-label="${t('newChat')}">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
             </svg>
           </button>
-          <span class="ask-version-badge">${uiVersion}</span>
         </header>
         <div class="ask-messages" id="askMessages">
           <div class="ask-empty" id="askEmpty">
@@ -2912,6 +3624,10 @@
               <div class="ask-ref-row-inline" id="askRefRowInline"></div>
               </div>
             </div>
+            <div class="ask-context-preview hidden" id="askContextPreview" role="dialog" aria-hidden="true">
+              <div class="ask-context-preview-title" id="askContextPreviewTitle"></div>
+              <div class="ask-context-preview-body" id="askContextPreviewBody"></div>
+            </div>
             <div class="ask-input-main" id="askInputMain">
               <div class="ask-inline-ref-row" id="askInlineRefRow"></div>
               <div class="ask-input-field" contenteditable="true" id="askInputField" data-placeholder="${t('inputPlaceholder')}" spellcheck="false" role="textbox" aria-label="${t('inputMessage')}"></div>
@@ -2953,17 +3669,40 @@
       'button[data-name="' + webPanelId + '"] > img, button[data-name="' + webPanelId + '"] .button-badge, button[data-name="' + webPanelId + '"] .ToolbarButton-Button-SVG { opacity:0 !important; }',
       'button[data-name="' + webPanelId + '"]:before { position:absolute; left:50%; top:50%; width:18px; height:18px; margin:0; content:""; background-color:var(--colorFg); transform:translate(-50%,-50%); -webkit-mask-image:url(' + JSON.stringify(panelIconMask) + '); -webkit-mask-repeat:no-repeat; -webkit-mask-position:center; -webkit-mask-size:contain; mask-image:url(' + JSON.stringify(panelIconMask) + '); mask-repeat:no-repeat; mask-position:center; mask-size:contain; }',
       '.ask-in-page-content { --aip-bg:var(--colorBg); --aip-surface:color-mix(in srgb, var(--colorBgLight) 82%, transparent); --aip-surface-strong:color-mix(in srgb, var(--colorBgLighter) 88%, transparent); --aip-elevated:color-mix(in srgb, var(--colorBgLightIntense) 92%, var(--colorAccentBgAlpha)); --aip-border:var(--colorBorderSubtle); --aip-border-hover:var(--colorBorderIntense); --aip-accent:var(--colorHighlightBg); --aip-accent-dim:var(--colorHighlightBgAlpha); --aip-text-primary:var(--colorFg); --aip-text-secondary:var(--colorFgFaded); --aip-text-muted:var(--colorFgFadedMost); --aip-chip-bg:color-mix(in srgb, var(--colorAccentBgAlphaHeavy) 68%, var(--colorBgLight)); --aip-r-xs:var(--radiusRounded); --aip-r-sm:var(--radiusHalf); --aip-r-md:var(--radiusCap); --aip-r-lg:var(--radius); --aip-r-pill:var(--radiusRound); --aip-r-full:50%; --radius:var(--aip-r-sm); --aip-shadow-base:0 8px 18px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.02); --aip-shadow-mid:0 14px 28px rgba(0,0,0,0.17), inset 0 1px 0 rgba(255,255,255,0.03); --aip-shadow-strong:0 18px 40px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.04); width:100%; flex:1 1 auto; min-height:0; background:linear-gradient(180deg, color-mix(in srgb, var(--colorBgLight) 90%, transparent) 0%, var(--aip-bg) 18%, var(--colorBgDark) 100%); color:var(--aip-text-primary); font-family:var(--sansSerifFont), sans-serif; -webkit-font-smoothing:antialiased; }',
+      '.ask-in-page-standalone { position:fixed; inset:0; z-index:2147483000; }',
       '.ask-in-page-content *, .ask-in-page-content *::before, .ask-in-page-content *::after { box-sizing:border-box; }',
       '.ask-in-page-content *:not(.ask-messages) { scrollbar-width:none; }',
       '.ask-in-page-content *:not(.ask-messages)::-webkit-scrollbar { width:0 !important; height:0 !important; display:none !important; }',
       '.ask-in-page-shell { width:100%; height:100%; display:flex; flex:1; flex-direction:column; min-height:0; background:transparent; position:relative; }',
-      '.ask-in-page-shell::before { content:""; position:absolute; inset:0 0 auto; height:92px; background:linear-gradient(180deg, color-mix(in srgb, var(--colorAccentBgAlpha) 42%, transparent) 0%, transparent 100%); opacity:.75; pointer-events:none; }',
-      '.ask-top-bar { display:flex; align-items:center; padding:10px 12px 6px; flex-shrink:0; position:relative; z-index:1; }',
-      '.ask-version-badge { margin-left:auto; padding:2px 8px; border:1px solid var(--aip-border); border-radius:999px; color:var(--aip-text-muted); background:color-mix(in srgb, var(--colorBgAlphaHeavy) 86%, transparent); font-size:10px; line-height:1; letter-spacing:.08em; text-transform:uppercase; }',
-      '.ask-btn-new, .ask-btn-tool { width:30px; height:30px; border:1px solid transparent; background:transparent; color:var(--aip-text-secondary); cursor:pointer; border-radius:var(--aip-r-md); display:flex; align-items:center; justify-content:center; transition:color .15s, background .15s, border-color .15s, transform .12s; }',
-      '.ask-btn-new:hover, .ask-btn-tool:hover { color:var(--aip-text-primary); background:color-mix(in srgb, var(--colorBgLight) 80%, transparent); border-color:var(--aip-border); }',
-      '.ask-btn-new:active, .ask-btn-tool:active { transform:scale(.96); }',
-      '.ask-btn-new svg, .ask-btn-tool svg { width:18px; height:18px; }',
+      '.ask-in-page-shell::before { display:none; }',
+      '.ask-top-bar { display:flex; align-items:center; gap:8px; padding:10px 12px 6px; flex-shrink:0; position:relative; z-index:3; }',
+      '.ask-top-spacer { flex:1 1 auto; min-width:0; }',
+      '.ask-btn-menu, .ask-btn-new, .ask-btn-tool { width:30px; height:30px; border:1px solid transparent; background:transparent; color:var(--aip-text-secondary); cursor:pointer; border-radius:var(--aip-r-md); display:flex; align-items:center; justify-content:center; transition:color .15s, background .15s, border-color .15s, transform .12s; }',
+      '.ask-btn-menu:hover, .ask-btn-new:hover, .ask-btn-tool:hover { color:var(--aip-text-primary); background:color-mix(in srgb, var(--colorBgLight) 80%, transparent); border-color:var(--aip-border); }',
+      '.ask-btn-menu:active, .ask-btn-new:active, .ask-btn-tool:active { transform:scale(.96); }',
+      '.ask-btn-menu svg, .ask-btn-new svg, .ask-btn-tool svg { width:18px; height:18px; }',
+      '.ask-btn-new-primary { margin-left:auto; }',
+      '.ask-history-backdrop { position:absolute; inset:0; z-index:29; background:rgba(10,12,16,0.46); }',
+      '.ask-history-drawer { position:absolute; left:0; top:0; bottom:0; width:min(320px, calc(100% - 28px)); z-index:30; display:flex; flex-direction:column; background:var(--colorBg); border-right:1px solid var(--aip-border); box-shadow:18px 0 40px rgba(0,0,0,0.24); transform:translateX(-102%); opacity:0; pointer-events:none; transition:transform .22s cubic-bezier(.22,1,.36,1), opacity .16s ease; }',
+      '.ask-history-drawer.open { transform:translateX(0); opacity:1; pointer-events:auto; }',
+      '.ask-history-header { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:14px 14px 10px; border-bottom:1px solid var(--aip-border); }',
+      '.ask-history-heading { font-size:13px; font-weight:700; color:var(--aip-text-primary); }',
+      '.ask-history-actions { display:flex; align-items:center; gap:6px; }',
+      '.ask-history-close { width:30px; height:30px; border:none; background:transparent; color:var(--aip-text-secondary); border-radius:var(--aip-r-md); cursor:pointer; font-size:18px; line-height:1; }',
+      '.ask-history-close:hover { color:var(--aip-text-primary); background:color-mix(in srgb, var(--colorBgLight) 80%, transparent); }',
+      '.ask-history-body { flex:1 1 auto; min-height:0; overflow-y:auto; padding:12px; }',
+      '.ask-history-group + .ask-history-group { margin-top:18px; }',
+      '.ask-history-group-title { margin:0 0 8px; color:var(--aip-text-muted); font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; }',
+      '.ask-history-group-list { display:flex; flex-direction:column; gap:6px; }',
+      '.ask-history-row { position:relative; display:block; }',
+      '.ask-history-item { position:relative; width:100%; min-width:0; padding:8px 34px 8px 10px; border:1px solid var(--aip-border); border-radius:calc(var(--aip-r-md) + 2px); background:color-mix(in srgb, var(--colorBgLighter) 84%, transparent); color:var(--aip-text-primary); text-align:left; cursor:pointer; box-shadow:var(--aip-shadow-base); }',
+      '.ask-history-item:hover { border-color:var(--aip-border-hover); background:color-mix(in srgb, var(--colorBgLighter) 92%, transparent); }',
+      '.ask-history-item.is-active { border-color:var(--colorHighlightBg); box-shadow:0 0 0 1px var(--colorHighlightBgAlpha), var(--aip-shadow-base); }',
+      '.ask-history-item-title { color:var(--aip-text-primary); font-size:12px; font-weight:600; line-height:1.25; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }',
+      '.ask-history-item-meta { margin-top:2px; color:var(--aip-text-secondary); font-size:10.5px; line-height:1.25; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }',
+      '.ask-history-delete { position:absolute; top:50%; right:8px; z-index:2; width:20px; height:20px; border:none; border-radius:999px; background:transparent; color:var(--aip-text-muted); cursor:pointer; font-size:15px; line-height:1; transform:translateY(-50%); opacity:.72; }',
+      '.ask-history-delete:hover { color:var(--aip-text-primary); background:color-mix(in srgb, var(--colorBgLight) 82%, transparent); opacity:1; }',
+      '.ask-history-empty { padding:12px; border:1px dashed var(--aip-border); border-radius:calc(var(--aip-r-md) + 2px); color:var(--aip-text-secondary); font-size:12px; text-align:center; }',
       '.ask-messages { display:flex !important; flex-direction:column !important; flex:1 1 auto !important; min-height:0 !important; overflow-y:auto !important; overflow-x:hidden !important; overflow-anchor:auto; padding:10px 12px 156px; position:relative; z-index:1; }',
       '.ask-messages::-webkit-scrollbar { width:var(--scrollbarWidth); }',
       '.ask-messages::-webkit-scrollbar-thumb { background:color-mix(in srgb, var(--colorFgAlpha) 70%, transparent); border:4px solid transparent; border-radius:999px; background-clip:padding-box; }',
@@ -2979,7 +3718,7 @@
       '.ask-btn-cmd svg { width:13px; height:13px; flex-shrink:0; }',
       '.ask-btn-current-page-icon { width:13px; height:13px; border-radius:4px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; background:linear-gradient(180deg, var(--colorAccentBgFadedMore) 0%, var(--colorAccentBg) 100%); color:var(--colorAccentFg); font-size:9px; font-weight:800; line-height:1; }',
       '.ask-input-area { display:block !important; flex:0 0 auto !important; flex-shrink:0 !important; margin-top:auto; padding:0 12px 14px; position:relative; z-index:20; overflow:visible !important; }',
-      '.ask-input-box { background:linear-gradient(180deg, color-mix(in srgb, var(--colorBgLight) 94%, transparent) 0%, color-mix(in srgb, var(--colorBgLightIntense) 96%, transparent) 100%); border:1px solid var(--aip-border); border-radius:calc(var(--aip-r-lg) + 2px); display:flex; flex-direction:column; overflow:hidden; box-shadow:var(--aip-shadow-mid); backdrop-filter:var(--backgroundBlur); transition:border-color .2s, box-shadow .2s, background .2s; }',
+      '.ask-input-box { background:linear-gradient(180deg, color-mix(in srgb, var(--colorBgLight) 98%, transparent) 0%, color-mix(in srgb, var(--colorBgLightIntense) 100%, transparent) 100%); border:1px solid var(--aip-border); border-radius:calc(var(--aip-r-lg) + 2px); display:flex; flex-direction:column; overflow:visible; box-shadow:var(--aip-shadow-mid); transition:border-color .2s, box-shadow .2s, background .2s; }',
       '.ask-input-box.focused { border-color:var(--colorHighlightBg); box-shadow:0 0 0 1px var(--colorHighlightBgAlpha), var(--aip-shadow-mid); }',
       '.ask-edit-banner { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 10px; margin:8px 8px 0; border-radius:calc(var(--aip-r-md) + 2px); background:color-mix(in srgb, var(--colorBgLighter) 84%, transparent); border:1px solid color-mix(in srgb, var(--colorHighlightBgAlpha) 32%, var(--aip-border)); box-shadow:var(--aip-shadow-base); }',
       '.ask-edit-banner.hidden { display:none; }',
@@ -2996,19 +3735,24 @@
       '.ask-context-card { cursor:pointer; }',
       '.ask-context-card:hover, .ask-ref-chip:hover, .ask-cmd-chip:hover, .ask-composer-token[data-token-role="capability"]:hover { border-style:dashed; border-color:var(--colorHighlightBg); opacity:.86; }',
       '.ask-context-card-selection { background:color-mix(in srgb, var(--colorAccentBgAlpha) 55%, var(--colorBgLight)); }',
+      '.ask-context-card-selection { cursor:default; }',
       '.ask-ref-chip-icon { width:32px; height:32px; border-radius:var(--aip-r-md); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:14px; font-weight:700; color:var(--colorAccentFg); background:linear-gradient(180deg, var(--colorAccentBgFadedMore) 0%, var(--colorAccentBg) 100%); }',
       '.ask-context-favicon-selection { background:color-mix(in srgb, var(--colorBgLighter) 88%, transparent); color:var(--aip-text-secondary); font-size:13px; letter-spacing:.02em; }',
       '.ask-ref-chip-info { flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:2px; }',
       '.ask-ref-chip-title { color:var(--aip-text-primary); font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.25; }',
       '.ask-ref-chip-subtitle { color:var(--aip-text-secondary); font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.2; }',
+      '.ask-context-preview { position:absolute; left:12px; bottom:100%; width:min(320px, calc(100% - 24px)); margin-bottom:10px; padding:10px 12px 12px; border-radius:calc(var(--aip-r-md) + 4px); border:1px solid var(--aip-border-hover); background:var(--colorBg); box-shadow:0 18px 40px rgba(0,0,0,0.28); z-index:35; pointer-events:none; opacity:1; }',
+      '.ask-context-preview.hidden { display:none; }',
+      '.ask-context-preview-title { color:var(--aip-text-primary); font-size:12px; font-weight:700; line-height:1.3; margin-bottom:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }',
+      '.ask-context-preview-body { color:var(--aip-text-secondary); font-size:12px; line-height:1.55; white-space:pre-wrap; word-break:break-word; }',
       '.ask-context-close, .ask-ref-chip .ask-chip-close { position:absolute; top:0; right:0; z-index:3; width:16px; height:16px; margin-top:0; border:none; background:rgba(91,97,106,0.95); color:#E2E6EA; cursor:pointer; border-radius:999px; display:flex; align-items:center; justify-content:center; font-size:12px; line-height:1; flex-shrink:0; opacity:0; pointer-events:none; box-shadow:0 2px 8px rgba(0,0,0,0.28); transform:translate(35%,-35%); transition:opacity .15s, color .15s, background .15s, transform .12s; }',
       '.ask-context-card:hover .ask-context-close, .ask-ref-chip:hover .ask-chip-close { opacity:1; pointer-events:auto; }',
       '.ask-context-close:hover, .ask-ref-chip .ask-chip-close:hover { color:var(--aip-text-primary); background:color-mix(in srgb, var(--colorBgLighter) 78%, transparent); transform:translate(35%,-35%) scale(1.04); }',
       '.ask-input-main { display:flex; align-items:flex-start; gap:8px; padding:12px 14px 0; min-height:24px; flex-wrap:wrap; }',
       '.ask-inline-ref-row { display:none; }',
       '.ask-composer-token { display:inline-flex; align-items:center; gap:6px; min-width:0; max-width:180px; margin:0 2px; vertical-align:baseline; color:var(--aip-text-secondary); font-size:13px; line-height:1.35; border-radius:8px; user-select:none; }',
-      '.ask-composer-token[data-token-kind="context"], .ask-composer-token[data-token-kind="tab"] { max-width:none; width:auto; gap:0; margin:0 4px 0 2px; }',
-      '.ask-composer-token[data-token-kind="context"] .ask-composer-token-label, .ask-composer-token[data-token-kind="tab"] .ask-composer-token-label { display:none; }',
+      '.ask-composer-token[data-token-kind="context"], .ask-composer-token[data-token-kind="tab"], .ask-composer-token[data-token-kind="selection"], .ask-composer-token[data-token-kind="note"], .ask-composer-token[data-token-kind="text"], .ask-composer-token[data-token-kind="file"] { max-width:none; width:auto; gap:0; margin:0 4px 0 2px; }',
+      '.ask-composer-token[data-token-kind="context"] .ask-composer-token-label, .ask-composer-token[data-token-kind="tab"] .ask-composer-token-label, .ask-composer-token[data-token-kind="selection"] .ask-composer-token-label, .ask-composer-token[data-token-kind="note"] .ask-composer-token-label, .ask-composer-token[data-token-kind="text"] .ask-composer-token-label, .ask-composer-token[data-token-kind="file"] .ask-composer-token-label { display:none; }',
       '.ask-composer-token.focused { background:color-mix(in srgb, var(--colorBgLighter) 84%, transparent); box-shadow:0 0 0 1px var(--colorHighlightBgAlpha); padding:2px 6px; }',
       '.ask-composer-token[data-token-role="capability"] { position:relative; display:inline-flex; align-items:center; gap:6px; max-width:none; font-size:12px; font-weight:600; user-select:none; animation:askChipPop .22s cubic-bezier(.22,1,.36,1); overflow:hidden; padding:6px 12px; background:color-mix(in srgb, var(--colorHighlightBgAlpha) 72%, transparent); border:1px solid color-mix(in srgb, var(--colorHighlightBgAlpha) 92%, transparent); border-radius:999px; color:var(--aip-text-primary); cursor:pointer; line-height:1.35; }',
       '.ask-composer-token[data-token-role="capability"].focused { box-shadow:0 0 0 1px var(--aip-accent), 0 6px 16px color-mix(in srgb, var(--colorHighlightBgAlpha) 40%, transparent); padding:6px 12px; }',
@@ -3025,6 +3769,7 @@
       '.ask-send-validation.hidden { display:none; }',
       '.ask-cmd-chip { position:relative; display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; user-select:none; animation:askChipPop .22s cubic-bezier(.22,1,.36,1); overflow:hidden; padding:6px 12px; background:color-mix(in srgb, var(--colorHighlightBgAlpha) 72%, transparent); border:1px solid color-mix(in srgb, var(--colorHighlightBgAlpha) 92%, transparent); border-radius:999px; color:var(--aip-text-primary); cursor:pointer; }',
       '.ask-ref-chip { position:relative; display:flex; align-items:center; font-size:13px; font-weight:500; user-select:none; overflow:visible; }',
+      '.ask-text-context-chip { background:color-mix(in srgb, var(--colorAccentBgAlpha) 55%, var(--colorBgLight)); }',
       '.ask-ref-chip.is-entering { animation:askChipPop .22s cubic-bezier(.22,1,.36,1); }',
       '.ask-cmd-chip.is-removing, .ask-ref-chip.is-removing, .ask-composer-token.is-removing { animation:askChipRemove .16s ease forwards; pointer-events:none; }',
       '.ask-cmd-chip.focused { box-shadow:0 0 0 1px var(--aip-accent), 0 6px 16px color-mix(in srgb, var(--colorHighlightBgAlpha) 40%, transparent); }',
@@ -3074,7 +3819,7 @@
       '.ask-suggestion-divider { height:1px; margin:8px 14px; background:color-mix(in srgb, var(--colorFgAlpha) 28%, transparent); }',
       '.ask-suggestion-empty { padding:18px 14px; color:var(--aip-text-secondary); font-size:12px; }',
       '.ask-messages, .ask-messages * { -webkit-user-select:text !important; user-select:text !important; }',
-      '.ask-msg { max-width:92%; font-size:13px; line-height:1.55; margin-bottom:12px; animation:askMsgIn .3s cubic-bezier(.22,1,.36,1); cursor:text; }',
+      '.ask-msg { max-width:92%; font-size:13px; line-height:1.55; margin-bottom:12px; cursor:text; }',
       '.ask-send-flight-ghost { position:fixed; z-index:10000; pointer-events:none; margin:0; transform-origin:right center; box-shadow:0 16px 36px rgba(0,0,0,.22); overflow:hidden; will-change:transform, opacity, left, top, width, background, border-color; }',
       '.ask-send-flight-ghost .ask-msg-text, .ask-send-flight-ghost .ask-msg-inline-ref, .ask-send-flight-ghost .ask-msg-cmd-tag { transition:opacity .18s ease, transform .22s cubic-bezier(.22,1,.36,1); }',
       '.ask-msg.is-send-arriving { visibility:hidden; }',
@@ -3082,7 +3827,7 @@
       '.ask-turn-ai-slot { width:100%; display:flex; flex-direction:column; justify-content:flex-start; cursor:text; overflow-anchor:none; }',
       '.ask-turn-meta { display:flex; align-items:center; justify-content:flex-end; gap:10px; margin:4px 6px 0; min-height:18px; }',
       '.ask-turn-time { color:var(--aip-text-muted); font-size:12px; line-height:1; opacity:0; transition:opacity .14s ease; }',
-      '.ask-turn-actions, .ask-turn-ai-actions { display:inline-flex; align-items:center; gap:6px; padding:4px; border-radius:999px; background:color-mix(in srgb, var(--colorBgAlphaBlur) 88%, transparent); border:1px solid color-mix(in srgb, var(--colorFgAlpha) 16%, transparent); box-shadow:var(--aip-shadow-base); opacity:0; transition:opacity .14s ease; }',
+      '.ask-turn-actions, .ask-turn-ai-actions { position:relative; display:inline-flex; align-items:center; gap:6px; padding:4px; border-radius:999px; background:color-mix(in srgb, var(--colorBgAlphaBlur) 88%, transparent); border:1px solid color-mix(in srgb, var(--colorFgAlpha) 16%, transparent); box-shadow:var(--aip-shadow-base); opacity:0; transition:opacity .14s ease; }',
       '.ask-turn:has(.ask-msg-user:hover, .ask-turn-meta:hover) .ask-turn-actions { opacity:1; }',
       '.ask-turn:has(.ask-msg-user:hover, .ask-turn-meta:hover) .ask-turn-time { opacity:1; }',
       '.ask-turn.is-ai-complete:has(.ask-msg-ai:hover, .ask-turn-ai-meta:hover) .ask-turn-ai-actions { opacity:1; }',
@@ -3093,6 +3838,12 @@
       '.ask-turn-action:active { transform:scale(.94); }',
       '.ask-turn-action svg { width:14px; height:14px; stroke:currentColor; transition:opacity .14s ease, transform .14s ease; }',
       '.ask-turn-action .ask-turn-action-icon-success, .ask-turn-action .ask-turn-action-icon-fail { position:absolute; opacity:0; transform:scale(.7); }',
+      '.ask-note-menu { position:fixed; left:var(--aip-note-menu-left, 8px); top:var(--aip-note-menu-top, 8px); width:min(260px, calc(100vw - 16px)); max-height:min(260px, calc(100vh - 16px)); overflow-y:auto; padding:6px; border:1px solid var(--aip-border-hover); border-radius:calc(var(--aip-r-md) + 2px); background:var(--colorBg); box-shadow:var(--aip-shadow-strong); transform-origin:var(--aip-note-menu-origin-x, 50%) top; z-index:2147483001; }',
+      '.ask-note-menu[hidden] { display:none; }',
+      '.ask-note-menu-item { width:100%; border:none; background:transparent; color:var(--aip-text-primary); display:flex; flex-direction:column; align-items:flex-start; gap:2px; padding:8px 10px; border-radius:var(--aip-r-md); cursor:pointer; text-align:left; }',
+      '.ask-note-menu-item:hover { background:color-mix(in srgb, var(--colorBgLighter) 82%, var(--colorAccentBgAlphaHeavy)); }',
+      '.ask-note-menu-title { font-size:12px; font-weight:700; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }',
+      '.ask-note-menu-subtitle { color:var(--aip-text-secondary); font-size:11px; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }',
       '.ask-turn-action.is-success { color:var(--aip-accent); }',
       '.ask-turn-action.is-success .ask-turn-action-icon-main { opacity:0; transform:scale(.7); }',
       '.ask-turn-action.is-success .ask-turn-action-icon-success { opacity:1; transform:scale(1); }',
@@ -3299,7 +4050,7 @@
   }
 
   function normalizeTab(tab) {
-    const title = tab.title || tab.pendingUrl || tab.url || t('untitledTab');
+    const title = getTabDisplayTitle(tab);
     const url = tab.url || tab.pendingUrl || '';
     const host = getHostFromUrl(url);
     return {
@@ -3312,6 +4063,11 @@
       iconUrl: tab.favIconUrl || '',
       color: '#2D3139',
       isCurrentPage: Boolean(tab.active),
+      workspaceId: tab.workspaceId,
+      workspaceName: tab.workspaceName || '',
+      groupId: tab.groupId || '',
+      fixedGroupTitle: tab.fixedGroupTitle || '',
+      searchTags: ['tab', 'tabs', 'url', 'page', '标签', '标签页', '网页', '网址'],
       raw: tab,
     };
   }
@@ -3327,18 +4083,128 @@
       meta: [formatBytes(file.fileSize || 0), formatDate(file.startTime || file.endTime)].filter(Boolean).join(' · '),
       iconText: fileName.slice(0, 1).toUpperCase(),
       color: '#3A3F47',
+      searchTags: ['file', 'files', 'attachment', 'attachments', '文件', '附件'],
       raw: file,
     };
+  }
+
+  function matchesAtSuggestionQuery(item, query) {
+    const lowerQuery = String(query || '').trim().toLowerCase().replace(/^@/, '');
+    if (!lowerQuery) {
+      return true;
+    }
+    const tokens = [
+      item?.id,
+      item?.kind,
+      item?.group,
+      item?.title,
+      item?.subtitle,
+      item?.meta,
+      item?.workspaceName,
+      item?.raw?.url,
+      item?.raw?.pendingUrl,
+      item?.raw?.filename,
+    ]
+      .concat(item?.aliases || [])
+      .concat(item?.searchTags || [])
+      .concat(item?.tabs?.flatMap((tab) => [
+        tab?.title,
+        tab?.subtitle,
+        tab?.workspaceName,
+        tab?.raw?.url,
+        tab?.raw?.pendingUrl,
+      ]) || []);
+    return tokens.some((token) => {
+      const value = String(token || '').trim().toLowerCase();
+      return value && (value.includes(lowerQuery) || lowerQuery.includes(value));
+    });
+  }
+
+  function getNotesApi() {
+    return globalThis.vivaldi?.notes || globalThis.chrome?.notes || null;
+  }
+
+  function callNotesApi(methodName, ...args) {
+    const api = getNotesApi();
+    if (!api || typeof api[methodName] !== 'function') {
+      return Promise.reject(new Error(t('notesUnavailable')));
+    }
+    return new Promise((resolve, reject) => {
+      let settled = false;
+      const finish = (value) => {
+        if (settled) return;
+        settled = true;
+        const lastError = globalThis.chrome?.runtime?.lastError;
+        if (lastError) {
+          reject(lastError);
+          return;
+        }
+        resolve(value);
+      };
+      try {
+        const result = api[methodName](...args, finish);
+        if (result && typeof result.then === 'function') {
+          result.then(finish, reject);
+        }
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  function flattenNoteTree(nodes) {
+    const output = [];
+    const visit = (node) => {
+      if (!node) return;
+      if (node.type === 'note') {
+        output.push(node);
+      }
+      (node.children || []).forEach(visit);
+    };
+    (Array.isArray(nodes) ? nodes : [nodes]).forEach(visit);
+    return output;
+  }
+
+  function normalizeNoteForSuggestion(note) {
+    const title = note.title || truncateText(note.content || '', 48) || t('untitledConversation');
+    return {
+      id: 'note-' + note.id,
+      kind: 'note',
+      group: 'Notes',
+      title,
+      subtitle: t('notesSection'),
+      meta: truncateText(String(note.content || '').replace(/\s+/g, ' ').trim(), 80),
+      iconText: 'N',
+      color: '#41533C',
+      content: note.content || '',
+      searchTags: ['note', 'notes', '笔记'],
+      raw: note,
+    };
+  }
+
+  async function getNoteSuggestions(query) {
+    const api = getNotesApi();
+    if (!api) {
+      return [];
+    }
+    const tree = await callNotesApi('getTree');
+    const lowerQuery = String(query || '').trim().toLowerCase();
+    return flattenNoteTree(tree)
+      .map(normalizeNoteForSuggestion)
+      .filter((item) => matchesAtSuggestionQuery(item, lowerQuery))
+      .slice(0, 12);
   }
 
   function initPanelState(root) {
     root.innerHTML = buildMarkup();
     const state = {
       root,
+      shell: root.querySelector('.ask-in-page-shell'),
       messages: root.querySelector('#askMessages'),
       empty: root.querySelector('#askEmpty'),
       commandsRow: root.querySelector('#askCommandsRow'),
       inputBox: root.querySelector('#askInputBox'),
+      btnMenu: root.querySelector('.ask-btn-menu'),
       editBanner: root.querySelector('#askEditBanner'),
       editClose: root.querySelector('#askEditClose'),
       inputContext: root.querySelector('#askInputContext'),
@@ -3347,11 +4213,20 @@
       inlineRefRow: root.querySelector('#askInlineRefRow'),
       selectionCard: root.querySelector('#askSelectionCard'),
       selectionTitle: root.querySelector('#askSelectionTitle'),
+      contextPreview: root.querySelector('#askContextPreview'),
+      contextPreviewTitle: root.querySelector('#askContextPreviewTitle'),
+      contextPreviewBody: root.querySelector('#askContextPreviewBody'),
       inputMain: root.querySelector('#askInputMain'),
       inputField: root.querySelector('#askInputField'),
       btnSend: root.querySelector('#askBtnSend'),
       btnTool: root.querySelector('.ask-btn-tool'),
       btnNew: root.querySelector('.ask-btn-new'),
+      historyDrawer: root.querySelector('#askHistoryDrawer'),
+      historyBackdrop: root.querySelector('#askHistoryBackdrop'),
+      historyClose: root.querySelector('#askHistoryClose'),
+      historyCurrentGroup: root.querySelector('#askHistoryCurrentGroup'),
+      historyCurrentList: root.querySelector('#askHistoryCurrentList'),
+      historyRecentList: root.querySelector('#askHistoryRecentList'),
       ctxFavicon: root.querySelector('#askContextFavicon'),
       ctxTitle: root.querySelector('#askContextTitle'),
       ctxUrl: root.querySelector('#askContextUrl'),
@@ -3364,8 +4239,10 @@
       cmdChipFocused: false,
       refs: [],
       autoCurrentPageRefId: null,
+      textContexts: [],
       capabilities: [],
       nextRefId: 1,
+      nextTextContextId: 1,
       nextCapabilityId: 1,
       suggestionToken: null,
       suggestionItems: [],
@@ -3373,10 +4250,12 @@
       suggestionSelectedIndex: 0,
       suggestionMode: null,
       atTabsExpanded: false,
+      atVisibleTabCount: TAB_SUGGESTION_LIMITS.collapsed,
       atSuggestionData: null,
       currentContext: null,
       contextCardVisible: false,
       selectedText: '',
+      selectedTextPinned: false,
       selectionPollId: null,
       focusedComposerTokenKey: null,
       editingTurnId: null,
@@ -3388,6 +4267,22 @@
       pendingAiTasks: new Map(),
       currentStreamingTurnId: null,
       isBusy: false,
+      hostMode: isAskInPageTabUrl(location.href) ? 'tab' : 'panel',
+      routeState: resolveAskInPageRoute(location.href),
+      targetTabId: resolveAskInPageRoute(location.href).targetTabId || null,
+      sessionTarget: null,
+      currentSessionId: '',
+      sessionTitle: '',
+      sessionTitlePending: false,
+      sessionTitleGenerated: false,
+      currentTabBindingKey: '',
+      currentPageKey: '',
+      currentSessionCreatedAt: '',
+      saveTimer: null,
+      isRestoringSession: false,
+      historyDrawerOpen: false,
+      historyCurrentItems: [],
+      historyRecentItems: [],
       commandUsage: new Map(),
       scrollAnimationFrame: null,
       autoScrollPinned: true,
@@ -3396,7 +4291,11 @@
       readingQueueTimer: null,
       readingQueueIndex: 0,
       selectionEventHandlersBound: false,
+      contextPreviewToken: 0,
+      contextPreviewOpen: false,
+      noteMenuEl: null,
     };
+    currentAppState = state;
 
     function setSendButtonMode(mode) {
       state.btnSend.classList.toggle('is-stop', mode === 'stop');
@@ -3417,6 +4316,512 @@
       state.inputField.classList.remove('disabled');
       state.btnTool.disabled = false;
       state.commandsRow.style.pointerEvents = '';
+    }
+
+    function stopAllPendingTasks() {
+      state.pendingAiTasks.forEach((_task, turnId) => clearPendingAiTask(turnId));
+      state.pendingAiTasks.clear();
+      state.currentStreamingTurnId = null;
+      syncBusyState();
+    }
+
+    function serializeCommandUsage() {
+      return Array.from(state.commandUsage.entries()).map(([name, count]) => [name, count]);
+    }
+
+    function extractUserQuestionTextFromTurn(turn) {
+      const explicitText = String(turn?.text || '').replace(/\s+/g, ' ').trim();
+      if (explicitText) {
+        return explicitText;
+      }
+      const sequenceParts = Array.isArray(turn?.sequenceParts) ? turn.sequenceParts : [];
+      const text = sequenceParts
+        .filter((part) => part.type === 'text')
+        .map((part) => String(part.text || '').trim())
+        .filter(Boolean)
+        .join(' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      if (text) {
+        return text;
+      }
+      const visible = String(turn?.visibleText || '').replace(/\s+/g, ' ').trim();
+      const activeCmd = String(turn?.activeCmd || '').trim();
+      if (!visible) {
+        return '';
+      }
+      if (activeCmd && visible.toLowerCase().startsWith(activeCmd.toLowerCase() + ' ')) {
+        return visible.slice(activeCmd.length + 1).trim();
+      }
+      return visible;
+    }
+
+    function buildFallbackSessionTitle(record) {
+      const firstQuestion = (record?.turns || [])
+        .map((turn) => extractUserQuestionTextFromTurn(turn))
+        .find(Boolean);
+      return truncateText(firstQuestion || t('untitledConversation'), 48);
+    }
+
+    async function maybeGenerateSessionTitle(record) {
+      if (!record || state.sessionTitlePending || state.sessionTitleGenerated) {
+        return;
+      }
+      const firstQuestion = (record.turns || [])
+        .map((turn) => extractUserQuestionTextFromTurn(turn))
+        .find(Boolean);
+      if (!firstQuestion) {
+        state.sessionTitleGenerated = true;
+        return;
+      }
+      if (!AI_CONFIG.apiKey) {
+        state.sessionTitleGenerated = true;
+        return;
+      }
+      state.sessionTitlePending = true;
+      try {
+        const body = {
+          model: AI_CONFIG.model,
+          stream: false,
+          temperature: 0.2,
+          max_tokens: 32,
+          messages: [
+            {
+              role: 'system',
+              content: 'Write a very short conversation title based only on the user question. Do not mention the webpage title. 4 to 8 words. No quotes. No punctuation unless necessary.',
+            },
+            {
+              role: 'user',
+              content: firstQuestion,
+            },
+          ],
+        };
+        const response = await fetch(AI_CONFIG.apiEndpoint, {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer ' + AI_CONFIG.apiKey,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
+        });
+        if (!response.ok) {
+          throw new Error('title request failed');
+        }
+        const data = await response.json();
+        const candidate = truncateText(cleanModelText(data?.choices?.[0]?.message?.content || '').replace(/\n+/g, ' ').trim(), 48);
+        state.sessionTitle = candidate || buildFallbackSessionTitle(record);
+      } catch (_error) {
+        state.sessionTitle = buildFallbackSessionTitle(record);
+      } finally {
+        state.sessionTitleGenerated = true;
+        state.sessionTitlePending = false;
+        saveSessionNow().catch(() => {});
+      }
+    }
+
+    function buildSessionRecord() {
+      const targetSnapshot = sanitizeTabSnapshot(state.sessionTarget || state.currentContext?.raw || state.currentContext || { id: state.targetTabId });
+      const turns = Array.from(state.messages.querySelectorAll('.ask-turn'))
+        .map((node) => sanitizeTurnSnapshot(node._askTurnData || {}));
+      const now = new Date().toISOString();
+      const provisionalTitle = state.sessionTitle || buildFallbackSessionTitle({ turns });
+      return {
+        sessionId: state.currentSessionId || createSessionId(),
+        createdAt: state.currentSessionCreatedAt || now,
+        updatedAt: now,
+        title: provisionalTitle,
+        target: targetSnapshot,
+        conversationMemory: {
+          summary: state.conversationMemory.summary || '',
+          summarizedTurnCount: Number(state.conversationMemory.summarizedTurnCount || 0),
+        },
+        nextTurnId: state.nextTurnId,
+        commandUsage: serializeCommandUsage(),
+        turns,
+      };
+    }
+
+    function hasPersistableConversation(record) {
+      return Boolean((record?.turns || []).some((turn) => Boolean(turn.persistEligible || (turn.aiReplyText && !turn.aiReplyError))));
+    }
+
+    async function ensureStorageManifest(storageHandle, updatedAt) {
+      const existing = await readJsonFromHandle(storageHandle, ASK_IN_PAGE_STORAGE.manifestName);
+      const manifest = Object.assign({
+        app: 'AskInPage',
+        storageVersion: ASK_IN_PAGE_STORAGE.manifestVersion,
+        createdAt: updatedAt,
+      }, existing || {});
+      manifest.lastSavedAt = updatedAt;
+      await writeJsonToHandle(storageHandle, ASK_IN_PAGE_STORAGE.manifestName, manifest);
+    }
+
+    async function readTabsIndex(storageHandle) {
+      return (await readJsonFromHandle(storageHandle, ['indexes', ASK_IN_PAGE_STORAGE.tabsIndexName])) || {
+        storageVersion: ASK_IN_PAGE_STORAGE.manifestVersion,
+        bindings: {},
+      };
+    }
+
+    async function readPagesIndex(storageHandle) {
+      return (await readJsonFromHandle(storageHandle, ['indexes', ASK_IN_PAGE_STORAGE.pagesIndexName])) || {
+        storageVersion: ASK_IN_PAGE_STORAGE.manifestVersion,
+        pages: {},
+        recent: [],
+      };
+    }
+
+    async function loadSessionRecord(sessionId) {
+      if (!sessionId) {
+        return null;
+      }
+      const storageHandle = await ensureAskInPageStorageHandle({ interactive: false });
+      if (!storageHandle) {
+        return null;
+      }
+      return readJsonFromHandle(storageHandle, ['sessions', sessionId + '.json']);
+    }
+
+    async function loadSessionBinding(tabBindingKey) {
+      if (!tabBindingKey) {
+        return '';
+      }
+      const storageHandle = await ensureAskInPageStorageHandle({ interactive: false });
+      if (!storageHandle) {
+        return '';
+      }
+      const tabsIndex = await readTabsIndex(storageHandle);
+      return String(tabsIndex.bindings?.[tabBindingKey] || '');
+    }
+
+    async function bindSessionToTab(tab, sessionId) {
+      const storageHandle = await ensureAskInPageStorageHandle({ interactive: false });
+      if (!storageHandle || !sessionId) {
+        return;
+      }
+      const bindingKey = getTabBindingKey(tab);
+      if (!bindingKey) {
+        return;
+      }
+      const tabsIndex = await readTabsIndex(storageHandle);
+      tabsIndex.bindings[bindingKey] = sessionId;
+      await writeJsonToHandle(storageHandle, ['indexes', ASK_IN_PAGE_STORAGE.tabsIndexName], tabsIndex);
+    }
+
+    async function deleteSessionRecord(sessionId) {
+      if (!sessionId) {
+        return;
+      }
+      const storageHandle = await ensureAskInPageStorageHandle({ interactive: false });
+      if (!storageHandle) {
+        return;
+      }
+      await removePathFromHandle(storageHandle, ['sessions', sessionId + '.json']);
+      const tabsIndex = await readTabsIndex(storageHandle);
+      Object.keys(tabsIndex.bindings || {}).forEach((key) => {
+        if (tabsIndex.bindings[key] === sessionId) {
+          delete tabsIndex.bindings[key];
+        }
+      });
+      await writeJsonToHandle(storageHandle, ['indexes', ASK_IN_PAGE_STORAGE.tabsIndexName], tabsIndex);
+      const pagesIndex = await readPagesIndex(storageHandle);
+      Object.keys(pagesIndex.pages || {}).forEach((pageKey) => {
+        pagesIndex.pages[pageKey] = (pagesIndex.pages[pageKey] || []).filter((item) => item.sessionId !== sessionId);
+        if (!pagesIndex.pages[pageKey].length) {
+          delete pagesIndex.pages[pageKey];
+        }
+      });
+      pagesIndex.recent = (pagesIndex.recent || []).filter((item) => item.sessionId !== sessionId);
+      await writeJsonToHandle(storageHandle, ['indexes', ASK_IN_PAGE_STORAGE.pagesIndexName], pagesIndex);
+      await renderHistoryLists();
+    }
+
+    async function saveSessionNow() {
+      const storageHandle = await ensureAskInPageStorageHandle({ interactive: true });
+      if (!storageHandle) {
+        return;
+      }
+      const record = buildSessionRecord();
+      if (!hasPersistableConversation(record)) {
+        await renderHistoryLists();
+        return;
+      }
+      const fallbackTitle = buildFallbackSessionTitle(record);
+      state.currentSessionId = record.sessionId;
+      state.currentSessionCreatedAt = record.createdAt;
+      state.currentTabBindingKey = record.target.bindingKey || state.currentTabBindingKey;
+      state.currentPageKey = record.target.pageKey || state.currentPageKey;
+      state.sessionTarget = Object.assign({}, record.target);
+      state.sessionTitle = record.title || state.sessionTitle || fallbackTitle;
+      if (!record.title && fallbackTitle && fallbackTitle !== t('untitledConversation')) {
+        record.title = fallbackTitle;
+      }
+      await writeJsonToHandle(storageHandle, ['sessions', record.sessionId + '.json'], record);
+
+      const tabsIndex = await readTabsIndex(storageHandle);
+      if (record.target.bindingKey) {
+        tabsIndex.bindings[record.target.bindingKey] = record.sessionId;
+      }
+      await writeJsonToHandle(storageHandle, ['indexes', ASK_IN_PAGE_STORAGE.tabsIndexName], tabsIndex);
+
+      const pagesIndex = await readPagesIndex(storageHandle);
+      const nextMeta = {
+        sessionId: record.sessionId,
+        updatedAt: record.updatedAt,
+        title: record.title || state.sessionTitle || buildFallbackSessionTitle(record),
+        url: record.target.url || '',
+        pageKey: record.target.pageKey || '',
+      };
+      if (record.target.pageKey) {
+        const existingPageEntries = Array.isArray(pagesIndex.pages[record.target.pageKey]) ? pagesIndex.pages[record.target.pageKey] : [];
+        pagesIndex.pages[record.target.pageKey] = [nextMeta].concat(existingPageEntries.filter((item) => item.sessionId !== record.sessionId)).slice(0, 12);
+      }
+      pagesIndex.recent = [nextMeta].concat((pagesIndex.recent || []).filter((item) => item.sessionId !== record.sessionId)).slice(0, 30);
+      await writeJsonToHandle(storageHandle, ['indexes', ASK_IN_PAGE_STORAGE.pagesIndexName], pagesIndex);
+      await ensureStorageManifest(storageHandle, record.updatedAt);
+      await renderHistoryLists();
+      if (!state.sessionTitleGenerated && hasPersistableConversation(record)) {
+        state.sessionTitle = state.sessionTitle || buildFallbackSessionTitle(record);
+        maybeGenerateSessionTitle(record).catch(() => {});
+      }
+    }
+
+    function queueSessionSave(immediate) {
+      if (state.isRestoringSession) {
+        return;
+      }
+      if (state.saveTimer) {
+        clearTimeout(state.saveTimer);
+        state.saveTimer = null;
+      }
+      if (immediate) {
+        saveSessionNow().catch(() => {});
+        return;
+      }
+      state.saveTimer = window.setTimeout(() => {
+        state.saveTimer = null;
+        saveSessionNow().catch(() => {});
+      }, 220);
+    }
+
+    function setHistoryDrawerOpen(open) {
+      state.historyDrawerOpen = Boolean(open);
+      state.historyDrawer.classList.toggle('open', state.historyDrawerOpen);
+      state.historyDrawer.setAttribute('aria-hidden', state.historyDrawerOpen ? 'false' : 'true');
+      state.historyBackdrop.hidden = !state.historyDrawerOpen;
+    }
+
+    function renderHistoryGroup(listEl, items) {
+      listEl.innerHTML = '';
+      if (!items.length) {
+        listEl.innerHTML = '<div class="ask-history-empty">' + escapeHtml(t('historyEmpty')) + '</div>';
+        return;
+      }
+      items.forEach((item) => {
+        const row = document.createElement('div');
+        row.className = 'ask-history-row';
+        const metaParts = [
+          getHostFromUrl(item.url || ''),
+          item.updatedAt ? new Date(item.updatedAt).toLocaleString() : '',
+        ].filter(Boolean);
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'ask-history-item' + (item.sessionId === state.currentSessionId ? ' is-active' : '');
+        button.innerHTML =
+          '<div class="ask-history-item-title">' + escapeHtml(item.title || t('currentPage')) + '</div>' +
+          '<div class="ask-history-item-meta">' + escapeHtml(metaParts.join(' · ')) + '</div>';
+        button.addEventListener('click', () => {
+          activateSessionFromHistory(item.sessionId).catch(() => {});
+        });
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'ask-history-delete';
+        deleteBtn.title = t('deleteConversation');
+        deleteBtn.setAttribute('aria-label', t('deleteConversation'));
+        deleteBtn.textContent = '×';
+        deleteBtn.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          deleteHistoryEntry(item.sessionId).catch(() => {});
+        });
+        button.appendChild(deleteBtn);
+        row.appendChild(button);
+        listEl.appendChild(row);
+      });
+    }
+
+    async function renderHistoryLists() {
+      const storageHandle = await ensureAskInPageStorageHandle({ interactive: false });
+      if (!storageHandle) {
+        renderHistoryGroup(state.historyCurrentList, []);
+        renderHistoryGroup(state.historyRecentList, []);
+        state.historyCurrentGroup.hidden = false;
+        return;
+      }
+      const pagesIndex = await readPagesIndex(storageHandle);
+      const currentItems = Array.isArray(pagesIndex.pages?.[state.currentPageKey]) ? pagesIndex.pages[state.currentPageKey] : [];
+      const recentItems = Array.isArray(pagesIndex.recent) ? pagesIndex.recent.filter((item) => item.pageKey !== state.currentPageKey) : [];
+      state.historyCurrentGroup.hidden = !state.currentPageKey;
+      renderHistoryGroup(state.historyCurrentList, currentItems);
+      renderHistoryGroup(state.historyRecentList, recentItems);
+    }
+
+    async function activateSessionFromHistory(sessionId) {
+      const record = await loadSessionRecord(sessionId);
+      if (!record) {
+        return;
+      }
+      const recordUrl = String(record.target?.url || '');
+      const normalizedRecordUrl = normalizePageUrl(recordUrl);
+      let destinationTab = await getTabById(record.target?.id || record.target?.tabId || 0);
+      const destinationUrl = String(destinationTab?.url || destinationTab?.pendingUrl || '');
+      if (!destinationTab?.id || (normalizedRecordUrl && normalizePageUrl(destinationUrl) !== normalizedRecordUrl)) {
+        const allTabs = await getAllTabs();
+        destinationTab = allTabs.find((tab) => normalizePageUrl(tab?.url || tab?.pendingUrl || '') === normalizedRecordUrl) || null;
+      }
+      if (!destinationTab?.id && recordUrl) {
+        destinationTab = await promisifyChrome(chrome.tabs, 'create', [{ url: recordUrl, active: true }]).catch(() => null);
+      }
+      if (destinationTab?.id) {
+        const reboundTarget = sanitizeTabSnapshot(destinationTab);
+        const reboundRecord = Object.assign({}, record, {
+          target: reboundTarget,
+        });
+        await bindSessionToTab(destinationTab, sessionId);
+        if (chrome.windows?.update && destinationTab.windowId) {
+          await promisifyChrome(chrome.windows, 'update', [destinationTab.windowId, { focused: true }]).catch(() => {});
+        }
+        await promisifyChrome(chrome.tabs, 'update', [destinationTab.id, { active: true }]).catch(() => {});
+        await restoreSessionRecord(reboundRecord);
+        queueSessionSave(true);
+        setHistoryDrawerOpen(false);
+        return;
+      }
+      await restoreSessionRecord(record);
+    }
+
+    async function deleteHistoryEntry(sessionId) {
+      if (!sessionId) {
+        return;
+      }
+      const deletingCurrent = sessionId === state.currentSessionId;
+      await deleteSessionRecord(sessionId);
+      if (deletingCurrent) {
+        const currentTab = await getCurrentTab().catch(() => null);
+        state.sessionTarget = null;
+        await createFreshSession(currentTab, { persistImmediately: false });
+      }
+      await renderHistoryLists();
+    }
+
+    async function restoreSessionRecord(record) {
+      if (!record) {
+        return;
+      }
+      state.isRestoringSession = true;
+      stopAllPendingTasks();
+      state.currentSessionId = record.sessionId || createSessionId();
+      state.currentSessionCreatedAt = record.createdAt || new Date().toISOString();
+      state.sessionTitle = record.title || buildFallbackSessionTitle(record);
+      state.sessionTitleGenerated = Boolean(record.title);
+      state.sessionTitlePending = false;
+      state.currentTabBindingKey = record.target?.bindingKey || '';
+      state.currentPageKey = record.target?.pageKey || '';
+      state.targetTabId = Number(record.target?.id || record.target?.tabId || state.targetTabId || 0) || null;
+      state.sessionTarget = Object.assign({}, record.target || {});
+      state.commandUsage = new Map(Array.isArray(record.commandUsage) ? record.commandUsage : []);
+      state.conversationMemory.summary = String(record.conversationMemory?.summary || '');
+      state.conversationMemory.summarizedTurnCount = Number(record.conversationMemory?.summarizedTurnCount || 0);
+      state.nextTurnId = Number(record.nextTurnId || 1);
+      state.messages.innerHTML = '';
+      for (const snapshot of (record.turns || [])) {
+        const turnData = hydrateTurnSnapshot(snapshot);
+        state.nextTurnId = Math.max(state.nextTurnId, Number(turnData.id || 0) + 1);
+        const turnNode = renderTurn(turnData);
+        state.messages.appendChild(turnNode);
+        if (turnData.aiReplyText || turnData.aiReasoningText) {
+          const scaffold = createAiMessageScaffold(turnData);
+          turnNode.querySelector('.ask-turn-ai-slot')?.appendChild(scaffold.aiMsg);
+          if (turnData.aiReasoningText) {
+            applyReasoningUi(scaffold, turnData.aiReasoningText, 1);
+          } else {
+            scaffold.processing.classList.add('hidden');
+          }
+          await renderRichAnswer(scaffold.answer, turnData.aiReplyText || '');
+          turnNode.classList.add('is-ai-complete');
+        }
+      }
+      state.empty.style.display = record.turns?.length ? 'none' : '';
+      clearComposer({ showDefaultContext: false });
+      await syncContext();
+      await syncSelectedText();
+      syncCommandsRow();
+      syncReferenceStrip();
+      setHistoryDrawerOpen(false);
+      scrollToBottom();
+      state.isRestoringSession = false;
+      await renderHistoryLists();
+    }
+
+    async function restoreSessionById(sessionId) {
+      const record = await loadSessionRecord(sessionId);
+      if (!record) {
+        return;
+      }
+      await restoreSessionRecord(record);
+    }
+
+    async function createFreshSession(targetTab, options) {
+      const settings = Object.assign({ persistImmediately: false }, options || {});
+      stopAllPendingTasks();
+      state.currentSessionId = createSessionId();
+      state.currentSessionCreatedAt = new Date().toISOString();
+      state.sessionTitle = '';
+      state.sessionTitleGenerated = false;
+      state.sessionTitlePending = false;
+      state.currentTabBindingKey = getTabBindingKey(targetTab);
+      state.currentPageKey = normalizePageUrl(targetTab?.url || targetTab?.pendingUrl || '');
+      state.targetTabId = Number(targetTab?.id || state.targetTabId || 0) || null;
+      state.sessionTarget = sanitizeTabSnapshot(targetTab || { id: state.targetTabId });
+      state.conversationMemory.summary = '';
+      state.conversationMemory.summarizedTurnCount = 0;
+      state.messages.innerHTML = '';
+      state.empty.style.display = '';
+      state.nextTurnId = 1;
+      clearComposer({ showDefaultContext: false });
+      if (targetTab) {
+        setContextFromTab(targetTab);
+        if (state.currentContext) {
+          setAutoCurrentPageReference(state.currentContext);
+        }
+      } else {
+        await syncContext();
+        if (state.currentContext) {
+          setAutoCurrentPageReference(state.currentContext);
+        }
+      }
+      await syncSelectedText();
+      if (settings.persistImmediately) {
+        queueSessionSave(true);
+      } else {
+        renderHistoryLists().catch(() => {});
+      }
+    }
+
+    async function ensureSessionForTab(tab) {
+      const bindingKey = getTabBindingKey(tab);
+      const pageKey = normalizePageUrl(tab?.url || tab?.pendingUrl || '');
+      const currentBindingChanged = bindingKey && bindingKey !== state.currentTabBindingKey;
+      const currentPageChanged = pageKey && pageKey !== state.currentPageKey;
+      if (!currentBindingChanged && !currentPageChanged && state.currentSessionId) {
+        return;
+      }
+      const boundSessionId = await loadSessionBinding(bindingKey);
+      if (boundSessionId) {
+        await restoreSessionById(boundSessionId);
+        return;
+      }
+      await createFreshSession(tab);
     }
 
     function isNearBottom() {
@@ -3542,6 +4947,51 @@
       state.editBanner.classList.toggle('hidden', !state.editingTurnId);
     }
 
+    function buildContextPreviewSnippet(text) {
+      const normalized = String(text || '').replace(/\s+/g, ' ').trim();
+      if (!normalized) {
+        return t('noPageContent');
+      }
+      if (normalized.length <= 240) {
+        return normalized;
+      }
+      const head = normalized.slice(0, 140).trim();
+      const tail = normalized.slice(-90).trim();
+      return head + '\n...\n' + tail;
+    }
+
+    function closeContextPreview() {
+      state.contextPreviewOpen = false;
+      state.contextPreview?.classList.add('hidden');
+      state.contextPreview?.setAttribute('aria-hidden', 'true');
+    }
+
+    async function openContextPreview() {
+      if (!state.contextCardVisible || !state.currentContext || !state.contextPreview) {
+        return;
+      }
+      state.contextPreviewOpen = true;
+      const previewToken = ++state.contextPreviewToken;
+      state.contextPreviewTitle.textContent = state.currentContext.title || t('currentPage');
+      state.contextPreviewBody.textContent = t('loading');
+      state.contextPreview.classList.remove('hidden');
+      state.contextPreview.setAttribute('aria-hidden', 'false');
+      try {
+        const snapshot = await getTabContentSnapshot(state.currentContext.raw || state.currentContext, { lightweight: true, allowCachedLightweight: true });
+        if (!state.contextPreviewOpen || previewToken !== state.contextPreviewToken) {
+          return;
+        }
+        const previewSource = snapshot.content || snapshot.metaDescription || snapshot.headings?.join(' ') || snapshot.url || '';
+        state.contextPreviewTitle.textContent = snapshot.title || state.currentContext.title || t('currentPage');
+        state.contextPreviewBody.textContent = buildContextPreviewSnippet(previewSource);
+      } catch (error) {
+        if (!state.contextPreviewOpen || previewToken !== state.contextPreviewToken) {
+          return;
+        }
+        state.contextPreviewBody.textContent = t('pageContentUnavailable');
+      }
+    }
+
     function getComposerReferenceItems() {
       const items = [];
       if (state.contextCardVisible && state.currentContext) {
@@ -3553,13 +5003,30 @@
         });
       }
       if (state.selectedText) {
+        const selectionContext = state.textContexts.find((item) => item.id === 'selection');
         items.push({
-          key: 'selection',
+          key: 'text:selection',
           kind: 'selection',
           iconText: 'AI',
           title: state.selectedText,
+          subtitle: t('selectedText'),
+          content: selectionContext?.content || state.selectedText,
+          textContextId: 'selection',
         });
       }
+      state.textContexts
+        .filter((item) => item.id !== 'selection')
+        .forEach((item) => {
+          items.push({
+            key: 'text:' + item.id,
+            kind: item.kind || 'text',
+            iconText: item.iconText || 'T',
+            title: item.title,
+            subtitle: item.subtitle || '',
+            content: item.content || '',
+            textContextId: item.id,
+          });
+        });
       state.refs.forEach((ref) => {
         items.push({
           key: 'ref:' + ref.id,
@@ -3572,12 +5039,72 @@
       return items;
     }
 
+    function makeTextContext(item, options) {
+      const content = String(item.content || item.title || '').trim();
+      const title = item.title || truncateText(content.replace(/\s+/g, ' '), 80) || t('selectedText');
+      return {
+        id: String(options?.id || item.id || ('text-' + state.nextTextContextId++)),
+        kind: item.kind || 'text',
+        title: truncateText(title, 140),
+        subtitle: item.subtitle || '',
+        iconText: item.iconText || (item.kind === 'note' ? 'N' : 'T'),
+        content,
+        sourceId: item.sourceId || item.raw?.id || '',
+        raw: item.raw || null,
+      };
+    }
+
+    function upsertTextContext(item, options) {
+      const textContext = makeTextContext(item, options);
+      const existing = state.textContexts.find((entry) => entry.id === textContext.id);
+      if (existing) {
+        Object.assign(existing, textContext);
+      } else {
+        state.textContexts.push(textContext);
+      }
+      if (textContext.id === 'selection') {
+        state.selectedText = textContext.title;
+        state.selectionTitle.textContent = textContext.title;
+      }
+      hideSendValidation();
+      syncReferenceStrip();
+      queueSessionSave();
+      return textContext;
+    }
+
+    function removeTextContext(textContextId) {
+      const id = String(textContextId || '');
+      const composerToken = findComposerTokenNode('text:' + id);
+      state.textContexts = state.textContexts.filter((item) => item.id !== id);
+      if (id === 'selection') {
+        state.selectedText = '';
+        state.selectedTextPinned = false;
+        state.selectionTitle.textContent = '';
+      }
+      if (state.focusedComposerTokenKey === 'text:' + id || (id === 'selection' && state.focusedComposerTokenKey === 'selection')) {
+        clearFocusedComposerToken();
+      }
+      animateNodeRemoval(composerToken, () => {
+        composerToken?.remove();
+        syncReferenceStrip();
+      });
+      state.inputField.focus();
+      queueSessionSave();
+    }
+
     function isSuggestionAlreadySelected(item) {
       if (!item) {
         return false;
       }
       if (item.kind === 'capability') {
         return state.capabilities.some((entry) => entry.type === item.capabilityType || entry.title === item.title);
+      }
+      if (item.kind === 'note') {
+        const noteId = String(item.raw?.id || item.id || '');
+        return state.textContexts.some((entry) => entry.kind === 'note' && (
+          (noteId && (entry.sourceId === noteId || entry.id === 'note-' + noteId || entry.id === noteId)) ||
+          (entry.title === item.title && entry.content === item.content)
+        ));
       }
       if (item.kind === 'context') {
         const currentContextId = String(state.currentContext?.id || state.currentContext?.raw?.id || '');
@@ -3642,6 +5169,58 @@
       return chip;
     }
 
+    function createTextContextCard(textContext) {
+      const chip = document.createElement('div');
+      chip.className = 'ask-ref-chip ask-text-context-chip is-entering';
+      chip.dataset.textContextId = textContext.id;
+      const icon = document.createElement('span');
+      icon.className = 'ask-ref-chip-icon';
+      const info = document.createElement('span');
+      info.className = 'ask-ref-chip-info';
+      const title = document.createElement('span');
+      title.className = 'ask-ref-chip-title';
+      const subtitle = document.createElement('span');
+      subtitle.className = 'ask-ref-chip-subtitle';
+      info.append(title, subtitle);
+      ['pointerdown', 'mousedown', 'click'].forEach((eventName) => {
+        chip.addEventListener(eventName, (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        });
+      });
+      chip.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (chip.dataset.textContextId === 'selection') {
+          clearSelectedTextContext();
+          return;
+        }
+        removeTextContext(chip.dataset.textContextId || '');
+      });
+      chip.append(icon, info);
+      updateTextContextCard(chip, textContext);
+      window.setTimeout(() => {
+        chip.classList.remove('is-entering');
+      }, 240);
+      return chip;
+    }
+
+    function updateTextContextCard(chip, textContext) {
+      chip.dataset.textContextId = textContext.id;
+      chip.title = textContext.content || textContext.title || '';
+      const icon = chip.querySelector('.ask-ref-chip-icon');
+      const title = chip.querySelector('.ask-ref-chip-title');
+      const subtitle = chip.querySelector('.ask-ref-chip-subtitle');
+      if (icon) {
+        icon.textContent = textContext.iconText || 'T';
+      }
+      if (title) {
+        title.textContent = textContext.title;
+      }
+      if (subtitle) {
+        subtitle.textContent = textContext.subtitle || (textContext.kind === 'note' ? t('notesSection') : t('selectedText'));
+      }
+    }
+
     function updateReferenceCard(chip, ref) {
       chip.classList.toggle('ask-ref-chip-auto-current', Boolean(ref.autoCurrentPage));
       chip.dataset.refId = ref.id;
@@ -3667,12 +5246,21 @@
         Array.from(state.refRowInline.querySelectorAll('.ask-ref-chip[data-ref-id]'))
           .map((chip) => [chip.dataset.refId, chip])
       );
-      const nextChips = state.refs.map((ref) => {
+      const existingTextById = new Map(
+        Array.from(state.refRowInline.querySelectorAll('.ask-ref-chip[data-text-context-id]'))
+          .map((chip) => [chip.dataset.textContextId, chip])
+      );
+      const textChips = state.textContexts.map((textContext) => {
+        const chip = existingTextById.get(textContext.id) || createTextContextCard(textContext);
+        updateTextContextCard(chip, textContext);
+        return chip;
+      });
+      const refChips = state.refs.map((ref) => {
         const chip = existingById.get(ref.id) || createReferenceCard(ref);
         updateReferenceCard(chip, ref);
         return chip;
       });
-      state.refRowInline.replaceChildren(...nextChips);
+      state.refRowInline.replaceChildren(...textChips, ...refChips);
     }
 
     function getComposerTokenEntries() {
@@ -3697,8 +5285,13 @@
               setContextCardVisible(false);
               return;
             }
-            if (item.key === 'selection') {
-              clearSelectedTextContext();
+            if (item.key === 'selection' || String(item.key || '').startsWith('text:')) {
+              const textContextId = item.key === 'selection' ? 'selection' : String(item.key || '').slice(5);
+              if (textContextId === 'selection') {
+                clearSelectedTextContext();
+                return;
+              }
+              removeTextContext(textContextId);
               return;
             }
             if (item.key && item.key.startsWith('cap:')) {
@@ -3737,8 +5330,10 @@
       }
       state.refs = [];
       state.autoCurrentPageRefId = null;
+      state.textContexts = [];
       state.capabilities = [];
       state.selectedText = '';
+      state.selectedTextPinned = false;
       state.selectionTitle.textContent = '';
       state.contextCardVisible = Boolean(settings.showDefaultContext);
       getComposerTokenNodes().forEach((node) => node.remove());
@@ -3814,6 +5409,122 @@
     async function copyTextWithFeedback(button, text) {
       const ok = await copyTextToClipboard(text);
       setActionButtonState(button, ok ? 'success' : 'fail');
+    }
+
+    function closeNoteMenu() {
+      if (state.noteMenuEl) {
+        state.noteMenuEl.remove();
+        state.noteMenuEl = null;
+      }
+    }
+
+    function positionNoteMenu(button, menu) {
+      const buttonRect = button.getBoundingClientRect();
+      const rootRect = state.root?.getBoundingClientRect?.() || {
+        left: 0,
+        right: window.innerWidth,
+        top: 0,
+        bottom: window.innerHeight,
+      };
+      const margin = 8;
+      const menuWidth = Math.min(260, Math.max(220, rootRect.width - margin * 2));
+      const menuHeight = Math.min(menu.scrollHeight || 260, 260, Math.max(80, rootRect.height - margin * 2));
+      const minLeft = Math.max(margin, rootRect.left + margin);
+      const maxLeft = Math.max(minLeft, Math.min(window.innerWidth - menuWidth - margin, rootRect.right - menuWidth - margin));
+      const anchorX = buttonRect.left + buttonRect.width / 2;
+      const left = Math.min(Math.max(anchorX - menuWidth / 2, minLeft), maxLeft);
+      const belowTop = buttonRect.bottom + 3;
+      const aboveTop = buttonRect.top - menuHeight - 3;
+      const maxTop = Math.max(margin, Math.min(window.innerHeight - menuHeight - margin, rootRect.bottom - menuHeight - margin));
+      const top = belowTop + menuHeight <= rootRect.bottom - margin
+        ? belowTop
+        : Math.min(Math.max(aboveTop, rootRect.top + margin, margin), maxTop);
+      menu.style.setProperty('--aip-note-menu-left', Math.round(left) + 'px');
+      menu.style.setProperty('--aip-note-menu-top', Math.round(top) + 'px');
+      menu.style.setProperty('--aip-note-menu-origin-x', Math.round(anchorX - left) + 'px');
+      menu.style.width = Math.round(menuWidth) + 'px';
+    }
+
+    function createNoteTitleFromReply(text) {
+      return truncateText(extractLeadSentence(text, 80) || t('untitledConversation'), 80);
+    }
+
+    async function createNoteFromReply(text) {
+      const content = String(text || '').trim();
+      if (!content) {
+        return false;
+      }
+      await callNotesApi('create', {
+        type: 'note',
+        title: createNoteTitleFromReply(content),
+        content,
+      });
+      return true;
+    }
+
+    async function appendReplyToNote(noteId, text) {
+      const content = String(text || '').trim();
+      if (!content || !noteId) {
+        return false;
+      }
+      const result = await callNotesApi('get', String(noteId));
+      const note = Array.isArray(result) ? result[0] : result;
+      const nextContent = [note?.content || '', content].filter(Boolean).join('\n\n');
+      await callNotesApi('update', String(noteId), {
+        content: nextContent,
+      });
+      return true;
+    }
+
+    async function showNoteMenu(button, turnNode) {
+      closeNoteMenu();
+      const replyText = String(turnNode?._askTurnData?.aiReplyText || '').trim();
+      if (!replyText) {
+        setActionButtonState(button, 'fail');
+        return;
+      }
+      if (!getNotesApi()) {
+        setActionButtonState(button, 'fail');
+        return;
+      }
+      const menu = document.createElement('div');
+      menu.className = 'ask-note-menu';
+      menu.addEventListener('pointerdown', (event) => event.stopPropagation());
+      menu.addEventListener('mousedown', (event) => event.stopPropagation());
+      const addMenuItem = (title, subtitle, onClick) => {
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'ask-note-menu-item';
+        item.innerHTML = '<span class="ask-note-menu-title"></span><span class="ask-note-menu-subtitle"></span>';
+        item.querySelector('.ask-note-menu-title').textContent = title;
+        item.querySelector('.ask-note-menu-subtitle').textContent = subtitle || '';
+        item.addEventListener('click', async (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          closeNoteMenu();
+          try {
+            const ok = await onClick();
+            setActionButtonState(button, ok ? 'success' : 'fail');
+          } catch (error) {
+            setActionButtonState(button, 'fail');
+          }
+        });
+        menu.appendChild(item);
+      };
+      addMenuItem(t('createNewNote'), t('createNewNoteSubtitle'), () => createNoteFromReply(replyText));
+      try {
+        const tree = await callNotesApi('getTree');
+        flattenNoteTree(tree)
+          .map(normalizeNoteForSuggestion)
+          .slice(0, 12)
+          .forEach((note) => {
+            const noteTitle = note.title || t('untitledConversation');
+            addMenuItem(tf('appendToExistingNoteTitle', { title: noteTitle }), note.meta || t('appendToNote'), () => appendReplyToNote(note.raw?.id, replyText));
+          });
+      } catch (error) {}
+      state.root.appendChild(menu);
+      positionNoteMenu(button, menu);
+      state.noteMenuEl = menu;
     }
 
     function animateNodeRemoval(node, callback) {
@@ -3967,9 +5678,14 @@
             setContextCardVisible(false);
             return;
           }
-          if (key === 'selection') {
-            clearSelectedTextContext();
-            return;
+          if (key === 'selection' || key.startsWith('text:')) {
+            const textContextId = key === 'selection' ? 'selection' : key.slice(5);
+            if (textContextId === 'selection') {
+              clearSelectedTextContext();
+              return;
+            }
+            removeTextContext(textContextId);
+              return;
           }
           if (key.startsWith('cap:')) {
             removeCapability(key.slice(4));
@@ -4006,6 +5722,15 @@
       }
       if (item.capabilityContent) {
         token.dataset.capabilityContent = item.capabilityContent;
+      }
+      if (item.textContextId) {
+        token.dataset.textContextId = item.textContextId;
+      }
+      if (item.content) {
+        token.dataset.tokenContent = item.content;
+      }
+      if (item.subtitle) {
+        token.dataset.tokenSubtitle = item.subtitle;
       }
       const icon = document.createElement('span');
       icon.className = 'ask-composer-token-icon';
@@ -4116,23 +5841,39 @@
         existingContext.remove();
       }
 
-      const existingSelection = findComposerTokenNode('selection');
-      if (state.selectedText) {
-        if (!existingSelection) {
-          const token = createComposerTokenElement({
-            key: 'selection',
-            kind: 'selection',
-            iconText: 'AI',
-            title: state.selectedText,
-          });
-          state.inputField.appendChild(token);
+      const currentTextKeys = new Set();
+      state.textContexts.forEach((textContext) => {
+        const key = 'text:' + textContext.id;
+        currentTextKeys.add(key);
+        const existingText = findComposerTokenNode(key);
+        const payload = {
+          key,
+          kind: textContext.kind || 'text',
+          iconText: textContext.iconText || 'T',
+          title: textContext.title,
+          subtitle: textContext.subtitle || '',
+          content: textContext.content || '',
+          textContextId: textContext.id,
+        };
+        if (!existingText) {
+          state.inputField.appendChild(createComposerTokenElement(payload));
         } else {
-          existingSelection.dataset.tokenTitle = state.selectedText;
-          existingSelection.querySelector('.ask-composer-token-label').textContent = state.selectedText;
+          existingText.dataset.tokenKind = payload.kind;
+          existingText.dataset.tokenTitle = payload.title;
+          existingText.dataset.tokenIcon = payload.iconText;
+          existingText.dataset.tokenSubtitle = payload.subtitle;
+          existingText.dataset.tokenContent = payload.content;
+          existingText.dataset.textContextId = payload.textContextId;
+          existingText.querySelector('.ask-composer-token-icon').textContent = payload.iconText;
+          existingText.querySelector('.ask-composer-token-label').textContent = payload.title;
         }
-      } else if (existingSelection) {
-        existingSelection.remove();
-      }
+      });
+      getComposerTokenNodes().forEach((node) => {
+        const key = node.dataset.tokenKey || '';
+        if (key.startsWith('text:') && !currentTextKeys.has(key)) {
+          node.remove();
+        }
+      });
     }
 
     function getComposerSequenceParts() {
@@ -4159,6 +5900,9 @@
             iconText: node.dataset.tokenIcon || '',
             refId: node.dataset.refId || '',
             tokenRole: node.dataset.tokenRole || '',
+            subtitle: node.dataset.tokenSubtitle || '',
+            content: node.dataset.tokenContent || '',
+            textContextId: node.dataset.textContextId || '',
             capabilityId: node.dataset.capabilityId || '',
             capabilityType: node.dataset.capabilityType || '',
             capabilityCategory: node.dataset.capabilityCategory || '',
@@ -4180,7 +5924,11 @@
     function syncStateFromComposerDom() {
       const tokenNodes = getComposerTokenNodes();
       const hasContextToken = tokenNodes.some((node) => node.dataset.tokenKey === 'context');
-      const selectionToken = tokenNodes.find((node) => node.dataset.tokenKey === 'selection');
+      const textTokenNodes = tokenNodes.filter((node) => String(node.dataset.tokenKey || '').startsWith('text:') || node.dataset.tokenKey === 'selection');
+      const nextTextContextIds = textTokenNodes
+        .map((node) => node.dataset.textContextId || (node.dataset.tokenKey === 'selection' ? 'selection' : String(node.dataset.tokenKey || '').slice(5)))
+        .filter(Boolean);
+      const selectionToken = textTokenNodes.find((node) => (node.dataset.textContextId || '').trim() === 'selection' || node.dataset.tokenKey === 'selection');
       const nextSelectedText = selectionToken?.dataset.tokenTitle || '';
       const presentRefIds = tokenNodes
         .map((node) => node.dataset.refId || '')
@@ -4189,16 +5937,30 @@
         .map((node) => node.dataset.capabilityId || '')
         .filter(Boolean);
       const refsChanged = presentRefIds.length !== state.refs.length || state.refs.some((ref) => !presentRefIds.includes(ref.id));
+      const textContextsChanged = nextTextContextIds.length !== state.textContexts.length || state.textContexts.some((item) => !nextTextContextIds.includes(item.id));
       const capabilitiesChanged = presentCapabilityIds.length !== state.capabilities.length || state.capabilities.some((item) => !presentCapabilityIds.includes(item.id));
       const contextChanged = state.contextCardVisible !== hasContextToken;
       const selectionChanged = state.selectedText !== nextSelectedText;
-      if (!refsChanged && !capabilitiesChanged && !contextChanged && !selectionChanged) {
+      if (!refsChanged && !textContextsChanged && !capabilitiesChanged && !contextChanged && !selectionChanged) {
         return;
       }
       state.contextCardVisible = hasContextToken;
       state.selectedText = nextSelectedText;
+      if (!nextSelectedText) {
+        state.selectedTextPinned = false;
+      }
       state.selectionTitle.textContent = state.selectedText;
       state.refs = state.refs.filter((ref) => presentRefIds.includes(ref.id));
+      state.textContexts = state.textContexts.filter((item) => nextTextContextIds.includes(item.id));
+      textTokenNodes.forEach((node) => {
+        const id = node.dataset.textContextId || (node.dataset.tokenKey === 'selection' ? 'selection' : String(node.dataset.tokenKey || '').slice(5));
+        const existing = state.textContexts.find((item) => item.id === id);
+        if (existing) {
+          existing.title = node.dataset.tokenTitle || existing.title;
+          existing.content = node.dataset.tokenContent || existing.content || existing.title;
+          existing.subtitle = node.dataset.tokenSubtitle || existing.subtitle;
+        }
+      });
       state.capabilities = state.capabilities.filter((item) => presentCapabilityIds.includes(item.id));
       syncReferenceStrip();
     }
@@ -4221,6 +5983,9 @@
             iconText: node.dataset.tokenIcon || '',
             refId: node.dataset.refId || '',
             tokenRole: node.dataset.tokenRole || '',
+            subtitle: node.dataset.tokenSubtitle || '',
+            content: node.dataset.tokenContent || '',
+            textContextId: node.dataset.textContextId || '',
             capabilityId: node.dataset.capabilityId || '',
             capabilityType: node.dataset.capabilityType || '',
             capabilityCategory: node.dataset.capabilityCategory || '',
@@ -4270,6 +6035,9 @@
             iconText: node.dataset.tokenIcon || '',
             refId: node.dataset.refId || '',
             tokenRole: node.dataset.tokenRole || '',
+            subtitle: node.dataset.tokenSubtitle || '',
+            content: node.dataset.tokenContent || '',
+            textContextId: node.dataset.textContextId || '',
             capabilityId: node.dataset.capabilityId || '',
             capabilityType: node.dataset.capabilityType || '',
             capabilityCategory: node.dataset.capabilityCategory || '',
@@ -4292,6 +6060,19 @@
       }
       if (payload.key === 'selection') {
         setSelectedText(payload.title || '');
+        return;
+      }
+      if (String(payload.key || '').startsWith('text:') || payload.textContextId) {
+        upsertTextContext({
+          id: payload.textContextId || String(payload.key || '').slice(5),
+          kind: payload.kind || 'text',
+          title: payload.title || '',
+          subtitle: payload.subtitle || '',
+          iconText: payload.iconText || '',
+          content: payload.content || payload.title || '',
+        }, {
+          id: payload.textContextId || String(payload.key || '').slice(5),
+        });
         return;
       }
       if (payload.capabilityId || payload.tokenRole === 'capability') {
@@ -4405,10 +6186,13 @@
 
     function syncReferenceStrip() {
       const hasRefs = state.refs.length > 0;
-      const hasSelectedText = Boolean(state.selectedText);
+      const hasTextContexts = state.textContexts.length > 0;
       state.contextCard.classList.toggle('hidden', !state.contextCardVisible);
-      state.selectionCard.classList.toggle('hidden', !hasSelectedText);
-      state.inputContext.classList.toggle('hidden', !state.contextCardVisible && !hasRefs && !hasSelectedText);
+      state.selectionCard.classList.add('hidden');
+      state.inputContext.classList.toggle('hidden', !state.contextCardVisible && !hasRefs && !hasTextContexts);
+      if (!state.contextCardVisible) {
+        closeContextPreview();
+      }
       renderReferenceCards();
       syncInlineReferenceTokens();
       syncComposerTokenDom();
@@ -4456,6 +6240,7 @@
         return;
       }
       const normalized = normalizeTab(tab);
+      state.targetTabId = Number(tab.id || state.targetTabId || 0) || null;
       state.currentContext = normalized;
       state.ctxFavicon.textContent = normalized.iconText || 'A';
       state.ctxFavicon.style.background = normalized.color;
@@ -4470,10 +6255,14 @@
       }, options || {});
       try {
         const tab = await getCurrentTab();
+        if (tab && !state.isRestoringSession) {
+          await ensureSessionForTab(tab);
+        }
         setContextFromTab(tab);
         if (settings.addCurrentPageReference && state.currentContext) {
           setAutoCurrentPageReference(state.currentContext);
         }
+        renderHistoryLists().catch(() => {});
       } catch (error) {
         if (!state.currentContext) {
           setContextFromTab({
@@ -4484,32 +6273,59 @@
       }
     }
 
-    function setSelectedText(text) {
-      const normalized = String(text || '').replace(/\s+/g, ' ').trim().slice(0, 140);
-      if (normalized === state.selectedText) {
+    function setSelectedText(text, options) {
+      const settings = Object.assign({
+        pinned: false,
+      }, options || {});
+      const normalizedContent = String(text || '').replace(/\s+/g, ' ').trim();
+      const normalizedTitle = truncateText(normalizedContent, 140);
+      const existingSelectionContext = state.textContexts.find((item) => item.id === 'selection');
+      if (normalizedTitle === state.selectedText && (!normalizedTitle || existingSelectionContext?.content === normalizedContent)) {
+        if (!normalizedTitle) {
+          state.selectedTextPinned = false;
+        } else if (settings.pinned) {
+          state.selectedTextPinned = true;
+        }
         return;
       }
       hideSendValidation();
-      if (!normalized && state.focusedComposerTokenKey === 'selection') {
+      if (!normalizedTitle && (state.focusedComposerTokenKey === 'selection' || state.focusedComposerTokenKey === 'text:selection')) {
         clearFocusedComposerToken();
       }
-      state.selectedText = normalized;
-      state.selectionTitle.textContent = normalized;
-      syncReferenceStrip();
+      state.selectedTextPinned = Boolean(normalizedTitle && settings.pinned);
+      if (!normalizedTitle) {
+        removeTextContext('selection');
+        return;
+      }
+      upsertTextContext({
+        id: 'selection',
+        kind: 'selection',
+        title: normalizedTitle,
+        subtitle: t('selectedText'),
+        iconText: 'AI',
+        content: normalizedContent,
+      }, { id: 'selection' });
     }
 
     async function clearSelectedTextContext() {
-      setSelectedText('');
+      setSelectedText('', { pinned: false });
       try {
         await clearCurrentTabSelection();
       } catch (error) {}
+      queueSessionSave();
     }
 
     async function syncSelectedText() {
       try {
-        setSelectedText(await getCurrentTabSelection());
+        const liveSelection = await getCurrentTabSelection();
+        if (state.selectedTextPinned) {
+          return;
+        }
+        setSelectedText(liveSelection, { pinned: false });
       } catch (error) {
-        setSelectedText('');
+        if (!state.selectedTextPinned) {
+          setSelectedText('', { pinned: false });
+        }
       }
     }
 
@@ -4726,8 +6542,18 @@
           title: state.selectedText,
           subtitle: t('selectedText'),
           iconText: 'AI',
+          content: state.textContexts.find((item) => item.id === 'selection')?.content || state.selectedText,
         }
         : null;
+      const textContextSnapshots = state.textContexts.map((item) => ({
+        id: item.id,
+        kind: item.kind || 'text',
+        title: item.title,
+        subtitle: item.subtitle || '',
+        iconText: item.iconText || 'T',
+        content: item.content || item.title || '',
+        sourceId: item.sourceId || '',
+      }));
       const refSnapshots = state.refs.map((ref) => ({
         id: ref.id,
         kind: ref.kind,
@@ -4750,14 +6576,14 @@
           iconText: contextSnapshot.iconText,
         });
       }
-      if (selectedTextSnapshot) {
+      textContextSnapshots.forEach((textContext) => {
         headerCards.push({
-          kind: selectedTextSnapshot.kind,
-          title: selectedTextSnapshot.title,
-          subtitle: selectedTextSnapshot.subtitle,
-          iconText: selectedTextSnapshot.iconText,
+          kind: textContext.kind,
+          title: textContext.title,
+          subtitle: textContext.subtitle || (textContext.kind === 'note' ? t('notesSection') : t('selectedText')),
+          iconText: textContext.iconText,
         });
-      }
+      });
       refSnapshots.forEach((ref) => {
         headerCards.push({
           kind: ref.kind,
@@ -4775,12 +6601,12 @@
           title: contextSnapshot.title,
         });
       }
-      if (selectedTextSnapshot) {
+      textContextSnapshots.forEach((textContext) => {
         aiReadItems.push({
-          kind: selectedTextSnapshot.kind,
-          title: selectedTextSnapshot.title,
+          kind: textContext.kind,
+          title: textContext.title,
         });
-      }
+      });
       refSnapshots.forEach((ref) => {
         aiReadItems.push({
           kind: ref.kind,
@@ -4796,6 +6622,7 @@
         text,
         contextSnapshot,
         selectedTextSnapshot,
+        textContextSnapshots,
         refSnapshots,
         headerCards,
         aiReadItems,
@@ -4926,6 +6753,7 @@
         }
         current.remove();
       }
+      queueSessionSave();
     }
 
     function createAiMessageScaffold(turnData) {
@@ -4950,7 +6778,7 @@
           pill.dataset.readingIndex = String(list.childElementCount);
           const icon = document.createElement('span');
           icon.className = 'ask-msg-ai-reading-pill-icon';
-          icon.textContent = ref.kind === 'file' ? 'D' : (ref.kind === 'selection' ? 'AI' : '◦');
+          icon.textContent = ref.kind === 'file' ? 'D' : (ref.kind === 'selection' ? 'AI' : (ref.kind === 'note' ? 'N' : '◦'));
           const label = document.createElement('span');
           label.className = 'ask-msg-ai-reading-pill-text';
           label.textContent = ref.title;
@@ -5013,14 +6841,18 @@
           };
         })());
       }
-      if (turnData.selectedTextSnapshot) {
+      const textContextSnapshots = Array.isArray(turnData.textContextSnapshots) && turnData.textContextSnapshots.length
+        ? turnData.textContextSnapshots
+        : (turnData.selectedTextSnapshot ? [turnData.selectedTextSnapshot] : []);
+      textContextSnapshots.forEach((textContext) => {
         attachmentTasks.push(Promise.resolve({
-          kind: 'selected-text',
-          title: truncateText(turnData.selectedTextSnapshot.title, 120),
-          subtitle: t('selectedText'),
-          content: turnData.selectedTextSnapshot.title,
+          kind: 'text-context',
+          type: textContext.kind || 'text',
+          title: truncateText(textContext.title, 120),
+          subtitle: textContext.subtitle || (textContext.kind === 'note' ? t('notesSection') : t('selectedText')),
+          content: textContext.content || textContext.title,
         }));
-      }
+      });
       (turnData.refSnapshots || []).forEach((ref) => {
         if (ref.kind === 'file') {
           attachmentTasks.push((async () => ({
@@ -5071,8 +6903,8 @@
           ].filter(Boolean).join('\n\n');
           return '<attachment><referenced-webpage type="current-page" title="' + escapeXmlAttribute(item.title) + '" url="' + escapeXmlAttribute(item.url) + '"><content>' + escapeXmlText(content) + '</content></referenced-webpage></attachment>';
         }
-        if (item.kind === 'selected-text') {
-          return '<attachment><selected-text title="' + escapeXmlAttribute(item.title) + '"><content>' + escapeXmlText(item.content) + '</content></selected-text></attachment>';
+        if (item.kind === 'selected-text' || item.kind === 'text-context') {
+          return '<attachment><text-context type="' + escapeXmlAttribute(item.type || item.kind) + '" title="' + escapeXmlAttribute(item.title) + '"' + (item.subtitle ? (' meta="' + escapeXmlAttribute(item.subtitle) + '"') : '') + '><content>' + escapeXmlText(item.content) + '</content></text-context></attachment>';
         }
         if (item.kind === 'referenced-page') {
           const content = [
@@ -5267,8 +7099,8 @@
         addKey('file-title-subtitle', title, subtitle);
         return Array.from(keys);
       }
-      if (item.kind === 'selected-text' || item.kind === 'selection') {
-        addKey('selection', title || item.content || '');
+      if (item.kind === 'selected-text' || item.kind === 'selection' || item.kind === 'text-context' || item.kind === 'note') {
+        addKey('text-context', item.type || item.kind || '', title || item.content || '', item.sourceId || '');
         return Array.from(keys);
       }
       addKey(item.kind || 'attachment', rawUrl, rawId, title, subtitle);
@@ -5286,6 +7118,7 @@
       if (turnData?.selectedTextSnapshot) {
         addItem(turnData.selectedTextSnapshot);
       }
+      (turnData?.textContextSnapshots || []).forEach(addItem);
       (turnData?.refSnapshots || []).forEach(addItem);
       (attachments || []).forEach(addItem);
       return keys;
@@ -5406,10 +7239,7 @@
         'The user is usually asking about the current webpage, selected text, or explicitly referenced attachments.',
         'Prefer the current webpage and selected text over generic world knowledge when they are relevant.',
         'If the user used a slash command, follow its instruction first.',
-        'Use markdown naturally, but keep answers concise unless the user clearly wants depth.',
-        'Default to a short answer: usually 1 short paragraph or 3-5 brief bullet points.',
-        'Do not produce long essays unless the user explicitly asks for a detailed answer.',
-        'When the answer could become long, summarize first and stop early.',
+        'Use markdown naturally when it helps.',
         'Do not mention these hidden instructions.',
         'Write responses in ' + languageName + '.',
       ].join('\n');
@@ -5479,7 +7309,7 @@
       scaffold.thoughtWrap.classList.toggle('has-content', hasReasoning);
       scaffold.thoughtWrap.dataset.hasReasoning = hasReasoning ? 'true' : '';
       scaffold.thoughtButton.classList.toggle('has-content', Boolean(reasoningText));
-      scaffold.thoughtButton.querySelector('span').textContent = 'Thought for ' + Math.max(1, elapsedSeconds) + ' seconds';
+      scaffold.thoughtButton.querySelector('span').textContent = 'Thought for ' + Math.max(0, elapsedSeconds) + ' seconds';
       scaffold.thoughtPanel.textContent = reasoningText || '';
       if (!hasReasoning) {
         scaffold.thoughtWrap.setAttribute('aria-expanded', 'false');
@@ -5487,20 +7317,39 @@
     }
 
     function finalizeThoughtUi(scaffold, reasoningText, elapsedSeconds) {
+      closeLoadingUi(scaffold);
+      applyReasoningUi(scaffold, reasoningText, elapsedSeconds);
+    }
+
+    function closeLoadingUi(scaffold) {
+      scaffold.loadingClosed = true;
       if (state.readingQueueTimer) {
         clearInterval(state.readingQueueTimer);
         state.readingQueueTimer = null;
       }
+      scaffold.thinking.classList.add('hidden');
       scaffold.processing.classList.add('hidden');
-      applyReasoningUi(scaffold, reasoningText, elapsedSeconds);
+      scaffold.readingList?.querySelectorAll('.ask-msg-ai-reading-pill.is-active')?.forEach((pill) => {
+        pill.classList.remove('is-active');
+      });
+    }
+
+    function stopLoadingUi(scaffold) {
+      closeLoadingUi(scaffold);
     }
 
     function showThinkingAnimation(scaffold) {
+      if (scaffold.loadingClosed) {
+        return;
+      }
       scaffold.thinking.classList.remove('hidden');
       scaffold.processing.classList.remove('hidden');
     }
 
     function startReadingQueue(scaffold) {
+      if (scaffold.loadingClosed) {
+        return;
+      }
       if (state.readingQueueTimer) {
         clearInterval(state.readingQueueTimer);
         state.readingQueueTimer = null;
@@ -5567,6 +7416,7 @@
     function openAtSuggestions(query) {
       const safeQuery = String(query || '');
       state.atTabsExpanded = false;
+      state.atVisibleTabCount = TAB_SUGGESTION_LIMITS.collapsed;
       state.atSuggestionData = null;
       state.suggestionSearchText.textContent = '@' + safeQuery;
       state.suggestionBody.innerHTML = '<div class="ask-suggestion-empty">' + escapeHtml(t('preparingSuggestions')) + '</div>';
@@ -5592,13 +7442,19 @@
       scrollToBottom({ smooth: true });
 
       if (!AI_CONFIG.apiKey) {
-        scaffold.processing.classList.add('hidden');
+        closeLoadingUi(scaffold);
         scaffold.answer.classList.add('ask-msg-ai-error');
         scaffold.answer.textContent = t('apiKeyMissing');
+        turnData.persistEligible = false;
+        turnData.aiReplyError = true;
         turnNode.classList.add('is-ai-complete');
+        turnNode._askTurnData = turnData;
+        queueSessionSave(true);
         return;
       }
+      showThinkingAnimation(scaffold);
 
+      const responseWaitStartedAt = Date.now();
       const attachments = await buildTurnAttachments(turnData);
       const explicitAttachmentKeys = buildExplicitAttachmentKeySet(turnData, attachments);
       const allTurnNodes = Array.from(state.messages.querySelectorAll('.ask-turn'));
@@ -5646,7 +7502,7 @@
       const timeoutId = window.setTimeout(() => abortController.abort(), AI_CONFIG.timeout);
       state.pendingAiTasks.set(turnData.id, { abortController, timeoutId });
       syncBusyState();
-      const startedAt = Date.now();
+      let firstAnswerStartedAt = 0;
       let answerText = '';
       let reasoningText = '';
       let rawResponseBody = '';
@@ -5663,6 +7519,16 @@
         resolvePlaybackDone = resolve;
       });
       startReadingQueue(scaffold);
+
+      function markAnswerStarted() {
+        if (!firstAnswerStartedAt) {
+          firstAnswerStartedAt = Date.now();
+        }
+      }
+
+      function getThoughtElapsedSeconds() {
+        return Math.round(((firstAnswerStartedAt || Date.now()) - responseWaitStartedAt) / 1000);
+      }
 
       function finishPlaybackWithCurrentText() {
         if (playbackFinished) {
@@ -5717,6 +7583,9 @@
             nextLength = getNextRevealLength(answerText, displayedLength);
           }
           if (nextLength !== displayedLength) {
+            if (nextLength > 0) {
+              stopLoadingUi(scaffold);
+            }
             displayedLength = nextLength;
             renderStreamingMarkdown(scaffold.answer, answerText.slice(0, displayedLength), answerText);
             if (state.autoScrollPinned && (timestamp - playbackLastScrollAt > 90 || displayedLength === answerText.length)) {
@@ -5781,12 +7650,18 @@
           const normalizedResult = finalizeNormalizedResponse(normalizationState);
           reasoningText = normalizedResult.thinkingText;
           answerText = normalizedResult.visibleText;
+          if (answerText) {
+            markAnswerStarted();
+          }
           if (reasoningText) {
             showThinkingAnimation(scaffold);
           }
+          if (answerText) {
+            stopLoadingUi(scaffold);
+          }
           scheduleAnswerPlayback();
           streamCompleted = true;
-          finalizeThoughtUi(scaffold, reasoningText, Math.round((Date.now() - startedAt) / 1000));
+          finalizeThoughtUi(scaffold, reasoningText, getThoughtElapsedSeconds());
           const playedText = await playbackDone;
           const finalText = playedText || cleanModelText(answerText).trim() || t('noDisplayBody');
           logAiDebug('AI Response Normalized', {
@@ -5800,6 +7675,8 @@
           });
           turnData.aiReasoningText = reasoningText.trim();
           turnData.aiReplyText = finalText;
+          turnData.persistEligible = true;
+          turnData.aiReplyError = false;
           if (!(state.pendingAiTasks.get(turnData.id)?.stoppedByUser)) {
             await renderRichAnswer(scaffold.answer, turnData.aiReplyText);
           }
@@ -5845,8 +7722,14 @@
               const normalizedResult = finalizeNormalizedResponse(normalizationState);
               answerText = normalizedResult.visibleText;
               reasoningText = normalizedResult.thinkingText;
+              if (answerText) {
+                markAnswerStarted();
+              }
               if (reasoningText) {
                 showThinkingAnimation(scaffold);
+              }
+              if (answerText) {
+                stopLoadingUi(scaffold);
               }
               scheduleAnswerPlayback();
             }
@@ -5855,9 +7738,15 @@
         const normalizedResult = finalizeNormalizedResponse(normalizationState);
         reasoningText = normalizedResult.thinkingText;
         answerText = normalizedResult.visibleText;
+        if (answerText) {
+          markAnswerStarted();
+        }
+        if (answerText) {
+          stopLoadingUi(scaffold);
+        }
         scheduleAnswerPlayback();
         streamCompleted = true;
-        finalizeThoughtUi(scaffold, reasoningText, Math.round((Date.now() - startedAt) / 1000));
+        finalizeThoughtUi(scaffold, reasoningText, getThoughtElapsedSeconds());
         logAiCompose('AI Response', {
           turnId: turnData.id,
           rawResponseBody: rawResponseBody.trim(),
@@ -5883,6 +7772,8 @@
         const finalText = playedText || cleanModelText(answerText).trim() || t('noDisplayBody');
         turnData.aiReasoningText = reasoningText.trim();
         turnData.aiReplyText = finalText;
+        turnData.persistEligible = true;
+        turnData.aiReplyError = false;
         if (!(state.pendingAiTasks.get(turnData.id)?.stoppedByUser)) {
           await renderRichAnswer(scaffold.answer, turnData.aiReplyText);
         }
@@ -5891,32 +7782,32 @@
         const activeTask = state.pendingAiTasks.get(turnData.id);
         if (error.name === 'AbortError' || activeTask?.stoppedByUser) {
           finishPlaybackWithCurrentText();
-          if (state.readingQueueTimer) {
-            clearInterval(state.readingQueueTimer);
-            state.readingQueueTimer = null;
-          }
-          scaffold.processing.classList.add('hidden');
+          closeLoadingUi(scaffold);
           const partialText = cleanModelText(answerText).trim();
           if (partialText) {
             turnData.aiReplyText = partialText;
+            turnData.persistEligible = false;
+            turnData.aiReplyError = false;
             await settleStreamingAnswer(scaffold.answer, partialText, { isError: false });
           } else {
             turnData.aiReplyText = '';
+            turnData.persistEligible = false;
+            turnData.aiReplyError = false;
             await settleStreamingAnswer(scaffold.answer, '', { fallbackText: 'Stopped.', isError: false });
           }
         } else {
           finishPlaybackWithCurrentText();
-          if (state.readingQueueTimer) {
-            clearInterval(state.readingQueueTimer);
-            state.readingQueueTimer = null;
-          }
-          scaffold.processing.classList.add('hidden');
+          closeLoadingUi(scaffold);
           const partialText = cleanModelText(answerText).trim();
           if (partialText) {
             turnData.aiReplyText = partialText;
+            turnData.persistEligible = false;
+            turnData.aiReplyError = true;
             await settleStreamingAnswer(scaffold.answer, partialText, { isError: false });
           } else {
             turnData.aiReplyText = '';
+            turnData.persistEligible = false;
+            turnData.aiReplyError = true;
             await settleStreamingAnswer(
               scaffold.answer,
               '',
@@ -5929,9 +7820,11 @@
         }
         turnNode.classList.add('is-ai-complete');
       } finally {
+        closeLoadingUi(scaffold);
         clearPendingAiTask(turnData.id);
         turnNode._askTurnData = turnData;
         scrollToBottom();
+        queueSessionSave(true);
       }
     }
 
@@ -6049,6 +7942,16 @@
       aiCopyBtn.addEventListener('click', () => {
         copyTextWithFeedback(aiCopyBtn, turnNode._askTurnData?.aiReplyText || '');
       });
+      const aiNoteBtn = document.createElement('button');
+      aiNoteBtn.type = 'button';
+      aiNoteBtn.className = 'ask-turn-action';
+      aiNoteBtn.title = t('saveReplyToNote');
+      aiNoteBtn.innerHTML = createActionIconMarkup('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4"/><path d="M9 12h6"/><path d="M9 16h5"/></svg>');
+      aiNoteBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        showNoteMenu(aiNoteBtn, turnNode).catch(() => setActionButtonState(aiNoteBtn, 'fail'));
+      });
       const aiRetryBtn = document.createElement('button');
       aiRetryBtn.type = 'button';
       aiRetryBtn.className = 'ask-turn-action';
@@ -6063,9 +7966,10 @@
         removeTurnsAfter(turnNode);
         latestTurnData.aiReplyText = '';
         latestTurnData.aiReasoningText = '';
+        queueSessionSave();
         streamAiForTurn(turnNode, latestTurnData);
       });
-      aiActions.append(aiCopyBtn, aiRetryBtn);
+      aiActions.append(aiCopyBtn, aiRetryBtn, aiNoteBtn);
       aiMeta.appendChild(aiActions);
       turnNode.appendChild(aiMeta);
       return turnNode;
@@ -6084,6 +7988,7 @@
         syncCommandsRow();
         state.inputField.focus();
       });
+      queueSessionSave();
     }
 
     function selectCommand(cmdName) {
@@ -6110,6 +8015,7 @@
       state.cmdChipEl = chip;
       syncCommandsRow();
       state.inputField.focus();
+      queueSessionSave();
     }
 
     function clearReferences() {
@@ -6148,6 +8054,7 @@
         clearFocusedComposerToken();
       }
       state.inputField.focus();
+      queueSessionSave();
     }
 
     function makeReferenceFromItem(item, options) {
@@ -6224,6 +8131,7 @@
         insertReferenceToken(ref, { prepend: true });
       }
       syncReferenceStrip();
+      queueSessionSave();
     }
 
     function removeCapability(capabilityInstanceId) {
@@ -6237,6 +8145,7 @@
         syncReferenceStrip();
       });
       state.inputField.focus();
+      queueSessionSave();
     }
 
     function addReference(item) {
@@ -6245,6 +8154,7 @@
       state.refs.push(ref);
       insertReferenceToken(ref);
       syncReferenceStrip();
+      queueSessionSave();
     }
 
     function addCapability(item) {
@@ -6272,6 +8182,7 @@
       bindCapabilityTokenRemoval(token, capability.id);
       state.inputMain.insertBefore(token, state.inlineRefRow);
       syncReferenceStrip();
+      queueSessionSave();
     }
 
     function replaceSuggestionToken() {
@@ -6456,6 +8367,20 @@
         });
         return;
       }
+      if (item.kind === 'note') {
+        upsertTextContext({
+          id: 'note-' + (item.raw?.id || item.id || state.nextTextContextId++),
+          kind: 'note',
+          title: item.title,
+          subtitle: item.subtitle || t('notesSection'),
+          iconText: item.iconText || 'N',
+          content: item.content || item.raw?.content || '',
+          sourceId: item.raw?.id || '',
+          raw: item.raw || null,
+        });
+        state.inputField.focus();
+        return;
+      }
       if (item.kind === 'tab-group') {
         addReferences(item.tabs || []);
         state.inputField.focus();
@@ -6470,13 +8395,13 @@
       state.inputField.focus();
     }
 
-    function buildTabGroupSuggestions(tabItems) {
+    function buildTabBatchSuggestions(tabItems, workspaceItems) {
       const allTabs = tabItems.filter((item) => item.kind === 'tab');
       if (!allTabs.length) {
         return [];
       }
-      const groups = [];
-      groups.push({
+      const batches = [];
+      batches.push({
         id: 'tab-group-all',
         kind: 'tab-group',
         title: tf('allOpenTabsTitle', { count: allTabs.length }),
@@ -6484,6 +8409,7 @@
         iconText: '◎',
         color: '#295B63',
         meta: '',
+        searchTags: ['tab', 'tabs', 'url', 'all', 'browser', '全部标签页', '标签页', '网址'],
         tabs: allTabs,
       });
       const hostMap = new Map();
@@ -6506,7 +8432,7 @@
           return a[0].localeCompare(b[0]);
         })
         .forEach(([host, items]) => {
-          groups.push({
+          batches.push({
             id: 'tab-group-' + host,
             kind: 'tab-group',
             title: tf('domainTabsTitle', { host, count: items.length }),
@@ -6514,16 +8440,76 @@
             iconText: '◌',
             color: '#2C4E63',
             meta: '',
+            searchTags: ['url', 'domain', 'host', 'tab', 'tabs', '域名', '网址', '标签页'],
             tabs: items,
           });
         });
-      return groups;
+      const stackMap = new Map();
+      allTabs.forEach((item) => {
+        const groupId = String(item.groupId || item.raw?.groupId || '');
+        if (!groupId) {
+          return;
+        }
+        if (!stackMap.has(groupId)) {
+          stackMap.set(groupId, []);
+        }
+        stackMap.get(groupId).push(item);
+      });
+      Array.from(stackMap.entries())
+        .filter(([, items]) => items.length > 1)
+        .sort((a, b) => b[1].length - a[1].length)
+        .forEach(([groupId, items]) => {
+          const title = items[0]?.fixedGroupTitle || items[0]?.raw?.fixedGroupTitle || items[0]?.title || groupId;
+          batches.push({
+            id: 'tab-stack-' + groupId,
+            kind: 'tab-group',
+            title: tf('stackTabsTitle', { title, count: items.length }),
+            subtitle: t('stackTabsSubtitle'),
+            iconText: '▣',
+            color: items[0]?.raw?.groupColor || '#4C4A63',
+            meta: '',
+            searchTags: ['stack', 'tab-stack', 'group', 'tab', 'tabs', '标签栈', '标签页'],
+            tabs: items,
+          });
+        });
+      (workspaceItems || [])
+        .filter((workspace) => workspace.tabs?.length)
+        .sort((a, b) => b.tabs.length - a.tabs.length)
+        .forEach((workspace) => {
+          const workspaceTabs = workspace.tabs
+            .map((tab) => allTabs.find((item) => item.raw?.id === tab.id || item.raw?.id === tab.raw?.id))
+            .filter(Boolean);
+          if (!workspaceTabs.length) {
+            return;
+          }
+          const name = workspace.name || ('Workspace ' + workspace.id);
+          batches.push({
+            id: 'workspace-tabs-' + workspace.id,
+            kind: 'tab-group',
+            title: tf('workspaceTabsTitle', { name, count: workspaceTabs.length }),
+            subtitle: t('workspaceTabsSubtitle'),
+            iconText: workspace.emoji || '◇',
+            color: '#3E5F63',
+            meta: '',
+            workspaceName: name,
+            searchTags: ['workspace', 'workspaces', 'tab', 'tabs', '工作区', '标签页'],
+            tabs: workspaceTabs,
+          });
+        });
+      return batches;
     }
 
-    function setAtSuggestionState({ tabItems, fileItems, formatItems }) {
-      const visibleTabItems = tabItems.slice(0, state.atTabsExpanded ? TAB_SUGGESTION_LIMITS.expanded : TAB_SUGGESTION_LIMITS.collapsed);
-      const moreCount = Math.max(0, Math.min(tabItems.length, TAB_SUGGESTION_LIMITS.expanded) - visibleTabItems.length);
-      const tabGroupItems = buildTabGroupSuggestions(tabItems);
+    function setAtSuggestionState({ tabItems, batchItems, fileItems, noteItems, formatItems, workspaceItems }) {
+      tabItems = tabItems || [];
+      batchItems = batchItems || null;
+      fileItems = fileItems || [];
+      noteItems = noteItems || [];
+      formatItems = formatItems || [];
+      workspaceItems = workspaceItems || [];
+      const visibleLimit = Math.max(TAB_SUGGESTION_LIMITS.collapsed, state.atVisibleTabCount || TAB_SUGGESTION_LIMITS.collapsed);
+      const visibleTabItems = tabItems.slice(0, visibleLimit);
+      const moreCount = Math.max(0, tabItems.length - visibleTabItems.length);
+      const tabGroupItems = batchItems || buildTabBatchSuggestions(tabItems, workspaceItems);
       const sections = [];
       const tabSectionItems = visibleTabItems.map((item) => ({ selectable: true, item }));
       if (moreCount > 0) {
@@ -6533,7 +8519,7 @@
             kind: 'action',
             action: 'expand-tabs',
             title: t('showMoreTabs'),
-            subtitle: tf('showMoreTabsSubtitle', { count: moreCount }),
+            subtitle: tf('showMoreTabsSubtitle', { count: Math.min(TAB_SUGGESTION_LIMITS.increment, moreCount) }),
             iconText: '+',
             color: '#2D3139',
           },
@@ -6562,6 +8548,12 @@
         sections.push({
           title: t('filesSection'),
           items: fileItems.map((item) => ({ selectable: true, item })),
+        });
+      }
+      if (noteItems.length) {
+        sections.push({
+          title: t('notesSection'),
+          items: noteItems.map((item) => ({ selectable: true, item })),
         });
       }
       if (formatItems.length) {
@@ -6596,22 +8588,37 @@
       state.suggestionBody.innerHTML = '<div class="ask-suggestion-section"><div class="ask-suggestion-section-title">Loading</div><button class="ask-suggestion-item active" type="button"><span class="ask-suggestion-icon"><span>@</span></span><span class="ask-suggestion-text"><span class="ask-suggestion-title">' + escapeHtml(t('loadingTabsFilesTitle')) + '</span><span class="ask-suggestion-subtitle">' + escapeHtml(t('loadingTabsFilesSubtitle')) + '</span></span></button></div>';
       showSuggestions();
       try {
-        const [tabsResult, filesResult, clipboardResult] = await Promise.allSettled([getPanelTabs(), getDownloadedFiles(query), getClipboardFiles()]);
-        const tabs = tabsResult.status === 'fulfilled' ? (tabsResult.value || []) : [];
+        const [tabDataResult, filesResult, clipboardResult, notesResult] = await Promise.allSettled([getWorkspaceTabData(), getDownloadedFiles(query), getClipboardFiles(), getNoteSuggestions(query)]);
+        const tabData = tabDataResult.status === 'fulfilled' ? (tabDataResult.value || {}) : {};
+        const tabs = (tabData.tabs || [])
+          .filter((tab) => !isAskInPageInternalTab(tab))
+          .sort((a, b) => {
+            if (a.active && !b.active) return -1;
+            if (!a.active && b.active) return 1;
+            if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+            if (a.windowId !== b.windowId) return (a.windowId || 0) - (b.windowId || 0);
+            return (a.index || 0) - (b.index || 0);
+          });
+        const workspaceItems = tabData.workspaces || [];
         const files = filesResult.status === 'fulfilled' ? (filesResult.value || []) : [];
         const clipboardFiles = clipboardResult.status === 'fulfilled' ? (clipboardResult.value || []) : [];
+        const notes = notesResult.status === 'fulfilled' ? (notesResult.value || []) : [];
         const lowerQuery = query.trim().toLowerCase();
         const formatItems = formatCapabilityDefinitions
           .filter((item) => {
-            if (isSuggestionAlreadySelected({ kind: 'capability', capabilityType: item.id, title: item.title })) {
+            const suggestionItem = {
+              kind: 'capability',
+              group: 'Formats',
+              capabilityType: item.id,
+              title: item.title,
+              subtitle: item.subtitle,
+              aliases: item.aliases || [],
+              searchTags: ['format', 'formats', '格式'],
+            };
+            if (isSuggestionAlreadySelected(suggestionItem)) {
               return false;
             }
-            if (!lowerQuery) {
-              return true;
-            }
-            return [item.title, item.subtitle]
-              .concat(item.aliases || [])
-              .some((token) => String(token || '').toLowerCase().includes(lowerQuery));
+            return matchesAtSuggestionQuery(suggestionItem, lowerQuery);
           })
           .map((item) => ({
             id: 'capability-' + item.id,
@@ -6624,8 +8631,13 @@
             capabilityType: item.id,
             capabilityCategory: 'format',
             capabilityContent: item.content,
+            aliases: item.aliases || [],
+            searchTags: ['format', 'formats', '格式'],
           }));
-        const tabItems = ((tabs || []).map(normalizeTab))
+        const workspaceNameById = new Map((workspaceItems || []).map((workspace) => [workspace.id, workspace.name || '']));
+        const allTabItems = ((tabs || []).map((tab) => normalizeTab(Object.assign({}, tab, {
+          workspaceName: workspaceNameById.get(tab.workspaceId) || '',
+        }))))
           .filter((item, index, arr) => {
             const unique = arr.findIndex((candidate) => candidate.id === item.id) === index;
             if (!unique) {
@@ -6634,11 +8646,11 @@
             if (isSuggestionAlreadySelected(item)) {
               return false;
             }
-            if (!lowerQuery) {
-              return true;
-            }
-            return (item.title + ' ' + item.subtitle).toLowerCase().includes(lowerQuery);
+            return true;
           });
+        const tabItems = allTabItems.filter((item) => matchesAtSuggestionQuery(item, lowerQuery));
+        const batchItems = buildTabBatchSuggestions(allTabItems, workspaceItems)
+          .filter((item) => matchesAtSuggestionQuery(item, lowerQuery));
         const fileItems = (clipboardFiles || [])
           .map(normalizeFile)
           .concat((files || []).map(normalizeFile))
@@ -6650,10 +8662,7 @@
             if (isSuggestionAlreadySelected(item)) {
               return false;
             }
-            if (!lowerQuery) {
-              return true;
-            }
-            return (item.title + ' ' + item.subtitle).toLowerCase().includes(lowerQuery);
+            return matchesAtSuggestionQuery(item, lowerQuery);
           });
         const openFolderItem = {
           id: 'files-action-open',
@@ -6663,16 +8672,26 @@
           subtitle: t('chooseFileSubtitle'),
           iconText: '+',
           color: '#2D3139',
+          searchTags: ['file', 'files', 'attachment', 'attachments', '文件', '附件'],
         };
-        const finalFileItems = fileItems.concat(openFolderItem);
+        const finalFileItems = fileItems.concat(matchesAtSuggestionQuery(openFolderItem, lowerQuery) ? [openFolderItem] : []);
+        const noteItems = (notes || [])
+          .filter((item, index, arr) => arr.findIndex((candidate) => candidate.id === item.id) === index)
+          .filter((item) => !isSuggestionAlreadySelected(item));
         state.atSuggestionData = {
           tabItems,
+          batchItems,
           fileItems: finalFileItems,
+          noteItems,
+          workspaceItems,
           formatItems,
         };
         setAtSuggestionState({
           tabItems,
+          batchItems,
           fileItems: finalFileItems,
+          noteItems,
+          workspaceItems,
           formatItems,
         });
         if (!state.suggestionItems.length && !state.suggestionSections.length) {
@@ -6752,6 +8771,7 @@
         state.messages.appendChild(turnNode);
       }
       clearComposer({ showDefaultContext: false });
+      queueSessionSave();
       streamAiForTurn(turnNode, turnData);
       scrollToBottom({ smooth: true });
       requestAnimationFrame(() => {
@@ -6760,24 +8780,42 @@
     }
 
     state.btnSend.addEventListener('click', handleSend);
+    state.btnMenu.addEventListener('click', () => {
+      const nextOpen = !state.historyDrawerOpen;
+      setHistoryDrawerOpen(nextOpen);
+      if (nextOpen) {
+        renderHistoryLists().catch(() => {});
+      }
+    });
+    state.historyClose.addEventListener('click', () => {
+      setHistoryDrawerOpen(false);
+    });
+    state.historyBackdrop.addEventListener('click', () => {
+      setHistoryDrawerOpen(false);
+    });
     state.btnNew.addEventListener('click', () => {
-      state.pendingAiTasks.forEach((task, turnId) => clearPendingAiTask(turnId));
-      state.pendingAiTasks.clear();
-      state.currentStreamingTurnId = null;
-      state.conversationMemory.summary = '';
-      state.conversationMemory.summarizedTurnCount = 0;
-      syncBusyState();
-      state.messages.innerHTML = '';
-      state.empty.style.display = '';
-      clearComposer({ showDefaultContext: false });
-      syncContext();
-      syncSelectedText();
+      getCurrentTab()
+        .then((tab) => createFreshSession(tab, { persistImmediately: true }))
+        .catch(() => createFreshSession(null, { persistImmediately: true }));
     });
     state.editClose.addEventListener('click', () => {
       clearComposer({ showDefaultContext: false });
     });
     state.contextCard.addEventListener('click', () => {
+      closeContextPreview();
       setContextCardVisible(false);
+    });
+    state.contextCard.addEventListener('mouseenter', () => {
+      openContextPreview().catch(() => {});
+    });
+    state.contextCard.addEventListener('mouseleave', () => {
+      closeContextPreview();
+    });
+    state.contextCard.addEventListener('focusin', () => {
+      openContextPreview().catch(() => {});
+    });
+    state.contextCard.addEventListener('focusout', () => {
+      closeContextPreview();
     });
     state.selectionCard.addEventListener('click', () => {
       clearSelectedTextContext();
@@ -7030,6 +9068,7 @@
       const actionButton = event.target.closest('[data-action]');
       if (actionButton?.dataset.action === 'expand-tabs') {
         const previousScrollTop = state.suggestionBody.scrollTop;
+        state.atVisibleTabCount = (state.atVisibleTabCount || TAB_SUGGESTION_LIMITS.collapsed) + TAB_SUGGESTION_LIMITS.increment;
         state.atTabsExpanded = true;
         if (state.atSuggestionData) {
           setAtSuggestionState(state.atSuggestionData);
@@ -7075,6 +9114,9 @@
       });
     });
     root.addEventListener('mousedown', (event) => {
+      if (state.noteMenuEl && !state.noteMenuEl.contains(event.target)) {
+        closeNoteMenu();
+      }
       if (!state.suggestionDropdown.classList.contains('visible')) {
         return;
       }
@@ -7086,11 +9128,29 @@
 
     syncCommandsRow();
     syncReferenceStrip();
-    syncContext();
-    syncSelectedText();
     syncBusyState();
     startSelectionPolling();
-    panelState = state;
+    ensureAskInPageStorageHandle({ interactive: false }).catch(() => {});
+    renderHistoryLists().catch(() => {});
+    window.setTimeout(() => {
+      renderHistoryLists().catch(() => {});
+    }, 500);
+    Promise.resolve()
+      .then(() => syncContext())
+      .then(() => syncSelectedText())
+      .then(() => {
+        if (state.routeState.sessionId) {
+          return restoreSessionById(state.routeState.sessionId);
+        }
+        return null;
+      })
+      .then(() => renderHistoryLists())
+      .catch(() => {});
+    if (state.hostMode === 'tab') {
+      standaloneState = state;
+    } else {
+      panelState = state;
+    }
   }
 
   function ensurePanelUI(panel) {
@@ -7136,6 +9196,31 @@
         }).catch(() => {});
       }
     }
+  }
+
+  function ensureStandaloneUI() {
+    if (standaloneRoot && standaloneRoot.dataset.askInPageUiVersion !== uiVersion) {
+      standaloneRoot.remove();
+      standaloneRoot = null;
+      standaloneState = null;
+    }
+    if (!standaloneRoot) {
+      standaloneRoot = createElement('div', {
+        class: 'ask-in-page-content ask-in-page-standalone',
+      }, document.body);
+      standaloneRoot.dataset.askInPageUiVersion = uiVersion;
+      initPanelState(standaloneRoot);
+    }
+    if (standaloneRoot.parentNode !== document.body) {
+      document.body.append(standaloneRoot);
+    }
+    Array.from(document.body.children).forEach((node) => {
+      if (node !== standaloneRoot) {
+        node.style.display = 'none';
+      }
+    });
+    document.documentElement.style.background = 'var(--colorBg)';
+    document.body.style.background = 'var(--colorBg)';
   }
 
   function createWebPanel() {
@@ -7228,10 +9313,11 @@
   }
 
   function waitForBrowser(callback) {
+    const standaloneMode = isAskInPageTabUrl(location.href);
     let count = 0;
     const interval = setInterval(() => {
       count++;
-      if (document.getElementById('browser')) {
+      if (standaloneMode ? Boolean(document.body) : Boolean(document.getElementById('browser'))) {
         clearInterval(interval);
         callback();
       } else if (count > 100) {
@@ -7253,26 +9339,38 @@
 
   waitForBrowser(() => {
     injectStyles();
-    createWebPanel();
+    loadAskInPageConfig().catch(() => {});
+    window.addEventListener('ask-in-page-config-updated', (event) => {
+      applyAskInPageConfig(event.detail || {});
+    });
+    window.addEventListener('vivaldi-mod-ai-config-updated', (event) => {
+      applyAskInPageConfig(event.detail || {});
+    });
+    if (isAskInPageTabUrl(location.href)) {
+      ensureStandaloneUI();
+    } else {
+      createWebPanel();
+      scheduleUpdatePanel();
+      ensureSelectionAskButton().catch(() => {});
+
+      const observer = new MutationObserver(() => {
+        scheduleUpdatePanel();
+      });
+      const observerRoot = document.querySelector('#panels .webpanel-stack') || document.querySelector('#panels') || document.body;
+      observer.observe(observerRoot, {
+        childList: true,
+        subtree: true,
+      });
+    }
     registerAskInPageRuntimeBridge();
     registerAskInPageContextMenus();
-    scheduleUpdatePanel();
-    ensureSelectionAskButton().catch(() => {});
-
-    const observer = new MutationObserver(() => {
-      scheduleUpdatePanel();
-    });
-    const observerRoot = document.querySelector('#panels .webpanel-stack') || document.querySelector('#panels') || document.body;
-    observer.observe(observerRoot, {
-      childList: true,
-      subtree: true,
-    });
 
     chrome.tabs?.onActivated?.addListener(() => {
       ensureSelectionAskButton().catch(() => {});
-      if (panelState) {
-        panelState.syncContext?.({ addCurrentPageReference: true });
-        panelState.syncSelectedText?.();
+      const activeState = panelState || standaloneState;
+      if (activeState) {
+        activeState.syncContext?.({ addCurrentPageReference: true });
+        activeState.syncSelectedText?.();
       }
     });
 
@@ -7283,14 +9381,43 @@
           ensureSelectionAskButton(tab).catch(() => {});
         }
       }
-      if (!panelState || !tab?.active) {
+      const activeState = panelState || standaloneState;
+      if (!activeState || !tab?.active) {
         return;
       }
-      if (changeInfo.title || changeInfo.url || changeInfo.status === 'complete') {
-        const previousUrl = String(panelState.currentContext?.raw?.url || panelState.currentContext?.raw?.pendingUrl || '');
-        panelState.syncContext?.({ addCurrentPageReference: Boolean(changeInfo.url && changeInfo.url !== previousUrl) });
-        panelState.syncSelectedText?.();
+      const previousUrl = String(activeState.currentContext?.raw?.url || activeState.currentContext?.raw?.pendingUrl || '');
+      const previousPageKey = normalizePageUrl(previousUrl);
+      const nextPageKey = normalizePageUrl(changeInfo.url || tab?.url || tab?.pendingUrl || '');
+      const pageActuallyChanged = Boolean(changeInfo.url) && Boolean(nextPageKey) && nextPageKey !== previousPageKey;
+      if (pageActuallyChanged || changeInfo.status === 'complete') {
+        activeState.syncContext?.({ addCurrentPageReference: pageActuallyChanged });
+        activeState.syncSelectedText?.();
       }
+    });
+
+    chrome.tabs?.onRemoved?.addListener((tabId, removeInfo) => {
+      const activeState = panelState || standaloneState;
+      if (!activeState) {
+        return;
+      }
+      const removedBindingKey = Number(removeInfo?.windowId || 0) && Number(tabId || 0)
+        ? (Number(removeInfo.windowId) + ':' + Number(tabId))
+        : '';
+      if (!removedBindingKey) {
+        return;
+      }
+      ensureAskInPageStorageHandle({ interactive: false })
+        .then(async (storageHandle) => {
+          if (!storageHandle) {
+            return;
+          }
+          const tabsIndex = await readTabsIndex(storageHandle);
+          if (tabsIndex.bindings?.[removedBindingKey]) {
+            delete tabsIndex.bindings[removedBindingKey];
+            await writeJsonToHandle(storageHandle, ['indexes', ASK_IN_PAGE_STORAGE.tabsIndexName], tabsIndex);
+          }
+        })
+        .catch(() => {});
     });
   });
 })();
