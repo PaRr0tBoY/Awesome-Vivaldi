@@ -1,11 +1,3 @@
-// ==UserScript==
-// @name         Tab Scroll
-// @description  Clicking an active tab scrolls the page to top; clicking it again returns to the previous scroll position.
-// @version      2024.9.2
-// @author       luetage
-// @website      https://forum.vivaldi.net/post/214898
-// ==/UserScript==
-
 (function tabScroll() {
   "use strict";
 
@@ -14,9 +6,27 @@
   const scb = "smooth";
   // EDIT END
 
-  function exit(tab) {
-    tab.removeEventListener("mousemove", exit);
-    tab.removeEventListener("click", trigger);
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((m) => {
+      if (m.target.classList.contains("active")) {
+        m.target.dataset.activatedAt = Date.now();
+      }
+    });
+  });
+
+  const initialActive = document.querySelector(".tab.active");
+  if (initialActive) initialActive.dataset.activatedAt = 1;
+
+  function cleanup(e) {
+    const tab = e.currentTarget || e;
+    tab.removeEventListener("mousemove", cleanup);
+    tab.removeEventListener("click", triggerHandler);
+  }
+
+  function triggerHandler(e) {
+    const tab = e.currentTarget;
+    trigger(tab);
+    cleanup(tab);
   }
 
   function trigger(tab) {
@@ -27,12 +37,15 @@
         code: `(${script})("${scb}")`,
       });
     }
-    exit(tab);
   }
 
   function react(e, tab) {
+    const activatedAt = parseInt(tab.dataset.activatedAt) || 0;
+    const timeSinceActive = Date.now() - activatedAt;
+
     if (
       tab.classList.contains("active") &&
+      timeSinceActive > 100 &&
       e.which === 1 &&
       !(e.target.nodeName === "path" || e.target.nodeName === "svg") &&
       !e.shiftKey &&
@@ -40,21 +53,49 @@
       !e.altKey &&
       !e.metaKey
     ) {
-      tab.addEventListener("mousemove", () => exit(tab));
-      tab.addEventListener("click", () => trigger(tab));
+      cleanup(tab);
+      tab.addEventListener("mousemove", cleanup);
+      tab.addEventListener("click", triggerHandler);
     }
   }
 
   const script = (scb) => {
-    let offset = window.scrollY;
+    const getTarget = () => {
+      // Specific selectors for Google Docs and Sheets found in their DOM
+      const selectors = [
+        ".kix-appview-editor",            // Google Docs
+        ".native-scrollbar-y",            // Google Sheets
+        ".docs-ui-container-scrollable",  // Google Docs (alternate)
+        ".grid-scrollable-wrapper"        // Google Sheets (alternate)
+      ];
+
+      for (const s of selectors) {
+        const el = document.querySelector(s);
+        if (el && el.scrollHeight > el.clientHeight) return el;
+      }
+
+      // Default to window if it's scrolled or as final fallback
+      if (window.scrollY > 0) return window;
+
+      // Scan for any scrolled element if we are at the top
+      const divs = document.getElementsByTagName("div");
+      for (let i = 0; i < divs.length; i++) {
+        if (divs[i].scrollTop > 0) return divs[i];
+      }
+
+      return window;
+    };
+
+    const target = getTarget();
+    const isWin = target === window;
+    const offset = isWin ? window.scrollY : target.scrollTop;
+
     if (offset > 0) {
-      window.sessionStorage.setItem("offset", offset);
-      window.scrollTo({ top: 0, behavior: scb });
+      window.sessionStorage.setItem("tabScrollOffset", offset);
+      target.scrollTo({ top: 0, behavior: scb });
     } else {
-      window.scrollTo({
-        top: window.sessionStorage.getItem("offset") || 0,
-        behavior: scb,
-      });
+      const savedOffset = window.sessionStorage.getItem("tabScrollOffset") || 0;
+      target.scrollTo({ top: parseInt(savedOffset), behavior: scb });
     }
   };
 
@@ -65,12 +106,16 @@
       arguments[0].classList.contains("tab")
     ) {
       const tab = arguments[0];
-      setTimeout(function () {
-        const ts = function (e) {
-          react(e, tab);
-        };
-        tab.addEventListener("mousedown", ts);
-      });
+      if (!tab.dataset.tabScrollInitialized) {
+        tab.dataset.tabScrollInitialized = "true";
+        setTimeout(function () {
+          const ts = function (e) {
+            react(e, tab);
+          };
+          tab.addEventListener("mousedown", ts);
+          observer.observe(tab, { attributes: true, attributeFilter: ["class"] });
+        });
+      }
     }
     return appendChild.apply(this, arguments);
   };

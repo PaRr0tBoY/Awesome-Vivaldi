@@ -9,58 +9,97 @@
 
 (() => {
   // =========================
-  // Trigger Config
+  // Trigger Config & State
   // =========================
-  const ICON_CONFIG = {
-    // Modifier keys that allow left click to open Peek.
-    // Available values: "alt", "shift", "ctrl", "meta"
-    // Examples:
-    // ["alt"] => Alt + click opens Peek
-    // ["shift"] => Shift + click opens Peek
-    // ["meta"] => Command (macOS) / Windows key + click opens Peek
-    // ["ctrl", "shift"] => Ctrl + click OR Shift + click both open Peek
-    // [] or "none" => disable modifier + click opening
-    clickOpenModifiers: ["alt"],
-
-    // Long-press trigger buttons.
-    // Available values: "middle", "right"
-    // Examples:
-    // ["right"] => only right-button long press opens Peek
-    // ["middle"] => only middle-button long press opens Peek
-    // ["middle", "right"] => middle and right long press both open Peek
-    // [] or "none" => disable long-press open entirely
+  const DEFAULT_ARCPEEK_SETTINGS = {
+    clickOpenModifiers: ["ctrl", "meta"],
     longPressButtons: ["middle"],
-
-    // How long the button must be held before Peek opens, in milliseconds.
-    // Example: 400
     longPressHoldTime: 400,
-
-    // Delay before the hold feedback animation starts, in milliseconds.
-    // Example: 200
     longPressHoldDelay: 200,
-
-    // Auto-open rules for normal left click on links.
-    // Available values:
-    // "*.baidu.com" => any matching hostname auto-opens Peek
-    // "example.com" => exact hostname match auto-opens Peek
-    // "pin" => all links inside pinned tabs auto-open Peek
-    // Examples:
-    // ["pin"] => only pinned tabs auto-open Peek
-    // ["pin", "*.baidu.com"] => pinned tabs and all baidu subdomains auto-open Peek
-    // [] => disable auto-open
-    // The list can be long:
-    // autoOpenList: [
-    //   "pin",
-    //   "*.baidu.com",
-    //   "*.google.com",
-    //   "*.bilibili.com",
-    //   "*.x.com",
-    // ],
     autoOpenList: [
       "pin",
-      "*.google.com",
+      "labs.google/fx/tools/flow/project/*",
+      "google.com",
+      "www.google.com",
+      "ya.ru",
+      "marketplace+keepon:+.ozon.ru/product/*",
+      "marketplace+keepon:+.market.yandex.ru/card/*",
+      "marketplace+keepon:+.aliexpress.ru/item/*",
+      "marketplace+keepon:+.aliexpress.com/item/*",
+      "marketplace+keepon:+.wildberries.ru/catalog/*"
     ],
   };
+
+  const state = {
+    settings: { ...DEFAULT_ARCPEEK_SETTINGS }
+  };
+  const ARCPEEK_SETTINGS_KEY = 'arcpeek-settings';
+
+  function saveSettings() {
+    chrome.storage.local.set({ [ARCPEEK_SETTINGS_KEY]: state.settings });
+    chrome.runtime.sendMessage({ type: "arcpeek-update-config", config: state.settings });
+
+    // Also inject into all active webviews locally without needing extension-level broadcast loopbacks
+    const webviews = document.querySelectorAll('webview');
+    const configStr = JSON.stringify(state.settings);
+    webviews.forEach(webview => {
+      try {
+        webview.executeScript({
+          code: `if (window.__arcpeekHandler) { window.__arcpeekHandler.config = Object.assign(window.__arcpeekHandler.config || {}, ${configStr}); }`
+        }, () => { void chrome.runtime.lastError; });
+      } catch (e) {}
+    });
+  }
+
+  function parseAutoOpenPatternToRule(pattern) {
+    let matchType = "exact";
+    let marketplace = false;
+    let keepOn = false;
+
+    if (typeof pattern !== "string" || !pattern) {
+      return { domain: "", matchType, marketplace, keepOn };
+    }
+
+    let domain = pattern;
+
+    if (domain.startsWith("marketplace+keepon:")) {
+      marketplace = true;
+      keepOn = true;
+      domain = domain.slice("marketplace+keepon:".length);
+    } else if (domain.startsWith("marketplace:")) {
+      marketplace = true;
+      domain = domain.slice("marketplace:".length);
+    }
+
+    if (domain.startsWith("+.")) {
+      matchType = "root_sub";
+      domain = domain.slice(2);
+    } else if (domain.startsWith("*.")) {
+      matchType = "sub";
+      domain = domain.slice(2);
+    }
+
+    return { domain, matchType, marketplace, keepOn };
+  }
+
+  function compileRuleToAutoOpenPattern(rule) {
+    if (!rule.domain || rule.domain.trim() === "") return null;
+    let pattern = rule.domain.trim();
+
+    if (rule.matchType === "root_sub") {
+      pattern = "+." + pattern;
+    } else if (rule.matchType === "sub") {
+      pattern = "*." + pattern;
+    }
+
+    if (rule.marketplace && rule.keepOn) {
+      pattern = "marketplace+keepon:" + pattern;
+    } else if (rule.marketplace) {
+      pattern = "marketplace:" + pattern;
+    }
+
+    return pattern;
+  }
 
   // =========================
   // Visual Config
@@ -129,7 +168,7 @@
       new WebsiteInjectionUtils(
         (navigationDetails) => this.getWebviewConfig(navigationDetails),
         (url, fromPanel, rect) => this.openPeek(url, fromPanel, rect),
-        ICON_CONFIG
+        state.settings
       );
     }
 
@@ -3492,7 +3531,7 @@
           const instantiationCode = `
                 window.__arcpeekCurrentTabIsPinned = ${currentTabIsPinned ? "true" : "false"};
                 if (!this.peekEventListenerSet) {
-                    new (${handler})(${fromPanel}, ${pageConfig});
+                    window.__arcpeekHandler = new (${handler})(${fromPanel}, ${pageConfig});
                     this.peekEventListenerSet = true;
                 }
             `;
@@ -3550,6 +3589,11 @@
         if (message.type === "peek-closed") {
           this.isLongPress = false;
           this.#restorePeekSourceLink();
+          return;
+        }
+
+        if (message.type === "arcpeek-update-config") {
+          this.config = Object.assign(this.config || {}, message.config);
           return;
         }
 
@@ -3680,11 +3724,224 @@
 
     #hostnameMatchesPattern(hostname, pattern) {
       if (!hostname || !pattern || pattern === "pin") return false;
+      if (pattern.startsWith("+.")) {
+        const suffix = pattern.slice(2);
+        return !!suffix && (hostname === suffix || hostname.endsWith(`.${suffix}`));
+      }
       if (pattern.startsWith("*.")) {
         const suffix = pattern.slice(2);
         return !!suffix && hostname.endsWith(`.${suffix}`);
       }
       return hostname === pattern;
+    }
+
+    #parseAutoOpenPattern(pattern) {
+      const raw = String(pattern || "").trim().toLowerCase();
+      if (!raw) return null;
+
+      const marketplacePrefix = "marketplace:";
+      const marketplaceKeepOnPrefix = "marketplace+keepon:";
+      if (raw.startsWith(marketplaceKeepOnPrefix)) {
+        return {
+          kind: "marketplace",
+          keepOn: true,
+          pattern: raw.slice(marketplaceKeepOnPrefix.length).trim(),
+        };
+      }
+      if (raw.startsWith(marketplacePrefix)) {
+        return {
+          kind: "marketplace",
+          keepOn: false,
+          pattern: raw.slice(marketplacePrefix.length).trim(),
+        };
+      }
+
+      return {
+        kind: "normal",
+        keepOn: false,
+        pattern: raw,
+      };
+    }
+
+    #matchesSimpleAutoOpenPattern(pattern, href) {
+      if (!pattern || pattern === "pin") return false;
+      const normalizedPattern = String(pattern).trim().toLowerCase();
+      if (!normalizedPattern) return false;
+
+      let targetUrl;
+      try {
+        targetUrl = new URL(String(href || window.location.href).trim(), window.location.href);
+      } catch (_) {
+        return false;
+      }
+
+      const hostname = String(targetUrl.hostname || "").toLowerCase();
+      const path = String(targetUrl.pathname || "/").toLowerCase();
+      const [hostPattern, ...pathParts] = normalizedPattern.split("/");
+      const pathPattern = pathParts.length ? `/${pathParts.join("/")}` : "";
+
+      const hostMatches = this.#hostnameMatchesPattern(hostname, hostPattern);
+      if (!hostMatches) return false;
+      if (!pathPattern) return true;
+
+      if (pathPattern.endsWith("*")) {
+        const prefix = pathPattern.slice(0, -1);
+        return prefix ? path.startsWith(prefix) : true;
+      }
+      return path === pathPattern;
+    }
+
+    #matchesAutoOpenPattern(pattern, href) {
+      const info = this.#parseAutoOpenPattern(pattern);
+      if (!info || !info.pattern || info.pattern === "pin") return false;
+      return this.#matchesSimpleAutoOpenPattern(info.pattern, href);
+    }
+
+    #shouldIgnoreAutoOpenForLink(link) {
+      if (!link || !link.href) return false;
+      const href = String(link.getAttribute("href") || link.href || "").trim();
+      if (!href) return false;
+
+      let targetUrl;
+      try {
+        targetUrl = new URL(href, window.location.href);
+      } catch (_) {
+        return false;
+      }
+
+      const hostname = String(targetUrl.hostname || "").toLowerCase();
+      const path = String(targetUrl.pathname || "").toLowerCase();
+      const searchParams = new URLSearchParams(targetUrl.search);
+
+      if (hostname.endsWith("google.com") && path.startsWith("/search") && searchParams.has("start")) {
+        return true;
+      }
+
+      if (hostname === "ya.ru" && path.startsWith("/search") && searchParams.has("p")) {
+        return true;
+      }
+
+      if (this.#isGoogleOrYandexSearchCategoryLink(targetUrl)) {
+        return true;
+      }
+
+      return false;
+    }
+
+    #isGooglePaginationLink(link) {
+      if (!link || !link.href) return false;
+      const href = String(link.getAttribute("href") || link.href || "").trim();
+      if (!href) return false;
+
+      let targetUrl;
+      try {
+        targetUrl = new URL(href, window.location.href);
+      } catch (_) {
+        return false;
+      }
+
+      const hostname = String(targetUrl.hostname || "").toLowerCase();
+      if (!hostname.endsWith("google.com")) return false;
+      const path = String(targetUrl.pathname || "").toLowerCase();
+      if (!path.startsWith("/search")) return false;
+
+      const searchParams = new URLSearchParams(targetUrl.search);
+      if (searchParams.has("start")) return true;
+
+      const text = String(link.textContent || "").trim().toLowerCase();
+      const ariaLabel = String(link.getAttribute("aria-label") || "").toLowerCase();
+      const id = String(link.id || "").toLowerCase();
+
+      if (id === "pnnext" || id === "pnprev") {
+        return true;
+      }
+
+      if (/(^|\s)(next|previous|следующ|предыдущ)(\s|$)/.test(ariaLabel)) {
+        return true;
+      }
+
+      if (/^\d+$/.test(text)) {
+        return true;
+      }
+
+      if (/^[«‹›»]$/.test(text)) {
+        return true;
+      }
+
+      return false;
+    }
+
+    #isGoogleOrYandexSearchCategoryLink(targetUrl) {
+      if (!targetUrl) return false;
+      const hostname = String(targetUrl.hostname || "").toLowerCase();
+      const path = String(targetUrl.pathname || "").toLowerCase();
+      const searchParams = new URLSearchParams(targetUrl.search);
+
+      if (/(^|\.)google\.[a-z.]+$/.test(hostname)) {
+        if (path.startsWith("/search")) {
+          return true;
+        }
+        if (path.startsWith("/maps") || path.startsWith("/shopping")) {
+          return true;
+        }
+      }
+
+      if (/(^|\.)yandex\.[a-z.]+$/.test(hostname) || hostname === "ya.ru") {
+        if (path === "/" && searchParams.get("source") === "tabbar") {
+          return true;
+        }
+
+        if (path.startsWith("/search")) {
+          if (searchParams.has("rpt")) {
+            const rpt = String(searchParams.get("rpt") || "").toLowerCase();
+            if (
+              [
+                "image",
+                "images",
+                "video",
+                "news",
+                "map",
+                "shop",
+                "shop2",
+              ].includes(rpt)
+            ) {
+              return true;
+            }
+          }
+
+          if (
+            searchParams.has("from") &&
+            String(searchParams.get("from") || "").toLowerCase() === "tabbar"
+          ) {
+            return true;
+          }
+
+          if (
+            searchParams.has("parent-reqid") ||
+            searchParams.has("serp-reload-from") ||
+            searchParams.has("products_mode") ||
+            (searchParams.has("source") &&
+              String(searchParams.get("source") || "").toLowerCase() === "tabbar")
+          ) {
+            return true;
+          }
+        }
+
+        if (
+          path.startsWith("/images") ||
+          path.startsWith("/video") ||
+          path.startsWith("/maps") ||
+          path.startsWith("/market")
+        ) {
+          return true;
+        }
+
+        if (hostname === "maps.yandex.ru" || hostname === "market.yandex.ru") {
+          return true;
+        }
+      }
+
+      return false;
     }
 
     #isCurrentTabPinned() {
@@ -3697,8 +3954,13 @@
     #shouldAutoOpenLinkEvent(event) {
       if (!event || event.button !== 0) return false;
 
+      const link = this.#getLinkElement(event);
       const autoOpenList = this.#getAutoOpenList();
       if (!autoOpenList.length) return false;
+
+      if (link && this.#shouldIgnoreAutoOpenForLink(link)) {
+        return false;
+      }
 
       if (
         autoOpenList.includes("pin") &&
@@ -3707,12 +3969,38 @@
         return true;
       }
 
-      const hostname = String(window.location.hostname || "").toLowerCase();
-      if (!hostname) return false;
-
-      return autoOpenList.some((pattern) =>
-        this.#hostnameMatchesPattern(hostname, pattern)
+      const locationUrl = String(window.location.href || "").trim();
+      const normalPatterns = autoOpenList.filter(
+        (pattern) => this.#parseAutoOpenPattern(pattern)?.kind !== "marketplace"
       );
+      const marketplacePatterns = autoOpenList.filter(
+        (pattern) => this.#parseAutoOpenPattern(pattern)?.kind === "marketplace"
+      );
+
+      if (normalPatterns.some((pattern) => this.#matchesAutoOpenPattern(pattern, locationUrl))) {
+        return true;
+      }
+
+      if (!link || !marketplacePatterns.length) {
+        return false;
+      }
+
+      const linkUrl = String(link.getAttribute("href") || link.href || "").trim();
+      let shouldOpen = false;
+      for (const pattern of marketplacePatterns) {
+        if (!this.#matchesAutoOpenPattern(pattern, linkUrl)) {
+          continue;
+        }
+
+        const info = this.#parseAutoOpenPattern(pattern);
+        if (info?.keepOn && this.#matchesAutoOpenPattern(pattern, locationUrl)) {
+          return false;
+        }
+
+        shouldOpen = true;
+      }
+
+      return shouldOpen;
     }
 
     #setupMouseHandling() {
@@ -3736,10 +4024,12 @@
         }
 
         if (
-          (event.type === "click" ||
+          ((event.type === "click" ||
             event.type === "auxclick" ||
             event.type === "contextmenu") &&
-          typeof this.pendingSuppressedButton === "number"
+            typeof this.pendingSuppressedButton === "number") ||
+          event.type === "pointercancel" ||
+          event.type === "dragend"
         ) {
           clearTimeout(this.timers.suppressNativeOpen);
           this.#releasePointerSuppression();
@@ -3751,10 +4041,42 @@
       };
 
       [
-        "pointerup", "pointermove", "mouseup", "mousemove", "click",
+        "pointerdown", "pointerup", "pointermove", "mouseup", "mousemove", "mousedown", "click",
         "auxclick", "contextmenu", "selectstart", "dragstart",
+        "pointercancel", "dragend",
       ].forEach((eventName) => {
         document.addEventListener(eventName, suppressNativeEvent, signalOptions);
+      });
+
+      const tryOpenPeekOnClick = (event) => {
+        if (this.peekTriggered || this.suppressPointerSequence) return;
+        if (event.button !== 0) return;
+        const link = this.#getLinkElement(event);
+        if (!link) return;
+        if (!this.#shouldAutoOpenLinkEvent(event)) {
+          if (
+            link.target === "_blank" &&
+            this.#isGoogleOrYandexSearchCategoryLink(
+              new URL(String(link.getAttribute("href") || link.href || "").trim(), window.location.href)
+            )
+          ) {
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation?.();
+            window.location.href = link.href;
+          }
+          return;
+        }
+
+        this.pendingLeftButtonRelease = true;
+        this.pendingSuppressedButton = 0;
+        this.#openPeekFromEvent(event);
+        this.preventAllClicks();
+      };
+
+      document.addEventListener("click", tryOpenPeekOnClick, {
+        signal: this.#abortController.signal,
+        capture: true,
       });
 
       document.addEventListener("pointerdown", (event) => {
@@ -4092,6 +4414,41 @@
       this.peekTriggered = true;
       this.suppressPointerSequence = true;
       this.#suppressSelection();
+      this.#cancelActiveNativeDrag();
+    }
+
+    #cancelActiveNativeDrag() {
+      const createEvent = (Constructor, type, init) => {
+        try {
+          return new Constructor(type, init);
+        } catch (_) {
+          return null;
+        }
+      };
+
+      const cancelEvents = [
+        createEvent(PointerEvent, "pointercancel", {
+          bubbles: true,
+          cancelable: true,
+          composed: true,
+        }),
+        createEvent(MouseEvent, "mouseup", {
+          bubbles: true,
+          cancelable: true,
+          view: window,
+        }),
+        createEvent(DragEvent, "dragend", {
+          bubbles: true,
+          cancelable: true,
+          view: window,
+        }),
+      ].filter(Boolean);
+
+      cancelEvents.forEach((cancelEvent) => {
+        try {
+          document.dispatchEvent(cancelEvent);
+        } catch (_) {}
+      });
     }
 
     #suppressSelection() {
@@ -4219,6 +4576,291 @@
     get backgroundTab() { return this.getIcon("backgroundTab"); }
   }
 
+  function injectArcPeekSettings(targetSection) {
+    if (!targetSection || document.querySelector('.ap-setting-group')) return;
+
+    const group = document.createElement('div');
+    group.className = 'setting-section ap-setting-group';
+
+    const s = state.settings;
+    const isPinned = s.autoOpenList.includes("pin");
+
+    group.innerHTML = `
+      <style>
+        .ap-setting-group { margin-top: 24px; border-top: 1px solid var(--colorBorderSubtle); padding-top: 18px; font-size: 13px; color: var(--colorFg); width: 100%; box-sizing: border-box; max-width: 100%; overflow-x: hidden; }
+        .ap-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+        .ap-section { margin-bottom: 24px; }
+        .ap-section-header { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--colorFgFaded); margin-bottom: 8px; border-bottom: 1px solid var(--colorBorderSubtle); padding-bottom: 4px; }
+        .ap-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--colorBorderSubtle); gap: 16px; }
+        .ap-row:last-child { border-bottom: none; }
+        .ap-row-label { flex: 1; min-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 8px; }
+        .ap-row-controls { display: flex; align-items: center; gap: 12px; }
+        .ap-row-controls label { display: flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap; margin: 0; }
+        .ap-input-text, .ap-select { background: var(--colorBgDark); border: 1px solid var(--colorBorderSubtle); color: var(--colorFg); padding: 4px 8px; border-radius: var(--radius); font-size: 12px; box-sizing: border-box; height: 26px; }
+        .ap-number-input { width: 60px; }
+        .ap-select { padding: 4px 6px; }
+        .ap-btn { background: var(--colorBgDark); border: 1px solid var(--colorBorderSubtle); color: var(--colorFg); padding: 4px 12px; border-radius: var(--radius); cursor: pointer; font-size: 12px; font-weight: 600; }
+        .ap-btn:hover { background: var(--colorBgDarker); }
+        .ap-btn-primary { background: var(--colorHighlightBg); color: var(--colorHighlightFg); border: none; }
+        .ap-btn-primary:hover { opacity: 0.9; }
+        .ap-btn-danger { color: #ff5555; border-color: rgba(255,85,85,0.3); }
+        .ap-btn-danger:hover { background: rgba(255, 85, 85, 0.1); border-color: #ff5555; }
+
+        .ap-table-wrap { overflow-y: auto; overflow-x: hidden; max-height: 400px; max-width: 100%; border: 1px solid var(--colorBorderSubtle); border-radius: var(--radius); margin-top: 8px; padding-right: 4px; box-sizing: border-box; }
+        .ap-rules-grid { display: grid; grid-template-columns: minmax(50px, 2fr) minmax(60px, 1.2fr) 40px 40px 38px; gap: 4px; align-items: center; width: 100%; }
+        .ap-rules-header { padding: 8px; font-size: 10px; color: var(--colorFgFaded); text-transform: uppercase; border-bottom: 1px solid var(--colorBorderSubtle); font-weight: 600; background: var(--colorBgDark); }
+        .ap-rule-row { padding: 4px; border-bottom: 1px solid var(--colorBorderSubtle); }
+        .ap-rule-row:last-child { border-bottom: none; }
+        .ap-rule-row input[type="text"] { width: 100%; box-sizing: border-box; min-width: 0; font-size: 11px; padding: 2px; }
+        .ap-rule-row select { font-size: 11px; padding: 2px; min-width: 0; }
+        .ap-rule-row label { display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; font-size: 12px; white-space: nowrap; margin: 0; }
+        .ap-tips { margin-top: 12px; font-size: 11px; color: var(--colorFgFaded); line-height: 1.5; border-left: 2px solid var(--colorBorderSubtle); padding-left: 10px; }        .ap-tips ul { margin: 4px 0 0 0; padding-left: 16px; }
+        .ap-tips code { background: var(--colorBgDark); padding: 1px 4px; border-radius: 3px; font-family: monospace; }
+        .ap-rule-keepon-label[data-disabled="true"] { opacity: 0.5; pointer-events: none; }
+      </style>
+      
+      <div class="ap-title">
+        <span>Arc Peek Settings</span>
+      </div>
+
+      <div class="ap-section">
+        <div class="ap-section-header">Activation</div>
+        
+        <div class="ap-row">
+          <div class="ap-row-label">Modifier keys</div>
+          <div class="ap-row-controls">
+            <label><input type="checkbox" class="ap-mod-cb" value="ctrl_meta" ${s.clickOpenModifiers.includes('ctrl') || s.clickOpenModifiers.includes('meta') ? 'checked' : ''}> Ctrl/Cmd</label>
+            <label><input type="checkbox" class="ap-mod-cb" value="alt" ${s.clickOpenModifiers.includes('alt') ? 'checked' : ''}> Alt/Opt</label>
+            <label><input type="checkbox" class="ap-mod-cb" value="shift" ${s.clickOpenModifiers.includes('shift') ? 'checked' : ''}> Shift</label>
+          </div>
+        </div>
+
+        <div class="ap-row">
+          <div class="ap-row-label">Long-press buttons</div>
+          <div class="ap-row-controls">
+            <label><input type="checkbox" class="ap-lp-cb" value="middle" ${s.longPressButtons.includes('middle') ? 'checked' : ''}> Middle Click</label>
+            <label><input type="checkbox" class="ap-lp-cb" value="right" ${s.longPressButtons.includes('right') ? 'checked' : ''}> Right Click</label>
+          </div>
+        </div>
+
+        <div class="ap-row">
+          <div class="ap-row-label">Hold Time (ms)</div>
+          <div class="ap-row-controls">
+            <input type="number" id="ap-lp-time" value="${s.longPressHoldTime}" min="100" max="2000" step="50" class="ap-input-text ap-number-input">
+          </div>
+        </div>
+
+        <div class="ap-row">
+          <div class="ap-row-label">Hold Delay (ms)</div>
+          <div class="ap-row-controls">
+            <input type="number" id="ap-lp-delay" value="${s.longPressHoldDelay}" min="0" max="2000" step="50" class="ap-input-text ap-number-input">
+          </div>
+        </div>
+      </div>
+
+      <div class="ap-section">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <div class="ap-section-header" style="margin: 0; border: none; padding: 0;">Auto-open Rules</div>
+          <button id="ap-add-rule-btn" class="ap-btn ap-btn-primary">+ Add Rule</button>
+        </div>
+
+        <div class="ap-row" style="padding-top: 0; border: none;">
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; width: 100%;">
+            <input type="checkbox" id="ap-pin-cb" ${isPinned ? 'checked' : ''}>
+            <span>Auto-open links in pinned tabs</span>
+          </label>
+        </div>
+
+        <div class="ap-table-wrap">
+          <div class="ap-rules-grid ap-rules-header">
+            <div>Domain</div>
+            <div>Match Type</div>
+            <div style="text-align: center;" title="Force Peek even off-site">Market</div>
+            <div style="text-align: center;" title="Keep in tab if already on same market site">KeepOn</div>
+            <div></div>
+          </div>
+          <div id="ap-rules-container"></div>
+        </div>
+
+        <div class="ap-tips">
+          <strong>Tips:</strong>
+          <ul>
+            <li><strong>Exact:</strong> Root domain only (<code>example.com</code>)</li>
+            <li><strong>Subdomains:</strong> Only subdomains (<code>*.example.com</code>)</li>
+            <li><strong>Root+Sub:</strong> Both root and subdomains (<code>+.example.com</code>)</li>
+            <li><strong>Market:</strong> Force Peek to open even when clicking links to this domain from other sites.</li>
+            <li><strong>KeepOn:</strong> Open link in the current tab (instead of Peek) if you are already on this market site.</li>
+          </ul>
+        </div>
+      </div>
+    `;
+
+    targetSection.appendChild(group);
+
+    const modCheckboxes = group.querySelectorAll('.ap-mod-cb');
+    modCheckboxes.forEach(cb => {
+      cb.addEventListener('change', () => {
+        let newModifiers = [];
+        Array.from(modCheckboxes).filter(c => c.checked).forEach(c => {
+          if (c.value === 'ctrl_meta') {
+            newModifiers.push('ctrl', 'meta');
+          } else {
+            newModifiers.push(c.value);
+          }
+        });
+        s.clickOpenModifiers = newModifiers;
+        saveSettings();
+      });
+    });
+
+    const lpCheckboxes = group.querySelectorAll('.ap-lp-cb');
+    lpCheckboxes.forEach(cb => {
+      cb.addEventListener('change', () => {
+        const selected = Array.from(lpCheckboxes).filter(c => c.checked).map(c => c.value);
+        s.longPressButtons = selected;
+        saveSettings();
+      });
+    });
+
+    group.querySelector('#ap-lp-time').addEventListener('change', (e) => {
+      s.longPressHoldTime = parseInt(e.target.value) || 400;
+      saveSettings();
+    });
+
+    group.querySelector('#ap-lp-delay').addEventListener('change', (e) => {
+      s.longPressHoldDelay = parseInt(e.target.value) || 200;
+      saveSettings();
+    });
+
+    const pinCb = group.querySelector('#ap-pin-cb');
+    pinCb.addEventListener('change', (e) => {
+      const hasPin = s.autoOpenList.includes("pin");
+      if (e.target.checked && !hasPin) {
+        s.autoOpenList.unshift("pin");
+      } else if (!e.target.checked && hasPin) {
+        s.autoOpenList = s.autoOpenList.filter(r => r !== "pin");
+      }
+      saveSettings();
+      renderArcPeekRules(group.querySelector('#ap-rules-container'));
+    });
+
+    renderArcPeekRules(group.querySelector('#ap-rules-container'));
+
+    group.querySelector('#ap-add-rule-btn').addEventListener('click', () => {
+      const newPattern = compileRuleToAutoOpenPattern({ domain: "example.com", matchType: "exact", marketplace: false, keepOn: false });
+      if (newPattern) {
+        if (s.autoOpenList[0] === "pin") {
+          s.autoOpenList.splice(1, 0, newPattern);
+        } else {
+          s.autoOpenList.unshift(newPattern);
+        }
+        saveSettings();
+        renderArcPeekRules(group.querySelector('#ap-rules-container'));
+      }
+    });
+  }
+
+  function renderArcPeekRules(container) {
+    const s = state.settings;
+    container.innerHTML = '';
+
+    let ruleCount = 0;
+
+    s.autoOpenList.forEach((pattern, index) => {
+      if (pattern === "pin") return;
+      ruleCount++;
+
+      const rule = parseAutoOpenPatternToRule(pattern);
+
+      const row = document.createElement('div');
+      row.className = 'ap-rules-grid ap-rule-row';
+
+      row.innerHTML = `
+        <div><input type="text" class="ap-rule-domain ap-input-text" placeholder="example.com/path/*" autocomplete="off" spellcheck="false" value="${rule.domain}"></div>
+        <div>
+          <select class="ap-rule-match ap-select" style="width: 100%;">
+            <option value="exact" ${rule.matchType === 'exact' ? 'selected' : ''}>Exact Match</option>
+            <option value="sub" ${rule.matchType === 'sub' ? 'selected' : ''}>Subdomains (*.)</option>
+            <option value="root_sub" ${rule.matchType === 'root_sub' ? 'selected' : ''}>Root+Sub (+.)</option>
+          </select>
+        </div>
+        <div style="text-align: center;"><label><input type="checkbox" class="ap-rule-marketplace" ${rule.marketplace ? 'checked' : ''}></label></div>
+        <div style="text-align: center;"><label class="ap-rule-keepon-label" ${!rule.marketplace ? 'data-disabled="true"' : ''}><input type="checkbox" class="ap-rule-keepon" ${rule.keepOn ? 'checked' : ''} ${!rule.marketplace ? 'disabled' : ''}></label></div>
+        <div><button class="ap-btn ap-btn-danger ap-rule-remove" title="Remove Rule" style="padding: 4px; width: 100%; box-sizing: border-box;">Del</button></div>
+      `;
+
+      const updateRule = () => {
+        const newDomain = row.querySelector('.ap-rule-domain').value;
+        const newMatch = row.querySelector('.ap-rule-match').value;
+        const newMarketplace = row.querySelector('.ap-rule-marketplace').checked;
+        const newKeepOnCb = row.querySelector('.ap-rule-keepon');
+        const keepOnLabel = row.querySelector('.ap-rule-keepon-label');
+
+        if (!newMarketplace) {
+          newKeepOnCb.checked = false;
+          newKeepOnCb.disabled = true;
+          keepOnLabel.dataset.disabled = "true";
+        } else {
+          newKeepOnCb.disabled = false;
+          keepOnLabel.removeAttribute("data-disabled");
+        }
+
+        const newKeepOn = newKeepOnCb.checked;
+
+        const newPattern = compileRuleToAutoOpenPattern({
+          domain: newDomain,
+          matchType: newMatch,
+          marketplace: newMarketplace,
+          keepOn: newMarketplace ? newKeepOn : false
+        });
+
+        s.autoOpenList[index] = newPattern !== null ? newPattern : "";
+        saveSettings();
+      };
+
+      row.querySelector('.ap-rule-domain').addEventListener('input', updateRule);
+      row.querySelector('.ap-rule-match').addEventListener('change', updateRule);
+      row.querySelector('.ap-rule-marketplace').addEventListener('change', updateRule);
+      row.querySelector('.ap-rule-keepon').addEventListener('change', updateRule);
+
+      row.querySelector('.ap-rule-remove').addEventListener('click', () => {
+        s.autoOpenList.splice(index, 1);
+        saveSettings();
+        renderArcPeekRules(container);
+      });
+
+      container.appendChild(row);
+    });
+    
+    if (ruleCount === 0) {
+      container.innerHTML = '<div style="text-align: center; color: var(--colorFgFaded); padding: 10px; font-size: 12px;">No rules added.</div>';
+    }
+  }
+
+  function initArcPeekSettingsObserver() {
+    const getCustomUiSection = () => {
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+      let node;
+      while ((node = walker.nextNode())) {
+        if (node.nodeValue && node.nodeValue.toLowerCase().includes('restart to apply')) {
+          const container = node.parentElement.closest('.setting-group, .setting-section, .setting-single') || node.parentElement;
+          return container.parentElement || container;
+        }
+      }
+
+      const heading = Array.from(document.querySelectorAll('h2, h3')).find(el => /custom ui modifications|custom ui mods|css ui mods/i.test(el.textContent));
+      if (heading) return heading.closest('.setting-group') || heading.closest('.setting-section') || heading.parentElement;
+      return null;
+    };
+
+    const observer = new MutationObserver(() => {
+      if (document.querySelector('.arcpeek-setting-group')) return;
+      const section = getCustomUiSection();
+      if (section) injectArcPeekSettings(section);
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+
   function bootstrapPeekMod() {
     if (window.__arcPeekInitialized) return true;
     const browser = document.getElementById("browser");
@@ -4228,26 +4870,42 @@
     return true;
   }
 
-  if (!bootstrapPeekMod()) {
-    const observerTarget = document.documentElement || document;
-    const observer = new MutationObserver(() => {
-      if (bootstrapPeekMod()) {
-        observer.disconnect();
-      }
+  function init() {
+    chrome.storage.local.get([ARCPEEK_SETTINGS_KEY], (res) => {
+      state.settings = { ...DEFAULT_ARCPEEK_SETTINGS, ...(res[ARCPEEK_SETTINGS_KEY] || {}) };
+
+      const tryBootstrap = () => {
+        if (!bootstrapPeekMod()) {
+          const observerTarget = document.documentElement || document;
+          const observer = new MutationObserver(() => {
+            if (bootstrapPeekMod()) {
+              observer.disconnect();
+            }
+          });
+          observer.observe(observerTarget, { childList: true, subtree: true });
+
+          let rafAttempts = 0;
+          const retryBootstrap = () => {
+            if (bootstrapPeekMod()) {
+              observer.disconnect();
+              return;
+            }
+            if (rafAttempts++ < 120) {
+              window.requestAnimationFrame(retryBootstrap);
+            }
+          };
+          window.requestAnimationFrame(retryBootstrap);
+        }
+      };
+
+      tryBootstrap();
+      initArcPeekSettingsObserver();
     });
+  }
 
-    observer.observe(observerTarget, { childList: true, subtree: true });
-
-    let rafAttempts = 0;
-    const retryBootstrap = () => {
-      if (bootstrapPeekMod()) {
-        observer.disconnect();
-        return;
-      }
-      if (rafAttempts++ < 120) {
-        window.requestAnimationFrame(retryBootstrap);
-      }
-    };
-    window.requestAnimationFrame(retryBootstrap);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
   }
 })();

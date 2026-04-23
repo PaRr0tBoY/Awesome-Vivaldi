@@ -1,0 +1,101 @@
+/* Tab Drag Indicator Mod
+ * Draws a vertical line with arrows when dragging text/links
+ * Logic: Edge Zones = Insert new tab, Center Zone = Navigate current tab
+ */
+.tab-drag-indicator {
+  position: fixed;
+  width: 2px;
+  background-color: #fff; /* White like the screenshot */
+  z-index: 10000;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
+}
+
+.tab-drag-indicator.visible {
+  opacity: 1;
+}
+
+/* Sharp Arrow Pointer at the tip */
+.tab-drag-indicator::before {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 8px;
+  background-color: #fff;
+  /* Use a sharp triangle mask */
+  mask-image: url('data:image/svg+xml,<svg viewBox="0 0 10 8" xmlns="http://www.w3.org/2000/svg"><path d="M5 0L10 8H0L5 0Z"/></svg>');
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -4px; /* Default for top tabbar */
+}
+
+/* Bottom Tabbar flip */
+#tabs-tabbar-container.bottom .tab-drag-indicator::before {
+  bottom: auto;
+  top: -4px;
+  transform: translateX(-50%) rotate(180deg);
+}
+
+/* Sidebar Tabbar flip */
+#tabs-tabbar-container.left .tab-drag-indicator::before {
+  left: auto;
+  right: -4px;
+  bottom: 50%;
+  transform: translateY(50%) rotate(-90deg);
+}
+#tabs-tabbar-container.right .tab-drag-indicator::before {
+  right: auto;
+  left: -4px;
+  bottom: 50%;
+  transform: translateY(50%) rotate(90deg);
+}
+
+/* Navigation Highlight for center drops (Replacement Mode)
+ * Uses a premium Glow + Glass effect instead of a simple outline.
+ */
+.tab-drag-navigation-hover {
+  z-index: 10;
+}
+
+.tab-drag-navigation-hover .tab {
+  box-shadow: 
+    0 0 0 2px #fff,
+    0 0 15px rgba(255, 255, 255, 0.5),
+    inset 0 0 10px rgba(255, 255, 255, 0.3) !important;
+  background-color: rgba(255, 255, 255, 0.25) !important;
+  transition: all 0.15s ease-out;
+  border-radius: var(--radius) !important;
+}
+
+/* Enhanced shine for the active tab to pop against the accent color */
+.tab-drag-navigation-hover .tab.active,
+.tab-drag-navigation-hover.active .tab {
+  box-shadow: 
+    0 0 0 2px #fff,
+    0 0 20px rgba(255, 255, 255, 0.6),
+    inset 0 0 15px rgba(255, 255, 255, 0.4) !important;
+  background-color: rgba(255, 255, 255, 0.35) !important;
+  filter: brightness(1.1);
+}
+
+/* Ensure parents don't clip */
+#tabs-container, .tab-strip, #tabs-tabbar-container {
+  overflow: visible !important;
+}
+
+/* Dynamic Override for Window Drag Regions
+ * This allows standard drag events to reach the header when a web-drag is active.
+ * We use a wildcard to capture all hidden spacers/handles in the top bar.
+ */
+#browser.mod-active-drag #header *,
+#browser.mod-active-drag #titlebar *,
+#browser.mod-active-drag #tabs-subcontainer *,
+#browser.mod-active-drag .tabbar-wrapper *,
+#browser.mod-active-drag .toolbar-tabbar * {
+  -webkit-app-region: no-drag !important;
+  pointer-events: auto !important;
+}

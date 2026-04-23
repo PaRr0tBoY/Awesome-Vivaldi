@@ -347,3 +347,7 @@ body.peek-open #browser #webpage-stack {
 .peek-container .peek-panel .peek-sidebar-controls .peek-sidebar-button {
   pointer-events: auto;
 }
+
+/* ==========================================================================
+   Settings UI Customizations (Moved to JS inline styles for isolation)
+   ========================================================================== */

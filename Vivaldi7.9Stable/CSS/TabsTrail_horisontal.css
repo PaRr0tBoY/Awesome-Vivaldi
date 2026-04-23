@@ -1,0 +1,120 @@
+/* ==UserStyle==
+ * @name         TabsTrail
+ * @description  Shows trails on tabs to highlight hover, close-button hover, and active-tab states.
+ * @version      2025.10.31
+ * @author       PaRr0tBoY, wyrtensi
+ * @website      https://github.com/PaRr0tBoY/Awesome-Vivaldi
+ * ==/UserStyle==
+ */
+
+/* ========================================
+   TAB TRAIL EFFECTS - THEME COLOR FOR TAB, RED FOR CLOSE BUTTON
+   ======================================== */
+
+/* Ensure tab-header is positioned relative for the absolute positioned trail */
+.tab-position .tab .tab-header {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Theme color trail element */
+.tab-position .tab .tab-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 90.333%;
+  background: linear-gradient(to bottom,
+      color-mix(in srgb, var(--colorHighlightBg) 70%, transparent) 0%,
+      color-mix(in srgb, var(--colorHighlightBg) 50%, transparent) 30%,
+      color-mix(in srgb, var(--colorHighlightBg) 20%, transparent) 60%,
+      transparent 100%);
+  transform: translateY(-100%);
+  opacity: 0;
+  transition: transform 300ms ease-out, opacity 300ms ease-out;
+  pointer-events: none;
+  z-index: 1;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* Red trail element */
+.tab-position .tab .tab-header::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 90.333%;
+  border-top-right-radius: inherit;
+  border-bottom-right-radius: inherit;
+  border-top-left-radius: inherit;
+  border-bottom-left-radius: inherit;
+  background: linear-gradient(to bottom,
+      rgba(180, 0, 0, 0.7) 0%,
+      rgba(180, 0, 0, 0.5) 30%,
+      rgba(180, 0, 0, 0.2) 60%,
+      rgba(180, 0, 0, 0) 100%);
+  transform: translateY(-100%);
+  opacity: 0;
+  transition: transform 300ms ease-out, opacity 300ms ease-out;
+  pointer-events: none;
+  z-index: 2;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* Theme color trail show when tab is hovered (but not close button) */
+
+.tab-position .tab:hover:not(:has(.close:hover)) .tab-header::before {
+  /* border-radius: 12px !important; */
+  transform: translateY(0);
+  opacity: 0.6;
+}
+
+/* Theme color trail show for active tab */
+.tab-position .tab.active:not(:has(.close:hover)) .tab-header::before,
+.tab-position .tab.active:hover:not(:has(.close:hover)) .tab-header::before {
+  /* border-radius: 12px !important; */
+  transform: translateY(0);
+  opacity: 0.6;
+}
+
+/* Red trail show when close button is hovered */
+.tab-position .tab:hover .close:hover~.tab-header::after,
+.tab-position .tab:hover .close:hover+.tab-header::after,
+.tab-position .tab:has(.close:hover) .tab-header::after,
+.tab-position .tab.active:has(.close:hover) .tab-header::after {
+  /* border-radius: 12px !important; */
+  transform: translateY(0);
+  opacity: 0.6;
+}
+
+/* Hide theme color trail when red trail is active - slide out to top */
+.tab-position .tab:has(.close:hover) .tab-header::before {
+  /* border-radius: 12px !important; */
+  transform: translateY(-100%);
+  opacity: 0;
+  transition: transform 150ms ease-out, opacity 150ms ease-out;
+}
+
+/* Red trail return to base state when theme color trail is active */
+.tab-position .tab:hover:not(:has(.close:hover)) .tab-header::after {
+  /* border-radius: 12px !important; */
+  transform: translateY(-100%);
+  opacity: 0;
+  transition: transform 150ms ease-out, opacity 150ms ease-out;
+}
+
+#tabs-subcontainer .tab.tab-small.tab-mini .tab-header,
+#tabs-subcontainer .tab.pinned.tab-mini .tab-header,
+#tabs-container .tab.tab-small.tab-mini .tab-header,
+#tabs-container .tab.pinned.tab-mini .tab-header {
+  border-left: none;
+  border-right: none;
+}

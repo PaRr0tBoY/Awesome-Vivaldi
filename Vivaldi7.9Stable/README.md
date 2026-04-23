@@ -50,6 +50,13 @@
 | ![VividPlayer](../Others/assets/VividPlayer.gif)             | `VidPlayer.css` + `VividPlayer.js`                                      |
 | ![ArcPeek](../Others/assets/ArcPeek.gif)             | `ArcPeek.css` + `ArcPeek.js`                                      |
 | ![AskInPage](../Others/assets/AskInPage.png) | `AskInPage.js`                                                |
+| ![BeautyMedia](../Others/assets/beautyplayer.gif)    | `BeautyMedia.css` + `BeautyMedia.js` (Replaces `Quietify`)        |
+| ![SplitScreenConnector](../Others/assets/splitscreenconnector.gif) | `SplitScreenConnector.css` + `SplitScreenConnector.js`                  |
+| ![SearchEngineSelector](../Others/assets/searchengineselector.gif) | `SearchEngineSelector.css` + `SearchEngineSelector.js`                  |
+| ![TabDragIndicator](../Others/assets/tabdragindicator.gif)   | `TabDragIndicator.css` + `TabDragIndicator.js`                          |
+| -                                                   | `texthelper.css` + `texthelper.js`                                      |
+| -                                                   | `TabsTrail_horisontal.css`                                        |
+| -                                                   | `YandexVideoTranslator.css` + `YandexVideoTranslator.js`                |
 
 
 ## Feature Showcase
@@ -60,7 +67,6 @@
 | ![VivaldiMax](../Others/assets/VivaldiMax.gif)       | `TidyTabs.css` + `TidyTabs.js` + `TidyTitles.js`                 |
 | ![TidyDownloads](../Others/assets/TidyDownloads.gif) | `TidyDownloads.js`                                                |
 | ![PeekTabbar](../Others/assets/PeekTabbar.gif)       | `PeekTabbar.css`                                                  |
-| ![Quietify](../Others/assets/Quietify.gif)           | `Quietify.css`                                                    |
 
 ## Mod List
 
@@ -70,6 +76,7 @@
 | --------------------- | ----------------------------------------------------------- |
 | `AdaptiveBF.css`      | Hide back/forward buttons when unnecessary                  |
 | `ArcPeek.css`         | Arc peek experience (pair with `ArcPeek.js`)                |
+| `BeautyMedia.css`     | Sleeker audio indicator / media controls / player (Replaces `Quietify`) |
 | `BetterAnimation.css` | Smoother overscroll animation                               |
 | `BtnHoverAnime.css`   | Button hover animation _(disabled by default)_              |
 | `DownloadPanel.css`   | Download panel theming                                      |
@@ -79,11 +86,16 @@
 | `FluidQC.css`         | Arc-like quick command styling                              |
 | `LineBreak.css`       | Utility / omit it                                           |
 | `PeekTabbar.css`      | Peek tabbar on hover with 2-level stacking                  |
-| `Quietify.css`        | Sleeker audio indicator                                     |
 | `RemoveClutter.css`   | Hide scrollbars & visual clutter                            |
-| `TabsTrail.css`       | Green trail on active/hovered tabs                          |
+| `SearchEngineSelector.css` | Search Engine Selector popup and modal settings styling                   |
+| `SplitScreenConnector.css` | Split screen tabs connector UI                              |
+| `TabDragIndicator.css` | Drop text to tabs to use it in search (has drop off indicator)  |
+| `TabsTrail.css`       | Green vertical trail on active/hovered tabs                 |
+| `TabsTrail_horisontal.css` | Horizontal trail on active/hovered tabs (light version)       |
+| `texthelper.css`      | Text helper popup and settings styling                      |
 | `TidyTabs.css`        | AI tab grouping _(requires `TidyTabs.js`)_                    |
 | `VivalArc.css`        | Arc theme port _(incompatible with this modpack)_           |
+| `YandexVideoTranslator.css` | Yandex Video Translator styling                       |
 
 ### Javascripts
 
@@ -92,16 +104,22 @@
 | `ArcPeek.js`             | Arc peek dialog support _(pairs with `ArcPeek.css`)_            |
 | `AskInPage.js`           | AI side panel for page questions, summaries, and rewrites       |
 | `AutoHidePanel.js`       | Auto-hide side panel                                            |
+| `BeautyMedia.js`         | Sleeker media player (Replaces `Quietify`)                      |
 | `EasyFiles.js`           | Opera-inspired file attachment via clipboard & downloads        |
 | `GlobalMediaControls.js` | Global Media Controls panel (Chrome-like)                       |
 | `MonochromeIcons.js`     | Monochrome web panel icons to reduce visual noise               |
 | `QuickCapture.js`        | Auto-select capture area with clipboard/file/default modes      |
+| `SearchEngineSelector.js`| Quickly select search engine right in the address bar           |
 | `SelectCloseTabs.js`     | Mark tabs in the tab cycler, then close them in one batch       |
+| `SplitScreenConnector.js`| Split screen tabs connector                                     |
+| `TabDragIndicator.js`    | Drop text to tabs to use it in search (has drop off indicator)  |
 | `TabScroll.js`           | Click active tab: scroll to top / previous position             |
+| `texthelper.js`          | Text selection instant translator with settings                 |
 | `TidyDownloads.js`       | AI download filename cleanup                                    |
 | `TidyTabs.js`            | AI tab grouping _(pairs with `TidyTabs.css`)_                   |
 | `TidyTitles.js`          | AI tab title cleanup                                            |
 | `WorkspaceTabManager.js` | Workspace Board panel for viewing and managing workspace tabs   |
+| `YandexVideoTranslator.js` | Real-time video translation to English/Russian/Kazakh         |
 | `YbAddressBar.js`        | Address bar enhancements (buggy)                                |
 
 ## How to install
@@ -185,6 +203,12 @@ To install, Just copy all the content under ./Javascripts/ to your `<YOURVIVALDI
     <script src="GlobalMediaControls.js"></script>
     <script src="EasyFiles.js"></script>
     <script src="ArcPeek.js"></script>
+    <script src="BeautyMedia.js"></script>
+    <script src="SearchEngineSelector.js"></script>
+    <script src="SplitScreenConnector.js"></script>
+    <script src="TabDragIndicator.js"></script>
+    <script src="texthelper.js"></script>
+    <script src="YandexVideoTranslator.js"></script>
   </body>
 </html>
 ```
