@@ -54,9 +54,6 @@
 | ![SplitScreenConnector](../Others/assets/splitscreenconnector.gif) | `SplitScreenConnector.css` + `SplitScreenConnector.js`                  |
 | ![SearchEngineSelector](../Others/assets/searchengineselector.gif) | `SearchEngineSelector.css` + `SearchEngineSelector.js`                  |
 | ![TabDragIndicator](../Others/assets/tabdragindicator.gif)   | `TabDragIndicator.css` + `TabDragIndicator.js`                          |
-| -                                                   | `texthelper.css` + `texthelper.js`                                      |
-| -                                                   | `TabsTrail_horisontal.css`                                        |
-| -                                                   | `YandexVideoTranslator.css` + `YandexVideoTranslator.js`                |
 
 
 ## Feature Showcase
@@ -67,6 +64,7 @@
 | ![VivaldiMax](../Others/assets/VivaldiMax.gif)       | `TidyTabs.css` + `TidyTabs.js` + `TidyTitles.js`                 |
 | ![TidyDownloads](../Others/assets/TidyDownloads.gif) | `TidyDownloads.js`                                                |
 | ![PeekTabbar](../Others/assets/PeekTabbar.gif)       | `PeekTabbar.css`                                                  |
+| ![Quietify](../Others/assets/Quietify.gif)           | `Quietify.css`                                                    |
 
 ## Mod List
 
@@ -86,6 +84,7 @@
 | `FluidQC.css`         | Arc-like quick command styling                              |
 | `LineBreak.css`       | Utility / omit it                                           |
 | `PeekTabbar.css`      | Peek tabbar on hover with 2-level stacking                  |
+| `Quietify.css`        | Sleeker audio indicator                                     |
 | `RemoveClutter.css`   | Hide scrollbars & visual clutter                            |
 | `SearchEngineSelector.css` | Search Engine Selector popup and modal settings styling                   |
 | `SplitScreenConnector.css` | Split screen tabs connector UI                              |
