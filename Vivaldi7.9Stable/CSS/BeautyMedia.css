@@ -51,7 +51,7 @@
 }
 
 html:not(.beautymedia-player-enabled) .draggable-player-root {
-  display: none !important;
+  visibility: hidden !important;
   opacity: 0 !important;
   pointer-events: none !important;
 }
@@ -63,7 +63,7 @@ html:not(.beautymedia-player-enabled) .draggable-player-root {
   background-position: center;
   opacity: 0.18;
   filter: blur(65px);
-  z-index: -1;
+  z-index: 10;
   pointer-events: none;
 }
 
@@ -415,7 +415,7 @@ html.beautymedia-tabs-icon-enabled .tab-audio {
 }
 
 html.beautymedia-tabs-icon-enabled .tab-audio svg {
-  display: none !important;
+  visibility: hidden !important;
 }
 
 html.beautymedia-tabs-icon-enabled .tab-audio::after {
@@ -449,32 +449,26 @@ html.beautymedia-tabs-icon-enabled .tab-audio:hover::after {
 
 /* --- PRECISION PLACEMENT LOGIC --- */
 
-/* 1. Normal Tabs: Audio icon sits at the end of the tab (Native Vivaldi style) */
-.tab:not(.pinned):not(.tab-small) .tab-audio {
-  margin-left: auto !important;
-  margin-right: 4px !important;
-}
 
-/* 2. Pinned & Small Tabs: Audio icon replaces favicon for space efficiency */
-html.beautymedia-tabs-icon-enabled .tab:is(.pinned, .tab-small):is(.audio-on, .audio-muted) .favicon {
+
+/* ALL Tabs: Audio icon replaces favicon for space efficiency */
+html.beautymedia-tabs-icon-enabled .tab:is(.audio-on, .audio-muted) .favicon {
   transform: scale(0) !important;
+  visibility: hidden !important;
   opacity: 0 !important;
   pointer-events: none !important;
 }
 
-html.beautymedia-tabs-icon-enabled .tab:is(.pinned, .tab-small):is(.audio-on, .audio-muted) .tab-audio {
+html.beautymedia-tabs-icon-enabled .tab:is(.audio-on, .audio-muted) .tab-audio {
   position: absolute !important;
-  left: 14px !important;
+  left: 8px !important;
   /* Standard Vivaldi favicon horizontal center */
   top: 50% !important;
   transform: translateY(-50%) !important;
   margin: 0 !important;
 }
 
-/* Ensure the title doesn't overlap the trailing audio icon on normal tabs */
-html.beautymedia-tabs-icon-enabled .tab:not(.pinned):not(.tab-small):is(.audio-on, .audio-muted) .title {
-  padding-right: 20px !important;
-}
+
 
 /* --- ANIMATED TAB GLOW (CREDIT: AstronGlitch) --- */
 @property --dp-deg {
@@ -493,11 +487,14 @@ html.beautymedia-tabs-animation-enabled .tab.audio-on:not(.active) {
   height: 97% !important;
 }
 
-html.beautymedia-tabs-animation-enabled .tab-position:has(.tab.audio-on):not(:has(.active))::after {
+
+
+
+html.beautymedia-tabs-animation-enabled .tab.audio-on:not(.active)::before {
   content: '';
   position: absolute;
   inset: 0;
-  z-index: -1;
+  z-index: 10;
   box-sizing: border-box;
   border-radius: var(--currentRadius);
   padding: 2px;
