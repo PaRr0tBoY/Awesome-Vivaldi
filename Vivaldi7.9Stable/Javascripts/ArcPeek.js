@@ -4688,6 +4688,7 @@
             <li><strong>Exact:</strong> Root domain only (<code>example.com</code>)</li>
             <li><strong>Subdomains:</strong> Only subdomains (<code>*.example.com</code>)</li>
             <li><strong>Root+Sub:</strong> Both root and subdomains (<code>+.example.com</code>)</li>
+            <li>For marketplace sites domain name should look like  <code>aliexpress.com/item/*</code>.</li>
             <li><strong>Market:</strong> Force Peek to open even when clicking links to this domain from other sites.</li>
             <li><strong>KeepOn:</strong> Open link in the current tab (instead of Peek) if you are already on this market site.</li>
           </ul>
