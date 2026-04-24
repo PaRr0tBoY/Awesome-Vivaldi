@@ -18,6 +18,8 @@
     enabled: true,
     showPlayer: true,
     showTabsIcon: true,
+    tabPlayingIconStyle: 'quietify',
+    tabMutedIconStyle: 'quietify',
     showTabGradient: true,
     defaultOnlyAccent: false,
     defaultOnlyGradient: false,
@@ -277,6 +279,7 @@
       this._lastSeekRequestId = 0;
       this._trackChangeTimestamp = 0;
       this._previousTrackKey = null;
+      this._previousMediaId = null;
 
       this.createDom();
       this.initDraggable();
@@ -564,8 +567,8 @@
       const count = activeColors.length;
 
       const stops = activeColors.map((color, idx) => {
-          const percent = (idx / (count - 1)) * 100;
-          return `${color} ${percent}%`;
+        const percent = (idx / (count - 1)) * 100;
+        return `${color} ${percent}%`;
       }).join(', ');
 
       return stops;
@@ -592,9 +595,9 @@
 
           let styleTag = document.getElementById(`bm-style-tab-${tabId}`);
           if (!styleTag) {
-              styleTag = document.createElement('style');
-              styleTag.id = `bm-style-tab-${tabId}`;
-              document.head.appendChild(styleTag);
+            styleTag = document.createElement('style');
+            styleTag.id = `bm-style-tab-${tabId}`;
+            document.head.appendChild(styleTag);
           }
 
           // Target the ::after of the tab-position containing this tab by leveraging CSS :has to match the unique tab ID inside the generic position node
@@ -603,8 +606,8 @@
           const isAudioOn = tabEl.classList.contains('audio-on') || tabEl.querySelector('.audio-on');
 
           if (isAudioOn) {
-              // Use both id and data-id to account for vivaldi recycling wrappers
-              styleTag.textContent = `
+            // Use both id and data-id to account for vivaldi recycling wrappers
+            styleTag.textContent = `
                   html.beautymedia-tabs-animation-enabled .tab#tab-${tabId}.audio-on:not(.active)::before,
                   html.beautymedia-tabs-animation-enabled .tab[data-id="tab-${tabId}"].audio-on:not(.active)::before,
                   html.beautymedia-tabs-animation-enabled .tab-wrapper[id="tab-${tabId}"] .tab.audio-on:not(.active)::before,
@@ -613,7 +616,7 @@
                   }
               `;
           } else {
-              styleTag.textContent = '';
+            styleTag.textContent = '';
           }
         }
       }
@@ -646,7 +649,7 @@
       this.position.y = y;
 
       this.el.style.left = `${x}px`;
-      
+
       if (y > window.innerHeight / 2) {
         this.el.style.top = 'auto';
         this.el.style.bottom = `${window.innerHeight - y - h}px`;
@@ -675,10 +678,10 @@
       }
       this.saveState();
       if (visible) {
-          if (this.isDocked) autoArrangePlayers(skipTransition);
-          else this.applyPosition(skipTransition);
+        if (this.isDocked) autoArrangePlayers(skipTransition);
+        else this.applyPosition(skipTransition);
       } else {
-          autoArrangePlayers();
+        autoArrangePlayers();
       }
     }
 
@@ -696,26 +699,25 @@
         if (trackKey === currentKey) return; // Discard ghost heartbeat
       }
 
-      if (this.mediaId && data.mediaId && data.mediaId !== this.mediaId) {
-        if (this._mediaIdChangeTimestamp && (now - this._mediaIdChangeTimestamp < 3000)) return;
-      }
-      if (trackKey && this._previousTrackKey === trackKey && (now - this._trackChangeTimestamp < 3000)) return;
+      if (this._previousMediaId && data.mediaId === this._previousMediaId && (now - this._mediaIdChangeTimestamp < 3000)) return;
+      if (trackKey && this._previousTrackKey === trackKey && trackKey !== currentKey && (now - this._trackChangeTimestamp < 3000)) return;
 
       let isHardTrackChange = (trackKey && trackKey !== currentKey) || (data.mediaId && data.mediaId !== this.mediaId);
 
       if (isHardTrackChange) {
+        this._previousMediaId = this.mediaId;
         this.mediaId = data.mediaId;
         this._mediaIdChangeTimestamp = now;
         this._previousTrackKey = currentKey;
         this._trackChangeTimestamp = now;
-        this._manualSeekTargetTime = null;
-        this._suppressUpdateUntil = 0;
+        this._manualSeekTargetTime = 0;
+        this._suppressUpdateUntil = now + 1000;
         this.mediaData.currentTime = 0;
         this.mediaData.duration = data.duration || 0;
         const fills = this.el.querySelectorAll('.draggable-player-progress-fill');
         fills.forEach(fill => fill.style.width = '0%');
         const timeEl = q('.draggable-player-time');
-        if (timeEl) timeEl.textContent = '0:00 / 0:00';
+        if (timeEl) timeEl.textContent = `0:00 / ${this.formatTime(data.duration || 0)}`;
       }
 
       this.tabId = tabId;
@@ -732,8 +734,8 @@
         if (pp) pp.innerHTML = data.paused ? icons.play : icons.pause;
 
         if (!data.paused && this.hiddenByTabClose && !this.manuallyClosed) {
-            this.hiddenByTabClose = false;
-            this.setVisible(true);
+          this.hiddenByTabClose = false;
+          this.setVisible(true);
         }
       }
       if (data.muted !== undefined) {
@@ -855,33 +857,33 @@
   };
 
   function getGlobalGradientStops() {
-      const s = state.settings;
-      let grad1 = s.defaultGradient1;
-      let grad2 = s.defaultGradient2;
-      let grad3 = s.defaultGradient3;
-      let grad4 = s.defaultGradient4;
+    const s = state.settings;
+    let grad1 = s.defaultGradient1;
+    let grad2 = s.defaultGradient2;
+    let grad3 = s.defaultGradient3;
+    let grad4 = s.defaultGradient4;
 
-      let e1 = s.defaultGradient1_enabled !== false;
-      let e2 = s.defaultGradient2_enabled !== false;
-      let e3 = s.defaultGradient3_enabled !== false;
-      let e4 = s.defaultGradient4_enabled !== false;
+    let e1 = s.defaultGradient1_enabled !== false;
+    let e2 = s.defaultGradient2_enabled !== false;
+    let e3 = s.defaultGradient3_enabled !== false;
+    let e4 = s.defaultGradient4_enabled !== false;
 
-      const activeColors = [];
-      if (e1 && grad1) activeColors.push(grad1);
-      if (e2 && grad2) activeColors.push(grad2);
-      if (e3 && grad3) activeColors.push(grad3);
-      if (e4 && grad4) activeColors.push(grad4);
+    const activeColors = [];
+    if (e1 && grad1) activeColors.push(grad1);
+    if (e2 && grad2) activeColors.push(grad2);
+    if (e3 && grad3) activeColors.push(grad3);
+    if (e4 && grad4) activeColors.push(grad4);
 
-      if (activeColors.length === 0) activeColors.push('#7ef29d', '#2693e2');
-      if (activeColors.length === 1) activeColors.push(activeColors[0]);
+    if (activeColors.length === 0) activeColors.push('#7ef29d', '#2693e2');
+    if (activeColors.length === 1) activeColors.push(activeColors[0]);
 
-      activeColors.push(activeColors[0]);
-      const count = activeColors.length;
+    activeColors.push(activeColors[0]);
+    const count = activeColors.length;
 
-      return activeColors.map((color, idx) => {
-          const percent = (idx / (count - 1)) * 100;
-          return `${color} ${percent}%`;
-      }).join(', ');
+    return activeColors.map((color, idx) => {
+      const percent = (idx / (count - 1)) * 100;
+      return `${color} ${percent}%`;
+    }).join(', ');
   }
 
   function applySettings() {
@@ -905,6 +907,15 @@
       root.classList.remove('beautymedia-tabs-icon-enabled');
     }
 
+    root.classList.remove(
+      'bm-tab-playing-icon-quietify',
+      'bm-tab-playing-icon-default',
+      'bm-tab-muted-icon-quietify',
+      'bm-tab-muted-icon-default'
+    );
+    root.classList.add(`bm-tab-playing-icon-${s.tabPlayingIconStyle || 'quietify'}`);
+    root.classList.add(`bm-tab-muted-icon-${s.tabMutedIconStyle || 'quietify'}`);
+
     if (s.enabled && s.showTabGradient) {
       root.classList.add('beautymedia-tabs-animation-enabled');
     } else {
@@ -918,37 +929,37 @@
 
     let shadowVal = 'none';
     if (s.showPlayerShadow !== false) {
-        const size = s.playerShadowSize !== undefined ? s.playerShadowSize : 30;
-        shadowVal = `0 12px ${size}px rgba(0, 0, 0, 0.6)`;
+      const size = s.playerShadowSize !== undefined ? s.playerShadowSize : 30;
+      shadowVal = `0 12px ${size}px rgba(0, 0, 0, 0.6)`;
     }
     root.style.setProperty('--bm-player-shadow', shadowVal);
 
     let isLight = false;
     if (s.playerTheme === 'light') {
-        isLight = true;
+      isLight = true;
     } else if (s.playerTheme === 'system') {
-        isLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+      isLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
     }
 
     if (isLight) {
-        root.style.setProperty('--bm-dp-glass-bg', 'rgba(255, 255, 255, 0.90)');
-        root.style.setProperty('--bm-dp-glass-border', 'rgba(0, 0, 0, 0.12)');
-        root.style.setProperty('--bm-dp-text', '#000000');
-        root.style.setProperty('--bm-dp-text-dim', 'rgba(0, 0, 0, 0.6)');
-        root.style.setProperty('--bm-dp-progress-bg', 'rgba(0, 0, 0, 0.15)');
+      root.style.setProperty('--bm-dp-glass-bg', 'rgba(255, 255, 255, 0.90)');
+      root.style.setProperty('--bm-dp-glass-border', 'rgba(0, 0, 0, 0.12)');
+      root.style.setProperty('--bm-dp-text', '#000000');
+      root.style.setProperty('--bm-dp-text-dim', 'rgba(0, 0, 0, 0.6)');
+      root.style.setProperty('--bm-dp-progress-bg', 'rgba(0, 0, 0, 0.15)');
     } else {
-        root.style.setProperty('--bm-dp-glass-bg', 'rgba(18, 20, 26, 0.96)');
-        root.style.setProperty('--bm-dp-glass-border', 'rgba(255, 255, 255, 0.12)');
-        root.style.setProperty('--bm-dp-text', '#ffffff');
-        root.style.setProperty('--bm-dp-text-dim', 'rgba(255, 255, 255, 0.5)');
-        root.style.setProperty('--bm-dp-progress-bg', 'rgba(255, 255, 255, 0.15)');
+      root.style.setProperty('--bm-dp-glass-bg', 'rgba(18, 20, 26, 0.96)');
+      root.style.setProperty('--bm-dp-glass-border', 'rgba(255, 255, 255, 0.12)');
+      root.style.setProperty('--bm-dp-text', '#ffffff');
+      root.style.setProperty('--bm-dp-text-dim', 'rgba(255, 255, 255, 0.5)');
+      root.style.setProperty('--bm-dp-progress-bg', 'rgba(255, 255, 255, 0.15)');
     }
 
     let styleTag = document.getElementById('bm-style-global');
     if (!styleTag) {
-        styleTag = document.createElement('style');
-        styleTag.id = 'bm-style-global';
-        document.head.appendChild(styleTag);
+      styleTag = document.createElement('style');
+      styleTag.id = 'bm-style-global';
+      document.head.appendChild(styleTag);
     }
     const globalStops = getGlobalGradientStops();
     styleTag.textContent = `html.beautymedia-tabs-animation-enabled .tab.audio-on:not(.active)::before { background: conic-gradient(from var(--dp-deg) at center, ${globalStops}) !important; }`;
@@ -963,7 +974,7 @@
       inst.applyServiceStyles(inst.tabId);
     });
   }
-function saveSettings() {
+  function saveSettings() {
     chrome.storage.local.set({ [SETTINGS_KEY]: state.settings });
   }
 
@@ -974,17 +985,17 @@ function saveSettings() {
 
       // Data migration: ensure missing gradient colors and toggles are filled
       if (state.settings.services) {
-          state.settings.services.forEach(srv => {
-              if (srv.grad1 === undefined || srv.grad1 === '') srv.grad1 = state.settings.defaultGradient1;
-              if (srv.grad2 === undefined || srv.grad2 === '') srv.grad2 = state.settings.defaultGradient2;
-              if (srv.grad3 === undefined || srv.grad3 === '') srv.grad3 = state.settings.defaultGradient3;
-              if (srv.grad4 === undefined || srv.grad4 === '') srv.grad4 = state.settings.defaultGradient4;
+        state.settings.services.forEach(srv => {
+          if (srv.grad1 === undefined || srv.grad1 === '') srv.grad1 = state.settings.defaultGradient1;
+          if (srv.grad2 === undefined || srv.grad2 === '') srv.grad2 = state.settings.defaultGradient2;
+          if (srv.grad3 === undefined || srv.grad3 === '') srv.grad3 = state.settings.defaultGradient3;
+          if (srv.grad4 === undefined || srv.grad4 === '') srv.grad4 = state.settings.defaultGradient4;
 
-              if (srv.grad1_enabled === undefined) srv.grad1_enabled = true;
-              if (srv.grad2_enabled === undefined) srv.grad2_enabled = true;
-              if (srv.grad3_enabled === undefined) srv.grad3_enabled = true;
-              if (srv.grad4_enabled === undefined) srv.grad4_enabled = true;
-          });
+          if (srv.grad1_enabled === undefined) srv.grad1_enabled = true;
+          if (srv.grad2_enabled === undefined) srv.grad2_enabled = true;
+          if (srv.grad3_enabled === undefined) srv.grad3_enabled = true;
+          if (srv.grad4_enabled === undefined) srv.grad4_enabled = true;
+        });
       }
 
       // Also migrate default enablements if missing
@@ -997,6 +1008,8 @@ function saveSettings() {
       if (state.settings.playerShadowSize === undefined) state.settings.playerShadowSize = 30;
       if (state.settings.playerTheme === undefined) state.settings.playerTheme = 'dark';
       if (state.settings.defaultPlayerPosition === undefined) state.settings.defaultPlayerPosition = 'bottom-right';
+      if (!['quietify', 'default'].includes(state.settings.tabPlayingIconStyle)) state.settings.tabPlayingIconStyle = 'quietify';
+      if (!['quietify', 'default'].includes(state.settings.tabMutedIconStyle)) state.settings.tabMutedIconStyle = 'quietify';
 
       applySettings();
 
@@ -1018,7 +1031,7 @@ function saveSettings() {
 
     group.innerHTML = `
       <style>
-        .bm-setting-group { margin-top: 24px; border-top: 1px solid var(--colorBorderSubtle); padding-top: 18px; font-size: 13px; color: var(--colorFg); width: 100%; box-sizing: border-box; max-width: 100%; overflow-x: hidden; }
+        .bm-setting-group { margin-top: 24px; border-top: 1px solid var(--colorBorderSubtle); padding-top: 18px; font-size: 13px; color: var(--colorFg); width: 100%; box-sizing: border-box; max-width: 800px; overflow-x: hidden; }
         .bm-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
         .bm-section { margin-bottom: 24px; }
         .bm-section-header { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--colorFgFaded); margin-bottom: 8px; border-bottom: 1px solid var(--colorBorderSubtle); padding-bottom: 4px; }
@@ -1037,9 +1050,8 @@ function saveSettings() {
         .bm-btn-primary:hover { opacity: 0.9; }
         .bm-btn-danger { color: #ff5555; border-color: rgba(255,85,85,0.3); }
         .bm-btn-danger:hover { background: rgba(255, 85, 85, 0.1); border-color: #ff5555; }
-
         .bm-table-wrap { overflow-y: auto; overflow-x: hidden; max-height: 400px; max-width: 100%; border: 1px solid var(--colorBorderSubtle); border-radius: var(--radius); margin-top: 8px; padding-right: 4px; box-sizing: border-box; }
-        .bm-sites-grid { display: grid; grid-template-columns: minmax(40px, 1fr) minmax(50px, 1.5fr) 24px 24px 90px 40px; gap: 4px; align-items: center; width: 100%; }
+        .bm-sites-grid { display: grid; grid-template-columns: 140px 160px 24px 24px 100px 40px; gap: 8px; align-items: center; width: 100%; }
         .bm-sites-header { padding: 8px; font-size: 10px; color: var(--colorFgFaded); text-transform: uppercase; border-bottom: 1px solid var(--colorBorderSubtle); font-weight: 600; background: var(--colorBgDark); }
         .bm-site-row { padding: 4px; border-bottom: 1px solid var(--colorBorderSubtle); }
         .bm-site-row:last-child { border-bottom: none; }
@@ -1067,6 +1079,24 @@ function saveSettings() {
         <div class="bm-row">
           <div class="bm-row-label">Tab audio icon colors</div>
           <div class="bm-row-controls"><input type="checkbox" id="bm-setting-tabs-icon" ${s.showTabsIcon ? 'checked' : ''}></div>
+        </div>
+        <div class="bm-row">
+          <div class="bm-row-label">Playing tab icon style</div>
+          <div class="bm-row-controls">
+            <select id="bm-setting-playing-icon-style" class="bm-select">
+              <option value="quietify" ${s.tabPlayingIconStyle === 'quietify' ? 'selected' : ''}>Quietify</option>
+              <option value="default" ${s.tabPlayingIconStyle === 'default' ? 'selected' : ''}>Default</option>
+            </select>
+          </div>
+        </div>
+        <div class="bm-row">
+          <div class="bm-row-label">Muted tab icon style</div>
+          <div class="bm-row-controls">
+            <select id="bm-setting-muted-icon-style" class="bm-select">
+              <option value="quietify" ${s.tabMutedIconStyle === 'quietify' ? 'selected' : ''}>Quietify</option>
+              <option value="default" ${s.tabMutedIconStyle === 'default' ? 'selected' : ''}>Default</option>
+            </select>
+          </div>
         </div>
         <div class="bm-row">
           <div class="bm-row-label">Tab animated gradient</div>
@@ -1208,66 +1238,86 @@ function saveSettings() {
     updateCheck('bm-setting-tabs-icon', 'showTabsIcon');
     updateCheck('bm-setting-tabs-gradient', 'showTabGradient');
 
+    const tabPlayingIconStyleSelect = group.querySelector('#bm-setting-playing-icon-style');
+    if (tabPlayingIconStyleSelect) {
+      tabPlayingIconStyleSelect.addEventListener('change', (e) => {
+        state.settings.tabPlayingIconStyle = e.target.value === 'default' ? 'default' : 'quietify';
+        saveSettings();
+        applySettings();
+        showSaveIndicator();
+      });
+    }
+
+    const tabMutedIconStyleSelect = group.querySelector('#bm-setting-muted-icon-style');
+    if (tabMutedIconStyleSelect) {
+      tabMutedIconStyleSelect.addEventListener('change', (e) => {
+        state.settings.tabMutedIconStyle = e.target.value === 'quietify' ? 'quietify' : 'default';
+        saveSettings();
+        applySettings();
+        showSaveIndicator();
+      });
+    }
+
     const themeSelect = group.querySelector('#bm-setting-player-theme');
     if (themeSelect) {
-        themeSelect.addEventListener('change', (e) => {
-            state.settings.playerTheme = e.target.value;
-            saveSettings();
-            applySettings();
-            showSaveIndicator();
-        });
+      themeSelect.addEventListener('change', (e) => {
+        state.settings.playerTheme = e.target.value;
+        saveSettings();
+        applySettings();
+        showSaveIndicator();
+      });
     }
 
     const posSelect = group.querySelector('#bm-setting-def-pos');
     if (posSelect) {
-        posSelect.addEventListener('change', (e) => {
-            state.settings.defaultPlayerPosition = e.target.value;
-            saveSettings();
-            showSaveIndicator();
-        });
+      posSelect.addEventListener('change', (e) => {
+        state.settings.defaultPlayerPosition = e.target.value;
+        saveSettings();
+        showSaveIndicator();
+      });
     }
 
     const opacityRange = group.querySelector('#bm-setting-player-opacity');
     const opacityVal = group.querySelector('#bm-opacity-val');
     if (opacityRange) {
-        opacityRange.addEventListener('input', (e) => {
-            if (opacityVal) opacityVal.textContent = e.target.value;
-        });
-        opacityRange.addEventListener('change', (e) => {
-            state.settings.playerOpacity = parseFloat(e.target.value);
-            saveSettings();
-            applySettings();
-            showSaveIndicator();
-        });
+      opacityRange.addEventListener('input', (e) => {
+        if (opacityVal) opacityVal.textContent = e.target.value;
+      });
+      opacityRange.addEventListener('change', (e) => {
+        state.settings.playerOpacity = parseFloat(e.target.value);
+        saveSettings();
+        applySettings();
+        showSaveIndicator();
+      });
     }
 
     const shadowCheck = group.querySelector('#bm-setting-show-shadow');
     const shadowContainer = group.querySelector('#bm-shadow-size-container');
     if (shadowCheck) {
-        shadowCheck.addEventListener('change', (e) => {
-            state.settings.showPlayerShadow = e.target.checked;
-            if (shadowContainer) {
-                shadowContainer.style.opacity = e.target.checked ? '1' : '0.5';
-                shadowContainer.style.pointerEvents = e.target.checked ? 'auto' : 'none';
-            }
-            saveSettings();
-            applySettings();
-            showSaveIndicator();
-        });
+      shadowCheck.addEventListener('change', (e) => {
+        state.settings.showPlayerShadow = e.target.checked;
+        if (shadowContainer) {
+          shadowContainer.style.opacity = e.target.checked ? '1' : '0.5';
+          shadowContainer.style.pointerEvents = e.target.checked ? 'auto' : 'none';
+        }
+        saveSettings();
+        applySettings();
+        showSaveIndicator();
+      });
     }
 
     const shadowSizeRange = group.querySelector('#bm-setting-player-shadow-size');
     const shadowSizeVal = group.querySelector('#bm-shadow-size-val');
     if (shadowSizeRange) {
-        shadowSizeRange.addEventListener('input', (e) => {
-            if (shadowSizeVal) shadowSizeVal.textContent = e.target.value + 'px';
-        });
-        shadowSizeRange.addEventListener('change', (e) => {
-            state.settings.playerShadowSize = parseInt(e.target.value, 10);
-            saveSettings();
-            applySettings();
-            showSaveIndicator();
-        });
+      shadowSizeRange.addEventListener('input', (e) => {
+        if (shadowSizeVal) shadowSizeVal.textContent = e.target.value + 'px';
+      });
+      shadowSizeRange.addEventListener('change', (e) => {
+        state.settings.playerShadowSize = parseInt(e.target.value, 10);
+        saveSettings();
+        applySettings();
+        showSaveIndicator();
+      });
     }
     updateCheck('bm-setting-def-only-accent', 'defaultOnlyAccent');
     updateCheck('bm-setting-def-only-icon', 'defaultOnlyIcon');
@@ -1288,16 +1338,16 @@ function saveSettings() {
 
     const resetBtn = group.querySelector('#bm-reset-settings-btn');
     if (resetBtn) {
-        resetBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
+      resetBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
 
-            const overlay = document.createElement('div');
-            overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:999999;display:flex;align-items:center;justify-content:center;';
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:999999;display:flex;align-items:center;justify-content:center;';
 
-            const modal = document.createElement('div');
-            modal.style.cssText = 'background:var(--colorBgDark, #2d2d2d) !important;border:1px solid var(--colorBorderSubtle, rgba(255,255,255,0.2)) !important;border-radius:8px !important;padding:20px !important;max-width:400px !important;box-shadow:0 10px 30px rgba(0,0,0,0.8) !important;';
-            modal.innerHTML = `
+        const modal = document.createElement('div');
+        modal.style.cssText = 'background:var(--colorBgDark, #2d2d2d) !important;border:1px solid var(--colorBorderSubtle, rgba(255,255,255,0.2)) !important;border-radius:8px !important;padding:20px !important;max-width:400px !important;box-shadow:0 10px 30px rgba(0,0,0,0.8) !important;';
+        modal.innerHTML = `
                 <h3 style="margin-top:0 !important;margin-bottom:15px !important;font-size:16px !important;color:var(--colorFg, #ffffff) !important;font-weight:bold !important;line-height:1.2 !important;">Reset BeautyMedia Settings</h3>
                 <p style="margin-bottom:20px !important;font-size:13px !important;color:var(--colorFgFaded, #cccccc) !important;line-height:1.5 !important;">Are you sure you want to reset BeautyMedia to default settings? All custom site colors will be permanently lost.</p>
                 <div style="display:flex !important;justify-content:flex-end !important;gap:10px !important;">
@@ -1306,19 +1356,19 @@ function saveSettings() {
                 </div>
             `;
 
-            overlay.appendChild(modal);
-            document.body.appendChild(overlay);
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
 
-            overlay.querySelector('#bm-modal-cancel').onclick = () => overlay.remove();
-            overlay.querySelector('#bm-modal-confirm').onclick = () => {
-                state.settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
-                saveSettings();
-                applySettings();
-                group.remove();
-                overlay.remove();
-                injectBeautyMediaSettings(targetSection);
-            };
-        });
+        overlay.querySelector('#bm-modal-cancel').onclick = () => overlay.remove();
+        overlay.querySelector('#bm-modal-confirm').onclick = () => {
+          state.settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+          saveSettings();
+          applySettings();
+          group.remove();
+          overlay.remove();
+          injectBeautyMediaSettings(targetSection);
+        };
+      });
     }
 
     renderServicesList(group.querySelector('#bm-services-container'), showSaveIndicator);
@@ -1328,10 +1378,10 @@ function saveSettings() {
     const s = state.settings;
 
     const render = () => {
-        let html = '';
+      let html = '';
 
-        s.services.forEach((srv, idx) => {
-            html += `
+      s.services.forEach((srv, idx) => {
+        html += `
               <div class="bm-sites-grid bm-site-row">
                   <div><input type="text" class="bm-srv-input bm-input-text" data-idx="${idx}" data-field="name" value="${srv.name}" placeholder="Name"></div>
                   <div><input type="text" class="bm-srv-input bm-input-text" data-idx="${idx}" data-field="host" value="${srv.host}" placeholder="Domain"></div>
@@ -1346,75 +1396,75 @@ function saveSettings() {
                   <div><button class="bm-btn bm-btn-danger bm-del-service-btn" data-idx="${idx}" style="padding: 4px; width: 100%; box-sizing: border-box;">Del</button></div>
               </div>
             `;
-        });
-        
-        if (s.services.length === 0) {
-            html = '<div style="text-align: center; color: var(--colorFgFaded); padding: 12px; font-size: 12px;">No custom sites added.</div>';
-        }
+      });
 
-        container.innerHTML = html;
+      if (s.services.length === 0) {
+        html = '<div style="text-align: center; color: var(--colorFgFaded); padding: 12px; font-size: 12px;">No custom sites added.</div>';
+      }
 
-        const parent = container.closest('.bm-section');
-        const addBtn = parent ? parent.querySelector('#bm-add-service-btn') : document.querySelector('#bm-add-service-btn');
-        if (addBtn) {
-            addBtn.onclick = () => {
-                s.services.unshift({ id: Date.now().toString(), name: 'New Site', host: 'example.com', accent: s.defaultAccent, icon: s.defaultIconColor, grad1: s.defaultGradient1, grad2: s.defaultGradient2, grad3: s.defaultGradient3, grad4: s.defaultGradient4, grad1_enabled: true, grad2_enabled: true, grad3_enabled: true, grad4_enabled: true });
-                saveSettings();
-                applySettings();
-                showSaveIndicator();
-                render();
-            };
-        }
+      container.innerHTML = html;
 
-        container.querySelectorAll('.bm-del-service-btn').forEach(btn => {
-            btn.onclick = (e) => {
-                const idx = parseInt(e.target.dataset.idx, 10);
-                s.services.splice(idx, 1);
-                saveSettings();
-                applySettings();
-                showSaveIndicator();
-                render();
-            };
-        });
+      const parent = container.closest('.bm-section');
+      const addBtn = parent ? parent.querySelector('#bm-add-service-btn') : document.querySelector('#bm-add-service-btn');
+      if (addBtn) {
+        addBtn.onclick = () => {
+          s.services.unshift({ id: Date.now().toString(), name: 'New Site', host: 'example.com', accent: s.defaultAccent, icon: s.defaultIconColor, grad1: s.defaultGradient1, grad2: s.defaultGradient2, grad3: s.defaultGradient3, grad4: s.defaultGradient4, grad1_enabled: true, grad2_enabled: true, grad3_enabled: true, grad4_enabled: true });
+          saveSettings();
+          applySettings();
+          showSaveIndicator();
+          render();
+        };
+      }
 
-        container.querySelectorAll('.bm-srv-input').forEach(inp => {
-            inp.onchange = (e) => {
-                const idx = parseInt(e.target.dataset.idx, 10);
-                const field = e.target.dataset.field;
-                s.services[idx][field] = e.target.value;
-                saveSettings();
-                applySettings();
-                showSaveIndicator();
-            };
-        });
+      container.querySelectorAll('.bm-del-service-btn').forEach(btn => {
+        btn.onclick = (e) => {
+          const idx = parseInt(e.target.dataset.idx, 10);
+          s.services.splice(idx, 1);
+          saveSettings();
+          applySettings();
+          showSaveIndicator();
+          render();
+        };
+      });
 
-        container.querySelectorAll('.bm-srv-check').forEach(inp => {
-            inp.onchange = (e) => {
-                const idx = parseInt(e.target.dataset.idx, 10);
-                const field = e.target.dataset.field;
-                s.services[idx][field] = e.target.checked;
-                saveSettings();
-                applySettings();
-                showSaveIndicator();
-            };
-        });
+      container.querySelectorAll('.bm-srv-input').forEach(inp => {
+        inp.onchange = (e) => {
+          const idx = parseInt(e.target.dataset.idx, 10);
+          const field = e.target.dataset.field;
+          s.services[idx][field] = e.target.value;
+          saveSettings();
+          applySettings();
+          showSaveIndicator();
+        };
+      });
 
-        container.querySelectorAll('.bm-srv-color').forEach(inp => {
-            inp.oninput = (e) => {
-                const idx = parseInt(e.target.dataset.idx, 10);
-                const field = e.target.dataset.field;
-                s.services[idx][field] = e.target.value;
-                applySettings();
-            };
-            inp.onchange = (e) => {
-                const idx = parseInt(e.target.dataset.idx, 10);
-                const field = e.target.dataset.field;
-                s.services[idx][field] = e.target.value;
-                saveSettings();
-                applySettings();
-                showSaveIndicator();
-            };
-        });
+      container.querySelectorAll('.bm-srv-check').forEach(inp => {
+        inp.onchange = (e) => {
+          const idx = parseInt(e.target.dataset.idx, 10);
+          const field = e.target.dataset.field;
+          s.services[idx][field] = e.target.checked;
+          saveSettings();
+          applySettings();
+          showSaveIndicator();
+        };
+      });
+
+      container.querySelectorAll('.bm-srv-color').forEach(inp => {
+        inp.oninput = (e) => {
+          const idx = parseInt(e.target.dataset.idx, 10);
+          const field = e.target.dataset.field;
+          s.services[idx][field] = e.target.value;
+          applySettings();
+        };
+        inp.onchange = (e) => {
+          const idx = parseInt(e.target.dataset.idx, 10);
+          const field = e.target.dataset.field;
+          s.services[idx][field] = e.target.value;
+          saveSettings();
+          applySettings();
+          showSaveIndicator();
+        };
+      });
     };
 
     render();
@@ -1422,21 +1472,27 @@ function saveSettings() {
 
   function initSettingsObserver() {
     const getCustomUiSection = () => {
-      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
-      let node;
-      while ((node = walker.nextNode())) {
-        if (node.nodeValue && node.nodeValue.toLowerCase().includes('restart to apply')) {
-          const container = node.parentElement.closest('.setting-group, .setting-section, .setting-single') || node.parentElement;
-          return container.parentElement || container;
-        }
-      }
+      // 1. Try by specific Vivaldi class (most reliable)
+      const folderSelection = document.querySelector('.folder-selection');
+      if (folderSelection) return folderSelection.closest('.setting-group') || folderSelection.closest('section');
 
-      const heading = Array.from(document.querySelectorAll('h2, h3')).find(el => /custom ui modifications|custom ui mods|css ui mods/i.test(el.textContent));
-      if (heading) return heading.closest('.setting-group') || heading.closest('.setting-section') || heading.parentElement;
-      return null;
+      // 2. Try by language-agnostic content search (.css is usually untranslated)
+      const infoText = Array.from(document.querySelectorAll('.info, p, span'))
+        .find(el => el.textContent.includes('.css') && /restart|apply/i.test(el.textContent));
+      if (infoText) return infoText.closest('.setting-group') || infoText.closest('section');
+
+      // 3. Fallback to English names
+      const heading = Array.from(document.querySelectorAll('h2, h3'))
+        .find(el => /custom ui modifications|custom ui mods|css ui mods/i.test(el.textContent));
+      return heading ? heading.closest('.setting-group') || heading.closest('section') : null;
     };
 
     const observer = new MutationObserver(() => {
+      // Check if we are on the Appearance page (Stable data-id="2")
+      const selectedCategory = document.querySelector('.settings-sidebar .tree-item[aria-selected="true"]');
+      const isAppearance = selectedCategory?.getAttribute('data-id') === '2';
+      if (!isAppearance) return;
+
       if (document.querySelector('.beautymedia-setting-group')) return;
       const section = getCustomUiSection();
       if (section) injectBeautyMediaSettings(section);
@@ -1445,53 +1501,53 @@ function saveSettings() {
   }
 
   function autoArrangePlayers(skipTransition = false) {
-      const docked = Array.from(state.instances.values()).filter(p => p.isVisible && p.isDocked);
-      if (!docked.length) return;
+    const docked = Array.from(state.instances.values()).filter(p => p.isVisible && p.isDocked);
+    if (!docked.length) return;
 
-      const pos = state.settings.defaultPlayerPosition || 'bottom-right';
-      docked.sort((a, b) => a.id.localeCompare(b.id));
+    const pos = state.settings.defaultPlayerPosition || 'bottom-right';
+    docked.sort((a, b) => a.id.localeCompare(b.id));
 
-      const padding = 20;
-      const spacing = 10;
-      const w = 360;
-      const baseH = 100;
+    const padding = 20;
+    const spacing = 10;
+    const w = 360;
+    const baseH = 100;
 
-      let currentX = padding;
-      if (pos.includes('right')) currentX = window.innerWidth - w - padding;
-      else if (pos.includes('center')) currentX = (window.innerWidth - w) / 2;
+    let currentX = padding;
+    if (pos.includes('right')) currentX = window.innerWidth - w - padding;
+    else if (pos.includes('center')) currentX = (window.innerWidth - w) / 2;
 
-      let currentY = padding;
-      let currentBottom = padding;
+    let currentY = padding;
+    let currentBottom = padding;
 
-      const isBottom = pos.includes('bottom');
-      const isTop = pos.includes('top');
-      const isCenter = !isBottom && !isTop;
+    const isBottom = pos.includes('bottom');
+    const isTop = pos.includes('top');
+    const isCenter = !isBottom && !isTop;
 
-      if (isCenter) {
-          currentY = (window.innerHeight - baseH) / 2 - ((docked.length - 1) * (baseH + spacing)) / 2;
+    if (isCenter) {
+      currentY = (window.innerHeight - baseH) / 2 - ((docked.length - 1) * (baseH + spacing)) / 2;
+    }
+
+    for (let p of docked) {
+      const isHovered = p.el && p.el.matches(':hover');
+      const actualH = isHovered ? 200 : baseH;
+
+      p.position.x = currentX;
+      if (isBottom) {
+        p.position.y = window.innerHeight - currentBottom - baseH;
+        currentBottom += actualH + spacing;
+      } else {
+        p.position.y = currentY;
+        currentY += actualH + spacing;
       }
-
-      for (let p of docked) {
-          const isHovered = p.el && p.el.matches(':hover');
-          const actualH = isHovered ? 200 : baseH;
-
-          p.position.x = currentX;
-          if (isBottom) {
-              p.position.y = window.innerHeight - currentBottom - baseH;
-              currentBottom += actualH + spacing;
-          } else {
-              p.position.y = currentY;
-              currentY += actualH + spacing;
-          }
-          p.applyPosition(skipTransition);
-      }
+      p.applyPosition(skipTransition);
+    }
   }
 
   function getInstanceForHost(hostname) {
     if (!state.instances.has(hostname)) {
       const saved = state.persisted[hostname] || { x: 80, y: 80, isDocked: true };
-      state.instances.set(hostname, new PlayerInstance(hostname, { 
-        x: saved.x, y: saved.y, manuallyClosed: saved.manuallyClosed, hiddenByTabClose: saved.hiddenByTabClose, isDocked: saved.isDocked 
+      state.instances.set(hostname, new PlayerInstance(hostname, {
+        x: saved.x, y: saved.y, manuallyClosed: saved.manuallyClosed, hiddenByTabClose: saved.hiddenByTabClose, isDocked: saved.isDocked
       }));
     }
     return state.instances.get(hostname);
@@ -1559,15 +1615,27 @@ function saveSettings() {
         // --- SINGLE CLICK CANDIDATE ---
         lastClickTime = now;
         clickTimer = setTimeout(() => {
-          // Re-dispatch a real click for Vivaldi to handle as a Mute action
-          const evt = new MouseEvent('click', {
-            bubbles: true,
-            cancelable: true,
-            view: window,
-            detail: 1
-          });
-          evt._dp_ignore = true; // Flag to prevent our own interceptor from catching it again
-          target.dispatchEvent(evt);
+          const tabEl = findTabElement(target);
+          const tabId = parseTabId(tabEl);
+
+          if (tabId) {
+            chrome.tabs.get(tabId, (tab) => {
+              if (chrome.runtime.lastError || !tab) {
+                // Fallback to event re-dispatch if tab lookup fails
+                const evt = new MouseEvent('click', { bubbles: true, cancelable: true, view: window, detail: 1 });
+                evt._dp_ignore = true;
+                target.dispatchEvent(evt);
+              } else {
+                const isMuted = tab.mutedInfo ? tab.mutedInfo.muted : false;
+                chrome.tabs.update(tabId, { muted: !isMuted });
+              }
+            });
+          } else {
+            // Fallback for non-tab icons (e.g. panels) where tabId might not be directly parseable
+            const evt = new MouseEvent('click', { bubbles: true, cancelable: true, view: window, detail: 1 });
+            evt._dp_ignore = true;
+            target.dispatchEvent(evt);
+          }
           lastClickTime = 0;
         }, 200);
       }
@@ -1625,10 +1693,10 @@ function saveSettings() {
     setupAutoInjection();
     initSettingsObserver();
     window.addEventListener('resize', () => {
-        state.instances.forEach(inst => {
-            if (inst.isVisible && !inst.isDocked) inst.applyPosition(true);
-        });
-        autoArrangePlayers(true);
+      state.instances.forEach(inst => {
+        if (inst.isVisible && !inst.isDocked) inst.applyPosition(true);
+      });
+      autoArrangePlayers(true);
     });
     console.log('[BeautyMedia] Stability Engine Active.');
   }

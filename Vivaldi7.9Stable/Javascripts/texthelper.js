@@ -604,17 +604,31 @@
     // Native Settings Page Integration
     // =========================================================================
     initSettingsObserver() {
-      const observer = new MutationObserver(() => {
-        const panelHeaders = Array.from(document.querySelectorAll('.setting-group h3')).filter(h3 =>
-          h3.textContent === 'Translate Panel' || h3.textContent === 'Web Panels'
-        );
+      const getCustomUiSection = () => {
+        // 1. Try by specific Vivaldi class (most reliable)
+        const folderSelection = document.querySelector('.folder-selection');
+        if (folderSelection) return folderSelection.closest('.setting-group') || folderSelection.closest('section');
 
-        if (panelHeaders.length > 0) {
-          const section = panelHeaders[0].closest('.setting-section') || panelHeaders[0].closest('div');
-          if (section && !document.querySelector('.th-setting-group')) {
-            this.injectIntegratedSettings(section);
-          }
-        }
+        // 2. Try by language-agnostic content search (.css is usually untranslated)
+        const infoText = Array.from(document.querySelectorAll('.info, p, span'))
+          .find(el => el.textContent.includes('.css') && /restart|apply/i.test(el.textContent));
+        if (infoText) return infoText.closest('.setting-group') || infoText.closest('section');
+
+        // 3. Fallback to English names
+        const heading = Array.from(document.querySelectorAll('h2, h3'))
+          .find(el => /custom ui modifications|custom ui mods|css ui mods/i.test(el.textContent));
+        return heading ? heading.closest('.setting-group') || heading.closest('section') : null;
+      };
+
+      const observer = new MutationObserver(() => {
+        // Check if we are on the Appearance page (Stable data-id="2")
+        const selectedCategory = document.querySelector('.settings-sidebar .tree-item[aria-selected="true"]');
+        const isAppearance = selectedCategory?.getAttribute('data-id') === '2';
+        if (!isAppearance) return;
+
+        if (document.querySelector('.th-setting-group')) return;
+        const section = getCustomUiSection();
+        if (section) this.injectIntegratedSettings(section);
       });
       observer.observe(document.body, { childList: true, subtree: true });
     }
@@ -623,16 +637,18 @@
       if (document.querySelector('.th-setting-group')) return;
 
       const group = document.createElement('div');
-      group.className = 'setting-group th-setting-group';
+      group.className = 'setting-section th-setting-group';
       group.style.borderTop = '1px solid var(--colorBorderSubtle)';
-      group.style.marginTop = '40px';
-      group.style.paddingTop = '20px';
+      group.style.marginTop = '24px';
+      group.style.paddingTop = '18px';
+      group.style.maxWidth = '800px';
 
       group.innerHTML = `
-        <h2 style="margin-bottom: 25px; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--colorFgFaded); display: flex; align-items: center; gap: 10px;">
-          Text Helper Tool
-          <span id="th-save-indicator" style="font-size: 9px; text-transform: none; font-weight: 400; opacity: 0; transition: opacity 0.3s; color: var(--colorHighlightBg);">Saved</span>
-        </h2>
+        <div class="th-title" style="font-size: 15px; font-weight: 600; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+          <span>Text Helper Tool</span>
+          <span id="th-save-indicator" style="font-size: 12px; opacity: 0; transition: opacity 0.3s; color: var(--colorHighlightBg); font-weight: normal;">Saved</span>
+        </div>
+
         <h3>Translator</h3>
         <div class="th-settings-grid">
           <div class="th-line-section">

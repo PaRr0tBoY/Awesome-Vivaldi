@@ -4587,7 +4587,7 @@
 
     group.innerHTML = `
       <style>
-        .ap-setting-group { margin-top: 24px; border-top: 1px solid var(--colorBorderSubtle); padding-top: 18px; font-size: 13px; color: var(--colorFg); width: 100%; box-sizing: border-box; max-width: 100%; overflow-x: hidden; }
+        .ap-setting-group { margin-top: 24px; border-top: 1px solid var(--colorBorderSubtle); padding-top: 18px; font-size: 13px; color: var(--colorFg); width: 100%; box-sizing: border-box; max-width: 800px; overflow-x: hidden; }
         .ap-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
         .ap-section { margin-bottom: 24px; }
         .ap-section-header { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--colorFgFaded); margin-bottom: 8px; border-bottom: 1px solid var(--colorBorderSubtle); padding-bottom: 4px; }
@@ -4839,21 +4839,27 @@
 
   function initArcPeekSettingsObserver() {
     const getCustomUiSection = () => {
-      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
-      let node;
-      while ((node = walker.nextNode())) {
-        if (node.nodeValue && node.nodeValue.toLowerCase().includes('restart to apply')) {
-          const container = node.parentElement.closest('.setting-group, .setting-section, .setting-single') || node.parentElement;
-          return container.parentElement || container;
-        }
-      }
+      // 1. Try by specific Vivaldi class (most reliable)
+      const folderSelection = document.querySelector('.folder-selection');
+      if (folderSelection) return folderSelection.closest('.setting-group') || folderSelection.closest('section');
 
-      const heading = Array.from(document.querySelectorAll('h2, h3')).find(el => /custom ui modifications|custom ui mods|css ui mods/i.test(el.textContent));
-      if (heading) return heading.closest('.setting-group') || heading.closest('.setting-section') || heading.parentElement;
-      return null;
+      // 2. Try by language-agnostic content search (.css is usually untranslated)
+      const infoText = Array.from(document.querySelectorAll('.info, p, span'))
+        .find(el => el.textContent.includes('.css') && /restart|apply/i.test(el.textContent));
+      if (infoText) return infoText.closest('.setting-group') || infoText.closest('section');
+
+      // 3. Fallback to English names
+      const heading = Array.from(document.querySelectorAll('h2, h3'))
+        .find(el => /custom ui modifications|custom ui mods|css ui mods/i.test(el.textContent));
+      return heading ? heading.closest('.setting-group') || heading.closest('section') : null;
     };
 
     const observer = new MutationObserver(() => {
+      // Check if we are on the Appearance page (Stable data-id="2")
+      const selectedCategory = document.querySelector('.settings-sidebar .tree-item[aria-selected="true"]');
+      const isAppearance = selectedCategory?.getAttribute('data-id') === '2';
+      if (!isAppearance) return;
+
       if (document.querySelector('.arcpeek-setting-group')) return;
       const section = getCustomUiSection();
       if (section) injectArcPeekSettings(section);
