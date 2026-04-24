@@ -606,8 +606,7 @@
           const isAudioOn = tabEl.classList.contains('audio-on') || tabEl.querySelector('.audio-on');
 
           if (isAudioOn) {
-            // Use both id and data-id to account for vivaldi recycling wrappers
-            styleTag.textContent = `
+              styleTag.textContent = `
                   html.beautymedia-tabs-animation-enabled .tab#tab-${tabId}.audio-on:not(.active)::before,
                   html.beautymedia-tabs-animation-enabled .tab[data-id="tab-${tabId}"].audio-on:not(.active)::before,
                   html.beautymedia-tabs-animation-enabled .tab-wrapper[id="tab-${tabId}"] .tab.audio-on:not(.active)::before,
@@ -910,6 +909,7 @@
     root.classList.remove(
       'bm-tab-playing-icon-quietify',
       'bm-tab-playing-icon-default',
+      'bm-tab-playing-icon-equalizer',
       'bm-tab-muted-icon-quietify',
       'bm-tab-muted-icon-default'
     );
@@ -963,7 +963,6 @@
     }
     const globalStops = getGlobalGradientStops();
     styleTag.textContent = `html.beautymedia-tabs-animation-enabled .tab.audio-on:not(.active)::before { background: conic-gradient(from var(--dp-deg) at center, ${globalStops}) !important; }`;
-
     if (!s.enabled || !s.showPlayer) {
       state.instances.forEach(inst => {
         if (inst.isVisible) inst.setVisible(false);
@@ -1008,7 +1007,7 @@
       if (state.settings.playerShadowSize === undefined) state.settings.playerShadowSize = 30;
       if (state.settings.playerTheme === undefined) state.settings.playerTheme = 'dark';
       if (state.settings.defaultPlayerPosition === undefined) state.settings.defaultPlayerPosition = 'bottom-right';
-      if (!['quietify', 'default'].includes(state.settings.tabPlayingIconStyle)) state.settings.tabPlayingIconStyle = 'quietify';
+      if (!['quietify', 'default', 'equalizer'].includes(state.settings.tabPlayingIconStyle)) state.settings.tabPlayingIconStyle = 'quietify';
       if (!['quietify', 'default'].includes(state.settings.tabMutedIconStyle)) state.settings.tabMutedIconStyle = 'quietify';
 
       applySettings();
@@ -1086,6 +1085,7 @@
             <select id="bm-setting-playing-icon-style" class="bm-select">
               <option value="quietify" ${s.tabPlayingIconStyle === 'quietify' ? 'selected' : ''}>Quietify</option>
               <option value="default" ${s.tabPlayingIconStyle === 'default' ? 'selected' : ''}>Default</option>
+              <option value="equalizer" ${s.tabPlayingIconStyle === 'equalizer' ? 'selected' : ''}>Equalizer</option>
             </select>
           </div>
         </div>
@@ -1241,7 +1241,7 @@
     const tabPlayingIconStyleSelect = group.querySelector('#bm-setting-playing-icon-style');
     if (tabPlayingIconStyleSelect) {
       tabPlayingIconStyleSelect.addEventListener('change', (e) => {
-        state.settings.tabPlayingIconStyle = e.target.value === 'default' ? 'default' : 'quietify';
+        state.settings.tabPlayingIconStyle = ['default', 'equalizer'].includes(e.target.value) ? e.target.value : 'quietify';
         saveSettings();
         applySettings();
         showSaveIndicator();
@@ -1251,7 +1251,7 @@
     const tabMutedIconStyleSelect = group.querySelector('#bm-setting-muted-icon-style');
     if (tabMutedIconStyleSelect) {
       tabMutedIconStyleSelect.addEventListener('change', (e) => {
-        state.settings.tabMutedIconStyle = e.target.value === 'quietify' ? 'quietify' : 'default';
+        state.settings.tabMutedIconStyle = e.target.value === 'default' ? 'default' : 'quietify';
         saveSettings();
         applySettings();
         showSaveIndicator();
