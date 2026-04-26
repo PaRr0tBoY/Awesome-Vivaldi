@@ -40,6 +40,7 @@
     showPlayerShadow: true,
     playerShadowSize: 30,
     playerTheme: 'dark',
+    defaultPlayerPosition: 'bottom-right',
     services: [
       { id: '1', name: 'Yandex Music', host: 'yandex', accent: '#ffcc00', icon: '#ffcc00', grad1: '#ffcc00', grad2: '#ffb300', grad3: '#ff9900', grad4: '#ff8000', grad1_enabled: true, grad2_enabled: true, grad3_enabled: true, grad4_enabled: true },
       { id: '2', name: 'Spotify', host: 'spotify', accent: '#1db954', icon: '#1db954', grad1: '#1db954', grad2: '#189945', grad3: '#128236', grad4: '#0d6629', grad1_enabled: true, grad2_enabled: true, grad3_enabled: true, grad4_enabled: true },
@@ -1336,6 +1337,50 @@
     }).join(', ');
   }
 
+  function cloneDefaultSettings() {
+    return JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+  }
+
+  function cleanupBeautyMediaRuntimeArtifacts() {
+    const root = document.documentElement;
+    root.classList.remove(
+      'beautymedia-enabled',
+      'beautymedia-player-enabled',
+      'beautymedia-tabs-icon-enabled',
+      'beautymedia-panels-icon-enabled',
+      'beautymedia-tabs-animation-enabled',
+      'bm-player-design-classic',
+      'bm-player-design-circle',
+      'bm-tab-playing-icon-quietify',
+      'bm-tab-playing-icon-default',
+      'bm-tab-playing-icon-equalizer',
+      'bm-tab-muted-icon-quietify',
+      'bm-tab-muted-icon-default',
+      'bm-player-theme-light',
+      'bm-player-theme-dark'
+    );
+
+    [
+      '--bm-icon-color',
+      '--bm-icon-color-hover',
+      '--bm-player-opacity',
+      '--bm-player-shadow',
+      '--bm-circle-player-shadow',
+      '--bm-dp-glass-bg',
+      '--bm-dp-glass-border',
+      '--bm-dp-text',
+      '--bm-dp-text-dim',
+      '--bm-dp-progress-bg'
+    ].forEach(prop => root.style.removeProperty(prop));
+
+    document.querySelectorAll('.draggable-player-root').forEach(el => el.remove());
+    document.querySelectorAll('#bm-style-global, style[id^="bm-style-tab-"]').forEach(el => el.remove());
+    document.querySelectorAll('#panels #switch .beautymedia-panel-audio, #panels #switch [data-beautymedia-panel-tab-id]').forEach(clearPanelAudioButton);
+    document.querySelectorAll('.bm-setting-group').forEach(el => el.remove());
+    state.instances.clear();
+    state.panelAudioByTabId.clear();
+  }
+
   function applySettings() {
     const root = document.documentElement;
     const s = state.settings;
@@ -1450,7 +1495,7 @@
   function loadFromStorage() {
     chrome.storage.local.get([STORAGE_KEY, SETTINGS_KEY], (res) => {
       state.persisted = res[STORAGE_KEY] || {};
-      state.settings = { ...DEFAULT_SETTINGS, ...(res[SETTINGS_KEY] || {}) };
+      state.settings = { ...cloneDefaultSettings(), ...(res[SETTINGS_KEY] || {}) };
 
       // Data migration: ensure missing gradient colors and toggles are filled
       if (state.settings.services) {
@@ -1866,8 +1911,10 @@
 
         overlay.querySelector('#bm-modal-cancel').onclick = () => overlay.remove();
         overlay.querySelector('#bm-modal-confirm').onclick = () => {
-          state.settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
-          saveSettings();
+          cleanupBeautyMediaRuntimeArtifacts();
+          state.persisted = {};
+          state.settings = cloneDefaultSettings();
+          chrome.storage.local.set({ [STORAGE_KEY]: {}, [SETTINGS_KEY]: state.settings });
           applySettings();
           group.remove();
           overlay.remove();
@@ -2311,21 +2358,34 @@
   }
 
   function setupPanelAudioCleanupObserver() {
-    const target = document.getElementById('browser') || document.body || document.documentElement;
-    if (!target) return;
-
     let cleanupTimer = null;
+    let observedTarget = null;
     const observer = new MutationObserver(() => {
       clearTimeout(cleanupTimer);
       cleanupTimer = setTimeout(refreshPanelAudioButtons, 120);
     });
 
-    observer.observe(target, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['class', 'src', 'tab_id', 'title', 'aria-label', 'data-name']
-    });
+    const attach = () => {
+      const target = document.querySelector('#panels #switch');
+      if (!target) {
+        setTimeout(attach, 500);
+        return;
+      }
+      if (target === observedTarget) return;
+      observer.disconnect();
+      observedTarget = target;
+      observer.observe(target, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['class', 'title', 'aria-label', 'data-name']
+      });
+    };
+
+    attach();
+    setInterval(() => {
+      if (!observedTarget?.isConnected) attach();
+    }, 2000);
   }
 
   function setupPanelAudioStateValidation() {
@@ -2350,67 +2410,88 @@
     return isNaN(tabId) ? null : tabId;
   }
 
+  function activatePlayerForTabId(tabId, hostHint = '') {
+    const numericTabId = Number(tabId);
+    if (!Number.isFinite(numericTabId) || numericTabId <= 0) return;
+
+    chrome.tabs.get(numericTabId, (tab) => {
+      if (chrome.runtime.lastError || !tab) return;
+      const host = normalizeHostname(tab.url) || canonicalPanelHost(hostHint);
+      if (!host) return;
+      const inst = getInstanceForHost(host);
+      inst._lockedTabId = numericTabId;
+      inst.resetToDefaultPosition();
+      inst.setVisible(true);
+    });
+  }
+
+  function findPanelAudioButton(target) {
+    return target.closest?.('#panels #switch button.beautymedia-panel-audio[data-beautymedia-panel-tab-id]') || null;
+  }
+
+  function activatePanelPlayer(button) {
+    if (!button) return;
+    const tabId = Number(button.dataset.beautymediaPanelTabId);
+    if (!Number.isFinite(tabId) || tabId <= 0) return;
+    activatePlayerForTabId(tabId, getPanelButtonText(button));
+  }
+
   function setupActivation() {
     let lastClickTime = 0;
+    let lastClickTabId = null;
     let clickTimer = null;
 
-    // THE ULTIMATE CLICK BUFFER: Perfectly separates Mute from Player Activation
     window.addEventListener('click', (e) => {
       if (!state.settings.enabled || !state.settings.showPlayer) return;
-      const target = e.target.closest('.tab-audio, .audio-icon, .audioicon, .audio-indicator');
+      const target = e.target.closest?.('.tab-audio, .audio-icon, .audioicon, .audio-indicator');
       if (!target || e._dp_ignore) return;
 
-      // Stop everything immediately
+      if (target.closest?.('#panels #switch')) return;
+
+      const tabEl = findTabElement(target);
+      const tabId = parseTabId(tabEl);
+      if (!tabId) return;
+
       e.stopImmediatePropagation();
       e.preventDefault();
 
       const now = Date.now();
-      if (now - lastClickTime < 250) {
-        // --- DOUBLE CLICK DETECTED ---
+      if (lastClickTabId === tabId && now - lastClickTime < 250) {
         clearTimeout(clickTimer);
         lastClickTime = 0;
-
-        const tabEl = findTabElement(target);
-        const tabId = parseTabId(tabEl);
-        if (tabId) {
-          chrome.tabs.get(tabId, (tab) => {
-            if (chrome.runtime.lastError || !tab) return;
-            const host = normalizeHostname(tab.url);
-            if (!host) return;
-            const inst = getInstanceForHost(host);
-            inst._lockedTabId = tabId;
-            inst.resetToDefaultPosition();
-            inst.setVisible(true);
-          });
-        }
+        lastClickTabId = null;
+        activatePlayerForTabId(tabId);
       } else {
-        // --- SINGLE CLICK CANDIDATE ---
         lastClickTime = now;
+        lastClickTabId = tabId;
         clickTimer = setTimeout(() => {
-          const tabEl = findTabElement(target);
-          const tabId = parseTabId(tabEl);
-
-          if (tabId) {
-            chrome.tabs.get(tabId, (tab) => {
-              if (chrome.runtime.lastError || !tab) {
-                // Fallback to event re-dispatch if tab lookup fails
-                const evt = new MouseEvent('click', { bubbles: true, cancelable: true, view: window, detail: 1 });
-                evt._dp_ignore = true;
-                target.dispatchEvent(evt);
-              } else {
-                const isMuted = tab.mutedInfo ? tab.mutedInfo.muted : false;
-                chrome.tabs.update(tabId, { muted: !isMuted });
-              }
-            });
-          } else {
-            // Fallback for non-tab icons (e.g. panels) where tabId might not be directly parseable
-            const evt = new MouseEvent('click', { bubbles: true, cancelable: true, view: window, detail: 1 });
-            evt._dp_ignore = true;
-            target.dispatchEvent(evt);
-          }
+          chrome.tabs.get(tabId, (tab) => {
+            if (chrome.runtime.lastError || !tab) {
+              const evt = new MouseEvent('click', { bubbles: true, cancelable: true, view: window, detail: 1 });
+              evt._dp_ignore = true;
+              target.dispatchEvent(evt);
+            } else {
+              const isMuted = tab.mutedInfo ? tab.mutedInfo.muted : false;
+              chrome.tabs.update(tabId, { muted: !isMuted });
+            }
+          });
           lastClickTime = 0;
+          lastClickTabId = null;
         }, 200);
       }
+    }, { capture: true });
+
+    window.addEventListener('dblclick', (e) => {
+      if (!state.settings.enabled || !state.settings.showPlayer) return;
+      const button = findPanelAudioButton(e.target);
+      if (!button) return;
+
+      activatePanelPlayer(button);
+      setTimeout(() => {
+        if (button.isConnected && !button.closest('.button-toolbar-webpanel')?.classList.contains('active')) {
+          button.click();
+        }
+      }, 0);
     }, { capture: true });
   }
 
