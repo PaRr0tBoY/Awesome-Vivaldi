@@ -758,6 +758,7 @@
 
       draggerAreas.forEach(area => {
         area.onpointerdown = (e) => {
+          if (!this.isVisible || this.el.dataset.visible !== 'true') return;
           if (e.button !== 0 || e.target.closest('button, input, .draggable-player-progress-bar, .dp-favicon, .dp-provider-badge, .dp-circle-bottom-panel')) return;
           if (['close', 'prev', 'next'].includes(this.getCircleIntentZone(e))) return;
           isDragging = true;
