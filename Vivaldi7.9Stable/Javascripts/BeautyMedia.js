@@ -17,7 +17,9 @@
   const DEFAULT_SETTINGS = {
     enabled: true,
     showPlayer: true,
+    playerDesign: 'classic',
     showTabsIcon: true,
+    showPanelIcon: true,
     tabPlayingIconStyle: 'quietify',
     tabMutedIconStyle: 'quietify',
     showTabGradient: true,
@@ -50,6 +52,8 @@
 
   const state = {
     instances: new Map(), // hostname -> PlayerInstance
+    panelAudioByTabId: new Map(), // tabId -> { button, host, title, src, mediaData }
+    panelAudioValidationTimer: null,
     persisted: {},       // hostname -> { visible, x, y }
     settings: { ...DEFAULT_SETTINGS }
   };
@@ -58,6 +62,7 @@
   const SETTINGS_KEY = 'beautymedia-settings';
   const GMC_TYPE = 'global-media-controls';
   const NAME_ATTR = 'draggable-player-active';
+  const PANEL_AUDIO_CLASS = 'beautymedia-panel-audio';
 
   // --- INTERNAL MONITOR SCRIPTS ---
 
@@ -89,6 +94,7 @@
     window._dpMonitorInjected = true;
 
     let currentMedia = null;
+    const observedMedia = new Set();
 
     // 1. Intercept MediaSession Handlers (Required for universal Next/Prev track skipping)
     const _savedMsHandlers = {};
@@ -99,6 +105,44 @@
         return _origSet(action, handler);
       };
     }
+
+    function getBestObservedMedia() {
+      const mediaNodes = Array.from(observedMedia).filter(media => media && media._dpObserved);
+      if (currentMedia && mediaNodes.includes(currentMedia)) return currentMedia;
+      return mediaNodes.find(media => !media.paused && (media.webkitAudioDecodedByteCount || media.webkitVideoDecodedByteCount || media.currentTime > 0)) ||
+        mediaNodes.find(media => !media.paused) ||
+        mediaNodes.find(media => media.webkitAudioDecodedByteCount || media.webkitVideoDecodedByteCount || media.currentTime > 0) ||
+        null;
+    }
+
+    let metadataReportTimer = null;
+    function scheduleMetadataReport() {
+      clearTimeout(metadataReportTimer);
+      metadataReportTimer = setTimeout(() => {
+        const media = getBestObservedMedia();
+        if (media) {
+          currentMedia = media;
+          report(media, 'metadatachange');
+        }
+      }, 0);
+    }
+
+    try {
+      const sessionProto = navigator.mediaSession && Object.getPrototypeOf(navigator.mediaSession);
+      const metadataDescriptor = sessionProto && Object.getOwnPropertyDescriptor(sessionProto, 'metadata');
+      if (metadataDescriptor?.configurable && metadataDescriptor.set && !sessionProto._dpMetadataHooked) {
+        Object.defineProperty(sessionProto, '_dpMetadataHooked', { value: true, configurable: false });
+        Object.defineProperty(sessionProto, 'metadata', {
+          configurable: true,
+          enumerable: metadataDescriptor.enumerable,
+          get: metadataDescriptor.get ? function () { return metadataDescriptor.get.call(this); } : undefined,
+          set: function (value) {
+            metadataDescriptor.set.call(this, value);
+            scheduleMetadataReport();
+          }
+        });
+      }
+    } catch (err) { }
 
     function getMetadata() {
       const ms = navigator.mediaSession?.metadata;
@@ -175,6 +219,7 @@
       media._dpObserved = true;
       media._dpId = Math.random().toString(36).slice(2);
       media.setAttribute(attr, '');
+      observedMedia.add(media);
 
       const addOrig = HTMLMediaElement.prototype.addEventListener;
       addOrig.call(media, 'play', onTimeUpdate);
@@ -237,25 +282,45 @@
         return;
       }
 
+      function getActionMedia(msg) {
+        const mediaNodes = Array.from(observedMedia).filter(media => media && media._dpObserved);
+        if (msg.mediaId) {
+          const exactMedia = mediaNodes.find(media => media._dpId === msg.mediaId);
+          if (exactMedia) return exactMedia;
+        }
+        if (currentMedia && mediaNodes.includes(currentMedia)) return currentMedia;
+
+        return mediaNodes.find(media => media._dpObserved && !media.paused && (media.webkitAudioDecodedByteCount || media.webkitVideoDecodedByteCount || media.currentTime > 0)) ||
+          mediaNodes.find(media => media._dpObserved && (media.webkitAudioDecodedByteCount || media.webkitVideoDecodedByteCount || media.currentTime > 0)) ||
+          mediaNodes.find(media => media._dpObserved) ||
+          null;
+      }
+
       // Standard Actions (Play/Pause/Seek/Volume) applied directly to native media
-      if (!currentMedia) return;
+      const actionMedia = getActionMedia(msg);
+      if (!actionMedia) return;
+      currentMedia = actionMedia;
       switch (msg.action) {
-        case 'play': currentMedia.play().catch(() => { }); break;
-        case 'pause': currentMedia.pause(); break;
-        case 'seekTo': if (!isNaN(msg.time)) currentMedia.currentTime = msg.time; break;
+        case 'play': actionMedia.play().catch(() => { }); break;
+        case 'pause': actionMedia.pause(); break;
+        case 'seekTo': if (!isNaN(msg.time)) actionMedia.currentTime = msg.time; break;
         case 'muted':
-          if (currentMedia.volume === 0) {
-            currentMedia.muted = false;
-            currentMedia.volume = 1;
+          if (typeof msg.muted === 'boolean') {
+            actionMedia.muted = msg.muted;
+            if (!msg.muted && actionMedia.volume === 0) actionMedia.volume = 1;
+          } else if (actionMedia.volume === 0) {
+            actionMedia.muted = false;
+            actionMedia.volume = 1;
           } else {
-            currentMedia.muted = !currentMedia.muted;
+            actionMedia.muted = !actionMedia.muted;
           }
           break;
         case 'volume':
-          currentMedia.volume = Math.max(0, Math.min(1, msg.volume));
-          currentMedia.muted = false;
+          actionMedia.volume = Math.max(0, Math.min(1, msg.volume));
+          actionMedia.muted = false;
           break;
       }
+      report(actionMedia, msg.action);
     });
   }
 
@@ -267,6 +332,7 @@
       this.frameId = null;
       this.mediaId = null;
       this._lockedTabId = null;
+      this._muteOverride = null;
       this.position = initialPos;
       this.isVisible = false;
       this.manuallyClosed = initialPos.manuallyClosed || false;
@@ -280,6 +346,9 @@
       this._trackChangeTimestamp = 0;
       this._previousTrackKey = null;
       this._previousMediaId = null;
+      this._trackIdentity = null;
+      this._progressGuardUntil = 0;
+      this._guardPreviousProgress = null;
 
       this.createDom();
       this.initDraggable();
@@ -326,6 +395,40 @@
           </div>
         </div>
         <div class="draggable-player-progress-bar bot"><div class="draggable-player-progress-fill"></div></div>
+        <div class="dp-circle-layout">
+          <div class="dp-circle-shell">
+            <div class="dp-circle-art dp-album-art"></div>
+            <svg class="dp-circle-ring" viewBox="0 0 320 320" aria-hidden="true">
+              <circle class="dp-circle-ring-track" cx="160" cy="160" r="150" pathLength="100"></circle>
+              <circle class="dp-circle-ring-value" cx="160" cy="160" r="150" pathLength="100"></circle>
+            </svg>
+            <button class="draggable-player-close-btn dp-circle-close" title="Close">${icons.close}</button>
+            <div class="dp-provider-info dp-circle-provider">
+              <div class="dp-favicon"></div>
+              <div class="dp-provider-badge">${this.getFriendlyName(this.hostname)}</div>
+            </div>
+            <div class="draggable-player-artist dp-circle-artist">...</div>
+            <div class="dp-circle-controls">
+              <button class="dp-btn dp-nav prev dp-circle-prev" title="Previous">${icons.prev}</button>
+              <button class="dp-btn dp-btn-playpause playpause dp-circle-play" title="Play/Pause">${icons.play}</button>
+              <button class="dp-btn dp-nav next dp-circle-next" title="Next">${icons.next}</button>
+            </div>
+            <div class="draggable-player-title dp-circle-title">-</div>
+            <div class="draggable-player-time dp-circle-time">0:00 / 0:00</div>
+            <div class="dp-circle-bottom-panel">
+              <div class="draggable-player-title dp-circle-panel-title">-</div>
+              <div class="dp-circle-progress-row">
+                <span class="dp-time-current">0:00</span>
+                <div class="draggable-player-progress-bar mid dp-circle-progress-bar"><div class="draggable-player-progress-fill"></div></div>
+                <span class="dp-time-duration">0:00</span>
+              </div>
+              <div class="dp-volume-container dp-circle-volume">
+                <button class="dp-btn dp-small-btn unmute">${icons.mute}</button>
+                <input type="range" class="dp-volume-slider" min="0" max="1" step="0.01" value="1">
+              </div>
+            </div>
+          </div>
+        </div>
       `;
 
       document.body.appendChild(root);
@@ -336,26 +439,39 @@
     }
 
     setupListeners() {
-      const q = (s) => this.el.querySelector(s);
+      const all = (s) => Array.from(this.el.querySelectorAll(s));
 
       this.el.addEventListener('mouseenter', () => requestAnimationFrame(autoArrangePlayers));
       this.el.addEventListener('mouseleave', () => requestAnimationFrame(autoArrangePlayers));
 
-      q('.draggable-player-close-btn').onclick = () => this.setVisible(false, true);
-      q('.playpause').onclick = () => this.togglePlay();
-      q('.prev').onclick = () => this.skip(-1);
-      q('.next').onclick = () => this.skip(1);
-      q('.unmute').onclick = () => this.sendGmcAction('muted');
+      all('.draggable-player-close-btn').forEach(btn => {
+        btn.onclick = () => this.setVisible(false, true);
+      });
+      all('.playpause').forEach(btn => {
+        btn.onclick = () => this.togglePlay();
+      });
+      all('.prev').forEach(btn => {
+        btn.onclick = () => this.skip(-1);
+      });
+      all('.next').forEach(btn => {
+        btn.onclick = () => this.skip(1);
+      });
+      all('.unmute').forEach(btn => {
+        btn.onclick = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.toggleMute();
+        };
+      });
 
-      const vol = q('.dp-volume-slider');
-      if (vol) {
-        vol.oninput = () => {
-          const value = parseFloat(vol.value);
+      all('.dp-volume-slider').forEach(slider => {
+        slider.oninput = () => {
+          const value = parseFloat(slider.value);
           this.updateVolumeVisual(value);
           this.sendGmcAction('volume', value);
         };
-        this.updateVolumeVisual(parseFloat(vol.value));
-      }
+      });
+      this.updateVolumeVisual(1);
 
       const bars = this.el.querySelectorAll('.draggable-player-progress-bar');
       bars.forEach(bar => {
@@ -408,25 +524,25 @@
     }
 
     updateVolumeVisual(value) {
-      const q = (s) => this.el.querySelector(s);
-      const slider = q('.dp-volume-slider');
-      if (!slider) return;
+      const sliders = Array.from(this.el.querySelectorAll('.dp-volume-slider'));
+      if (!sliders.length) return;
 
       const accent = this.getServiceAccent(this.hostname) || '#3366ff';
       const clamped = Math.max(0, Math.min(1, Number(value) || 0));
       this.el.style.setProperty('--dp-active-accent', accent);
-      slider.style.setProperty('--dp-volume-level', clamped);
-      slider.style.background = `linear-gradient(90deg, ${accent} ${clamped * 100}%, rgba(255,255,255,0.08) ${clamped * 100}%)`;
-      if (accent && !accent.startsWith('var')) {
-        try { slider.style.accentColor = accent; } catch (e) { }
-      }
+      this.el.style.setProperty('--dp-volume-level', clamped);
+      sliders.forEach(slider => {
+        if (!slider.matches(':active')) slider.value = clamped;
+        slider.style.setProperty('--dp-volume-level', clamped);
+        slider.style.background = `linear-gradient(90deg, ${accent} ${clamped * 100}%, var(--bm-circle-volume-track, rgba(255,255,255,0.08)) ${clamped * 100}%)`;
+        if (accent && !accent.startsWith('var')) {
+          try { slider.style.accentColor = accent; } catch (e) { }
+        }
+      });
       this.updateVolumeIcon(clamped, this.mediaData.muted);
     }
 
     updateVolumeIcon(value, muted) {
-      const btn = this.el.querySelector('.unmute');
-      if (!btn) return;
-
       let icon = icons.volMid;
       if (muted) icon = icons.volMute;
       else if (value <= 0) icon = icons.vol0;
@@ -434,17 +550,44 @@
       else if (value < 0.67) icon = icons.volMid;
       else icon = icons.volHigh;
 
-      btn.innerHTML = icon;
+      this.el.querySelectorAll('.unmute').forEach(btn => {
+        btn.innerHTML = icon;
+      });
+    }
+
+    updateProgressVisual(currentTime, duration, displayTime = currentTime) {
+      const total = Number(duration) || 0;
+      const shown = Math.max(0, Number(displayTime) || 0);
+      const percent = total > 0 ? Math.max(0, Math.min(100, (shown / total) * 100)) : 0;
+      const currentText = this.formatTime(shown);
+      const durationText = this.formatTime(total);
+
+      this.el.querySelectorAll('.draggable-player-progress-fill').forEach(fill => {
+        fill.style.width = `${percent}%`;
+      });
+      this.el.querySelectorAll('.draggable-player-time').forEach(timeEl => {
+        timeEl.textContent = `${currentText} / ${durationText}`;
+      });
+      this.el.querySelectorAll('.dp-time-current').forEach(timeEl => {
+        timeEl.textContent = currentText;
+      });
+      this.el.querySelectorAll('.dp-time-duration').forEach(timeEl => {
+        timeEl.textContent = durationText;
+      });
+      this.el.querySelectorAll('.dp-circle-ring-value').forEach(ring => {
+        ring.style.strokeDasharray = '100';
+        ring.style.strokeDashoffset = `${100 - percent}`;
+      });
     }
 
     initDraggable() {
-      const draggerAreas = this.el.querySelectorAll('.dp-nano-header, .dp-main-row, .dp-info-stack');
+      const draggerAreas = this.el.querySelectorAll('.dp-nano-header, .dp-main-row, .dp-info-stack, .dp-circle-shell');
       let isDragging = false;
       let startX, startY;
 
       draggerAreas.forEach(area => {
         area.onpointerdown = (e) => {
-          if (e.button !== 0 || e.target.closest('button, input, .draggable-player-progress-bar, .dp-favicon, .dp-provider-badge')) return;
+          if (e.button !== 0 || e.target.closest('button, input, .draggable-player-progress-bar, .dp-favicon, .dp-provider-badge, .dp-circle-bottom-panel')) return;
           isDragging = true;
           this.isDocked = false; // User dragged it
           startX = e.clientX - this.position.x;
@@ -606,7 +749,7 @@
           const isAudioOn = tabEl.classList.contains('audio-on') || tabEl.querySelector('.audio-on');
 
           if (isAudioOn) {
-              styleTag.textContent = `
+            styleTag.textContent = `
                   html.beautymedia-tabs-animation-enabled .tab#tab-${tabId}.audio-on:not(.active)::before,
                   html.beautymedia-tabs-animation-enabled .tab[data-id="tab-${tabId}"].audio-on:not(.active)::before,
                   html.beautymedia-tabs-animation-enabled .tab-wrapper[id="tab-${tabId}"] .tab.audio-on:not(.active)::before,
@@ -619,6 +762,7 @@
           }
         }
       }
+
     }
 
     resetToDefaultPosition() {
@@ -628,6 +772,12 @@
       autoArrangePlayers();
     }
 
+    getPlayerBounds() {
+      return state.settings.playerDesign === 'circle'
+        ? { w: 248, h: 225 }
+        : { w: 360, h: 100 };
+    }
+
     applyPosition(skipTransition = false) {
       if (!this.el) return;
 
@@ -635,8 +785,7 @@
         this.el.style.transition = 'none';
       }
 
-      const w = 360;
-      const h = 100;
+      const { w, h } = this.getPlayerBounds();
 
       const maxX = window.innerWidth - w;
       const maxY = window.innerHeight - h;
@@ -649,7 +798,10 @@
 
       this.el.style.left = `${x}px`;
 
-      if (y > window.innerHeight / 2) {
+      if (state.settings.playerDesign === 'circle') {
+        this.el.style.top = `${y}px`;
+        this.el.style.bottom = 'auto';
+      } else if (y > window.innerHeight / 2) {
         this.el.style.top = 'auto';
         this.el.style.bottom = `${window.innerHeight - y - h}px`;
       } else {
@@ -684,13 +836,76 @@
       }
     }
 
+    getTrackIdentity(data) {
+      const title = String(data?.title || '').trim();
+      const artist = String(data?.artist || '').trim();
+      if (title || artist) return `meta:${title}\u0001${artist}`;
+      if (data?.mediaId) return `media:${data.mediaId}`;
+      return null;
+    }
+
+    getSafeTrackChangeDuration(data, previousProgress) {
+      const duration = Number(data?.duration) || 0;
+      if (!duration || !Number.isFinite(duration)) return 0;
+
+      const currentTime = Number(data?.currentTime) || 0;
+      const previousDuration = Number(previousProgress?.duration) || 0;
+      const durationTolerance = Math.max(1.5, previousDuration * 0.01);
+      const oldDurationLike = previousDuration > 0 && Math.abs(duration - previousDuration) <= durationTolerance;
+      const oldEndingLike = currentTime > Math.max(8, duration * 0.72);
+
+      return oldDurationLike && oldEndingLike ? 0 : duration;
+    }
+
+    isFreshTrackProgress(data, now, identityChanged) {
+      if (!this._progressGuardUntil || now >= this._progressGuardUntil) return true;
+
+      const currentTime = Number(data?.currentTime);
+      const duration = Number(data?.duration);
+      if (!Number.isFinite(currentTime) && !Number.isFinite(duration)) return false;
+
+      const shownTime = Number.isFinite(currentTime) ? Math.max(0, currentTime) : 0;
+      const shownDuration = Number.isFinite(duration) ? Math.max(0, duration) : 0;
+      const previous = this._guardPreviousProgress || {};
+      const previousTime = Number(previous.currentTime) || 0;
+      const previousDuration = Number(previous.duration) || 0;
+      const durationTolerance = Math.max(1.5, previousDuration * 0.01);
+      const oldDurationLike = previousDuration > 0 && shownDuration > 0 && Math.abs(shownDuration - previousDuration) <= durationTolerance;
+      const oldTrackNearEnd = previousDuration > 0 && previousTime > Math.max(8, previousDuration - 12);
+      const staleEndingLike = oldDurationLike && oldTrackNearEnd && shownTime > Math.max(previousTime - 5, shownDuration * 0.72);
+      const freshStartLike = shownTime <= 8;
+      const jumpedBack = previousTime > 12 && shownTime < previousTime - 8;
+      const newDurationLike = previousDuration > 0 && shownDuration > 0 && Math.abs(shownDuration - previousDuration) > Math.max(2, previousDuration * 0.02);
+      const plausibleNewDurationStart = newDurationLike && shownTime < Math.min(30, shownDuration * 0.35);
+
+      if (freshStartLike || jumpedBack || plausibleNewDurationStart) return true;
+      if (staleEndingLike || identityChanged) return false;
+
+      return false;
+    }
+
+    hasStaleGuardDuration(data) {
+      if (!this._progressGuardUntil || !this._guardPreviousProgress) return false;
+
+      const duration = Number(data?.duration) || 0;
+      const currentTime = Number(data?.currentTime) || 0;
+      const previousDuration = Number(this._guardPreviousProgress.duration) || 0;
+      const previousTime = Number(this._guardPreviousProgress.currentTime) || 0;
+      const durationTolerance = Math.max(1.5, previousDuration * 0.01);
+      const oldDurationLike = previousDuration > 0 && duration > 0 && Math.abs(duration - previousDuration) <= durationTolerance;
+      const oldTrackNearEnd = previousDuration > 0 && previousTime > Math.max(8, previousDuration - 12);
+
+      return oldDurationLike && oldTrackNearEnd && currentTime < 12;
+    }
+
     update(data, tabId, frameId, windowId) {
       if (this._lockedTabId && tabId !== this._lockedTabId) return;
 
       const now = Date.now();
       const q = (s) => this.el.querySelector(s);
-      const trackKey = (data.title || data.artist) ? `${data.title || ''}|${data.artist || ''}` : null;
-      const currentKey = `${this.mediaData.title || ''}|${this.mediaData.artist || ''}`;
+      const all = (s) => Array.from(this.el.querySelectorAll(s));
+      const trackKey = this.getTrackIdentity(data);
+      const currentKey = this._trackIdentity || this.getTrackIdentity(this.mediaData);
 
       // CRITICAL FIX: Ignore empty 'virtual-audio' heartbeats from the top frame 
       // if we are already successfully tracking a real hidden <audio> tag.
@@ -698,39 +913,74 @@
         if (trackKey === currentKey) return; // Discard ghost heartbeat
       }
 
-      if (this._previousMediaId && data.mediaId === this._previousMediaId && (now - this._mediaIdChangeTimestamp < 3000)) return;
+      if (this._previousMediaId && data.mediaId === this._previousMediaId && trackKey !== currentKey && (now - this._mediaIdChangeTimestamp < 3000)) return;
       if (trackKey && this._previousTrackKey === trackKey && trackKey !== currentKey && (now - this._trackChangeTimestamp < 3000)) return;
 
-      let isHardTrackChange = (trackKey && trackKey !== currentKey) || (data.mediaId && data.mediaId !== this.mediaId);
+      const mediaChangedWithoutMetadata = !trackKey && data.mediaId && this.mediaId && data.mediaId !== this.mediaId;
+      let isHardTrackChange = (trackKey && currentKey && trackKey !== currentKey) || mediaChangedWithoutMetadata;
+      const sanitizedData = { ...data };
 
       if (isHardTrackChange) {
+        const previousProgress = {
+          currentTime: Number(this.mediaData.currentTime) || 0,
+          duration: Number(this.mediaData.duration) || 0
+        };
+        const safeDuration = this.getSafeTrackChangeDuration(data, previousProgress);
         this._previousMediaId = this.mediaId;
         this.mediaId = data.mediaId;
         this._mediaIdChangeTimestamp = now;
         this._previousTrackKey = currentKey;
         this._trackChangeTimestamp = now;
+        this._trackIdentity = trackKey || `media:${data.mediaId || now}`;
+        this._guardPreviousProgress = previousProgress;
+        this._progressGuardUntil = now + 4500;
         this._manualSeekTargetTime = 0;
-        this._suppressUpdateUntil = now + 1000;
+        this._suppressUpdateUntil = this._progressGuardUntil;
         this.mediaData.currentTime = 0;
-        this.mediaData.duration = data.duration || 0;
-        const fills = this.el.querySelectorAll('.draggable-player-progress-fill');
-        fills.forEach(fill => fill.style.width = '0%');
-        const timeEl = q('.draggable-player-time');
-        if (timeEl) timeEl.textContent = `0:00 / ${this.formatTime(data.duration || 0)}`;
+        this.mediaData.duration = safeDuration;
+        this.updateProgressVisual(0, safeDuration, 0);
+      } else {
+        if (trackKey && !this._trackIdentity) this._trackIdentity = trackKey;
+        if (data.mediaId) this.mediaId = data.mediaId;
+      }
+
+      const progressIsFresh = this.isFreshTrackProgress(data, now, isHardTrackChange);
+      if (!progressIsFresh) {
+        delete sanitizedData.currentTime;
+        delete sanitizedData.duration;
+      } else if (this._progressGuardUntil) {
+        const staleGuardDuration = this.hasStaleGuardDuration(data);
+        if (staleGuardDuration) {
+          delete sanitizedData.duration;
+        } else {
+          this._progressGuardUntil = 0;
+          this._guardPreviousProgress = null;
+        }
+        this._suppressUpdateUntil = 0;
+        this._manualSeekTargetTime = null;
       }
 
       this.tabId = tabId;
       this.frameId = frameId;
-      this.mediaData = { ...this.mediaData, ...data, windowId };
+      this.mediaData = { ...this.mediaData, ...sanitizedData, windowId };
 
       const titleEl = q('.draggable-player-title');
       if (titleEl) titleEl.textContent = this.mediaData.title || '—';
       const artistEl = q('.draggable-player-artist');
       if (artistEl) artistEl.textContent = this.mediaData.artist || (this.mediaData.title ? this.hostname : 'Waiting for media...');
+      all('.draggable-player-title').forEach(el => {
+        el.textContent = this.mediaData.title || '-';
+      });
+      all('.draggable-player-artist').forEach(el => {
+        el.textContent = this.mediaData.artist || (this.mediaData.title ? this.hostname : 'Waiting for media...');
+      });
 
       if (data.paused !== undefined) {
         const pp = q('.playpause');
         if (pp) pp.innerHTML = data.paused ? icons.play : icons.pause;
+        all('.playpause').forEach(btn => {
+          btn.innerHTML = data.paused ? icons.play : icons.pause;
+        });
 
         if (!data.paused && this.hiddenByTabClose && !this.manuallyClosed) {
           this.hiddenByTabClose = false;
@@ -738,27 +988,24 @@
         }
       }
       if (data.muted !== undefined) {
+        this._muteOverride = !!data.muted;
         this.updateVolumeIcon(this.mediaData.volume, data.muted);
       }
       if (data.volume !== undefined) {
         const slider = q('.dp-volume-slider');
         if (slider && !slider.matches(':active')) slider.value = data.volume;
+        all('.dp-volume-slider').forEach(sliderEl => {
+          if (!sliderEl.matches(':active')) sliderEl.value = data.volume;
+        });
         this.updateVolumeVisual(data.volume);
       }
 
       if (this.mediaData.currentTime !== undefined && this.mediaData.duration) {
-        const timeEl = q('.draggable-player-time');
         if (this._suppressUpdateUntil && now < this._suppressUpdateUntil) {
           const displayTime = (this._manualSeekTargetTime !== null && !isNaN(this._manualSeekTargetTime)) ? this._manualSeekTargetTime : this.mediaData.currentTime;
-          const percent = (displayTime / this.mediaData.duration) * 100;
-          const fills = this.el.querySelectorAll('.draggable-player-progress-fill');
-          fills.forEach(fill => fill.style.width = `${percent}%`);
-          if (timeEl) timeEl.textContent = `${this.formatTime(displayTime)} / ${this.formatTime(this.mediaData.duration)}`;
+          this.updateProgressVisual(this.mediaData.currentTime, this.mediaData.duration, displayTime);
         } else {
-          const percent = (this.mediaData.currentTime / this.mediaData.duration) * 100;
-          const fills = this.el.querySelectorAll('.draggable-player-progress-fill');
-          fills.forEach(fill => fill.style.width = `${percent}%`);
-          if (timeEl) timeEl.textContent = `${this.formatTime(this.mediaData.currentTime)} / ${this.formatTime(this.mediaData.duration)}`;
+          this.updateProgressVisual(this.mediaData.currentTime, this.mediaData.duration, this.mediaData.currentTime);
           this._manualSeekTargetTime = null;
           this._suppressUpdateUntil = 0;
         }
@@ -769,6 +1016,9 @@
         const art = q('.dp-album-art');
         if (poster) poster.style.backgroundImage = `url(${data.image})`;
         if (art) art.style.backgroundImage = `url(${data.image})`;
+        all('.draggable-player-poster, .dp-album-art').forEach(el => {
+          el.style.backgroundImage = `url(${data.image})`;
+        });
       }
 
       this.applyServiceStyles(tabId);
@@ -778,6 +1028,9 @@
           if (chrome.runtime.lastError || !tab || !tab.favIconUrl) return;
           const fav = q('.dp-favicon');
           if (fav) fav.style.backgroundImage = `url(${tab.favIconUrl})`;
+          all('.dp-favicon').forEach(el => {
+            el.style.backgroundImage = `url(${tab.favIconUrl})`;
+          });
         });
       }
     }
@@ -797,6 +1050,32 @@
       this.sendGmcAction(direction > 0 ? 'next-track' : 'previous-track');
     }
 
+    toggleMute() {
+      if (!this.tabId) return;
+
+      const fallbackMuted = !(this.mediaData.muted || Number(this.mediaData.volume) <= 0);
+      const applyMuted = (muted) => {
+        this._muteOverride = muted;
+        this.mediaData.muted = muted;
+        this.updateVolumeIcon(this.mediaData.volume, muted);
+        this.sendGmcAction('muted', muted);
+      };
+
+      chrome.tabs.get(this.tabId, (tab) => {
+        if (chrome.runtime.lastError || !tab) {
+          applyMuted(fallbackMuted);
+          return;
+        }
+
+        const tabMuted = !!(tab.mutedInfo && tab.mutedInfo.muted);
+        const volumeMuted = Number(this.mediaData.volume) <= 0;
+        const muted = !(tabMuted || this.mediaData.muted || volumeMuted);
+        chrome.tabs.update(this.tabId, { muted }, () => {
+          applyMuted(muted);
+        });
+      });
+    }
+
     sendGmcAction(action, value = null) {
       if (!this.tabId) return;
 
@@ -805,7 +1084,9 @@
         action: action,
         tabId: this.tabId,
         frameId: this.frameId,
+        mediaId: this.mediaId,
         volume: value,
+        muted: (action === 'muted') ? value : null,
         time: (action === 'seekTo') ? value : null
       };
 
@@ -826,8 +1107,8 @@
     saveState() {
       state.persisted[this.hostname] = {
         visible: this.isVisible,
-        x: parseInt(this.el.style.left),
-        y: parseInt(this.el.style.top),
+        x: Number.isFinite(parseInt(this.el.style.left, 10)) ? parseInt(this.el.style.left, 10) : this.position.x,
+        y: Number.isFinite(parseInt(this.el.style.top, 10)) ? parseInt(this.el.style.top, 10) : this.position.y,
         manuallyClosed: this.manuallyClosed,
         hiddenByTabClose: this.hiddenByTabClose
       };
@@ -836,6 +1117,7 @@
 
     hideForTabClose() {
       this.hiddenByTabClose = true;
+      clearPanelAudioForTab(this.tabId);
       this.tabId = null;
       this._lockedTabId = null;
       this.setVisible(false);
@@ -900,10 +1182,21 @@
       root.classList.remove('beautymedia-player-enabled');
     }
 
+    const playerDesign = s.playerDesign === 'circle' ? 'circle' : 'classic';
+    root.classList.remove('bm-player-design-classic', 'bm-player-design-circle');
+    root.classList.add(`bm-player-design-${playerDesign}`);
+
     if (s.enabled && s.showTabsIcon) {
       root.classList.add('beautymedia-tabs-icon-enabled');
     } else {
       root.classList.remove('beautymedia-tabs-icon-enabled');
+    }
+
+    if (s.enabled && s.showPanelIcon !== false) {
+      root.classList.add('beautymedia-panels-icon-enabled');
+    } else {
+      root.classList.remove('beautymedia-panels-icon-enabled');
+      clearAllPanelAudioButtons();
     }
 
     root.classList.remove(
@@ -928,11 +1221,14 @@
     root.style.setProperty('--bm-player-opacity', s.playerOpacity !== undefined ? s.playerOpacity : 1.0);
 
     let shadowVal = 'none';
+    let circleShadowVal = 'none';
     if (s.showPlayerShadow !== false) {
       const size = s.playerShadowSize !== undefined ? s.playerShadowSize : 30;
       shadowVal = `0 12px ${size}px rgba(0, 0, 0, 0.6)`;
+      circleShadowVal = `0 8px ${Math.max(10, Math.round(size * 0.55))}px rgba(0, 0, 0, 0.52)`;
     }
     root.style.setProperty('--bm-player-shadow', shadowVal);
+    root.style.setProperty('--bm-circle-player-shadow', circleShadowVal);
 
     let isLight = false;
     if (s.playerTheme === 'light') {
@@ -940,6 +1236,9 @@
     } else if (s.playerTheme === 'system') {
       isLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
     }
+
+    root.classList.toggle('bm-player-theme-light', isLight);
+    root.classList.toggle('bm-player-theme-dark', !isLight);
 
     if (isLight) {
       root.style.setProperty('--bm-dp-glass-bg', 'rgba(255, 255, 255, 0.90)');
@@ -971,7 +1270,9 @@
 
     state.instances.forEach(inst => {
       inst.applyServiceStyles(inst.tabId);
+      if (inst.isVisible && !inst.isDocked) inst.applyPosition(true);
     });
+    refreshPanelAudioButtons();
   }
   function saveSettings() {
     chrome.storage.local.set({ [SETTINGS_KEY]: state.settings });
@@ -1006,7 +1307,9 @@
       if (state.settings.showPlayerShadow === undefined) state.settings.showPlayerShadow = true;
       if (state.settings.playerShadowSize === undefined) state.settings.playerShadowSize = 30;
       if (state.settings.playerTheme === undefined) state.settings.playerTheme = 'dark';
+      if (!['classic', 'circle'].includes(state.settings.playerDesign)) state.settings.playerDesign = 'classic';
       if (state.settings.defaultPlayerPosition === undefined) state.settings.defaultPlayerPosition = 'bottom-right';
+      if (state.settings.showPanelIcon === undefined) state.settings.showPanelIcon = true;
       if (!['quietify', 'default', 'equalizer'].includes(state.settings.tabPlayingIconStyle)) state.settings.tabPlayingIconStyle = 'quietify';
       if (!['quietify', 'default'].includes(state.settings.tabMutedIconStyle)) state.settings.tabMutedIconStyle = 'quietify';
 
@@ -1021,7 +1324,12 @@
   }
 
   function injectBeautyMediaSettings(targetSection) {
-    if (!targetSection || document.querySelector('.bm-setting-group')) return;
+    if (!targetSection) return;
+    const existingGroup = document.querySelector('.bm-setting-group');
+    if (existingGroup) {
+      if (existingGroup.querySelector('#bm-setting-player-design')) return;
+      existingGroup.remove();
+    }
 
     const group = document.createElement('div');
     group.className = 'setting-section bm-setting-group';
@@ -1076,8 +1384,21 @@
           <div class="bm-row-controls"><input type="checkbox" id="bm-setting-show-player" ${s.showPlayer ? 'checked' : ''}></div>
         </div>
         <div class="bm-row">
+          <div class="bm-row-label">Player design</div>
+          <div class="bm-row-controls">
+            <select id="bm-setting-player-design" class="bm-select">
+                <option value="classic" ${s.playerDesign !== 'circle' ? 'selected' : ''}>Classic</option>
+                <option value="circle" ${s.playerDesign === 'circle' ? 'selected' : ''}>Circle</option>
+            </select>
+          </div>
+        </div>
+        <div class="bm-row">
           <div class="bm-row-label">Tab audio icon colors</div>
           <div class="bm-row-controls"><input type="checkbox" id="bm-setting-tabs-icon" ${s.showTabsIcon ? 'checked' : ''}></div>
+        </div>
+        <div class="bm-row">
+          <div class="bm-row-label">Side panel audio icon</div>
+          <div class="bm-row-controls"><input type="checkbox" id="bm-setting-panel-icon" ${s.showPanelIcon !== false ? 'checked' : ''}></div>
         </div>
         <div class="bm-row">
           <div class="bm-row-label">Playing tab icon style</div>
@@ -1236,7 +1557,22 @@
     updateCheck('bm-setting-enabled', 'enabled');
     updateCheck('bm-setting-show-player', 'showPlayer');
     updateCheck('bm-setting-tabs-icon', 'showTabsIcon');
+    updateCheck('bm-setting-panel-icon', 'showPanelIcon');
     updateCheck('bm-setting-tabs-gradient', 'showTabGradient');
+
+    const playerDesignSelect = group.querySelector('#bm-setting-player-design');
+    if (playerDesignSelect) {
+      playerDesignSelect.addEventListener('change', (e) => {
+        state.settings.playerDesign = e.target.value === 'circle' ? 'circle' : 'classic';
+        saveSettings();
+        applySettings();
+        autoArrangePlayers(true);
+        state.instances.forEach(inst => {
+          if (!inst.isDocked) inst.applyPosition(true);
+        });
+        showSaveIndicator();
+      });
+    }
 
     const tabPlayingIconStyleSelect = group.querySelector('#bm-setting-playing-icon-style');
     if (tabPlayingIconStyleSelect) {
@@ -1487,17 +1823,20 @@
       return heading ? heading.closest('.setting-group') || heading.closest('section') : null;
     };
 
-    const observer = new MutationObserver(() => {
+    const tryInjectSettings = () => {
       // Check if we are on the Appearance page (Stable data-id="2")
       const selectedCategory = document.querySelector('.settings-sidebar .tree-item[aria-selected="true"]');
       const isAppearance = selectedCategory?.getAttribute('data-id') === '2';
       if (!isAppearance) return;
 
-      if (document.querySelector('.beautymedia-setting-group')) return;
       const section = getCustomUiSection();
       if (section) injectBeautyMediaSettings(section);
-    });
+    };
+
+    const observer = new MutationObserver(tryInjectSettings);
     observer.observe(document.body, { childList: true, subtree: true });
+    setTimeout(tryInjectSettings, 0);
+    setTimeout(tryInjectSettings, 500);
   }
 
   function autoArrangePlayers(skipTransition = false) {
@@ -1509,8 +1848,9 @@
 
     const padding = 20;
     const spacing = 10;
-    const w = 360;
-    const baseH = 100;
+    const bounds = docked[0]?.getPlayerBounds?.() || { w: 360, h: 100 };
+    const w = bounds.w;
+    const baseH = bounds.h;
 
     let currentX = padding;
     if (pos.includes('right')) currentX = window.innerWidth - w - padding;
@@ -1524,16 +1864,22 @@
     const isCenter = !isBottom && !isTop;
 
     if (isCenter) {
-      currentY = (window.innerHeight - baseH) / 2 - ((docked.length - 1) * (baseH + spacing)) / 2;
+      const totalHeight = docked.reduce((sum, p, idx) => {
+        const playerHeight = p.getPlayerBounds?.().h || baseH;
+        return sum + playerHeight + (idx ? spacing : 0);
+      }, 0);
+      currentY = (window.innerHeight - totalHeight) / 2;
     }
 
     for (let p of docked) {
       const isHovered = p.el && p.el.matches(':hover');
-      const actualH = isHovered ? 200 : baseH;
+      const playerBounds = p.getPlayerBounds?.() || { w, h: baseH };
+      const collapsedH = playerBounds.h;
+      const actualH = state.settings.playerDesign === 'circle' ? collapsedH : (isHovered ? 200 : collapsedH);
 
       p.position.x = currentX;
       if (isBottom) {
-        p.position.y = window.innerHeight - currentBottom - baseH;
+        p.position.y = window.innerHeight - currentBottom - collapsedH;
         currentBottom += actualH + spacing;
       } else {
         p.position.y = currentY;
@@ -1561,6 +1907,263 @@
       if (host.includes('spotify.com')) return 'spotify.com';
       return host;
     } catch (e) { return ''; }
+  }
+
+  function getServiceConfigForHost(host) {
+    if (!host) return null;
+    const h = host.toLowerCase();
+    return state.settings.services.find(s => s.host && s.host.trim() !== '' && h.includes(s.host.trim().toLowerCase())) || null;
+  }
+
+  function getServiceIconColorForHost(host) {
+    if (state.settings.defaultOnlyIcon) return state.settings.defaultIconColor;
+    const conf = getServiceConfigForHost(host);
+    return conf ? conf.icon : state.settings.defaultIconColor;
+  }
+
+  function canonicalPanelHost(host) {
+    return String(host || '')
+      .toLowerCase()
+      .replace(/^(www|m)\./, '');
+  }
+
+  function getHostsFromText(text) {
+    const matches = String(text || '').match(/[a-z][a-z0-9+.-]*:\/\/[^\s'",)]+/ig) || [];
+    return matches
+      .map(value => {
+        try { return canonicalPanelHost(new URL(value).hostname); } catch (e) { return ''; }
+      })
+      .filter(Boolean);
+  }
+
+  function getPanelWebviewForTabId(tabId) {
+    const webview = document.querySelector(`webview[tab_id="${tabId}"]`);
+    return isWebPanelWebview(webview) ? webview : null;
+  }
+
+  function getPanelWebviewSrc(webview) {
+    return webview?.getAttribute?.('src') || webview?.src || '';
+  }
+
+  function getPanelButtons() {
+    return Array.from(document.querySelectorAll(
+      '#panels #switch .button-toolbar-webpanel > button[data-name^="WEBPANEL_"], #panels #switch button[data-name^="WEBPANEL_"]'
+    ));
+  }
+
+  function isWebPanelWebview(webview) {
+    if (!webview) return false;
+    const name = String(webview.name || webview.getAttribute?.('name') || '');
+    return name.includes('webpanel') || !!webview.closest?.('#panels, .panel.webpanel, .webpanel-stack, .webpanel-content');
+  }
+
+  function getPanelButtonText(button) {
+    const image = button.querySelector('img, .button-icon');
+    return [
+      button.getAttribute('title'),
+      button.getAttribute('aria-label'),
+      button.dataset.name,
+      image?.getAttribute('src'),
+      image?.getAttribute('srcset')
+    ].filter(Boolean).join('\n');
+  }
+
+  function findPanelButtonForTabId(tabId, hostHint = '', titleHint = '') {
+    const webview = getPanelWebviewForTabId(tabId);
+    if (!webview) return null;
+
+    const buttons = getPanelButtons();
+    const previous = buttons.find(button => button.dataset.beautymediaPanelTabId === String(tabId));
+    if (previous) return previous;
+
+    const panel = webview.closest?.('.panel.webpanel');
+    if (panel?.classList?.contains('visible')) {
+      const activeButton = document.querySelector('#panels #switch .button-toolbar-webpanel.active > button[data-name^="WEBPANEL_"]');
+      if (activeButton) return activeButton;
+    }
+
+    const src = webview.getAttribute?.('src') || webview.src || '';
+    const srcHost = (() => {
+      try { return canonicalPanelHost(new URL(src).hostname); } catch (e) { return ''; }
+    })();
+    const host = srcHost || canonicalPanelHost(hostHint);
+    const panelTitle = panel?.querySelector?.('.webpanel-title, header h1 span, header h1')?.textContent?.trim() || '';
+    const title = String(titleHint || panelTitle || '').trim().toLowerCase();
+
+    let bestButton = null;
+    let bestScore = 0;
+
+    buttons.forEach(button => {
+      const text = getPanelButtonText(button);
+      const lowerText = text.toLowerCase();
+      let score = 0;
+
+      if (src && lowerText.includes(src.toLowerCase())) score += 100;
+      if (title && lowerText.includes(title)) score += 70;
+      if (panelTitle && lowerText.includes(panelTitle.toLowerCase())) score += 50;
+      if (host && getHostsFromText(text).includes(host)) score += 25;
+
+      if (score > bestScore) {
+        bestScore = score;
+        bestButton = button;
+      }
+    });
+
+    return bestScore > 0 ? bestButton : null;
+  }
+
+  function shouldShowPanelAudio(mediaData, tabInfo = null) {
+    if (!state.settings.enabled || state.settings.showPanelIcon === false || !mediaData) return false;
+    if (mediaData.paused || mediaData.muted) return false;
+    if (tabInfo?.mutedInfo?.muted || tabInfo?.audible === false) return false;
+
+    const volume = Number(mediaData.volume);
+    if (!Number.isNaN(volume) && volume <= 0) return false;
+
+    return true;
+  }
+
+  function updatePanelAudioButton(tabId, host, mediaData, tabInfo = null) {
+    const numericTabId = Number(tabId);
+    if (!Number.isFinite(numericTabId) || numericTabId <= 0) return;
+
+    const webview = getPanelWebviewForTabId(numericTabId);
+    if (!webview) return;
+
+    if (!shouldShowPanelAudio(mediaData, tabInfo)) {
+      clearPanelAudioForTab(numericTabId);
+      return;
+    }
+
+    const button = findPanelButtonForTabId(numericTabId, host, mediaData.title);
+    if (!button) {
+      clearPanelAudioForTab(numericTabId);
+      return;
+    }
+
+    const oldOwner = Number(button.dataset.beautymediaPanelTabId);
+    if (Number.isFinite(oldOwner) && oldOwner > 0 && oldOwner !== numericTabId) {
+      clearPanelAudioForTab(oldOwner);
+    }
+
+    const previous = state.panelAudioByTabId.get(numericTabId);
+    if (previous?.button && previous.button !== button) clearPanelAudioButton(previous.button);
+
+    const iconColor = getServiceIconColorForHost(host);
+    button.classList.add(PANEL_AUDIO_CLASS, 'audio-on');
+    button.classList.remove('audio-muted');
+    button.dataset.beautymediaPanelTabId = String(numericTabId);
+    button.style.setProperty('--bm-icon-color', iconColor);
+    button.style.setProperty('--bm-icon-color-hover', iconColor);
+
+    state.panelAudioByTabId.set(numericTabId, {
+      button,
+      host,
+      title: mediaData.title || '',
+      src: getPanelWebviewSrc(webview),
+      mediaData: {
+        title: mediaData.title || '',
+        paused: !!mediaData.paused,
+        muted: !!mediaData.muted,
+        volume: mediaData.volume
+      }
+    });
+  }
+
+  function clearPanelAudioForTab(tabId) {
+    const numericTabId = Number(tabId);
+    if (!Number.isFinite(numericTabId) || numericTabId <= 0) return;
+
+    const entry = state.panelAudioByTabId.get(numericTabId);
+    if (entry?.button) clearPanelAudioButton(entry.button);
+    document.querySelectorAll(`#panels #switch .${PANEL_AUDIO_CLASS}[data-beautymedia-panel-tab-id="${numericTabId}"]`).forEach(clearPanelAudioButton);
+    state.panelAudioByTabId.delete(numericTabId);
+  }
+
+  function clearPanelAudioButton(button) {
+    if (!button) return;
+    button.classList.remove(PANEL_AUDIO_CLASS, 'audio-on', 'audio-muted');
+    delete button.dataset.beautymediaPanelTabId;
+    button.style.removeProperty('--bm-icon-color');
+    button.style.removeProperty('--bm-icon-color-hover');
+  }
+
+  function clearAllPanelAudioButtons() {
+    document.querySelectorAll(`#panels #switch .${PANEL_AUDIO_CLASS}`).forEach(clearPanelAudioButton);
+    state.panelAudioByTabId.clear();
+  }
+
+  function validatePanelAudioEntry(tabId, entry, onValid = null) {
+    const numericTabId = Number(tabId);
+    if (!Number.isFinite(numericTabId) || numericTabId <= 0) return;
+
+    const webview = getPanelWebviewForTabId(numericTabId);
+    if (!webview || !entry?.button?.isConnected) {
+      clearPanelAudioForTab(numericTabId);
+      return;
+    }
+
+    const currentSrc = getPanelWebviewSrc(webview);
+    if (entry.src && currentSrc && entry.src !== currentSrc) {
+      clearPanelAudioForTab(numericTabId);
+      return;
+    }
+
+    chrome.tabs.get(numericTabId, (tab) => {
+      if (chrome.runtime.lastError || !tab) {
+        clearPanelAudioForTab(numericTabId);
+        return;
+      }
+
+      if (tab.mutedInfo?.muted || tab.audible === false) {
+        clearPanelAudioForTab(numericTabId);
+        return;
+      }
+
+      if (onValid) onValid(tab);
+    });
+  }
+
+  function refreshPanelAudioButtons() {
+    Array.from(state.panelAudioByTabId.entries()).forEach(([tabId, entry]) => {
+      validatePanelAudioEntry(tabId, entry, (tab) => {
+        const currentEntry = state.panelAudioByTabId.get(Number(tabId));
+        if (!currentEntry || currentEntry !== entry) return;
+        updatePanelAudioButton(tabId, currentEntry.host, { ...currentEntry.mediaData, title: currentEntry.title }, tab);
+      });
+    });
+  }
+
+  function syncPanelAudioFromTab(tabId, tab = null, info = null) {
+    if (!state.panelAudioByTabId.has(Number(tabId))) return;
+    if (info?.url || info?.audible === false || tab?.audible === false || tab?.mutedInfo?.muted) {
+      clearPanelAudioForTab(tabId);
+    }
+  }
+
+  function setupPanelAudioCleanupObserver() {
+    const target = document.getElementById('browser') || document.body || document.documentElement;
+    if (!target) return;
+
+    let cleanupTimer = null;
+    const observer = new MutationObserver(() => {
+      clearTimeout(cleanupTimer);
+      cleanupTimer = setTimeout(refreshPanelAudioButtons, 120);
+    });
+
+    observer.observe(target, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class', 'src', 'tab_id', 'title', 'aria-label', 'data-name']
+    });
+  }
+
+  function setupPanelAudioStateValidation() {
+    if (state.panelAudioValidationTimer) return;
+    state.panelAudioValidationTimer = setInterval(() => {
+      if (state.panelAudioByTabId.size) refreshPanelAudioButtons();
+    }, 1500);
   }
 
   function findTabElement(target) {
@@ -1647,6 +2250,7 @@
       if (msg.type !== GMC_TYPE || !sender.tab) return;
       const host = normalizeHostname(sender.tab.url);
       if (!host) return;
+      updatePanelAudioButton(sender.tab.id, host, msg, sender.tab);
       getInstanceForHost(host).update(msg, sender.tab.id, sender.frameId || 0, sender.tab.windowId);
     });
   }
@@ -1664,19 +2268,26 @@
   function setupAutoInjection() {
     chrome.tabs.query({}, (tabs) => tabs.forEach(t => { if (isInjectable(t.url)) injectMonitor(t.id); }));
     if (window.vivaldi?.tabsPrivate?.onMediaStateChanged) {
-      vivaldi.tabsPrivate.onMediaStateChanged.addListener((tabId, winId, state) => {
-        if (state && state.length > 0) injectMonitor(tabId);
+      vivaldi.tabsPrivate.onMediaStateChanged.addListener((tabId, winId, mediaState) => {
+        const stateText = Array.isArray(mediaState) ? mediaState.join(' ').toLowerCase() : String(mediaState || '').toLowerCase();
+        if (!mediaState || mediaState.length === 0 || /muted|paused|stopped|inactive|suspended/.test(stateText)) clearPanelAudioForTab(tabId);
+        if (mediaState && mediaState.length > 0) injectMonitor(tabId);
       });
     }
     chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
+      syncPanelAudioFromTab(tabId, tab, info);
       if (isInjectable(tab.url) && (info.status === 'complete' || info.url || info.audible)) injectMonitor(tabId);
     });
     chrome.webNavigation.onCommitted.addListener((details) => {
-      if (details.frameId === 0 && isInjectable(details.url)) injectMonitor(details.tabId);
+      if (details.frameId === 0) {
+        clearPanelAudioForTab(details.tabId);
+        if (isInjectable(details.url)) injectMonitor(details.tabId);
+      }
     });
     chrome.tabs.onRemoved.addListener((tabId) => {
       const styleTag = document.getElementById(`bm-style-tab-${tabId}`);
       if (styleTag) styleTag.remove();
+      clearPanelAudioForTab(tabId);
 
       state.instances.forEach(inst => {
         if (inst.tabId === tabId) {
@@ -1691,6 +2302,8 @@
     setupActivation();
     setupGmcListener();
     setupAutoInjection();
+    setupPanelAudioCleanupObserver();
+    setupPanelAudioStateValidation();
     initSettingsObserver();
     window.addEventListener('resize', () => {
       state.instances.forEach(inst => {
