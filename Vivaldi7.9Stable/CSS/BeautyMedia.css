@@ -46,8 +46,14 @@
 
 .draggable-player-root[data-visible="false"] {
   opacity: 0;
-  pointer-events: none;
+  pointer-events: none !important;
   transform: scale(0.95);
+}
+
+.draggable-player-root[data-visible="false"] *,
+html.bm-player-design-circle .draggable-player-root[data-visible="false"] *,
+html.bm-player-design-circle .draggable-player-root[data-visible="false"] .dp-circle-hit-target {
+  pointer-events: none !important;
 }
 
 html:not(.beautymedia-player-enabled) .draggable-player-root {
