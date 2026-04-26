@@ -352,6 +352,7 @@
 
       this.createDom();
       this.initDraggable();
+      this.initCircleHoverIntent();
     }
 
     createDom() {
@@ -396,11 +397,12 @@
         </div>
         <div class="draggable-player-progress-bar bot"><div class="draggable-player-progress-fill"></div></div>
         <div class="dp-circle-layout">
-          <div class="dp-circle-shell">
-            <div class="dp-circle-art dp-album-art"></div>
-            <svg class="dp-circle-ring" viewBox="0 0 320 320" aria-hidden="true">
-              <circle class="dp-circle-ring-track" cx="160" cy="160" r="150" pathLength="100"></circle>
-              <circle class="dp-circle-ring-value" cx="160" cy="160" r="150" pathLength="100"></circle>
+            <div class="dp-circle-shell">
+              <div class="dp-circle-art dp-album-art"></div>
+              <div class="dp-circle-hit-target" aria-hidden="true"></div>
+              <svg class="dp-circle-ring" viewBox="0 0 320 320" aria-hidden="true">
+                <circle class="dp-circle-ring-track" cx="160" cy="160" r="150" pathLength="100"></circle>
+                <circle class="dp-circle-ring-value" cx="160" cy="160" r="150" pathLength="100"></circle>
             </svg>
             <button class="draggable-player-close-btn dp-circle-close" title="Close">${icons.close}</button>
             <div class="dp-provider-info dp-circle-provider">
@@ -580,36 +582,198 @@
       });
     }
 
-    initDraggable() {
-      const draggerAreas = this.el.querySelectorAll('.dp-nano-header, .dp-main-row, .dp-info-stack, .dp-circle-shell');
-      let isDragging = false;
-      let startX, startY;
+    isPointInExpandedRect(x, y, rect, pad = 0) {
+      return rect &&
+        x >= rect.left - pad &&
+        x <= rect.right + pad &&
+        y >= rect.top - pad &&
+        y <= rect.bottom + pad;
+    }
 
-      draggerAreas.forEach(area => {
-        area.onpointerdown = (e) => {
-          if (e.button !== 0 || e.target.closest('button, input, .draggable-player-progress-bar, .dp-favicon, .dp-provider-badge, .dp-circle-bottom-panel')) return;
-          isDragging = true;
-          this.isDocked = false; // User dragged it
-          startX = e.clientX - this.position.x;
-          startY = e.clientY - this.position.y;
-          this.el.setPointerCapture(e.pointerId);
-          e.stopPropagation();
-        };
+    getCircleIntentZone(e) {
+      if (!this.el || !this.isVisible || this.el.dataset.visible !== 'true' || state.settings.playerDesign !== 'circle') return null;
+
+      const shell = this.el.querySelector('.dp-circle-shell');
+      if (!shell) return null;
+
+      const shellRect = shell.getBoundingClientRect();
+      if (!shellRect.width || !shellRect.height) return null;
+
+      const x = e.clientX;
+      const y = e.clientY;
+      const cx = shellRect.left + shellRect.width / 2;
+      const cy = shellRect.top + shellRect.height / 2;
+      const radius = Math.max(shellRect.width, shellRect.height) / 2;
+      const distance = Math.hypot(x - cx, y - cy);
+      const isCircleHoverActive = this.el.classList.contains('is-circle-hover');
+      const rectFor = (selector) => this.el.querySelector(selector)?.getBoundingClientRect();
+
+      if (isCircleHoverActive) {
+        const controls = [
+          ['close', '.dp-circle-close', 7],
+          ['prev', '.dp-circle-prev', 7],
+          ['next', '.dp-circle-next', 7],
+          ['play', '.dp-circle-play', 6],
+          ['provider', '.dp-circle-provider', 6],
+          ['panel', '.dp-circle-bottom-panel', 8]
+        ];
+
+        for (const [zone, selector, pad] of controls) {
+          if (this.isPointInExpandedRect(x, y, rectFor(selector), pad)) return zone;
+        }
+
+        const closeRect = rectFor('.dp-circle-close');
+        if (closeRect) {
+          const closeBridge = {
+            left: Math.min(closeRect.left, shellRect.right - 42),
+            right: Math.max(closeRect.right, shellRect.right + 10),
+            top: Math.min(closeRect.top, shellRect.top - 4),
+            bottom: Math.max(closeRect.bottom, shellRect.top + 62)
+          };
+          if (this.isPointInExpandedRect(x, y, closeBridge, 3)) return 'hover';
+        }
+
+        const panelRect = rectFor('.dp-circle-bottom-panel');
+        if (panelRect) {
+          const panelBridge = {
+            left: Math.min(panelRect.left, shellRect.left + 10),
+            right: Math.max(panelRect.right, shellRect.right - 10),
+            top: Math.min(shellRect.bottom - 26, panelRect.top),
+            bottom: Math.max(shellRect.bottom + 10, panelRect.bottom)
+          };
+          if (this.isPointInExpandedRect(x, y, panelBridge, 4)) return 'hover';
+        }
+      }
+
+      return distance <= radius + 10 ? 'shell' : null;
+    }
+
+    initCircleHoverIntent() {
+      if (this._circleHoverIntentReady) return;
+      this._circleHoverIntentReady = true;
+
+      let hoverOffTimer = null;
+      let lastHoverIntentAt = 0;
+      let raf = 0;
+      let lastEvent = null;
+
+      const removeCircleHover = () => {
+        clearTimeout(hoverOffTimer);
+        hoverOffTimer = null;
+        if (!this.el) return;
+        this.el.classList.remove('is-circle-hover');
+        delete this.el.dataset.circleIntent;
+      };
+
+      const setCircleHover = (zone) => {
+        if (!this.el) return;
+
+        clearTimeout(hoverOffTimer);
+        if (zone) {
+          lastHoverIntentAt = Date.now();
+          this.el.classList.add('is-circle-hover');
+          this.el.dataset.circleIntent = zone;
+          return;
+        }
+
+        hoverOffTimer = setTimeout(removeCircleHover, 90);
+      };
+
+      const clearCircleHover = () => setCircleHover(null);
+
+      const updateHoverIntent = (e) => {
+        lastEvent = e;
+        if (raf) return;
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          setCircleHover(this.getCircleIntentZone(lastEvent));
+        });
+      };
+
+      const handleIntentClick = (e) => {
+        const zone = this.getCircleIntentZone(e);
+        if (!zone || !['close', 'prev', 'next'].includes(zone)) return;
+        if (e.target.closest?.('.dp-circle-close, .dp-circle-prev, .dp-circle-next')) return;
+
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        if (zone === 'close') this.setVisible(false, true);
+        else this.skip(zone === 'prev' ? -1 : 1);
+      };
+
+      document.addEventListener('pointermove', updateHoverIntent, true);
+      document.addEventListener('pointerdown', updateHoverIntent, true);
+      document.addEventListener('pointerout', (e) => {
+        if (!e.relatedTarget) clearCircleHover();
+      }, true);
+      window.addEventListener('mouseout', (e) => {
+        if (!e.relatedTarget) clearCircleHover();
       });
+      document.addEventListener('click', handleIntentClick, true);
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) clearCircleHover();
+      });
+      window.addEventListener('blur', clearCircleHover);
+      this._circleHoverWatchTimer = setInterval(() => {
+        if (!this.el?.classList.contains('is-circle-hover')) return;
+        if (this.el.matches(':hover')) return;
+        if (Date.now() - lastHoverIntentAt < 360) return;
+        removeCircleHover();
+      }, 120);
+    }
 
-      this.el.onpointermove = (e) => {
+    initDraggable() {
+      const draggerAreas = this.el.querySelectorAll('.dp-nano-header, .dp-main-row, .dp-info-stack, .dp-circle-hit-target');
+      let isDragging = false;
+      let startX, startY, pointerId = null, activeDragArea = null;
+
+      const endDrag = (e) => {
         if (!isDragging) return;
+        if (e?.pointerId !== undefined && pointerId !== null && e.pointerId !== pointerId) return;
+
+        isDragging = false;
+        if (activeDragArea && pointerId !== null) {
+          try { activeDragArea.releasePointerCapture(pointerId); } catch (err) { }
+        }
+
+        document.removeEventListener('pointermove', onDragMove);
+        document.removeEventListener('pointerup', endDrag);
+        document.removeEventListener('pointercancel', endDrag);
+        window.removeEventListener('blur', endDrag);
+
+        pointerId = null;
+        activeDragArea = null;
+        this.saveState();
+      };
+
+      const onDragMove = (e) => {
+        if (!isDragging || e.pointerId !== pointerId) return;
+        e.preventDefault();
         this.position.x = e.clientX - startX;
         this.position.y = e.clientY - startY;
         this.applyPosition();
       };
 
-      this.el.onpointerup = (e) => {
-        if (!isDragging) return;
-        isDragging = false;
-        this.el.releasePointerCapture(e.pointerId);
-        this.saveState();
-      };
+      draggerAreas.forEach(area => {
+        area.onpointerdown = (e) => {
+          if (e.button !== 0 || e.target.closest('button, input, .draggable-player-progress-bar, .dp-favicon, .dp-provider-badge, .dp-circle-bottom-panel')) return;
+          if (['close', 'prev', 'next'].includes(this.getCircleIntentZone(e))) return;
+          isDragging = true;
+          pointerId = e.pointerId;
+          activeDragArea = area;
+          this.isDocked = false; // User dragged it
+          startX = e.clientX - this.position.x;
+          startY = e.clientY - this.position.y;
+          try { activeDragArea.setPointerCapture(pointerId); } catch (err) { }
+          document.addEventListener('pointermove', onDragMove);
+          document.addEventListener('pointerup', endDrag);
+          document.addEventListener('pointercancel', endDrag);
+          window.addEventListener('blur', endDrag);
+          e.preventDefault();
+          e.stopPropagation();
+        };
+      });
 
       const tabTriggers = this.el.querySelectorAll('.dp-favicon, .dp-provider-badge');
       tabTriggers.forEach(el => {
@@ -820,6 +984,10 @@
     setVisible(visible, manual = false, skipTransition = false) {
       this.isVisible = visible;
       this.el.dataset.visible = visible ? 'true' : 'false';
+      if (!visible) {
+        this.el.classList.remove('is-circle-hover');
+        delete this.el.dataset.circleIntent;
+      }
       if (manual && !visible) {
         this.manuallyClosed = true;
         this.hiddenByTabClose = false;
@@ -1110,7 +1278,8 @@
         x: Number.isFinite(parseInt(this.el.style.left, 10)) ? parseInt(this.el.style.left, 10) : this.position.x,
         y: Number.isFinite(parseInt(this.el.style.top, 10)) ? parseInt(this.el.style.top, 10) : this.position.y,
         manuallyClosed: this.manuallyClosed,
-        hiddenByTabClose: this.hiddenByTabClose
+        hiddenByTabClose: this.hiddenByTabClose,
+        isDocked: this.isDocked
       };
       chrome.storage.local.set({ [STORAGE_KEY]: state.persisted });
     }
