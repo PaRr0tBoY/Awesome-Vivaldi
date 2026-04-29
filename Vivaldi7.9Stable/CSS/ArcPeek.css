@@ -78,8 +78,7 @@
 #browser #webpage-stack {
   transition:
     transform 0.35s cubic-bezier(0.16, 0.88, 0.22, 1),
-    border-radius 0.35s cubic-bezier(0.16, 0.88, 0.22, 1),
-    box-shadow 0.35s cubic-bezier(0.16, 0.88, 0.22, 1) !important;
+    border-radius 0.35s cubic-bezier(0.16, 0.88, 0.22, 1) !important;
 }
 
 body.peek-open #browser #webpage-stack {
