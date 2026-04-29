@@ -1,0 +1,387 @@
+/* ==UserStyle==
+ * @name         SearchEngineSelector
+ * @description  Settings Interface Modal for search engine selector
+ * @author       wyrtensi
+ * ==UserStyle== 
+ */
+
+.search-engine-selector-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.search-engine-selector-modal.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.ses-modal-content {
+    background-color: var(--colorBgAlphaHeavy, var(--colorBg, #202020));
+    color: var(--colorFg, #FFFFFF);
+    padding: 24px;
+    border-radius: 12px;
+    width: 380px;
+    max-width: 90%;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--colorBorder, rgba(255, 255, 255, 0.08));
+    transform: translateY(12px) scale(0.98);
+    transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.search-engine-selector-modal.visible .ses-modal-content {
+    transform: translateY(0) scale(1);
+}
+
+.ses-modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--colorFg, #FFFFFF);
+}
+
+.ses-modal-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 50vh;
+    overflow-y: auto;
+    padding-right: 8px;
+    margin: 0 -8px 0 -8px;
+    padding-left: 8px;
+}
+
+.ses-modal-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.ses-modal-list::-webkit-scrollbar-thumb {
+    background: var(--colorBorderIntense);
+    border-radius: 3px;
+}
+
+.ses-modal-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: grab;
+    transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+    background: transparent;
+}
+
+.ses-modal-item:hover {
+    background: var(--colorBgAlpha, rgba(255, 255, 255, 0.05));
+}
+
+.ses-modal-item.dragging {
+    opacity: 0.3;
+    /* Do not scale, rotate, or alter dimensions or shadow of the original element to prevent dragover collision loops! */
+}
+
+.ses-modal-toggle {
+    cursor: default;
+    padding: 6px 0;
+}
+
+.ses-modal-toggle:hover {
+    background: transparent;
+}
+
+.ses-drag-handle {
+    color: var(--colorFgFaded);
+    display: flex;
+    align-items: center;
+    cursor: grab;
+    opacity: 0.3;
+    transition: opacity 0.2s, color 0.2s;
+    padding: 4px;
+    margin-left: -4px;
+}
+
+.ses-modal-item:hover .ses-drag-handle {
+    opacity: 1;
+    color: var(--colorFg);
+}
+
+.ses-modal-item input[type="checkbox"]:not(.ses-toggle-switch) {
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--colorFgFaded, rgba(128, 128, 128, 0.5));
+    border-radius: 6px;
+    cursor: pointer;
+    background: var(--colorBgDark, rgba(0, 0, 0, 0.1));
+    position: relative;
+    margin: 0;
+    flex-shrink: 0;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.ses-modal-item input[type="checkbox"]:not(.ses-toggle-switch):hover {
+    border-color: var(--colorAccentBg, #0078D7);
+}
+
+.ses-modal-item input[type="checkbox"]:not(.ses-toggle-switch):checked {
+    background: var(--colorAccentBg, #0078D7);
+    border-color: var(--colorAccentBg, #0078D7);
+}
+
+.ses-modal-item input[type="checkbox"]:not(.ses-toggle-switch)::after {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 2px;
+    width: 4px;
+    height: 10px;
+    border: solid var(--colorAccentFg, #fff);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    opacity: 0;
+    transition: opacity 0.15s, border-color 0.15s;
+}
+
+/* Ghost checkmark so it's obvious they are checkboxes */
+.ses-modal-item input[type="checkbox"]:not(.ses-toggle-switch):not(:checked)::after {
+    opacity: 0.15;
+    border-color: var(--colorFgFaded);
+}
+
+.ses-modal-item input[type="checkbox"]:not(.ses-toggle-switch):checked::after {
+    opacity: 1;
+}
+
+/* Custom Native Div Switch */
+.ses-native-switch {
+    width: 36px;
+    height: 20px;
+    background: var(--colorBgDarker, rgba(0, 0, 0, 0.2));
+    border: 1px solid var(--colorFgFaded, rgba(255, 255, 255, 0.2));
+    border-radius: 12px;
+    position: relative;
+    transition: background 0.25s ease, border-color 0.25s ease;
+    flex-shrink: 0;
+}
+
+.ses-native-switch.checked {
+    background: var(--colorAccentBg, #0078D7);
+    border-color: var(--colorAccentBg, #0078D7);
+}
+
+.ses-native-knob {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    width: 16px;
+    height: 16px;
+    background: var(--colorFg, #fff);
+    border-radius: 50%;
+    transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.ses-native-switch.checked .ses-native-knob {
+    transform: translateX(16px);
+}
+
+.ses-modal-name {
+    flex-grow: 1;
+    color: var(--colorFg);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.ses-modal-icon-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 16px;
+    height: 16px;
+}
+
+.ses-modal-item img {
+    width: 16px;
+    height: 16px;
+    border-radius: 2px;
+}
+
+.ses-modal-name {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.ses-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.ses-modal-close {
+    padding: 5px 14px;
+    background: transparent;
+    color: var(--colorFg, #ffffff);
+    border: 1px solid var(--colorBorder, rgba(255, 255, 255, 0.15));
+    border-radius: var(--radiusHalf, 4px);
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+}
+
+.ses-modal-close:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.ses-modal-close:active {
+    transform: scale(0.98);
+}
+
+/* Key Display Badge */
+.ses-key-badge {
+    padding: 4px 10px;
+    background: var(--colorBgDarker, rgba(0, 0, 0, 0.2));
+    border: 1px solid var(--colorBorderIntense, rgba(255, 255, 255, 0.1));
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 13px;
+    color: var(--colorAccentBg, #0078D7);
+    font-weight: 700;
+    min-width: 60px;
+    text-align: center;
+    transition: all 0.2s;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.ses-key-badge.waiting {
+    background: var(--colorAccentBg);
+    color: var(--colorAccentFg);
+    animation: ses-pulse 1.5s infinite;
+}
+
+@keyframes ses-pulse {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Address Bar Interface */
+.SearchEngineSelector-Container {
+    display: none;
+    align-items: center;
+    gap: 4px;
+    margin-right: 8px;
+    z-index: 100;
+}
+
+/* Show when focused or typed */
+.UrlBar-AddressField:focus-within .SearchEngineSelector-Container.has-input {
+    display: flex;
+}
+
+.SearchEngineSelector-Button {
+    width: 24px;
+    height: 24px;
+    border-radius: var(--radiusHalf);
+    background: transparent;
+    border: 1px solid transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    padding: 0;
+}
+
+.SearchEngineSelector-Button img {
+    width: 16px;
+    height: 16px;
+}
+
+.SearchEngineSelector-Button svg {
+    width: 14px;
+    height: 14px;
+}
+
+.SearchEngineSelector-Button:hover {
+    background: var(--colorBgDark);
+}
+
+.SearchEngineSelector-Button.active {
+    background: var(--colorAccentBg);
+    border-color: var(--colorAccentBgDark);
+}
+
+.SearchEngineSelector-Button.ses-settings-btn {
+    opacity: 0.5;
+}
+
+.SearchEngineSelector-Button.ses-settings-btn:hover {
+    opacity: 1;
+}
+
+/* Left side indicator logic - Targeted hiding while searching */
+.UrlBar-AddressField.ses-hide-siteinfo .SiteInfoButton .SiteInfoButton-SecurityBadge,
+.UrlBar-AddressField.ses-hide-siteinfo .SiteInfoButton>svg,
+.UrlBar-AddressField.ses-hide-siteinfo .ContentBlocker-Control,
+.UrlBar-AddressField.ses-hide-siteinfo .ToggleUISectionButton {
+    display: none !important;
+}
+
+.SearchEngineSelector-LeftBadge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--colorAccentBg, #0078d7);
+    color: var(--colorAccentFg, #fff);
+    border-radius: var(--radiusHalf, 4px);
+    font-size: 12px;
+    font-weight: 500;
+    opacity: 0;
+    max-width: 0;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: opacity 0.25s ease, max-width 0.25s ease, padding 0.25s ease, margin 0.25s ease;
+    pointer-events: none;
+    flex-shrink: 0;
+    z-index: 10;
+}
+
+.SearchEngineSelector-LeftBadge.visible {
+    opacity: 1;
+    max-width: 250px;
+    padding: 3px 8px;
+    margin-right: 6px;
+    margin-left: 6px;
+}
+
+.SearchEngineSelector-LeftBadge img {
+    width: 14px;
+    height: 14px;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}

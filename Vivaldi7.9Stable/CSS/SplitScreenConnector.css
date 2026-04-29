@@ -1,0 +1,95 @@
+/* ═══ SplitScreen Tab Connector v20 ═══
+   Per-group colors via CSS custom properties on .tab-position:
+     --tg-h      hue (0-360)
+     --tg-s      saturation (e.g. 72%)
+     --tg-l      lightness  (e.g. 58%)
+     --tg-active 1 when focused, 0.35 when background
+
+   Gradient inspired by TabsTrail.css
+*/
+
+/* ── Base: everything starts square to allow joining pieces cleanly ── */
+#browser .tab-position.is-tiled-connector .tab {
+    border-radius: 0 !important;
+    box-shadow: inset 0 2px 0 0 hsla(var(--tg-h, 220), var(--tg-s, 72%), var(--tg-l, 58%),
+            calc(0.55 * var(--tg-active, 1))) !important;
+}
+
+/* ── HORIZONTAL: restore outer left/right corners ── */
+#browser:not(.tabs-left):not(.tabs-right) .tab-position.is-tiled-connector.tiled-left .tab {
+    border-top-left-radius: var(--currentRadius, 4px) !important;
+    border-bottom-left-radius: var(--currentRadius, 4px) !important;
+}
+#browser:not(.tabs-left):not(.tabs-right) .tab-position.is-tiled-connector.tiled-right .tab {
+    border-top-right-radius: var(--currentRadius, 4px) !important;
+    border-bottom-right-radius: var(--currentRadius, 4px) !important;
+}
+
+/* ── VERTICAL: restore outer top/bottom corners ── */
+#browser.tabs-left .tab-position.is-tiled-connector.tiled-left .tab,
+#browser.tabs-right .tab-position.is-tiled-connector.tiled-left .tab {
+    border-top-left-radius: var(--currentRadius, 4px) !important;
+    border-top-right-radius: var(--currentRadius, 4px) !important;
+}
+#browser.tabs-left .tab-position.is-tiled-connector.tiled-right .tab,
+#browser.tabs-right .tab-position.is-tiled-connector.tiled-right .tab {
+    border-bottom-left-radius: var(--currentRadius, 4px) !important;
+    border-bottom-right-radius: var(--currentRadius, 4px) !important;
+}
+
+/* ── Solo tabs: restore all corners ── */
+#browser .tab-position.is-tiled-connector.tiled-solo .tab {
+    border-radius: var(--currentRadius, 4px) !important;
+}
+
+/* ── TabsTrail gradient on connected tabs (not just active) ── */
+#browser .tab-position.is-tiled-connector .tab .tab-header {
+    position: relative;
+    overflow: hidden;
+}
+
+#browser .tab-position.is-tiled-connector .tab .tab-header::before {
+    content: "";
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 90.333% !important;
+    border-top-left-radius: 6px !important;
+    border-top-right-radius: 6px !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    pointer-events: none;
+    z-index: 1;
+
+    background: linear-gradient(to bottom,
+            color-mix(in srgb, hsla(var(--tg-h, 220), var(--tg-s, 72%), var(--tg-l, 58%), 1) 70%, transparent) 0%,
+            color-mix(in srgb, hsla(var(--tg-h, 220), var(--tg-s, 72%), var(--tg-l, 58%), 1) 50%, transparent) 30%,
+            color-mix(in srgb, hsla(var(--tg-h, 220), var(--tg-s, 72%), var(--tg-l, 58%), 1) 20%, transparent) 60%,
+            transparent 100%) !important;
+
+    transform: translateY(0) !important;
+    opacity: calc(0.3 * var(--tg-active, 1)) !important;
+    transition: transform 300ms ease-out, opacity 300ms ease-out !important;
+}
+
+/* ── Stronger gradient on active tab ── */
+#browser .tab-position.is-tiled-active .tab .tab-header::before {
+    opacity: calc(0.6 * var(--tg-active, 1)) !important;
+}
+
+/* ── Full accent on focused tab ── */
+#browser .tab-position.is-tiled-active .tab {
+    box-shadow: inset 0 2px 0 0
+        hsla(var(--tg-h, 220), var(--tg-s, 72%), var(--tg-l, 58%),
+            var(--tg-active, 1)) !important;
+}
+
+/* ── Bridge: thin top line connecting tabs ──
+   z-index 100 ensures visibility above all tab content.
+   pointer-events:none so clicks pass through to tabs. */
+.tiled-bridge-overlay {
+    position: absolute;
+    pointer-events: none;
+    z-index: 100;
+}

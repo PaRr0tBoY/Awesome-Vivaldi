@@ -1,0 +1,119 @@
+/*
+ Yandex Video Translator - Vivaldi Native Theme
+
+ Port for Vivaldi browser: https://github.com/ilyhalight/voice-over-translation
+ Modification by wyrtensi
+ License: MIT (see Javascripts/yandexvideotranslator-LICENSE.txt)
+*/
+
+/* Global Container */
+vot-block {
+  font-family: var(--vot-font-family) !important;
+  color: var(--vot-onsurface-rgb) !important;
+}
+
+/* Subtitles styling */
+.vot-subtitles {
+  background: rgba(var(--vot-surface-rgb), 0.65) !important;
+  backdrop-filter: blur(12px) saturate(1.2) !important;
+  border: 1px solid rgba(var(--vot-onsurface-rgb), 0.15) !important;
+  box-shadow: var(--vot-shadow-1);
+  border-radius: var(--vot-radius-s) !important;
+  color: var(--vot-subtitles-color) !important;
+  padding: 8px 12px !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.vot-subtitles span.passed {
+  color: var(--vot-subtitles-passed-color) !important;
+}
+
+/* Menu & Dialog Styling */
+.vot-menu, .vot-dialog {
+  background: rgba(var(--vot-surface-rgb), 0.5) !important;
+  backdrop-filter: blur(16px) saturate(1.2) !important;
+  border: 1px solid rgba(var(--vot-onsurface-rgb), 0.15) !important;
+  border-radius: var(--vot-radius-m) !important;
+  box-shadow: var(--vot-shadow-2) !important;
+  color: rgb(var(--vot-onsurface-rgb)) !important;
+}
+
+/* Buttons */
+.vot-button {
+  border-radius: var(--vot-radius-s) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.vot-button--contained {
+  background: rgba(var(--vot-primary-rgb), 0.6) !important;
+  color: rgb(var(--vot-onsurface-rgb)) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(var(--vot-onsurface-rgb), 0.1) !important;
+}
+
+.vot-button--contained:hover {
+  background: rgba(var(--vot-primary-rgb), 0.8) !important;
+  filter: brightness(1.1);
+}
+
+.vot-button--outlined {
+  border: 1px solid rgba(var(--vot-onsurface-rgb), 0.2) !important;
+  background: transparent !important;
+}
+
+.vot-button--outlined:hover {
+  background: var(--colorBgAlpha, rgba(255, 255, 255, 0.05)) !important;
+}
+
+/* Sliders & Controls */
+.vot-slider {
+  accent-color: rgb(var(--vot-primary-rgb)) !important;
+}
+
+.vot-checkbox input:checked {
+  background-color: rgb(var(--vot-primary-rgb)) !important;
+}
+
+/* Tooltips */
+.vot-tooltip {
+  background: rgba(var(--vot-surface-rgb), 0.6) !important;
+  color: rgb(var(--vot-onsurface-rgb)) !important;
+  backdrop-filter: blur(12px) saturate(1.2) !important;
+  border: 1px solid rgba(var(--vot-onsurface-rgb), 0.15) !important;
+  border-radius: var(--vot-radius-xs) !important;
+  padding: 4px 8px !important;
+  font-size: 11px !important;
+  box-shadow: var(--vot-shadow-1) !important;
+}
+
+/* Segmented Button (Video Overlay Icon) */
+.vot-segmented-button {
+  background: rgba(var(--vot-surface-rgb), 0.4) !important;
+  backdrop-filter: blur(16px) saturate(1.2) !important;
+  border: 1px solid rgba(var(--vot-onsurface-rgb), 0.15) !important;
+  border-radius: var(--vot-radius-m) !important;
+  padding: 2px !important;
+  transform: translate(-50%) scale(0.85) !important; /* Make it smaller */
+  transform-origin: top center !important;
+}
+
+.vot-segmented-button__item--selected {
+  background: rgba(var(--vot-primary-rgb), 0.6) !important;
+  color: rgb(var(--vot-onsurface-rgb)) !important;
+  border-radius: calc(var(--vot-radius-m) - 2px) !important;
+}
+
+/* Animation for loading */
+.vot-loader {
+  border: 2px solid rgba(var(--vot-onsurface-rgb), 0.2);
+  border-top: 2px solid rgb(var(--vot-primary-rgb));
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: vot-spin 1s linear infinite;
+}
+
+@keyframes vot-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

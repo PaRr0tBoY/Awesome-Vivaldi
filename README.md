@@ -45,7 +45,12 @@
 | --------------------------------------------------- | ----------------------------------------------------------------- |
 | ![VividPlayer](./Others/assets/VividPlayer.gif)             | `VidPlayer.css` + `VividPlayer.js`                                      |
 | ![ArcPeek](./Others/assets/ArcPeek.gif)             | `ArcPeek.css` + `ArcPeek.js`                                      |
+| ![ArcPeek - Marketplace](./Others/assets/arcpeek-market-feauture-update.gif) | `ArcPeek.css` + `ArcPeek.js` — Marketplace feature update |
 | ![AskInPage](./Others/assets/AskInPage.png) | `AskInPage.js`                                                |
+| ![BeautyMedia](./Others/assets/beautyplayer.gif)    | `BeautyMedia.css` + `BeautyMedia.js` (Replaces `Quietify`)        |
+| ![SplitScreenConnector](./Others/assets/splitscreenconnector.gif) | `SplitScreenConnector.css` + `SplitScreenConnector.js`                  |
+| ![SearchEngineSelector](./Others/assets/searchengineselector.gif) | `SearchEngineSelector.css` + `SearchEngineSelector.js`                  |
+| ![TabDragIndicator](./Others/assets/tabdragindicator.gif)   | `TabDragIndicator.css` + `TabDragIndicator.js`                          |
 
 ## Introduction
 
@@ -64,7 +69,6 @@ Please choose the modpack that matches your Vivaldi Version. Which version of Vi
 | ![VivaldiMax](./Others/assets/VivaldiMax.gif)       | `TidyTabs.css` + `TidyTabs.js` + `TidyTitles.js` |
 | ![TidyDownloads](./Others/assets/TidyDownloads.gif) | `TidyDownloads.js`                                                |
 | ![PeekTabbar](./Others/assets/PeekTabbar.gif)       | `PeekTabbar.css`                                                  |
-| ![Quietify](./Others/assets/Quietify.gif)           | `Quietify.css`                                                    |
 
 ## Main File Structure
 
