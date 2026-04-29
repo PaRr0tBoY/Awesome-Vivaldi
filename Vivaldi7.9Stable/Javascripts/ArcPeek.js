@@ -2500,8 +2500,12 @@
     async flushPreviewLayerForClosing(peekPanel, previewLayer) {
       if (!peekPanel || !previewLayer) return;
       previewLayer.style.transform = "translateZ(0)";
-      void previewLayer.offsetHeight;
-      void peekPanel.offsetHeight;
+      // Removed: void previewLayer.offsetHeight / void peekPanel.offsetHeight
+      // These were forced synchronous layout reads that blocked the main thread
+      // for ~2-5ms each on Windows before the closing animation could begin,
+      // causing the first few frames to drop. The waitForAnimationFrames(2)
+      // below already guarantees all pending style mutations are committed and
+      // flushed to the render tree, making these reads redundant.
       await this.waitForAnimationFrames(2);
     }
 
