@@ -44,17 +44,32 @@
   align-items: stretch;
   justify-content: flex-start;
   align-self: flex-start;
+  width: 100%;
+  max-width: var(--popupWidth);
+}
+
+.extensionIconPopupMenu .ExtensionDropdownIcon {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .extensionIconPopupMenu .ExtensionDropdownIcon > button {
   justify-content: flex-start;
   padding: 10px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .extensionIconPopupMenu .ExtensionDropdownIcon > button::after {
   content: attr(title);
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+  max-width: 100%;
 }
 
 .button-toolbar > button > .button-badge {
