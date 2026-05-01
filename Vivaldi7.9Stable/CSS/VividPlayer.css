@@ -25,7 +25,11 @@
   --vivid-player-track: color-mix(in srgb, var(--colorFg) 18%, transparent 82%);
   --vivid-player-shadow: 0 14px 28px color-mix(in srgb, black 18%, transparent 82%);
   flex: 0 0 auto;
-  padding: 8px 8px 10px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 4px;
   position: relative;
   z-index: 3;
   pointer-events: auto;
@@ -57,6 +61,10 @@
 #vivid-player .vivid-player-card {
   position: relative;
   overflow: visible;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   border-radius: 14px;
   border: 1px solid var(--vivid-player-border);
   background:
@@ -84,6 +92,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
   overflow: hidden;
   max-height: 0;
   opacity: 0;
@@ -118,12 +127,14 @@
 
 #vivid-player .vivid-player-text {
   min-width: 0;
+  width: 0;
   flex: 1 1 auto;
   mask-image: linear-gradient(to left, transparent, #000 14px);
 }
 
 #vivid-player .vivid-player-title,
 #vivid-player .vivid-player-subtitle {
+  min-width: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -147,6 +158,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  min-width: 0;
 }
 
 #vivid-player .vivid-player-controls-row {
@@ -154,10 +166,13 @@
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 8px;
+  min-width: 0;
 }
 
 #vivid-player .vivid-player-center-controls {
   justify-content: center;
+  min-width: 0;
+  overflow: hidden;
 }
 
 #vivid-player .vivid-player-button {
@@ -405,13 +420,12 @@
 }
 
 #vivid-player[data-compact="true"] {
-  padding-top: 6px;
-  padding-bottom: 8px;
+  padding: 4px;
 }
 
 #vivid-player[data-compact="true"] .vivid-player-card {
   min-height: 0;
-  padding: 6px;
+  padding: 4px;
   border-radius: 12px;
 }
 

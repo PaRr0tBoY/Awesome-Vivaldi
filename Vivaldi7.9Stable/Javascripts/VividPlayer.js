@@ -10,7 +10,7 @@
 
   const VIVID_PLAYER_CONFIG = {
     theme: 'theme', // 'theme' | 'classic'
-    compactMinWidth: 210,
+    compactMinWidth: 150,
     hideAnimationMs: 260,
     stackTransitionMs: 320,
     backCardTransitionMs: 420,
