@@ -87,6 +87,104 @@ body.peek-open #browser #webpage-stack {
   overflow: hidden;
 }
 
+#tabs-container .tab-wrapper:has(.arcpeek-tab-button) .tab-header,
+#tabs-subcontainer .tab-wrapper:has(.arcpeek-tab-button) .tab-header {
+  position: relative;
+}
+
+#browser:not(.alt-tabs) #tabs-container .tab-wrapper:has(.arcpeek-tab-button) .tab,
+#browser:not(.alt-tabs) #tabs-subcontainer .tab-wrapper:has(.arcpeek-tab-button) .tab {
+  position: relative;
+}
+
+#tabs-container .tab-wrapper:has(.arcpeek-tab-button) .title,
+#tabs-subcontainer .tab-wrapper:has(.arcpeek-tab-button) .title {
+  padding-right: 54px;
+}
+
+#browser:not(.alt-tabs) #tabs-container .tab-wrapper:has(.arcpeek-tab-button) .close,
+#browser:not(.alt-tabs) #tabs-subcontainer .tab-wrapper:has(.arcpeek-tab-button) .close {
+  position: absolute;
+  top: 50%;
+  right: 32px;
+  z-index: 5;
+  margin: 0 !important;
+  transform: translateY(-50%);
+}
+
+.alt-tabs #tabs-container .tab-wrapper:has(.arcpeek-tab-button) .close,
+.alt-tabs #tabs-subcontainer .tab-wrapper:has(.arcpeek-tab-button) .close {
+  order: -1;
+}
+
+#tabs-container .arcpeek-tab-button,
+#tabs-subcontainer .arcpeek-tab-button {
+  --arcpeek-tab-button-size: 24px;
+  position: absolute;
+  top: 50%;
+  right: calc(4px + (var(--arcpeek-tab-button-index, 0) * 26px));
+  z-index: 4;
+  display: inline-flex;
+  width: var(--arcpeek-tab-button-size);
+  height: var(--arcpeek-tab-button-size);
+  min-width: var(--arcpeek-tab-button-size);
+  min-height: var(--arcpeek-tab-button-size);
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--colorBgLighter, var(--colorBg)) 86%, transparent);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--colorFg, currentColor) 14%, transparent),
+    0 1px 4px rgba(0, 0, 0, 0.16);
+  color: var(--colorFg);
+  opacity: 0.92;
+  transform: translateY(-50%);
+  transition:
+    background 0.16s ease,
+    box-shadow 0.16s ease,
+    opacity 0.16s ease,
+    transform 0.16s ease;
+}
+
+#tabs-container .arcpeek-tab-button:hover,
+#tabs-subcontainer .arcpeek-tab-button:hover {
+  background: color-mix(in srgb, var(--colorHighlightBg, var(--colorAccentBg)) 18%, var(--colorBgLighter, var(--colorBg)));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--colorHighlightBg, currentColor) 28%, transparent),
+    0 2px 8px rgba(0, 0, 0, 0.2);
+  opacity: 1;
+  transform: translateY(-50%) scale(1.04);
+}
+
+#tabs-container .arcpeek-tab-button-favicon,
+#tabs-subcontainer .arcpeek-tab-button-favicon {
+  display: block;
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  border-radius: 3px;
+  pointer-events: none;
+}
+
+#tabs-container .arcpeek-tab-button-fallback .arcpeek-tab-button-favicon,
+#tabs-subcontainer .arcpeek-tab-button-fallback .arcpeek-tab-button-favicon {
+  display: none;
+}
+
+#tabs-container .arcpeek-tab-button-fallback::before,
+#tabs-subcontainer .arcpeek-tab-button-fallback::before {
+  content: "";
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  background:
+    linear-gradient(135deg, transparent 45%, color-mix(in srgb, var(--colorFg) 38%, transparent) 46% 54%, transparent 55%),
+    radial-gradient(circle at center, color-mix(in srgb, var(--colorHighlightBg, var(--colorAccentBg)) 65%, var(--colorBg)) 0 62%, transparent 63%);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--colorFg) 26%, transparent);
+}
+
 .peek-container {
   z-index: 1;
   position: fixed;
@@ -290,6 +388,102 @@ body.peek-open #browser #webpage-stack {
 .peek-container .peek-sidebar-button.copy-link-button svg {
   width: 26px;
   height: 26px;
+}
+
+.peek-container .peek-sidebar-button.arcpeek-feedback-reload svg {
+  animation: arcpeek-reload-spin 0.72s cubic-bezier(0.33, 0.02, 0.24, 1) both;
+  transform-origin: center;
+}
+
+.peek-container .peek-sidebar-button.arcpeek-feedback-back,
+.peek-container .peek-sidebar-button.arcpeek-feedback-back svg {
+  animation: arcpeek-nav-bump-left 0.42s cubic-bezier(0.25, 0.86, 0.28, 1) both;
+}
+
+.peek-container .peek-sidebar-button.arcpeek-feedback-forward,
+.peek-container .peek-sidebar-button.arcpeek-feedback-forward svg {
+  animation: arcpeek-nav-bump-right 0.42s cubic-bezier(0.25, 0.86, 0.28, 1) both;
+}
+
+.peek-container .peek-sidebar-button.arcpeek-feedback-copy {
+  color: color-mix(in srgb, var(--colorHighlightBg, #5fd38d) 72%, white 18%);
+}
+
+.peek-container .peek-sidebar-button.arcpeek-feedback-copy svg {
+  width: 24px;
+  height: 24px;
+  animation: arcpeek-copy-morph 0.38s cubic-bezier(0.16, 0.88, 0.22, 1) both;
+}
+
+@keyframes arcpeek-reload-spin {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  48% {
+    transform: rotate(-186deg) scale(0.98);
+  }
+  100% {
+    transform: rotate(-360deg) scale(1);
+  }
+}
+
+@keyframes arcpeek-copy-morph {
+  0% {
+    opacity: 0;
+    transform: scale(0.42) rotate(-18deg);
+    filter: blur(2px);
+  }
+  62% {
+    opacity: 1;
+    transform: scale(1.16) rotate(3deg);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+    filter: blur(0);
+  }
+}
+
+@keyframes arcpeek-nav-bump-right {
+  0% {
+    transform: translateX(0) scale(1);
+  }
+  52% {
+    transform: translateX(3px) scaleX(1.025);
+  }
+  78% {
+    transform: translateX(-1px) scaleX(0.992);
+  }
+  100% {
+    transform: translateX(0) scaleX(1);
+  }
+}
+
+@keyframes arcpeek-nav-bump-left {
+  0% {
+    transform: translateX(0) scale(1);
+  }
+  52% {
+    transform: translateX(-3px) scaleX(1.025);
+  }
+  78% {
+    transform: translateX(1px) scaleX(0.992);
+  }
+  100% {
+    transform: translateX(0) scaleX(1);
+  }
+}
+
+.peek-container .peek-sidebar-button:disabled {
+  cursor: default;
+  opacity: 0.34;
+  filter: saturate(0.45);
+}
+
+.peek-container .peek-sidebar-button:disabled:hover {
+  transform: none;
+  background: color-mix(in srgb, var(--colorBg) 68%, transparent);
 }
 
 .peek-container .peek-sidebar-button:hover {

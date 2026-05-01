@@ -93,6 +93,7 @@
 | `AutoHidePanel.js`       | 自动隐藏侧边栏                                   |
 | `EasyFiles.js`           | Opera 风格的文件附件，支持剪贴板和下载内容       |
 | `GlobalMediaControls.js` | 全局媒体控制面板（Chrome 风格）                  |
+| `ModConfig.js`           | AI Key 和支持的修改项共用设置面板                |
 | `MonochromeIcons.js`     | 网页面板图标单色化，减少视觉噪音                 |
 | `QuickCapture.js`        | 自动框选区域，支持剪贴板/文件/默认模式           |
 | `SelectCloseTabs.js`     | 在标签切换器里标记多个标签，然后批量关闭         |
@@ -185,6 +186,7 @@ Vivaldi 中你唯一需要修改的文件是 window.html，它位于：
     <script src="QuickCapture.js"></script>
     <script src="GlobalMediaControls.js"></script>
     <script src="EasyFiles.js"></script>
+    <script src="ModConfig.js"></script>
     <script src="ArcPeek.js"></script>
   </body>
 </html>
@@ -193,6 +195,26 @@ Vivaldi 中你唯一需要修改的文件是 window.html，它位于：
 就这样！重启浏览器即可生效。如果有任何其他问题，请在 [Issues · PaRr0tBoY/Awesome-Vivaldi](https://github.com/PaRr0tBoY/Awesome-Vivaldi/issues?q=sort%3Aupdated-desc+is%3Aissue+is%3Aopen) 报告，我会在周末~~可能~~修复它。
 
 > 可选：可以在这里找免费的 OpenAI 兼容 API Key，用于 AI 功能：[cheahjs/free-llm-api-resources](https://github.com/cheahjs/free-llm-api-resources?tab=readme-ov-file#opencode-zen)。
+
+### 设置面板
+
+`ModConfig.js` 会在 Vivaldi 的外观设置页中添加 Awesome Vivaldi 设置区。使用方法：
+
+1. 将 `ModConfig.js` 和其他 JavaScript 修改一起安装，然后重启 Vivaldi。
+2. 打开 `vivaldi:settings/appearance/`。
+3. 找到 Awesome Vivaldi 设置区。
+4. 在 **AI Config** 中配置通用的 OpenAI 兼容接口、API Key、模型，以及每个修改项的单独覆盖配置。
+5. 在 **Arc Peek** 中配置 Peek 触发方式：
+   - `Click Modifiers`：普通左键点击时触发 Peek 的修饰键。
+   - `Long Press Buttons`：长按后触发 Peek 的鼠标按键。
+   - `Hold Time` / `Hold Delay`：长按触发时间和反馈延迟，单位为毫秒。
+   - `Auto Open List`：`pin` 表示固定标签页，或使用 `*.google.com` 这类域名规则。
+   - `Foreground Mode`：页面加载时的前景空白层样式。
+   - `Scale Background`：Peek 打开时是否让底层页面下沉。
+6. 在 **Quick Capture** 和 **Auto Hide Panel** 中配置对应修改项的行为。
+7. 修改后点击 **Save**。可以用 **Import** / **Export** 在不同配置或用户资料间迁移设置。
+
+设置会保存在浏览器本地 Origin Private File System 的 `.askonpage/config.json` 中，支持的修改项会自动读取这些保存值。
 
 ## 常见问题
 

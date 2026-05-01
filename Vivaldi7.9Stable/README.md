@@ -94,6 +94,7 @@
 | `AutoHidePanel.js`       | Auto-hide side panel                                            |
 | `EasyFiles.js`           | Opera-inspired file attachment via clipboard & downloads        |
 | `GlobalMediaControls.js` | Global Media Controls panel (Chrome-like)                       |
+| `ModConfig.js`           | Shared settings panel for AI keys and supported mods             |
 | `MonochromeIcons.js`     | Monochrome web panel icons to reduce visual noise               |
 | `QuickCapture.js`        | Auto-select capture area with clipboard/file/default modes      |
 | `SelectCloseTabs.js`     | Mark tabs in the tab cycler, then close them in one batch       |
@@ -184,6 +185,7 @@ To install, Just copy all the content under ./Javascripts/ to your `<YOURVIVALDI
     <script src="QuickCapture.js"></script>
     <script src="GlobalMediaControls.js"></script>
     <script src="EasyFiles.js"></script>
+    <script src="ModConfig.js"></script>
     <script src="ArcPeek.js"></script>
   </body>
 </html>
@@ -192,6 +194,26 @@ To install, Just copy all the content under ./Javascripts/ to your `<YOURVIVALDI
 3. That's it! Restart browser to see the effect. If any other issues please report it at [Issues · PaRr0tBoY/Awesome-Vivaldi](https://github.com/PaRr0tBoY/Awesome-Vivaldi/issues?q=sort%3Aupdated-desc+is%3Aissue+is%3Aopen) and I'll ~~probably~~ fix it at weekend.
 
 > Optionally, get an free OpenAI-Compatible Api Key here for AI features [cheahjs/free-llm-api-resources](https://github.com/cheahjs/free-llm-api-resources?tab=readme-ov-file#opencode-zen).
+
+### Settings Panel
+
+`ModConfig.js` adds an Awesome Vivaldi section to Vivaldi's Appearance settings page. To use it:
+
+1. Install `ModConfig.js` together with the other JavaScript mods and restart Vivaldi.
+2. Open `vivaldi:settings/appearance/`.
+3. Find the Awesome Vivaldi settings section.
+4. Use **AI Config** for the shared OpenAI-compatible endpoint, API key, model, and per-mod overrides.
+5. Use **Arc Peek** to configure Peek triggers:
+   - `Click Modifiers`: modifier keys for normal left-click Peek opening.
+   - `Long Press Buttons`: mouse buttons that open Peek after holding.
+   - `Hold Time` / `Hold Delay`: long-press timing in milliseconds.
+   - `Auto Open List`: `pin` for pinned tabs, or domain patterns such as `*.google.com`.
+   - `Foreground Mode`: blank loading layer style.
+   - `Scale Background`: whether the underlying page sinks while Peek is open.
+6. Use **Quick Capture** and **Auto Hide Panel** for their matching behavior settings.
+7. Click **Save** after changing settings. Use **Import** / **Export** to move the same config between profiles.
+
+Settings are stored in the browser's local Origin Private File System under `.askonpage/config.json`, and supported mods reload the saved values automatically.
 
 ## FAQ
 

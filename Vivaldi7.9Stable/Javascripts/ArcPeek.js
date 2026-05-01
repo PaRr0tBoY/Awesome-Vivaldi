@@ -90,6 +90,13 @@
     logSourceRectRequests: false,
     // Log split-view source rect mapping diagnostics.
     logSplitRectDiagnostics: false,
+    // Log related-tab lifecycle and open-action handoff diagnostics.
+    logOpenActions: true,
+  };
+  const PEEK_RELATED_TAB_ADOPTION_CONFIG = {
+    // Public chrome.tabs.update cannot currently detach Vivaldi related tabs into
+    // tab strip tabs; keep this disabled until an internal dispatcher path is proven.
+    enabled: false,
   };
   const MOD_CONFIG_KEY = "arcPeek";
   const MOD_CONFIG_FILE = "config.json";
@@ -171,6 +178,7 @@
       this.peekLayoutSyncQueued = false;
       this.peekLayoutObserver = null;
       this.peekResizeObserver = null;
+      window.ArcPeekDebug = this;
       this.registerPeekCloseShortcuts();
       this.registerPeekCloseGuard();
       this.initializePeekLayoutTracking();
@@ -180,6 +188,13 @@
         (url, fromPanel, rect) => this.openPeek(url, fromPanel, rect),
         ICON_CONFIG
       );
+    }
+
+    logOpenAction(stage, details = {}) {
+      if (!PEEK_DEBUG_CONFIG.logOpenActions && window.ArcPeekDebug !== this) return;
+      try {
+        console.info("[ArcPeek]", stage, details);
+      } catch (_) {}
     }
 
     checkPeekCSSSupport() {
@@ -277,6 +292,11 @@
           if (
             target?.id === "webview-container" ||
             target?.id === "browser" ||
+            target?.id === "tabs-container" ||
+            target?.id === "tabs-subcontainer" ||
+            target?.classList?.contains?.("tab-strip") ||
+            target?.classList?.contains?.("tab-position") ||
+            target?.classList?.contains?.("tab-wrapper") ||
             target?.classList?.contains?.("auto-hide-wrapper") ||
             target?.classList?.contains?.("auto-hide") ||
             target?.classList?.contains?.("auto-hide-off")
@@ -289,6 +309,7 @@
 
       this.peekLayoutObserver.observe(document.body, {
         subtree: true,
+        childList: true,
         attributes: true,
         attributeFilter: ["class", "style"],
       });
@@ -317,6 +338,7 @@
     }
 
     isPeekVisibleForCurrentTab(data) {
+      if (data?.handoffInProgress) return true;
       const ownerTabId = this.getOwningTabId(data);
       if (!Number.isFinite(ownerTabId) || ownerTabId <= 0) return true;
       return this.getActivePageTabId() === ownerTabId;
@@ -346,12 +368,106 @@
           this.shouldScaleBackgroundPage() && hasVisiblePeek
         );
       }
+      this.syncPeekTabButtons();
+    }
+
+    getTabWrapperElement(tabId) {
+      if (!Number.isFinite(Number(tabId)) || Number(tabId) <= 0) return null;
+      return document.querySelector(`.tab-wrapper[data-id="tab-${Number(tabId)}"]`);
+    }
+
+    getPeekFaviconUrl(data) {
+      const url = this.normalizePeekHistoryUrl(
+        data?.currentUrl || data?.initialUrl || ""
+      );
+      if (!url) return "";
+      return `chrome://favicon/size/16/${url}`;
+    }
+
+    syncPeekTabButtons() {
+      const expected = new Map();
+      for (const [webviewId, data] of this.webviews.entries()) {
+        if (!data || data.isDisposing) continue;
+        const ownerTabId = this.getOwningTabId(data);
+        if (!Number.isFinite(ownerTabId) || ownerTabId <= 0) continue;
+        expected.set(webviewId, { data, ownerTabId });
+      }
+
+      document.querySelectorAll(".arcpeek-tab-button").forEach((button) => {
+        const webviewId = button.getAttribute("data-arcpeek-webview-id") || "";
+        const expectedEntry = expected.get(webviewId);
+        const tabWrapper = expectedEntry
+          ? this.getTabWrapperElement(expectedEntry.ownerTabId)
+          : null;
+        if (!expectedEntry || !tabWrapper || !tabWrapper.contains(button)) {
+          button.remove();
+        }
+      });
+
+      const ownerIndexes = new Map();
+      for (const [webviewId, { data, ownerTabId }] of expected.entries()) {
+        const tabWrapper = this.getTabWrapperElement(ownerTabId);
+        if (!tabWrapper) continue;
+        const mountTarget =
+          tabWrapper.querySelector(".tab-header") ||
+          tabWrapper.querySelector(".tab") ||
+          tabWrapper;
+        const index = ownerIndexes.get(ownerTabId) || 0;
+        ownerIndexes.set(ownerTabId, index + 1);
+
+        let button = tabWrapper.querySelector(
+          `.arcpeek-tab-button[data-arcpeek-webview-id="${webviewId}"]`
+        );
+        if (!button) {
+          button = document.createElement("button");
+          button.type = "button";
+          button.className = "arcpeek-tab-button";
+          button.setAttribute("data-arcpeek-webview-id", webviewId);
+          button.setAttribute("aria-label", "Open Peek");
+          const image = document.createElement("img");
+          image.className = "arcpeek-tab-button-favicon";
+          image.alt = "";
+          image.draggable = false;
+          image.addEventListener("error", () => {
+            button.classList.add("arcpeek-tab-button-fallback");
+          });
+          button.appendChild(image);
+          button.addEventListener("pointerdown", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation?.();
+          });
+          button.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation?.();
+            this.updateTab(ownerTabId, { active: true });
+            window.setTimeout(() => {
+              this.updatePeekTabVisibility();
+              this.focusPeekWebview(webviewId);
+            }, 80);
+          });
+          mountTarget.appendChild(button);
+        } else if (button.parentElement !== mountTarget) {
+          mountTarget.appendChild(button);
+        }
+
+        const faviconUrl = this.getPeekFaviconUrl(data);
+        const image = button.querySelector(".arcpeek-tab-button-favicon");
+        if (image && faviconUrl && image.getAttribute("src") !== faviconUrl) {
+          button.classList.remove("arcpeek-tab-button-fallback");
+          image.src = faviconUrl;
+        }
+        button.style.setProperty("--arcpeek-tab-button-index", String(index));
+        button.title = this.getPeekUrl(webviewId) || data.currentUrl || "Peek";
+      }
     }
 
     syncOpenPeekLayouts() {
       this.updatePeekTabVisibility();
       this.webviews.forEach((data, webviewId) => {
         if (!data || data.isDisposing || data.closingMode) return;
+        if (data.handoffInProgress) return;
         if (!this.isPeekVisibleForCurrentTab(data)) return;
         this.syncPeekLayout(data, webviewId);
       });
@@ -670,17 +786,32 @@
     }
 
     registerPeekCloseShortcuts() {
-      const handleCloseShortcut = (event) => {
-        if (!this.webviews.size) return false;
+      const handleShortcut = (event) => {
+        const activePeekId = this.getTopVisiblePeekWebviewId();
+        if (!activePeekId) return false;
 
         const isEscape = event.key === "Escape";
+        const key = String(event.key || "").toLowerCase();
+        const hasCommandModifier = event.metaKey || event.ctrlKey;
         const isCloseTabShortcut =
-          (event.metaKey || event.ctrlKey) &&
+          hasCommandModifier &&
           !event.altKey &&
           !event.shiftKey &&
-          String(event.key).toLowerCase() === "w";
+          key === "w";
+        const isReloadShortcut =
+          hasCommandModifier &&
+          !event.altKey &&
+          !event.shiftKey &&
+          key === "r";
+        const isFindShortcut =
+          hasCommandModifier &&
+          !event.altKey &&
+          !event.shiftKey &&
+          key === "f";
 
-        if (!isEscape && !isCloseTabShortcut) return false;
+        if (!isEscape && !isCloseTabShortcut && !isReloadShortcut && !isFindShortcut) {
+          return false;
+        }
 
         if (isCloseTabShortcut) {
           this.armCloseShortcutGuard();
@@ -688,28 +819,51 @@
         event.preventDefault?.();
         event.stopPropagation?.();
         event.stopImmediatePropagation?.();
-        this.closeLastPeek();
+        if (isEscape || isCloseTabShortcut) {
+          this.closeLastPeek();
+        } else if (isReloadShortcut) {
+          this.reloadPeek(activePeekId);
+          this.focusPeekWebview(activePeekId);
+        } else if (isFindShortcut) {
+          this.focusPeekWebview(activePeekId);
+          this.startPeekFind(activePeekId);
+        }
         return true;
       };
 
-      document.addEventListener("keydown", handleCloseShortcut, true);
+      document.addEventListener("keydown", handleShortcut, true);
 
       if (
         window.vivaldi?.tabsPrivate?.onKeyboardShortcut &&
         typeof vivaldi.tabsPrivate.onKeyboardShortcut.addListener === "function"
       ) {
         vivaldi.tabsPrivate.onKeyboardShortcut.addListener((id, combination) => {
-          if (!this.webviews.size || typeof combination !== "string") return;
+          const activePeekId = this.getTopVisiblePeekWebviewId();
+          if (!activePeekId || typeof combination !== "string") return;
           const normalized = combination.toLowerCase();
           const isCloseTabShortcut =
             normalized === "cmd+w" ||
             normalized === "meta+w" ||
             normalized === "ctrl+w";
+          const isReloadShortcut =
+            normalized === "cmd+r" ||
+            normalized === "meta+r" ||
+            normalized === "ctrl+r";
+          const isFindShortcut =
+            normalized === "cmd+f" ||
+            normalized === "meta+f" ||
+            normalized === "ctrl+f";
           if (normalized === "esc" || isCloseTabShortcut) {
             if (isCloseTabShortcut) {
               this.armCloseShortcutGuard();
             }
             this.closeLastPeek();
+          } else if (isReloadShortcut) {
+            this.reloadPeek(activePeekId);
+            this.focusPeekWebview(activePeekId);
+          } else if (isFindShortcut) {
+            this.focusPeekWebview(activePeekId);
+            this.startPeekFind(activePeekId);
           }
         });
       }
@@ -802,11 +956,20 @@
     }
 
     async findPeekRuntimeTab(webviewId) {
+      const data = this.webviews.get(webviewId);
+      if (data?.relatedTabId) {
+        const tab = await this.getTab(data.relatedTabId);
+        if (!chrome.runtime.lastError && tab?.id) return tab;
+      }
       const tabs = await this.queryTabs({});
       return (
-        tabs.find((tab) =>
-          tab?.vivExtData?.includes?.(`${webviewId}tabId`)
-        ) || null
+        tabs.find((tab) => {
+          const viv = this.parseVivExtData(tab);
+          return (
+            viv?.arcPeekRuntime?.webviewId === webviewId ||
+            tab?.vivExtData?.includes?.(`${webviewId}tabId`)
+          );
+        }) || null
       );
     }
 
@@ -843,8 +1006,9 @@
       this.reconcilePeeks();
       if (!this.webviews.size) return;
 
+      const entry = this.getTopVisiblePeekEntry();
       const webviewValues = Array.from(this.webviews.values());
-      let webviewData = webviewValues.at(-1);
+      let webviewData = entry?.data || webviewValues.at(-1);
       
       if (!webviewData.fromPanel) {
         const activeWebview = document.querySelector(".active.visible.webpageview webview");
@@ -866,6 +1030,59 @@
           this.disposePeek(webviewId, { animated: true, closeRuntimeTab: true });
         }
       }
+    }
+
+    getTopVisiblePeekEntry() {
+      const entries = Array.from(this.webviews.entries());
+      for (let index = entries.length - 1; index >= 0; index -= 1) {
+        const [webviewId, data] = entries[index];
+        if (!data?.divContainer?.isConnected) continue;
+        if (data.isDisposing || data.closingMode) continue;
+        if (!this.isPeekVisibleForCurrentTab(data)) continue;
+        return { webviewId, data };
+      }
+      return null;
+    }
+
+    getTopVisiblePeekWebviewId() {
+      return this.getTopVisiblePeekEntry()?.webviewId || "";
+    }
+
+    focusPeekWebview(webviewId = this.getTopVisiblePeekWebviewId()) {
+      const data = this.webviews.get(webviewId);
+      const webview = data?.webview;
+      if (!webview?.isConnected) return false;
+
+      try {
+        data.divContainer?.focus?.({ preventScroll: true });
+      } catch (_) {}
+      try {
+        webview.focus?.();
+      } catch (_) {}
+      try {
+        webview.executeScript(
+          {
+            code: `
+              (() => {
+                try {
+                  window.focus();
+                  if (document.activeElement === document.body || !document.activeElement) {
+                    document.body?.focus?.({ preventScroll: true });
+                  }
+                  return true;
+                } catch (_) {
+                  return false;
+                }
+              })();
+            `,
+            runAt: "document_idle",
+          },
+          () => {
+            void chrome.runtime.lastError;
+          }
+        );
+      } catch (_) {}
+      return true;
     }
 
     dismissPeekInstant(webviewId) {
@@ -1077,6 +1294,9 @@
         pageStable: false,
         webviewRevealPending: false,
         webviewRevealed: false,
+        relatedTabId: null,
+        relatedPanelId: null,
+        handoffInProgress: false,
         closingMode: null,
         disableSourceCloseAnimation: false,
       });
@@ -1137,9 +1357,24 @@
       this.hideSidebarControls(sidebarControls);
 
       webview.id = webviewId;
-      webview.tab_id = `${webviewId}tabId`;
-      webview.setAttribute("src", "about:blank");
-      webview.dataset.pendingSrc = pendingUrl;
+      const runtime = await this.createPeekRuntimeTab(webviewId, pendingUrl);
+      if (runtime?.tab?.id) {
+        webview.tab_id = String(runtime.tab.id);
+        webview.setAttribute("tab_id", String(runtime.tab.id));
+        webview.setAttribute("parent_tab_id", "0");
+        webview.setAttribute("name", "vivaldi-arcpeek");
+        const currentData = this.webviews.get(webviewId);
+        if (currentData) {
+          currentData.relatedTabId = runtime.tab.id;
+          currentData.relatedPanelId = runtime.panelId;
+        }
+      } else {
+        webview.tab_id = `${webviewId}tabId`;
+        webview.setAttribute("src", "about:blank");
+      }
+      if (!runtime?.tab?.id) {
+        webview.dataset.pendingSrc = pendingUrl;
+      }
 
       const updateCurrentPeekUrl = (event, options = {}) => {
         const { fallbackToWebviewSrc = false, requireTopLevel = false } = options;
@@ -1172,6 +1407,8 @@
       });
       webview.addEventListener("loadstop", (event) => {
         updateCurrentPeekUrl(event, { fallbackToWebviewSrc: true });
+        this.installPeekWebviewShortcutGuard(webviewId);
+        this.focusPeekWebview(webviewId);
         this.syncPeekNavigationControls(webviewId);
       });
       webview.addEventListener("newwindow", (event) => {
@@ -1184,6 +1421,15 @@
         this.navigatePeekToUrl(webviewId, nextUrl);
       });
       fromPanel && webview.addEventListener("mousedown", (event) => event.stopPropagation());
+      ["pointerdown", "mousedown", "click"].forEach((eventName) => {
+        webview.addEventListener(
+          eventName,
+          () => {
+            this.focusPeekWebview(webviewId);
+          },
+          true
+        );
+      });
 
       peekContainer.setAttribute("class", "peek-container");
       peekContainer.dataset.motion = "js";
@@ -1275,6 +1521,8 @@
       peekContainer.appendChild(peekPanel);
 
       document.querySelector("#browser").appendChild(peekContainer);
+      peekContainer.tabIndex = -1;
+      window.setTimeout(() => this.focusPeekWebview(webviewId), 0);
 
       const geometry = this.applyPeekAnimationGeometry(
         peekContainer,
@@ -1712,6 +1960,172 @@
     getVivaldiWindowId() {
       const windowId = Number(window.vivaldiWindowId);
       return Number.isFinite(windowId) ? windowId : null;
+    }
+
+    buildPeekPanelId(webviewId) {
+      return `arcpeek-${webviewId}-${Date.now()}-${Math.random()
+        .toString(36)
+        .slice(2, 8)}`;
+    }
+
+    async createPeekRuntimeTab(webviewId, url) {
+      const windowId = this.getVivaldiWindowId();
+      const panelId = this.buildPeekPanelId(webviewId);
+      const vivExtData = {
+        panelId,
+        arcPeekRuntime: {
+          createdBy: "ArcPeek",
+          webviewId,
+          createdAt: Date.now(),
+        },
+      };
+      const createProperties = {
+        url,
+        active: false,
+        vivExtData: JSON.stringify(vivExtData),
+      };
+      if (windowId !== null) {
+        createProperties.windowId = windowId;
+      }
+
+      this.logOpenAction("runtime-tab:create:start", {
+        webviewId,
+        panelId,
+        url,
+        windowId,
+      });
+
+      const tab = await this.createTab(createProperties);
+      const error = chrome.runtime.lastError?.message || "";
+      this.logOpenAction("runtime-tab:create:done", {
+        webviewId,
+        panelId,
+        tabId: tab?.id || null,
+        status: tab?.status || null,
+        url: tab?.url || "",
+        error,
+      });
+
+      if (error || !tab?.id) return null;
+      return { tab, panelId };
+    }
+
+    findTabStripNode(tabId) {
+      if (!tabId) return null;
+      return (
+        document.querySelector(`.tab-wrapper[data-id="tab-${tabId}"]`) ||
+        document.querySelector(`.tab-position[data-id="tab-${tabId}"]`) ||
+        document.querySelector(`.tab[data-id="tab-${tabId}"]`) ||
+        document.querySelector(`[data-id="tab-${tabId}"]`) ||
+        document.querySelector(`[data-tab-id="${tabId}"]`)
+      );
+    }
+
+    async waitForTabStripNode(tabId, timeoutMs = 800) {
+      const startedAt = Date.now();
+      while (Date.now() - startedAt < timeoutMs) {
+        const node = this.findTabStripNode(tabId);
+        if (node) return node;
+        await new Promise((resolve) => window.setTimeout(resolve, 50));
+      }
+      return this.findTabStripNode(tabId);
+    }
+
+    async detachPeekRuntimeTab(webviewId, options = {}) {
+      const { active = true, reason = "open-action" } = options;
+      const data = this.webviews.get(webviewId);
+      const runtimeTabId = Number(data?.relatedTabId);
+      if (!runtimeTabId) {
+        this.logOpenAction("runtime-tab:detach:skip", {
+          webviewId,
+          reason,
+          message: "missing relatedTabId",
+        });
+        return null;
+      }
+
+      let before = null;
+      try {
+        before = await this.getTab(runtimeTabId);
+      } catch (_) {}
+      if (chrome.runtime.lastError || !before?.id) {
+        this.logOpenAction("runtime-tab:detach:missing", {
+          webviewId,
+          runtimeTabId,
+          reason,
+          error: chrome.runtime.lastError?.message || "",
+        });
+        return null;
+      }
+
+      const nextViv = this.parseVivExtData(before);
+      delete nextViv.panelId;
+      nextViv.arcPeekAdopted = {
+        createdBy: "ArcPeek",
+        webviewId,
+        reason,
+        adoptedAt: Date.now(),
+      };
+
+      this.logOpenAction("runtime-tab:detach:start", {
+        webviewId,
+        runtimeTabId,
+        reason,
+        active,
+        before: {
+          url: before.url,
+          status: before.status,
+          vivExtData: before.vivExtData || "",
+        },
+      });
+
+      const updated = await this.updateTab(runtimeTabId, {
+        active: !!active,
+        vivExtData: JSON.stringify(nextViv),
+      });
+      const error = chrome.runtime.lastError?.message || "";
+      await this.waitForTabStripNode(runtimeTabId);
+      let after = null;
+      try {
+        after = await this.getTab(runtimeTabId);
+      } catch (_) {}
+
+      const adopted = !!this.findTabStripNode(runtimeTabId);
+      const afterViv = this.parseVivExtData(after);
+      this.logOpenAction("runtime-tab:detach:done", {
+        webviewId,
+        runtimeTabId,
+        reason,
+        active,
+        adopted,
+        panelIdStillPresent: !!afterViv.panelId,
+        error,
+        updated: updated
+          ? {
+              id: updated.id,
+              active: updated.active,
+              status: updated.status,
+              url: updated.url,
+              vivExtData: updated.vivExtData || "",
+            }
+          : null,
+        after: after
+          ? {
+              id: after.id,
+              active: after.active,
+              status: after.status,
+              url: after.url,
+              vivExtData: after.vivExtData || "",
+            }
+          : null,
+      });
+
+      if (error || !after?.id) return null;
+      return {
+        tab: after,
+        adopted,
+        wasRelatedTab: true,
+      };
     }
 
     buildUICaptureRect(linkRect) {
@@ -2170,14 +2584,25 @@
         peekPanel.querySelector(".peek-sidebar-controls")
       );
       this.maybeRevealPeekWebview(webviewId);
+      this.focusPeekWebview(webviewId);
     }
 
-    startPeekNavigation(webview, webviewId = "") {
+    async startPeekNavigation(webview, webviewId = "") {
       const pendingSrc = webview?.dataset?.pendingSrc;
       if (!webview || !pendingSrc) return;
       const data = this.webviews.get(webviewId);
       if (data && this.isUsablePeekUrl(pendingSrc)) {
         data.currentUrl = pendingSrc;
+      }
+      if (data?.relatedTabId) {
+        this.logOpenAction("runtime-tab:navigate", {
+          webviewId,
+          tabId: data.relatedTabId,
+          url: pendingSrc,
+        });
+        await this.updateTab(data.relatedTabId, { url: pendingSrc });
+        delete webview.dataset.pendingSrc;
+        return;
       }
       webview.setAttribute("src", pendingSrc);
       webview.src = pendingSrc;
@@ -2252,6 +2677,8 @@
           await this.fadeForegroundLayerOut(currentPanel);
           this.removePreviewLayer(currentPanel);
           current.webviewRevealed = true;
+          this.installPeekWebviewShortcutGuard(webviewId);
+          this.focusPeekWebview(webviewId);
         })
         .finally(() => {
           const current = this.webviews.get(webviewId);
@@ -2259,6 +2686,43 @@
             current.webviewRevealPending = false;
           }
         });
+    }
+
+    installPeekWebviewShortcutGuard(webviewId) {
+      const data = this.webviews.get(webviewId);
+      const webview = data?.webview;
+      if (!webview?.isConnected) return;
+      try {
+        webview.executeScript(
+          {
+            code: `
+              (() => {
+                if (window.__arcPeekShortcutGuardInstalled) return true;
+                window.__arcPeekShortcutGuardInstalled = true;
+                document.addEventListener("keydown", (event) => {
+                  const key = String(event.key || "").toLowerCase();
+                  const command = event.metaKey || event.ctrlKey;
+                  if (!command || event.altKey || event.shiftKey) return;
+                  if (key !== "w" && key !== "r" && key !== "f") return;
+                  event.preventDefault();
+                  event.stopPropagation();
+                  event.stopImmediatePropagation?.();
+                  if (key === "r") {
+                    try {
+                      window.location.reload();
+                    } catch (_) {}
+                  }
+                }, true);
+                return true;
+              })();
+            `,
+            runAt: "document_start",
+          },
+          () => {
+            void chrome.runtime.lastError;
+          }
+        );
+      } catch (_) {}
     }
 
     hidePeekContent(peekPanel) {
@@ -2921,9 +3385,9 @@
       const createAction = (content, label, action, cls) => {
         const element = this.createOptionsButton(
           content,
-          () => {
+          (event) => {
             this.hideSidebarControls(controlsContainer);
-            action();
+            action(event);
           },
           `peek-sidebar-button ${cls}`
         );
@@ -2970,8 +3434,15 @@
       const createAction = (content, label, action, cls) => {
         const element = this.createOptionsButton(
           content,
-          () => {
-            action();
+          (event) => {
+            action(event);
+            const feedbackType = event?.currentTarget?.dataset?.arcpeekFeedback || "";
+            if (feedbackType === "back" || feedbackType === "forward") {
+              this.syncPeekNavigationControls(webviewId, {
+                delayDisabledButtons: [feedbackType],
+              });
+              return;
+            }
             this.syncPeekNavigationControls(webviewId);
           },
           `peek-sidebar-button ${cls}`
@@ -2984,7 +3455,10 @@
       const reloadButton = createAction(
         this.iconUtils.reload,
         "Reload",
-        () => this.reloadPeek(webviewId),
+        (event) => {
+          this.triggerButtonFeedback(event?.currentTarget, "reload");
+          this.reloadPeek(webviewId);
+        },
         "reload-button"
       );
       const menu = document.createElement("div");
@@ -2993,23 +3467,57 @@
       const backButton = createAction(
         this.iconUtils.back,
         "Back",
-        () => this.goPeekBack(webviewId),
+        (event) => {
+          this.triggerButtonFeedback(event?.currentTarget, "back");
+          this.goPeekBack(webviewId);
+        },
         "back-button"
       );
+      backButton.dataset.arcpeekFeedback = "back";
       const forwardButton = createAction(
         this.iconUtils.forward,
         "Forward",
-        () => this.goPeekForward(webviewId),
+        (event) => {
+          this.triggerButtonFeedback(event?.currentTarget, "forward");
+          this.goPeekForward(webviewId);
+        },
         "forward-button"
       );
-      backButton.hidden = true;
-      forwardButton.hidden = true;
+      forwardButton.dataset.arcpeekFeedback = "forward";
+      backButton.disabled = true;
+      forwardButton.disabled = true;
 
       menu.appendChild(backButton);
       menu.appendChild(forwardButton);
       group.appendChild(reloadButton);
       group.appendChild(menu);
       return group;
+    }
+
+    triggerButtonFeedback(button, type) {
+      if (!button) return;
+      const className = `arcpeek-feedback-${type}`;
+      button.classList.remove(className);
+      void button.offsetWidth;
+      button.classList.add(className);
+      const duration = this.getButtonFeedbackDuration(type);
+      window.setTimeout(() => {
+        button.classList.remove(className);
+      }, duration);
+    }
+
+    triggerCopyButtonFeedback(button) {
+      if (!button) return;
+      const originalIcon = button.dataset.originalIcon || button.innerHTML;
+      button.dataset.originalIcon = originalIcon;
+      this.triggerButtonFeedback(button, "copy");
+      button.innerHTML = this.iconUtils.check;
+      window.clearTimeout(button._arcPeekCopyFeedbackTimer);
+      button._arcPeekCopyFeedbackTimer = window.setTimeout(() => {
+        if (!button.isConnected) return;
+        button.innerHTML = button.dataset.originalIcon || originalIcon;
+        button.classList.remove("arcpeek-feedback-copy");
+      }, 1200);
     }
 
     hideSidebarControls(container) {
@@ -3039,10 +3547,19 @@
       });
       const invoke = (event) => {
         if (actionTriggered) return;
+        if (button.disabled) {
+          event.preventDefault();
+          event.stopPropagation();
+          event.stopImmediatePropagation?.();
+          return;
+        }
         actionTriggered = true;
         event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation?.();
+        if (button.classList.contains("copy-link-button")) {
+          this.triggerCopyButtonFeedback(button);
+        }
         clickListenerCallback(event);
         resetTriggerState();
       };
@@ -3186,6 +3703,253 @@
       return this.copyTextToClipboard(url);
     }
 
+    async animatePeekExpandToViewport(webviewId) {
+      const data = this.webviews.get(webviewId);
+      if (!data) return null;
+      const activeWebview = document.querySelector(".active.visible.webpageview webview");
+      const targetRect = this.getPeekViewportRect(activeWebview);
+      await this.animatePeekPanelToRect(webviewId, targetRect, {
+        durationMs: 340,
+        stage: "expand",
+      });
+      return targetRect;
+    }
+
+    getTabbarDockInfo() {
+      const tabbar = document.getElementById("tabs-tabbar-container");
+      const rect = tabbar?.getBoundingClientRect?.();
+      const classList = tabbar?.classList;
+      const side =
+        classList?.contains("right")
+          ? "right"
+          : classList?.contains("left")
+            ? "left"
+            : classList?.contains("bottom")
+              ? "bottom"
+              : "top";
+      return {
+        element: tabbar || null,
+        rect: rect?.width && rect?.height ? this.rectToPlainObject(rect) : null,
+        side,
+      };
+    }
+
+    getBackgroundTabHandoffRect(panelRect) {
+      const dock = this.getTabbarDockInfo();
+      const width = Math.max(96, Math.min(panelRect.width * 0.24, 220));
+      const height = Math.max(72, Math.min(panelRect.height * 0.18, 180));
+      const tabbarRect = dock.rect;
+      const viewportWidth = window.innerWidth || document.documentElement.clientWidth || panelRect.right;
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight || panelRect.bottom;
+      const centerX = tabbarRect ? tabbarRect.left + tabbarRect.width / 2 : viewportWidth / 2;
+      const centerY = tabbarRect ? tabbarRect.top + tabbarRect.height / 2 : viewportHeight / 2;
+
+      if (dock.side === "right") {
+        return {
+          left: (tabbarRect?.left || viewportWidth) + Math.min(36, width * 0.28),
+          top: centerY - height / 2,
+          width,
+          height,
+        };
+      }
+      if (dock.side === "left") {
+        return {
+          left: (tabbarRect?.right || 0) - width - Math.min(36, width * 0.28),
+          top: centerY - height / 2,
+          width,
+          height,
+        };
+      }
+      if (dock.side === "bottom") {
+        return {
+          left: centerX - width / 2,
+          top: (tabbarRect?.top || viewportHeight) + Math.min(28, height * 0.24),
+          width,
+          height,
+        };
+      }
+      return {
+        left: centerX - width / 2,
+        top: (tabbarRect?.bottom || 0) - height - Math.min(28, height * 0.24),
+        width,
+        height,
+      };
+    }
+
+    getSplitHandoffRect() {
+      const activeWebview = document.querySelector(".active.visible.webpageview webview");
+      const viewportRect = this.getPeekViewportRect(activeWebview);
+      if (!viewportRect?.width || !viewportRect?.height) return null;
+      return {
+        left: Math.round(viewportRect.left + viewportRect.width / 2),
+        top: Math.round(viewportRect.top),
+        width: Math.max(1, Math.round(viewportRect.width / 2)),
+        height: Math.max(1, Math.round(viewportRect.height)),
+      };
+    }
+
+    async animatePeekPanelToRect(webviewId, targetRect, options = {}) {
+      const {
+        durationMs = 300,
+        easing = "cubic-bezier(0.16, 0.88, 0.22, 1)",
+        fadeOut = false,
+        borderRadius = "0",
+        boxShadow = "none",
+        stage = "handoff",
+      } = options;
+      const data = this.webviews.get(webviewId);
+      const peekContainer = data?.divContainer;
+      const peekPanel = peekContainer?.querySelector(".peek-panel");
+      if (!data || !peekContainer || !peekPanel || !targetRect) return null;
+
+      const currentRect = peekPanel.getBoundingClientRect();
+      if (!currentRect?.width || !currentRect?.height) return null;
+      data.handoffInProgress = true;
+      data.disableSourceCloseAnimation = true;
+      peekPanel.getAnimations?.().forEach((animation) => animation.cancel());
+      peekPanel.removeAttribute("data-has-finished-animation");
+      peekPanel.style.position = "fixed";
+      peekPanel.style.left = `${currentRect.left}px`;
+      peekPanel.style.top = `${currentRect.top}px`;
+      peekPanel.style.width = `${currentRect.width}px`;
+      peekPanel.style.height = `${currentRect.height}px`;
+      peekPanel.style.margin = "0";
+      peekPanel.style.right = "auto";
+      peekPanel.style.bottom = "auto";
+      peekPanel.style.transform = "none";
+      peekPanel.style.transformOrigin = "center center";
+      peekPanel.style.transition = "none";
+      peekPanel.style.opacity = "1";
+      void peekPanel.offsetWidth;
+
+      peekContainer.classList.add("expanding-to-tab");
+      peekContainer.style.pointerEvents = "none";
+      if (this.shouldScaleBackgroundPage()) {
+        document.body.classList.remove("peek-open");
+      }
+      this.updatePeekTabVisibility();
+      await this.waitForAnimationFrames(2);
+
+      this.logOpenAction(`open-action:${stage}:animation:start`, {
+        webviewId,
+        currentRect: this.rectToPlainObject(currentRect),
+        targetRect,
+      });
+
+      const keyframes = [
+        {
+          left: `${currentRect.left}px`,
+          top: `${currentRect.top}px`,
+          width: `${currentRect.width}px`,
+          height: `${currentRect.height}px`,
+          opacity: 1,
+          borderRadius: getComputedStyle(peekPanel).borderRadius,
+          boxShadow: getComputedStyle(peekPanel).boxShadow,
+        },
+        {
+          left: `${targetRect.left}px`,
+          top: `${targetRect.top}px`,
+          width: `${targetRect.width}px`,
+          height: `${targetRect.height}px`,
+          opacity: fadeOut ? 0 : 1,
+          borderRadius,
+          boxShadow,
+        },
+      ];
+
+      try {
+        const animation = peekPanel.animate(keyframes, {
+          duration: durationMs,
+          easing,
+          fill: "forwards",
+        });
+        await animation.finished;
+      } catch (_) {
+      } finally {
+        peekPanel.style.left = `${targetRect.left}px`;
+        peekPanel.style.top = `${targetRect.top}px`;
+        peekPanel.style.width = `${targetRect.width}px`;
+        peekPanel.style.height = `${targetRect.height}px`;
+        peekPanel.style.opacity = fadeOut ? "0" : "1";
+        peekPanel.style.borderRadius = borderRadius;
+        peekPanel.style.boxShadow = boxShadow;
+        peekPanel.style.transition = "none";
+      }
+
+      this.logOpenAction(`open-action:${stage}:animation:done`, { webviewId });
+      return targetRect;
+    }
+
+    async createHandoffSnapshotOverlay(rect, options = {}) {
+      const { label = "handoff", tabId = null } = options;
+      if (!rect?.width || !rect?.height) return null;
+      let dataUrl = null;
+      try {
+        dataUrl = await this.captureUIArea({
+          left: Math.max(0, Math.round(rect.left)),
+          top: Math.max(0, Math.round(rect.top)),
+          width: Math.max(1, Math.round(rect.width)),
+          height: Math.max(1, Math.round(rect.height)),
+        });
+      } catch (error) {
+        this.logOpenAction("open-action:snapshot:capture-failed", {
+          label,
+          tabId,
+          message: error?.message || String(error),
+        });
+        return null;
+      }
+      if (!dataUrl) return null;
+
+      const overlay = document.createElement("div");
+      overlay.className = "arcpeek-handoff-snapshot";
+      overlay.dataset.arcpeekSnapshot = label;
+      if (tabId) overlay.dataset.tabId = String(tabId);
+      overlay.style.position = "fixed";
+      overlay.style.left = `${Math.round(rect.left)}px`;
+      overlay.style.top = `${Math.round(rect.top)}px`;
+      overlay.style.width = `${Math.max(1, Math.round(rect.width))}px`;
+      overlay.style.height = `${Math.max(1, Math.round(rect.height))}px`;
+      overlay.style.zIndex = "2147483000";
+      overlay.style.pointerEvents = "none";
+      overlay.style.backgroundImage = `url("${dataUrl}")`;
+      overlay.style.backgroundSize = "100% 100%";
+      overlay.style.backgroundRepeat = "no-repeat";
+      overlay.style.backgroundPosition = "center";
+      overlay.style.opacity = "1";
+      overlay.style.transition = "opacity 160ms ease";
+      overlay.style.contain = "layout paint style";
+      document.getElementById("browser")?.appendChild(overlay);
+      this.logOpenAction("open-action:snapshot:created", {
+        label,
+        tabId,
+        rect,
+      });
+      return overlay;
+    }
+
+    releaseHandoffSnapshotOverlay(overlay) {
+      if (!overlay?.isConnected) return;
+      overlay.style.opacity = "0";
+      window.setTimeout(() => overlay.remove(), 180);
+    }
+
+    async holdSnapshotUntilTabReady(overlay, tabId, options = {}) {
+      const { timeoutMs = 9000, minHoldMs = 180 } = options;
+      if (!overlay) return;
+      const startedAt = Date.now();
+      if (tabId) {
+        await this.waitForTabComplete(tabId, timeoutMs);
+      } else {
+        await new Promise((resolve) => window.setTimeout(resolve, minHoldMs));
+      }
+      const elapsed = Date.now() - startedAt;
+      if (elapsed < minHoldMs) {
+        await new Promise((resolve) => window.setTimeout(resolve, minHoldMs - elapsed));
+      }
+      this.releaseHandoffSnapshotOverlay(overlay);
+    }
+
     navigatePeekToUrl(webviewId, url, options = {}) {
       const { recordHistory = true } = options;
       const nextUrl = String(url || "").trim();
@@ -3217,10 +3981,21 @@
       return false;
     }
 
-    syncPeekNavigationControls(webviewId) {
+    getButtonFeedbackDuration(type) {
+      if (type === "copy") return 1200;
+      if (type === "reload") return 780;
+      if (type === "back" || type === "forward") return 520;
+      return 520;
+    }
+
+    syncPeekNavigationControls(webviewId, options = {}) {
       const data = this.webviews.get(webviewId);
       const container = data?.divContainer;
       if (!container?.isConnected) return;
+      const delayed = new Set([
+        ...(data.navigationDisableDelayDirections || []),
+        ...(options.delayDisabledButtons || []),
+      ]);
 
       const navigationGroup = container.querySelector(
         `.peek-navigation-actions[data-peek-webview-id="${webviewId}"]`
@@ -3229,8 +4004,22 @@
 
       const backButton = navigationGroup.querySelector(".back-button");
       const forwardButton = navigationGroup.querySelector(".forward-button");
-      if (backButton) backButton.hidden = !this.canNavigatePeek(webviewId, "back");
-      if (forwardButton) forwardButton.hidden = !this.canNavigatePeek(webviewId, "forward");
+      const applyButtonState = (button, direction) => {
+        if (!button) return;
+        window.clearTimeout(button._arcPeekDelayedDisableTimer);
+        const shouldDisable = !this.canNavigatePeek(webviewId, direction);
+        if (!shouldDisable || !delayed.has(direction)) {
+          button.disabled = shouldDisable;
+          return;
+        }
+        button.disabled = false;
+        button._arcPeekDelayedDisableTimer = window.setTimeout(() => {
+          data.navigationDisableDelayDirections?.delete(direction);
+          button.disabled = !this.canNavigatePeek(webviewId, direction);
+        }, this.getButtonFeedbackDuration(direction));
+      };
+      applyButtonState(backButton, "back");
+      applyButtonState(forwardButton, "forward");
     }
 
     reloadPeek(webviewId) {
@@ -3248,10 +4037,31 @@
       if (url) this.navigatePeekToUrl(webviewId, url);
     }
 
+    startPeekFind(webviewId) {
+      const webview = this.webviews.get(webviewId)?.webview;
+      if (!webview?.isConnected) return false;
+      try {
+        if (typeof webview.find === "function") {
+          webview.find("", { findNext: false }, () => {
+            void chrome.runtime.lastError;
+          });
+          return true;
+        }
+      } catch (_) {}
+      this.logOpenAction("shortcut:find:blocked", {
+        webviewId,
+        message: "No reliable peek find UI is available; shortcut was intercepted to protect the source tab.",
+      });
+      return false;
+    }
+
     goPeekBack(webviewId) {
       const data = this.webviews.get(webviewId);
       if (!data || !this.canNavigatePeek(webviewId, "back")) return;
 
+      data.navigationDisableDelayDirections =
+        data.navigationDisableDelayDirections || new Set();
+      data.navigationDisableDelayDirections.add("back");
       data.navigationIndex -= 1;
       const targetUrl = data.navigationHistory[data.navigationIndex];
       if (targetUrl) this.navigatePeekToUrl(webviewId, targetUrl, { recordHistory: false });
@@ -3261,76 +4071,84 @@
       const data = this.webviews.get(webviewId);
       if (!data || !this.canNavigatePeek(webviewId, "forward")) return;
 
+      data.navigationDisableDelayDirections =
+        data.navigationDisableDelayDirections || new Set();
+      data.navigationDisableDelayDirections.add("forward");
       data.navigationIndex += 1;
       const targetUrl = data.navigationHistory[data.navigationIndex];
       if (targetUrl) this.navigatePeekToUrl(webviewId, targetUrl, { recordHistory: false });
     }
 
-    openNewTab(webviewId, active) {
+    async openNewTab(webviewId, active) {
       const url = this.getPeekUrl(webviewId);
       if (!url) return;
 
+      this.logOpenAction("open-action:new-tab:start", {
+        webviewId,
+        active,
+        url,
+        relatedTabId: this.webviews.get(webviewId)?.relatedTabId || null,
+      });
+
       if (!active) {
-        chrome.tabs.create({ url: url, active: false });
-        this.disposePeek(webviewId, { animated: true, closeRuntimeTab: true });
+        const adopted = PEEK_RELATED_TAB_ADOPTION_CONFIG.enabled
+          ? await this.detachPeekRuntimeTab(webviewId, {
+              active: false,
+              reason: "background-tab",
+            })
+          : null;
+        if (adopted?.adopted && adopted?.tab?.id) {
+          await this.disposePeek(webviewId, { animated: false, closeRuntimeTab: false });
+          return;
+        }
+        const tab = await this.createTab({ url: url, active: false });
+        this.logOpenAction("open-action:new-tab:fallback-create", {
+          webviewId,
+          active,
+          tabId: tab?.id || null,
+          error: chrome.runtime.lastError?.message || "",
+        });
+        const panelRect = this.webviews.get(webviewId)?.divContainer
+          ?.querySelector(".peek-panel")
+          ?.getBoundingClientRect?.();
+        const targetRect = panelRect ? this.getBackgroundTabHandoffRect(panelRect) : null;
+        await this.animatePeekPanelToRect(webviewId, targetRect, {
+          durationMs: 440,
+          fadeOut: true,
+          borderRadius: "12px",
+          stage: "background-tab",
+        });
+        await this.disposePeek(webviewId, { animated: false, closeRuntimeTab: true });
         return;
       }
 
       const data = this.webviews.get(webviewId);
       if (!data) return;
 
-      const peekContainer = data.divContainer;
-      const peekPanel = peekContainer.querySelector(".peek-panel");
-      if (!peekPanel) return;
-      data.disableSourceCloseAnimation = true;
-      
-      peekContainer.classList.add("expanding-to-tab");
-      peekContainer.style.pointerEvents = "auto";
-      if (this.shouldScaleBackgroundPage()) {
-        document.body.classList.remove("peek-open");
-      }
-
-      let activeWebview = document.querySelector(".active.visible.webpageview webview");
-      const targetRect = this.getPeekViewportRect(activeWebview);
-      const expandDurationMs = 300;
-      if (targetRect) {
-        const currentRect = peekPanel.getBoundingClientRect();
-        const easing = "cubic-bezier(0.2, 0.8, 0.2, 1)";
-
-        // Lock the current on-screen box first, then interpolate to the tab viewport.
-        peekPanel.getAnimations?.().forEach((animation) => animation.cancel());
-        peekPanel.style.position = "fixed";
-        peekPanel.style.left = `${currentRect.left}px`;
-        peekPanel.style.top = `${currentRect.top}px`;
-        peekPanel.style.width = `${currentRect.width}px`;
-        peekPanel.style.height = `${currentRect.height}px`;
-        peekPanel.style.margin = "0";
-        peekPanel.style.right = "auto";
-        peekPanel.style.bottom = "auto";
-        peekPanel.style.transform = "none";
-        peekPanel.style.transition = "none";
-        void peekPanel.offsetWidth;
-        peekPanel.style.transition =
-          [
-            `left ${expandDurationMs}ms ${easing}`,
-            `top ${expandDurationMs}ms ${easing}`,
-            `width ${expandDurationMs}ms ${easing}`,
-            `height ${expandDurationMs}ms ${easing}`,
-          ].join(", ");
-        requestAnimationFrame(() => {
-          peekPanel.style.left = `${targetRect.left}px`;
-          peekPanel.style.top = `${targetRect.top}px`;
-          peekPanel.style.width = `${targetRect.width}px`;
-          peekPanel.style.height = `${targetRect.height}px`;
-        });
-      }
-
-      chrome.tabs.create({ url: url, active: true }, async (tab) => {
-        if (tab?.id) {
-          await this.waitForTabComplete(tab.id);
-        }
-        this.dismissPeekInstant(webviewId);
+      const targetRect = await this.animatePeekExpandToViewport(webviewId);
+      const overlay = await this.createHandoffSnapshotOverlay(targetRect, {
+        label: "new-tab",
       });
+      const adopted = PEEK_RELATED_TAB_ADOPTION_CONFIG.enabled
+        ? await this.detachPeekRuntimeTab(webviewId, {
+            active: true,
+            reason: "foreground-tab",
+          })
+          : null;
+      if (adopted?.adopted && adopted?.tab?.id) {
+        await this.disposePeek(webviewId, { animated: false, closeRuntimeTab: false });
+        void this.holdSnapshotUntilTabReady(overlay, adopted.tab.id);
+        return;
+      }
+      const tab = await this.createTab({ url: url, active: true });
+      this.logOpenAction("open-action:new-tab:fallback-create", {
+        webviewId,
+        active,
+        tabId: tab?.id || null,
+        error: chrome.runtime.lastError?.message || "",
+      });
+      await this.disposePeek(webviewId, { animated: false, closeRuntimeTab: true });
+      void this.holdSnapshotUntilTabReady(overlay, tab?.id || null);
     }
 
     async openInSourceTab(webviewId) {
@@ -3343,12 +4161,29 @@
       const sourceTabId = this.getOwningTabId(data);
       if (!sourceTabId) return;
 
-      const closePromise = this.disposePeek(webviewId, {
-        animated: true,
-        closeRuntimeTab: true,
+      this.logOpenAction("open-action:source-tab:start", {
+        webviewId,
+        sourceTabId,
+        relatedTabId: data.relatedTabId || null,
+        url,
+      });
+
+      const targetRect = await this.animatePeekExpandToViewport(webviewId);
+      const overlay = await this.createHandoffSnapshotOverlay(targetRect, {
+        label: "source-tab",
+        tabId: sourceTabId,
       });
       await this.updateTab(sourceTabId, { url, active: true });
-      await closePromise;
+      this.logOpenAction("open-action:source-tab:update-source", {
+        webviewId,
+        sourceTabId,
+        error: chrome.runtime.lastError?.message || "",
+      });
+      await this.disposePeek(webviewId, {
+        animated: false,
+        closeRuntimeTab: true,
+      });
+      void this.holdSnapshotUntilTabReady(overlay, sourceTabId);
     }
 
     isArcPeekSplitTab(tab, ownerTabId = null) {
@@ -3377,6 +4212,11 @@
       if (data) {
         data.disableSourceCloseAnimation = true;
       }
+      this.logOpenAction("open-action:split:start", {
+        webviewId,
+        relatedTabId: data?.relatedTabId || null,
+        url,
+      });
 
       try {
         const [currentTab] = await this.queryTabs({ active: true, currentWindow: true });
@@ -3388,16 +4228,33 @@
 
         await this.closeArcPeekSplitTabs(currentFresh.id);
 
-        const newTab = await this.createTab({
-          url,
-          active: true,
-          index: typeof currentFresh.index === "number" ? currentFresh.index + 1 : undefined,
-          openerTabId: currentFresh.id,
+        const splitTargetRect = this.getSplitHandoffRect();
+        const animationPromise = this.animatePeekPanelToRect(webviewId, splitTargetRect, {
+          durationMs: 320,
+          borderRadius: "0",
+          stage: "split",
         });
+        const adopted = PEEK_RELATED_TAB_ADOPTION_CONFIG.enabled
+          ? await this.detachPeekRuntimeTab(webviewId, {
+              active: true,
+              reason: "split-tab",
+            })
+          : null;
+        let newTab = adopted?.adopted ? adopted.tab : null;
+        if (!newTab?.id) {
+          newTab = await this.createTab({
+            url,
+            active: true,
+            index: typeof currentFresh.index === "number" ? currentFresh.index + 1 : undefined,
+            openerTabId: currentFresh.id,
+          });
+          this.logOpenAction("open-action:split:fallback-create", {
+            webviewId,
+            tabId: newTab?.id || null,
+            error: chrome.runtime.lastError?.message || "",
+          });
+        }
         if (!newTab?.id) return;
-
-        // Remove the peek as soon as the split tab exists; the tiling metadata can finish in background.
-        this.dismissPeekInstant(webviewId);
 
         await Promise.all([
           this.updateTabVivExtData(currentFresh.id, (viv) => ({
@@ -3419,7 +4276,28 @@
           this.updateTab(currentFresh.id, { active: true, highlighted: true }),
           this.updateTab(newTab.id, { highlighted: true }),
         ]);
-      } catch (_) {}
+        await animationPromise;
+        const overlay = await this.createHandoffSnapshotOverlay(splitTargetRect, {
+          label: "split-tab",
+          tabId: newTab.id,
+        });
+        await this.disposePeek(webviewId, {
+          animated: false,
+          closeRuntimeTab: !adopted?.adopted,
+        });
+        void this.holdSnapshotUntilTabReady(overlay, newTab.id);
+        this.logOpenAction("open-action:split:done", {
+          webviewId,
+          sourceTabId: currentFresh.id,
+          splitTabId: newTab.id,
+          adopted: !!adopted?.adopted,
+        });
+      } catch (error) {
+        this.logOpenAction("open-action:split:error", {
+          webviewId,
+          message: error?.message || String(error),
+        });
+      }
     }
   }
 
@@ -4271,6 +5149,7 @@
       openHere: '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M200-120q-33 0-56.5-23.5T120-200v-120h80v120h560v-480H200v120h-80v-200q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm260-140-56-56 83-84H120v-80h367l-83-84 56-56 180 180-180 180Z"/></svg>',
       backgroundTab: '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M320-80q-33 0-56.5-23.5T240-160v-80h-80q-33 0-56.5-23.5T80-320v-80h80v80h80v-320q0-33 23.5-56.5T320-720h320v-80h-80v-80h80q33 0 56.5 23.5T720-800v80h80q33 0 56.5 23.5T880-640v480q0 33-23.5 56.5T800-80H320Zm0-80h480v-480H320v480ZM80-480v-160h80v160H80Zm0-240v-80q0-33 23.5-56.5T160-880h80v80h-80v80H80Zm240-80v-80h160v80H320Zm0 640v-480 480Z"/></svg>',
       copyLink: '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" style="padding:3;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link2-icon lucide-link-2"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></svg>',
+      check: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" style="padding:3;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon"><path d="M20 6 9 17l-5-5"/></svg>',
     };
 
     static VIVALDI_BUTTONS = [
@@ -4323,6 +5202,7 @@
     get openHere() { return this.getIcon("openHere"); }
     get backgroundTab() { return this.getIcon("backgroundTab"); }
     get copyLink() { return this.getIcon("copyLink"); }
+    get check() { return this.getIcon("check"); }
   }
 
   function bootstrapPeekMod() {
