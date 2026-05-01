@@ -25,6 +25,45 @@
     showFileInPath: true,
     saveFilePattern: '',
   };
+  const MOD_CONFIG_KEY = 'quickCapture';
+  const MOD_CONFIG_FILE = 'config.json';
+  const MOD_CONFIG_DIR = '.askonpage';
+
+  function applySharedModConfig(raw) {
+    const source = raw?.mods?.[MOD_CONFIG_KEY] && typeof raw.mods[MOD_CONFIG_KEY] === 'object'
+      ? raw.mods[MOD_CONFIG_KEY]
+      : {};
+    if (typeof source.mode === 'string') {
+      QUICK_CAPTURE_CONFIG.mode = source.mode;
+    }
+    if (typeof source.encodeFormat === 'string') {
+      QUICK_CAPTURE_CONFIG.encodeFormat = source.encodeFormat;
+    }
+    if (Number.isFinite(Number(source.encodeQuality))) {
+      QUICK_CAPTURE_CONFIG.encodeQuality = Number(source.encodeQuality);
+    }
+    if (typeof source.showFileInPath === 'boolean') {
+      QUICK_CAPTURE_CONFIG.showFileInPath = source.showFileInPath;
+    }
+    if (typeof source.saveFilePattern === 'string') {
+      QUICK_CAPTURE_CONFIG.saveFilePattern = source.saveFilePattern;
+    }
+  }
+
+  async function loadSharedModConfig() {
+    try {
+      const root = await navigator.storage.getDirectory();
+      const dir = await root.getDirectoryHandle(MOD_CONFIG_DIR, { create: true });
+      const fileHandle = await dir.getFileHandle(MOD_CONFIG_FILE, { create: false });
+      const file = await fileHandle.getFile();
+      applySharedModConfig(JSON.parse(await file.text()));
+    } catch (_error) {}
+  }
+
+  loadSharedModConfig();
+  window.addEventListener('vivaldi-mod-config-updated', (event) => {
+    applySharedModConfig(event.detail || {});
+  });
 
   const CAPTURE_MODES = new Set(['clipboard', 'file', 'default']);
 

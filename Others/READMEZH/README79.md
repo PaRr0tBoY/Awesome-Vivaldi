@@ -101,7 +101,7 @@
 | `TidyTabs.js`            | AI 标签分组 _（配合 `TidyTabs.css`）_            |
 | `TidyTitles.js`          | AI 标签标题清理                                  |
 | `WorkspaceTabManager.js` | Workspace Board 面板，用来查看和管理工作区标签   |
-| `YbAddressBar.js`        | 地址栏增强（有 bug）                             |
+| `VividAddress.js`        | 将地址栏可见后缀改写为 AI 生成的 slug            |
 
 ## 如何安装
 
@@ -181,7 +181,7 @@ Vivaldi 中你唯一需要修改的文件是 window.html，它位于：
     <script src="AskInPage.js"></script>
     <script src="TabScroll.js"></script>
     <script src="MonochromeIcons.js"></script>
-    <script src="YbAddressBar.js"></script>
+    <script src="VividAddress.js"></script>
     <script src="QuickCapture.js"></script>
     <script src="GlobalMediaControls.js"></script>
     <script src="EasyFiles.js"></script>

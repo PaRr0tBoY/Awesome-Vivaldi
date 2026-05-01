@@ -281,6 +281,17 @@ body.peek-open #browser #webpage-stack {
   height: 20px;
 }
 
+.peek-container .peek-sidebar-button.copy-link-button svg,
+.peek-container .peek-sidebar-button.copy-link-button svg * {
+  fill: none;
+  stroke: currentColor;
+}
+
+.peek-container .peek-sidebar-button.copy-link-button svg {
+  width: 26px;
+  height: 26px;
+}
+
 .peek-container .peek-sidebar-button:hover {
   transform: scale(1.08);
   background: color-mix(in srgb, var(--colorBgIntense) 82%, white 18%);

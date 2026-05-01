@@ -35,6 +35,38 @@
     temperature: 0.1,
     maxTokens: 1000,
   };
+  const MOD_AI_CONFIG_KEY = "tidyDownloads";
+  const MOD_AI_CONFIG_FILE = "config.json";
+  const MOD_AI_CONFIG_DIR = ".askonpage";
+
+  function applySharedAiConfig(raw) {
+    const aiRoot = raw?.ai && typeof raw.ai === "object" ? raw.ai : raw || {};
+    const base = aiRoot.default && typeof aiRoot.default === "object" ? aiRoot.default : aiRoot;
+    const override = aiRoot.overrides?.[MOD_AI_CONFIG_KEY] && typeof aiRoot.overrides[MOD_AI_CONFIG_KEY] === "object"
+      ? aiRoot.overrides[MOD_AI_CONFIG_KEY]
+      : {};
+    const source = Object.assign({}, base, override);
+    ["apiEndpoint", "apiKey", "model"].forEach((key) => {
+      if (typeof source[key] === "string") {
+        AI_CONFIG[key] = source[key].trim();
+      }
+    });
+  }
+
+  async function loadSharedAiConfig() {
+    try {
+      const root = await navigator.storage.getDirectory();
+      const dir = await root.getDirectoryHandle(MOD_AI_CONFIG_DIR, { create: true });
+      const fileHandle = await dir.getFileHandle(MOD_AI_CONFIG_FILE, { create: false });
+      const file = await fileHandle.getFile();
+      applySharedAiConfig(JSON.parse(await file.text()));
+    } catch (_error) {}
+  }
+
+  loadSharedAiConfig();
+  window.addEventListener("vivaldi-mod-ai-config-updated", (event) => {
+    applySharedAiConfig(event.detail || {});
+  });
 
   // ==================== Script Configuration ====================
   const CONFIG = {

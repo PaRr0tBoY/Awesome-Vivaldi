@@ -28,6 +28,41 @@
     // Delay time before closing the panel in fixed display mode (milliseconds)
     close_delay_fixed: 3000,
   };
+  const MOD_CONFIG_KEY = "autoHidePanel";
+  const MOD_CONFIG_FILE = "config.json";
+  const MOD_CONFIG_DIR = ".askonpage";
+
+  function applySharedModConfig(raw) {
+    const source = raw?.mods?.[MOD_CONFIG_KEY] && typeof raw.mods[MOD_CONFIG_KEY] === "object"
+      ? raw.mods[MOD_CONFIG_KEY]
+      : {};
+    ["auto_close", "close_fixed"].forEach((key) => {
+      if (typeof source[key] === "boolean") {
+        config[key] = source[key];
+      }
+    });
+    ["open_delay", "switch_delay", "close_delay", "close_delay_fixed"].forEach((key) => {
+      const value = Number(source[key]);
+      if (Number.isFinite(value)) {
+        config[key] = value;
+      }
+    });
+  }
+
+  async function loadSharedModConfig() {
+    try {
+      const root = await navigator.storage.getDirectory();
+      const dir = await root.getDirectoryHandle(MOD_CONFIG_DIR, { create: true });
+      const fileHandle = await dir.getFileHandle(MOD_CONFIG_FILE, { create: false });
+      const file = await fileHandle.getFile();
+      applySharedModConfig(JSON.parse(await file.text()));
+    } catch (_error) {}
+  }
+
+  await loadSharedModConfig();
+  window.addEventListener("vivaldi-mod-config-updated", (event) => {
+    applySharedModConfig(event.detail || {});
+  });
 
   const addStyleSheet = (css) => {
     const styleSheet = new CSSStyleSheet();
@@ -101,6 +136,7 @@
   };
 
   const closePanel = () => {
+    if (!config.auto_close) return;
     if (!config.close_fixed && !isOverlayPanel()) return;
 
     cancelClosePanel();
@@ -147,20 +183,18 @@
       }
     };
 
-    if (config.auto_close) {
-      const panelsContainer = document.querySelector("#panels-container");
-      const webviewContainer = document.querySelector("#webview-container");
-      panelsContainer.addEventListener("mouseenter", cancelClosePanel);
-      webviewContainer.addEventListener("mouseenter", closePanel);
-      webviewContainer.addEventListener("animationstart", (event) => {
-        if (
-          event.target.matches("webview") &&
-          event.animationName === "delay_visibility"
-        ) {
-          closePanel();
-        }
-      });
-    }
+    const panelsContainer = document.querySelector("#panels-container");
+    const webviewContainer = document.querySelector("#webview-container");
+    panelsContainer.addEventListener("mouseenter", cancelClosePanel);
+    webviewContainer.addEventListener("mouseenter", closePanel);
+    webviewContainer.addEventListener("animationstart", (event) => {
+      if (
+        event.target.matches("webview") &&
+        event.animationName === "delay_visibility"
+      ) {
+        closePanel();
+      }
+    });
 
     const panels = document.querySelector("#panels");
     panels.addEventListener("mouseenter", eventHandler, { capture: true });

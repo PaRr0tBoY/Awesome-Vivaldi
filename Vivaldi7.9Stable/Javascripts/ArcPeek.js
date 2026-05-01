@@ -7,7 +7,7 @@
 // @website      https://forum.vivaldi.net/post/897615
 // ==/UserScript==
 
-(() => {
+(async () => {
   // =========================
   // Trigger Config
   // =========================
@@ -91,6 +91,55 @@
     // Log split-view source rect mapping diagnostics.
     logSplitRectDiagnostics: false,
   };
+  const MOD_CONFIG_KEY = "arcPeek";
+  const MOD_CONFIG_FILE = "config.json";
+  const MOD_CONFIG_DIR = ".askonpage";
+
+  function normalizeList(value, fallback) {
+    if (Array.isArray(value)) {
+      return value.map((item) => String(item).trim()).filter(Boolean);
+    }
+    if (typeof value === "string") {
+      return value.split(/[\n,]/).map((item) => item.trim()).filter(Boolean);
+    }
+    return fallback;
+  }
+
+  function applySharedModConfig(raw) {
+    const source = raw?.mods?.[MOD_CONFIG_KEY] && typeof raw.mods[MOD_CONFIG_KEY] === "object"
+      ? raw.mods[MOD_CONFIG_KEY]
+      : {};
+    ICON_CONFIG.clickOpenModifiers = normalizeList(source.clickOpenModifiers, ICON_CONFIG.clickOpenModifiers);
+    ICON_CONFIG.longPressButtons = normalizeList(source.longPressButtons, ICON_CONFIG.longPressButtons);
+    ICON_CONFIG.autoOpenList = normalizeList(source.autoOpenList, ICON_CONFIG.autoOpenList);
+    ["longPressHoldTime", "longPressHoldDelay"].forEach((key) => {
+      const value = Number(source[key]);
+      if (Number.isFinite(value)) {
+        ICON_CONFIG[key] = value;
+      }
+    });
+    if (source.foregroundMode === "default" || source.foregroundMode === "theme") {
+      PEEK_FOREGROUND_CONFIG.mode = source.foregroundMode;
+    }
+    if (typeof source.scaleBackgroundPage === "boolean") {
+      PEEK_BACKGROUND_CONFIG.scaleBackgroundPage = source.scaleBackgroundPage;
+    }
+  }
+
+  async function loadSharedModConfig() {
+    try {
+      const root = await navigator.storage.getDirectory();
+      const dir = await root.getDirectoryHandle(MOD_CONFIG_DIR, { create: true });
+      const fileHandle = await dir.getFileHandle(MOD_CONFIG_FILE, { create: false });
+      const file = await fileHandle.getFile();
+      applySharedModConfig(JSON.parse(await file.text()));
+    } catch (_error) {}
+  }
+
+  await loadSharedModConfig();
+  window.addEventListener("vivaldi-mod-config-updated", (event) => {
+    applySharedModConfig(event.detail || {});
+  });
 
   class PeekMod {
     ARC_CONFIG = Object.freeze({
@@ -2829,6 +2878,13 @@
           cls: "peek-sidebar-button split-button",
           label: "Split View",
         },
+        {
+          content: this.iconUtils.copyLink,
+          action: () => this.copyPeekUrl(webviewId),
+          cls: "peek-sidebar-button copy-link-button",
+          label: "Copy Link",
+          keepControlsOpen: true,
+        },
       ];
 
       const fragment = document.createDocumentFragment();
@@ -2836,7 +2892,9 @@
         const element = this.createOptionsButton(
           button.content,
           () => {
-            this.hideSidebarControls(thisElement);
+            if (!button.keepControlsOpen) {
+              this.hideSidebarControls(thisElement);
+            }
             button.action();
           },
           button.cls
@@ -3080,6 +3138,52 @@
         data.webview.src,
       ];
       return candidates.find((url) => this.isUsablePeekUrl(url)) || "";
+    }
+
+    async copyTextToClipboard(text) {
+      const value = String(text || "");
+      if (!value) return false;
+
+      try {
+        await navigator.clipboard.writeText(value);
+        return true;
+      } catch (_) {}
+
+      try {
+        const selection = window.getSelection();
+        const previousRanges = [];
+        if (selection) {
+          for (let index = 0; index < selection.rangeCount; index += 1) {
+            previousRanges.push(selection.getRangeAt(index).cloneRange());
+          }
+        }
+
+        const textarea = document.createElement("textarea");
+        textarea.value = value;
+        textarea.setAttribute("readonly", "true");
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        textarea.style.top = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+        const copied = document.execCommand("copy");
+        textarea.remove();
+
+        if (selection) {
+          selection.removeAllRanges();
+          previousRanges.forEach((range) => selection.addRange(range));
+        }
+
+        return copied;
+      } catch (_) {}
+
+      return false;
+    }
+
+    copyPeekUrl(webviewId) {
+      const url = this.getPeekUrl(webviewId);
+      if (!url) return Promise.resolve(false);
+      return this.copyTextToClipboard(url);
     }
 
     navigatePeekToUrl(webviewId, url, options = {}) {
@@ -4166,6 +4270,7 @@
       splitView: '<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><path d="M64 64C28.7 64 0 92.7 0 128V384c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64H64zm160 64V384H64V128H224zm64 256V128H448V384H288z"/></svg>',
       openHere: '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M200-120q-33 0-56.5-23.5T120-200v-120h80v120h560v-480H200v120h-80v-200q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm260-140-56-56 83-84H120v-80h367l-83-84 56-56 180 180-180 180Z"/></svg>',
       backgroundTab: '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M320-80q-33 0-56.5-23.5T240-160v-80h-80q-33 0-56.5-23.5T80-320v-80h80v80h80v-320q0-33 23.5-56.5T320-720h320v-80h-80v-80h80q33 0 56.5 23.5T720-800v80h80q33 0 56.5 23.5T880-640v480q0 33-23.5 56.5T800-80H320Zm0-80h480v-480H320v480ZM80-480v-160h80v160H80Zm0-240v-80q0-33 23.5-56.5T160-880h80v80h-80v80H80Zm240-80v-80h160v80H320Zm0 640v-480 480Z"/></svg>',
+      copyLink: '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" style="padding:3;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link2-icon lucide-link-2"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></svg>',
     };
 
     static VIVALDI_BUTTONS = [
@@ -4217,6 +4322,7 @@
     get splitView() { return this.getIcon("splitView"); }
     get openHere() { return this.getIcon("openHere"); }
     get backgroundTab() { return this.getIcon("backgroundTab"); }
+    get copyLink() { return this.getIcon("copyLink"); }
   }
 
   function bootstrapPeekMod() {

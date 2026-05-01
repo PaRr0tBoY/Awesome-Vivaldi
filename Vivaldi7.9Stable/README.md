@@ -102,7 +102,7 @@
 | `TidyTabs.js`            | AI tab grouping _(pairs with `TidyTabs.css`)_                   |
 | `TidyTitles.js`          | AI tab title cleanup                                            |
 | `WorkspaceTabManager.js` | Workspace Board panel for viewing and managing workspace tabs   |
-| `YbAddressBar.js`        | Address bar enhancements (buggy)                                |
+| `VividAddress.js`        | Rewrites the visible URL suffix into an AI-generated slug       |
 
 ## How to install
 
@@ -180,7 +180,7 @@ To install, Just copy all the content under ./Javascripts/ to your `<YOURVIVALDI
     <script src="AskInPage.js"></script>
     <script src="TabScroll.js"></script>
     <script src="MonochromeIcons.js"></script>
-    <script src="YbAddressBar.js"></script>
+    <script src="VividAddress.js"></script>
     <script src="QuickCapture.js"></script>
     <script src="GlobalMediaControls.js"></script>
     <script src="EasyFiles.js"></script>

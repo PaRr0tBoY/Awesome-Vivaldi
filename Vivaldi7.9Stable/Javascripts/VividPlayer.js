@@ -1478,26 +1478,103 @@
       }
     }
 
+    function describeElement(element) {
+      if (!element) return null;
+      const text = (
+        element.getAttribute?.('aria-label') ||
+        element.getAttribute?.('title') ||
+        element.textContent ||
+        ''
+      ).replace(/\s+/g, ' ').trim();
+      return {
+        tag: element.tagName || '',
+        id: element.id || '',
+        className: typeof element.className === 'string' ? element.className.slice(0, 160) : '',
+        ariaLabel: element.getAttribute?.('aria-label') || '',
+        title: element.getAttribute?.('title') || '',
+        text: text.slice(0, 120),
+        disabled: !!element.disabled || element.getAttribute?.('aria-disabled') === 'true',
+      };
+    }
+
+    function getTransportSelectors(action) {
+      return action === 'previous-track'
+        ? [
+            '[data-testid*="previous" i]', '[data-test*="previous" i]',
+            '[aria-label*="previous" i]', '[aria-label*="prev" i]',
+            '[title*="previous" i]', '[title*="prev" i]',
+            '[class*="previous" i]', '[class*="prev" i]',
+            '[id*="previous" i]', '[id*="prev" i]',
+          ]
+        : [
+            '[data-testid*="next" i]', '[data-test*="next" i]',
+            '[aria-label*="next" i]', '[title*="next" i]',
+            '[class*="next" i]', '[id*="next" i]',
+          ];
+    }
+
+    function getTransportLabels(action) {
+      return action === 'previous-track'
+        ? ['上一首', '上一曲', '上一個', '上一个', 'prev', 'previous', 'back']
+        : ['下一首', '下一曲', '下一個', '下一个', 'next', 'forward'];
+    }
+
+    function collectTransportDiagnostics(action) {
+      const media = getCommandMedia(currentMedia);
+      const msAction = action === 'previous-track' ? 'previoustrack' : 'nexttrack';
+      const selectors = getTransportSelectors(action);
+      const labels = getTransportLabels(action);
+      const selectorSnapshots = [];
+
+      selectors.forEach((selector) => {
+        const candidates = Array.from(document.querySelectorAll(selector)).slice(0, 8);
+        if (!candidates.length) return;
+        selectorSnapshots.push({
+          selector,
+          count: document.querySelectorAll(selector).length,
+          candidates: candidates.map((element) => {
+            const described = describeElement(element) || {};
+            const haystack = (
+              element.getAttribute?.('aria-label') ||
+              element.getAttribute?.('title') ||
+              element.textContent ||
+              ''
+            ).toLowerCase();
+            return Object.assign(described, {
+              labelMatch: labels.some((label) => haystack.includes(label.toLowerCase())),
+            });
+          }),
+        });
+      });
+
+      return {
+        action,
+        location: window.location.href,
+        title: document.title || '',
+        mediaSession: {
+          hasHandler: typeof _savedMsHandlers[msAction] === 'function',
+          registeredHandlers: Object.keys(_savedMsHandlers).sort(),
+          metadataTitle: navigator.mediaSession?.metadata?.title || '',
+          metadataArtist: navigator.mediaSession?.metadata?.artist || '',
+          playbackState: navigator.mediaSession?.playbackState || '',
+        },
+        currentMedia: media ? {
+          tagName: media.tagName || '',
+          currentSrc: media.currentSrc || media.src || '',
+          paused: !!media.paused,
+          muted: !!media.muted,
+          volume: Number.isFinite(media.volume) ? media.volume : null,
+          currentTime: Number.isFinite(media.currentTime) ? media.currentTime : null,
+          duration: Number.isFinite(media.duration) ? media.duration : null,
+        } : null,
+        activeElement: describeElement(document.activeElement),
+        selectorSnapshots,
+      };
+    }
+
     function clickTransportButton(action) {
-      const selectorMap = {
-        'previous-track': [
-          '[data-testid*="previous" i]', '[data-test*="previous" i]',
-          '[aria-label*="previous" i]', '[aria-label*="prev" i]',
-          '[title*="previous" i]', '[title*="prev" i]',
-          '[class*="previous" i]', '[class*="prev" i]',
-          '[id*="previous" i]', '[id*="prev" i]',
-        ],
-        'next-track': [
-          '[data-testid*="next" i]', '[data-test*="next" i]',
-          '[aria-label*="next" i]', '[title*="next" i]',
-          '[class*="next" i]', '[id*="next" i]',
-        ],
-      };
-      const labels = {
-        'previous-track': ['上一首', '上一曲', '上一個', '上一个', 'prev', 'previous', 'back'],
-        'next-track': ['下一首', '下一曲', '下一個', '下一个', 'next', 'forward'],
-      };
-      const selectors = selectorMap[action] || [];
+      const labels = getTransportLabels(action);
+      const selectors = getTransportSelectors(action);
       for (const selector of selectors) {
         const candidates = Array.from(document.querySelectorAll(selector));
         const match =
@@ -1509,7 +1586,7 @@
               element.getAttribute('title') ||
               element.textContent || ''
             ).toLowerCase();
-            return labels[action].some((label) => text.includes(label.toLowerCase()));
+            return labels.some((label) => text.includes(label.toLowerCase()));
           }) ||
           candidates.find((element) => (
             element &&
@@ -1542,6 +1619,7 @@
     function triggerTransportAction(action) {
       const msAction = action === 'previous-track' ? 'previoustrack' : 'nexttrack';
       const mediaKey = action === 'previous-track' ? 'MediaTrackPrevious' : 'MediaTrackNext';
+      const diagnostics = collectTransportDiagnostics(action);
 
       // 策略1：MediaSession handler（YouTube Music、Spotify、网易云等现代网站均注册）
       if (typeof _savedMsHandlers[msAction] === 'function') {
@@ -1555,8 +1633,10 @@
               transportAction: action,
               transportDebug: {
                 mediaKey: 'mediaSession-handler',
+                strategy: 'mediaSession-handler',
                 buttonResult: result,
                 mediaTitle: getMediaTitle(),
+                diagnostics,
               },
             },
           });
@@ -1575,13 +1655,23 @@
           transportAction: action,
           transportDebug: {
             mediaKey,
+            strategy: buttonResult.clicked ? 'media-key+dom-click' : 'media-key-only',
             buttonResult,
             mediaTitle: getMediaTitle(),
+            diagnostics,
           },
         },
       });
       return buttonResult.clicked;
     }
+
+    window.__vividPlayerDebug = Object.assign(window.__vividPlayerDebug || {}, {
+      collectTransportDiagnostics,
+      triggerTransportAction,
+      clickTransportButton,
+      triggerMediaKey,
+      getSavedMediaSessionHandlers: () => Object.keys(_savedMsHandlers).sort(),
+    });
 
     window.addEventListener('message', (event) => {
       if (
@@ -1741,10 +1831,12 @@
         tabId,
         frameId: sender.frameId || 0,
         mediaKey: info.transportDebug?.mediaKey,
+        strategy: info.transportDebug?.strategy || '',
         clicked: !!info.transportDebug?.buttonResult?.clicked,
         selector: info.transportDebug?.buttonResult?.selector || null,
         matchedText: info.transportDebug?.buttonResult?.matchedText || '',
         mediaTitle: info.transportDebug?.mediaTitle || '',
+        diagnostics: info.transportDebug?.diagnostics || null,
       });
       return;
     }
