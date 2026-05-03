@@ -25,6 +25,8 @@
     { key: "quickCapture", label: "Quick Capture" },
     { key: "arcPeek", label: "Arc Peek" },
     { key: "autoHidePanel", label: "Auto Hide Panel" },
+    { key: "tidySeries", label: "Tidy Series" },
+    { key: "workspaceThemeSwitcher", label: "Workspace Theme" },
   ];
 
   const MOD_SETTING_SCHEMAS = {
@@ -49,6 +51,7 @@
         { key: "longPressHoldDelay", label: "Hold Delay", type: "number", min: 0, step: 10, defaultValue: 200, unit: "ms", help: "Delay before the hold feedback animation starts." },
         { key: "autoOpenList", label: "Auto Open List", type: "list", defaultValue: ["pin", "*.google.com"], placeholder: "pin, *.google.com, *.example.com", help: "Comma-separated rules that auto-open normal left-click links in Peek. Use pin for pinned tabs or domain patterns like *.google.com." },
         { key: "foregroundMode", label: "Foreground Mode", type: "select", options: ["default", "theme"], defaultValue: "theme", help: "Foreground blank layer shown while the webview loads behind it." },
+        { key: "loadingAnimation", label: "Loading Animation", type: "select", options: ["skeleton", "breath", "real", "none"], defaultValue: "skeleton", help: "Loading effect shown while page loads: skeleton (static skeleton), breath (pulsing foreground), real (dynamic skeleton from page structure, cached), none (blank)." },
         { key: "scaleBackgroundPage", label: "Scale Background", type: "boolean", defaultValue: true, help: "Scale and sink the background webpage while Peek is open." },
       ],
     },
@@ -62,6 +65,21 @@
         { key: "switch_delay", label: "Switch Delay", type: "number", min: 0, step: 10, defaultValue: 40, unit: "ms", help: "Delay before switching between panel buttons." },
         { key: "close_delay", label: "Close Delay", type: "number", min: 0, step: 10, defaultValue: 280, unit: "ms", help: "Delay before closing an overlay panel." },
         { key: "close_delay_fixed", label: "Fixed Close Delay", type: "number", min: 0, step: 10, defaultValue: 3000, unit: "ms", help: "Delay before closing a fixed panel when fixed close is enabled." },
+      ],
+    },
+    tidySeries: {
+      title: "Tidy Series",
+      hint: "Settings for Tidy Tabs, Tidy Titles, and related Tidy mods.",
+      fields: [
+        { key: "enableStackColor", label: "Enable Stack Coloring", type: "boolean", defaultValue: false, help: "When enabled, newly created and existing tab stacks will be automatically assigned random colors. When disabled, stacks remain uncolored." },
+        { key: "dynamicRenameGap", label: "Dynamic Rename Gap", type: "number", min: 1, step: 1, defaultValue: 3, help: "Rename the stack every N tabs added. Stack is always named on creation; subsequent renames happen each time this many tabs accumulate." },
+      ],
+    },
+    workspaceThemeSwitcher: {
+      title: "Workspace Theme Switcher",
+      hint: "Map each workspace to a Vivaldi theme. Workspaces without a mapping use your current theme.",
+      fields: [
+        { key: "workspaceThemeMap", label: "Workspace → Theme", type: "workspaceThemeMap", defaultValue: {}, help: "Left column lists your workspaces. Right column lets you pick a Vivaldi theme for each. Unmapped workspaces keep your current theme." },
       ],
     },
   };
@@ -126,6 +144,8 @@
       quickCapture: {},
       arcPeek: {},
       autoHidePanel: {},
+      tidySeries: {},
+      workspaceThemeSwitcher: {},
     },
   };
   let targetSettingsVisible = false;
@@ -209,6 +229,12 @@
       }
       if (field.type === "select") {
         if (typeof value === "string" && field.options.includes(value)) {
+          output[field.key] = value;
+        }
+        return;
+      }
+      if (field.type === "workspaceThemeMap") {
+        if (value && typeof value === "object" && !Array.isArray(value)) {
           output[field.key] = value;
         }
         return;
@@ -678,6 +704,76 @@
     }
     const values = normalizeModBlock(modKey, config.mods?.[modKey]);
     grid.innerHTML = schema.fields.map((field) => renderModField(field, values[field.key])).join("");
+    if (modKey === "workspaceThemeSwitcher") {
+      initWorkspaceThemeMap(section, config);
+    }
+  }
+
+  async function initWorkspaceThemeMap(section, config) {
+    const container = section.querySelector("[data-workspace-theme-map]");
+    if (!container) return;
+
+    try {
+      const [workspaces, systemThemes, userThemes] = await Promise.all([
+        vivaldi.prefs.get("vivaldi.workspaces.list"),
+        vivaldi.prefs.get("vivaldi.themes.system"),
+        vivaldi.prefs.get("vivaldi.themes.user"),
+      ]);
+
+      const wsList = Array.isArray(workspaces) ? workspaces : [];
+      const themes = [...(systemThemes || []), ...(userThemes || [])];
+      const currentMap = config.mods?.workspaceThemeSwitcher?.workspaceThemeMap || {};
+
+      if (wsList.length === 0) {
+        container.innerHTML = '<div class="mod-config-wt-loading">No workspaces found.</div>';
+        return;
+      }
+
+      let html = `
+        <div class="mod-config-wt-header">
+          <span>Workspace</span>
+          <span>Theme</span>
+        </div>
+      `;
+
+      for (const ws of wsList) {
+        const wsName = ws.name || "Unnamed";
+        const selectedId = currentMap[wsName] || "";
+        const optionsHtml = themes.map((t) => {
+          const sel = t.id === selectedId ? " selected" : "";
+          return `<option value="${escapeHtml(t.id)}"${sel}>${escapeHtml(t.name)}</option>`;
+        }).join("");
+
+        html += `
+          <div class="mod-config-wt-row">
+            <div class="mod-config-wt-workspace">${escapeHtml(wsName)}</div>
+            <div class="mod-config-wt-theme">
+              <select class="mod-config-select" data-ws-theme="${escapeHtml(wsName)}">
+                <option value="">(default)</option>
+                ${optionsHtml}
+              </select>
+            </div>
+          </div>
+        `;
+      }
+
+      container.innerHTML = html;
+    } catch (error) {
+      container.innerHTML = `<div class="mod-config-wt-loading">Failed to load: ${escapeHtml(error.message)}</div>`;
+    }
+  }
+
+  function collectWorkspaceThemeMap(section) {
+    const selects = section.querySelectorAll("[data-ws-theme]");
+    const map = {};
+    selects.forEach((sel) => {
+      const wsName = sel.dataset.wsTheme;
+      const themeId = sel.value;
+      if (themeId) {
+        map[wsName] = themeId;
+      }
+    });
+    return map;
   }
 
   function renderModField(field, value) {
@@ -716,6 +812,14 @@
         <div class="mod-config-inline-field">
           <input id="mod-setting-${field.key}" class="mod-config-input" data-mod-setting="${escapeHtml(field.key)}" type="text" value="${valueAttr}" placeholder="${escapeHtml(field.placeholder || "")}" spellcheck="false">
           <button type="button" class="mod-config-browse" data-mod-file-picker="${escapeHtml(field.key)}">Choose</button>
+        </div>
+      `;
+    }
+    if (field.type === "workspaceThemeMap") {
+      return `
+        ${label}
+        <div class="mod-config-workspace-theme-map" data-workspace-theme-map="${escapeHtml(field.key)}">
+          <div class="mod-config-wt-loading">Loading workspaces and themes...</div>
         </div>
       `;
     }
@@ -760,6 +864,10 @@
     }
     const output = {};
     schema.fields.forEach((field) => {
+      if (field.type === "workspaceThemeMap") {
+        output[field.key] = collectWorkspaceThemeMap(section);
+        return;
+      }
       const input = section.querySelector('[data-mod-setting="' + field.key + '"]');
       if (!input) {
         return;
@@ -1448,6 +1556,49 @@
         #${SECTION_ID} .mod-config-storage-summary {
           justify-self: start;
         }
+      }
+      #${SECTION_ID} .mod-config-workspace-theme-map {
+        grid-column: 1 / -1;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      #${SECTION_ID} .mod-config-wt-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 12px;
+        padding: 6px 0;
+        border-bottom: 1px solid var(--colorBorderSubtle);
+        font-weight: 600;
+        font-size: 12px;
+        color: var(--colorFgFaded);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      #${SECTION_ID} .mod-config-wt-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 12px;
+        align-items: center;
+        padding: 4px 0;
+      }
+      #${SECTION_ID} .mod-config-wt-workspace {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 30px;
+        color: var(--colorFg);
+        font-size: 13px;
+      }
+      #${SECTION_ID} .mod-config-wt-theme {
+        position: relative;
+      }
+      #${SECTION_ID} .mod-config-wt-loading {
+        grid-column: 1 / -1;
+        padding: 12px 0;
+        color: var(--colorFgFaded);
+        font-size: 12px;
+        text-align: center;
       }
     `;
     document.head.appendChild(style);

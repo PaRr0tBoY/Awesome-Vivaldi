@@ -66,6 +66,7 @@
   const CONFIG = {
     autoStackWorkspaces: [],
     enableAIGrouping: true,
+    enableStackColor: false,
     maxTabsForAI: 50,
     delays: {
       init: 500,
@@ -77,6 +78,29 @@
       autoStack: 1000,
     },
   };
+
+  function applyModSettings(raw) {
+    const mods = raw?.mods && typeof raw.mods === "object" ? raw.mods : {};
+    const tidySeries = mods.tidySeries && typeof mods.tidySeries === "object" ? mods.tidySeries : {};
+    if (typeof tidySeries.enableStackColor === "boolean") {
+      CONFIG.enableStackColor = tidySeries.enableStackColor;
+    }
+  }
+
+  async function loadModSettings() {
+    try {
+      const root = await navigator.storage.getDirectory();
+      const dir = await root.getDirectoryHandle(MOD_AI_CONFIG_DIR, { create: true });
+      const fileHandle = await dir.getFileHandle(MOD_AI_CONFIG_FILE, { create: false });
+      const file = await fileHandle.getFile();
+      applyModSettings(JSON.parse(await file.text()));
+    } catch (_error) {}
+  }
+
+  loadModSettings();
+  window.addEventListener("vivaldi-mod-config-updated", (event) => {
+    applyModSettings(event.detail || {});
+  });
 
   const SELECTORS = {
     TAB_STRIP: ".tab-strip",
@@ -119,14 +143,25 @@
   };
 
   const OTHERS_NAMES = [
-    "其它",
-    "Others",
-    "その他",
-    "Other",
-    "Outros",
-    "Andere",
-    "Autres",
+    "其它", "Others", "その他", "Other",
+    "Outros", "Andere", "Autres", "Autre",
+    "Altri", "Другое", "다른", "أخرى", "अन्य",
   ];
+
+  const OTHERS_MAP = {
+    Chinese: "其它",
+    Japanese: "その他",
+    English: "Others",
+    Korean: "다른",
+    Spanish: "Otros",
+    French: "Autres",
+    German: "Andere",
+    Russian: "Другое",
+    Portuguese: "Outros",
+    Italian: "Altri",
+    Arabic: "أخرى",
+    Hindi: "अन्य",
+  };
 
   let debounceTimer = null;
   const processingSeparators = new Set();
@@ -141,7 +176,7 @@
 
   const getOthersName = () => {
     const lang = getLanguageName(getBrowserLanguage());
-    return { Chinese: "Others", Japanese: "Others" }[lang] || "Others";
+    return OTHERS_MAP[lang] || "Others";
   };
 
   const getUrlFragments = (url) => {
@@ -278,11 +313,29 @@
       });
     });
 
-  const addTabToStack = async (tabId, stackId, stackName) => {
+  const STACK_COLORS = Array.from({ length: 9 }, (_, i) => `color${i + 1}`);
+  const COLOR_WEIGHTS = { color2: 3, color5: 3, color8: 3 };
+  const RESTRICTED = new Set(["color3", "color6", "color4", "color9", "color7"]);
+  let lastAssignedColor = "";
+
+  const randomStackColor = (overrideLast) => {
+    const last = overrideLast || lastAssignedColor;
+    const candidates = STACK_COLORS.filter(c => {
+      if (!last || !RESTRICTED.has(last)) return true;
+      return !RESTRICTED.has(c);
+    });
+    const weighted = candidates.flatMap(c => Array(COLOR_WEIGHTS[c] || 1).fill(c));
+    const pick = weighted[Math.floor(Math.random() * weighted.length)] || candidates[0];
+    lastAssignedColor = pick;
+    return pick;
+  };
+
+  const addTabToStack = async (tabId, stackId, stackName, stackColor) => {
     const tab = await getTab(tabId);
     if (!tab?.vivExtData) return;
     const viv = tab.vivExtData;
     if (stackName) viv.fixedGroupTitle = stackName;
+    if (stackColor) viv.groupColor = stackColor;
     viv.group = stackId;
     return new Promise((resolve) => {
       chrome.tabs.update(tabId, { vivExtData: JSON.stringify(viv) }, () => {
@@ -399,7 +452,7 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
       .filter((g) => g.isExisting || g.tabs.length > 1);
   };
 
-  const handleOrphanTabs = (groupedTabs, tabs, existingStacks) => {
+  const handleOrphanTabs = (groupedTabs, tabs, existingStacks = []) => {
     const grouped = new Set();
     groupedTabs.forEach((g) => g.tabs.forEach((t) => grouped.add(t.id)));
     const orphans = tabs.filter((t) => !grouped.has(t.id));
@@ -419,7 +472,7 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
           stackId: existing.id,
           isExisting: true,
         });
-      } else if (orphans.length > 1) {
+      } else if (orphans.length > 0) {
         groupedTabs.push({
           name: getOthersName(),
           tabs: orphans,
@@ -511,11 +564,161 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
       });
   };
 
+  const generateStackName = async (tabs) => {
+    const languageName = getLanguageName(getBrowserLanguage());
+    const tabInfo = tabs.map((t, i) =>
+      `${i + 1}. [${getHostname(t.url || "")}] ${t.title || "Untitled"}`
+    ).join("\n");
+
+    const prompt = `Name this browser tab group in 1-4 words. Be concise and specific.
+Language: ${languageName}.
+
+Tabs:
+${tabInfo}
+
+Return JSON: {"name":"the group name"}`;
+
+    try {
+      const isGLM = AI_CONFIG.apiEndpoint?.includes("bigmodel.cn");
+      const payload = {
+        model: AI_CONFIG.model,
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.3,
+        max_tokens: 64,
+        stream: false,
+        response_format: { type: "json_object" },
+      };
+      if (isGLM) payload.thinking = { type: "disabled" };
+      else payload.include_reasoning = false;
+
+      const controller = AI_CONFIG.timeout > 0 ? new AbortController() : null;
+      const timeoutId = AI_CONFIG.timeout > 0
+        ? setTimeout(() => controller.abort(), AI_CONFIG.timeout) : null;
+
+      try {
+        const response = await fetch(AI_CONFIG.apiEndpoint, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${AI_CONFIG.apiKey}`,
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://github.com/Gershom-Chen/VivaldiModpack",
+            "X-Title": "Vivaldi TidyTabs",
+          },
+          body: JSON.stringify(payload),
+          signal: controller?.signal,
+        });
+
+        const data = await response.json();
+        if (!response.ok || data?.error) return null;
+
+        const raw = data.choices?.[0]?.message?.content || "";
+        const cleaned = raw.replace(/<(thought|reasoning)>[\s\S]*?<\/\1>/gi, "").trim();
+        const m = cleaned.match(/\{[\s\S]*?\}/);
+        if (m) {
+          const parsed = JSON.parse(m[0]);
+          if (parsed.name && typeof parsed.name === "string") return parsed.name.trim();
+        }
+      } finally {
+        if (timeoutId) clearTimeout(timeoutId);
+      }
+    } catch (e) {
+      console.warn("[TidyTabs] Stack name generation failed:", e.message);
+    }
+    return null;
+  };
+
+  const renameUnnamedStacks = async () => {
+    if (!AI_CONFIG.apiKey) return;
+
+    const allTabs = await new Promise((resolve) => {
+      chrome.tabs.query({ currentWindow: true }, resolve);
+    });
+
+    // Group tabs by their stack ID
+    const stacksMap = {};
+    for (const tab of allTabs) {
+      if (!tab.vivExtData) continue;
+      try {
+        const viv = typeof tab.vivExtData === "string"
+          ? JSON.parse(tab.vivExtData) : tab.vivExtData;
+        if (viv.group && !tab.pinned && !viv.panelId) {
+          if (!stacksMap[viv.group]) stacksMap[viv.group] = { tabs: [], hasName: false };
+          stacksMap[viv.group].tabs.push(tab);
+          if (viv.fixedGroupTitle) stacksMap[viv.group].hasName = true;
+        }
+      } catch {}
+    }
+
+    // Rename stacks that have no fixedGroupTitle
+    for (const [stackId, { tabs, hasName }] of Object.entries(stacksMap)) {
+      if (hasName || tabs.length < 2) continue;
+
+      const name = await generateStackName(tabs);
+      if (!name) continue;
+
+      for (const tab of tabs) {
+        await new Promise((resolve) => {
+          chrome.tabs.get(tab.id, (t) => {
+            if (chrome.runtime.lastError) { resolve(); return; }
+            let viv = {};
+            try { viv = t.vivExtData ? JSON.parse(t.vivExtData) : {}; } catch {}
+            viv.fixedGroupTitle = name;
+            chrome.tabs.update(tab.id, { vivExtData: JSON.stringify(viv) }, resolve);
+          });
+        });
+      }
+      console.log(`[TidyTabs] Named unnamed stack: "${name}" (${tabs.length} tabs)`);
+    }
+  };
+
+  const colorUncoloredStacks = async () => {
+    if (!CONFIG.enableStackColor) return;
+
+    const allTabs = await new Promise((resolve) => {
+      chrome.tabs.query({ currentWindow: true }, resolve);
+    });
+
+    const stacksMap = {};
+    for (const tab of allTabs) {
+      if (!tab.vivExtData) continue;
+      try {
+        const viv = typeof tab.vivExtData === "string"
+          ? JSON.parse(tab.vivExtData) : tab.vivExtData;
+        if (viv.group && !tab.pinned && !viv.panelId) {
+          if (!stacksMap[viv.group]) stacksMap[viv.group] = { tabs: [], hasColor: false };
+          stacksMap[viv.group].tabs.push(tab);
+          if (viv.groupColor) stacksMap[viv.group].hasColor = true;
+        }
+      } catch {}
+    }
+
+    for (const [stackId, { tabs, hasColor }] of Object.entries(stacksMap)) {
+      if (hasColor || tabs.length < 2) continue;
+
+      const color = randomStackColor();
+      for (const tab of tabs) {
+        await new Promise((resolve) => {
+          chrome.tabs.get(tab.id, (t) => {
+            if (chrome.runtime.lastError) { resolve(); return; }
+            let viv = {};
+            try { viv = t.vivExtData ? JSON.parse(t.vivExtData) : {}; } catch {}
+            viv.groupColor = color;
+            chrome.tabs.update(tab.id, { vivExtData: JSON.stringify(viv) }, resolve);
+          });
+        });
+      }
+      console.log(`[TidyTabs] Colored stack ${stackId.slice(0, 8)}... → ${color}`);
+    }
+  };
+
   // ==================== Tab Stack Operations ====================
 
   const createTabStacks = async (groups) => {
+    let lastColor = "";
     for (const group of groups) {
       const stackId = group.stackId || crypto.randomUUID();
+      const color = group.isExisting ? null : (CONFIG.enableStackColor ? randomStackColor(lastColor) : null);
+      if (color) lastColor = color;
       group.tabs.sort((a, b) => a.index - b.index);
       const targetIndex = group.tabs[0].index;
 
@@ -528,8 +731,25 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
             resolve();
           });
         });
-        await addTabToStack(tab.id, stackId, group.name);
+        await addTabToStack(tab.id, stackId, group.name, color);
       }
+    }
+  };
+
+  const moveGroupToEnd = async (group) => {
+    if (!group || !group.tabs.length) return;
+    const allTabs = await new Promise((r) =>
+      chrome.tabs.query({ currentWindow: true }, r)
+    );
+    const targetIndex = allTabs.length;
+    for (let i = 0; i < group.tabs.length; i++) {
+      await new Promise((resolve) => {
+        chrome.tabs.move(group.tabs[i].id, { index: targetIndex + i }, () => {
+          if (chrome.runtime.lastError)
+            console.error("[TidyTabs]", chrome.runtime.lastError.message);
+          resolve();
+        });
+      });
     }
   };
 
@@ -730,10 +950,18 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
 
     let groups =
       CONFIG.enableAIGrouping && AI_CONFIG.apiKey
-        ? (await getAIGrouping(tabs)) || groupByDomain(tabs)
-        : groupByDomain(tabs);
+        ? (await getAIGrouping(tabs))
+        : null;
+    if (!groups) {
+      groups = groupByDomain(tabs);
+      handleOrphanTabs(groups, tabs);
+    }
 
-    if (groups.length > 0) await createTabStacks(groups);
+    if (groups.length > 0) {
+      const othersGroup = groups.find((g) => OTHERS_NAMES.includes(g.name));
+      await createTabStacks(groups);
+      if (othersGroup) await moveGroupToEnd(othersGroup);
+    }
   };
 
   const tidyTabsBelow = async (separator) => {
@@ -760,10 +988,23 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
 
       let groups =
         CONFIG.enableAIGrouping && AI_CONFIG.apiKey
-          ? (await getAIGrouping(tabs, existingStacks)) || groupByDomain(tabs)
-          : groupByDomain(tabs);
+          ? (await getAIGrouping(tabs, existingStacks))
+          : null;
+      if (!groups) {
+        groups = groupByDomain(tabs);
+        handleOrphanTabs(groups, tabs, existingStacks);
+      }
 
-      if (groups.length > 0) await createTabStacks(groups);
+      if (groups.length > 0) {
+        const othersGroup = groups.find((g) => OTHERS_NAMES.includes(g.name));
+        await createTabStacks(groups);
+        if (othersGroup) await moveGroupToEnd(othersGroup);
+      }
+
+      // Name any existing stacks that lack fixedGroupTitle
+      await renameUnnamedStacks();
+      // Color any existing stacks that lack groupColor
+      await colorUncoloredStacks();
     } finally {
       if (separatorKey) {
         processingSeparators.delete(separatorKey);
