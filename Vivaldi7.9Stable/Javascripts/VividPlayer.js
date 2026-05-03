@@ -22,6 +22,7 @@
     noteSpawnMinMs: 540,
     noteSpawnMaxMs: 980,
     noteMaxConcurrent: 2,
+    autoPipOnSwitch: true,   // 切换标签页时自动对上一个 tab 触发 PiP
   };
 
   const MESSAGE_TYPE = 'vivid-player';
@@ -1291,6 +1292,19 @@
     await sendCommand(source.tabId, source.frameId, command);
   }
 
+  /**
+   * 尝试对指定 tab 触发 PiP。
+   * 返回 true 表示命令已发送（不代表 PiP 一定成功）。
+   */
+  function tryAutoPip(tabId) {
+    if (!VIVID_PLAYER_CONFIG.autoPipOnSwitch) return false;
+    const source = stateByTabId.get(tabId);
+    if (!source || !source.canPip) return false;
+    if (source.pictureInPicture) return false; // 已在 PiP 中
+    sendCommand(source.tabId, source.frameId, { action: 'picture-in-picture' });
+    return true;
+  }
+
   // ─── 页面注入 ─────────────────────────────────────────────────────────────
 
   function injectBridge(messageType, bridgeFlag) {
@@ -1380,6 +1394,22 @@
       );
     }
 
+    /** 判断媒体元素是否属于页面主体内容（排除 iframe 内嵌、零尺寸、完全离屏的媒体） */
+    function isEmbeddedMedia(media) {
+      if (!media) return true;
+      // iframe 内的媒体（广告、第三方嵌入）
+      try {
+        if (media.ownerDocument !== document) return true;
+      } catch (_e) { return true; }
+      // 零尺寸（display:none、visibility:hidden 等）
+      const rect = media.getBoundingClientRect();
+      if (rect.width === 0 && rect.height === 0) return true;
+      // 完全离屏（上下左右均超出视口）
+      if (rect.bottom <= 0 || rect.top >= window.innerHeight ||
+          rect.right <= 0 || rect.left >= window.innerWidth) return true;
+      return false;
+    }
+
     function isTrackable(media) { return !!media && !media.ended; }
     function isAudible(media) {
       return !!media && hasAudio(media) && !media.paused && !media.ended && !media.muted && media.volume > 0;
@@ -1398,22 +1428,22 @@
     }
 
     function getCurrentMedia(preferredMedia) {
-      if (preferredMedia && isAudible(preferredMedia)) return preferredMedia;
+      if (preferredMedia && isAudible(preferredMedia) && !isEmbeddedMedia(preferredMedia)) return preferredMedia;
       const medias = Array.from(document.querySelectorAll('video, audio'));
       for (let index = medias.length - 1; index >= 0; index -= 1) {
-        if (isAudible(medias[index])) return medias[index];
+        if (!isEmbeddedMedia(medias[index]) && isAudible(medias[index])) return medias[index];
       }
       for (let index = medias.length - 1; index >= 0; index -= 1) {
-        if (isPlayable(medias[index])) return medias[index];
+        if (!isEmbeddedMedia(medias[index]) && isPlayable(medias[index])) return medias[index];
       }
       return null;
     }
 
     function getCommandMedia(preferredMedia) {
-      if (preferredMedia && isTrackable(preferredMedia)) return preferredMedia;
+      if (preferredMedia && isTrackable(preferredMedia) && !isEmbeddedMedia(preferredMedia)) return preferredMedia;
       const medias = Array.from(document.querySelectorAll('video, audio'));
       for (let index = medias.length - 1; index >= 0; index -= 1) {
-        if (isTrackable(medias[index])) return medias[index];
+        if (!isEmbeddedMedia(medias[index]) && isTrackable(medias[index])) return medias[index];
       }
       return null;
     }
@@ -1449,6 +1479,7 @@
 
     function handlePlaybackEvent(event) {
       if (!isTrackable(event.target)) return;
+      if (isEmbeddedMedia(event.target)) return;
       postMediaUpdate(event.type, event.target);
     }
 
@@ -1463,7 +1494,9 @@
     }
 
     function scanExistingMedia() {
-      document.querySelectorAll('video, audio').forEach(attachMedia);
+      const allMedia = Array.from(document.querySelectorAll('video, audio'));
+      const mainMedia = allMedia.filter((m) => !isEmbeddedMedia(m));
+      mainMedia.forEach(attachMedia);
       const media = getCurrentMedia(currentMedia);
       if (media) postMediaUpdate('scan', media);
     }
@@ -1917,9 +1950,16 @@
 
     registerListener(chrome.tabs, 'onActivated', async (activeInfo) => {
       if (activeInfo.windowId !== state.currentWindowId) return;
+      const previousTabId = state.activeTabId;
       state.activeTabId = activeInfo.tabId;
       await refreshTabSnapshot(activeInfo.tabId);
+      // 切换前对上一个 tab 尝试自动 PiP（如果是视频）
+      if (previousTabId != null && previousTabId !== activeInfo.tabId) {
+        tryAutoPip(previousTabId);
+      }
       chooseCandidateSource();
+      // PiP 请求异步，延迟后重新判断（如果 PiP 成功，tab 会被排除）
+      setTimeout(() => { chooseCandidateSource(); }, 300);
       setTimeout(() => { void refreshWindowSnapshot(); }, 250);
     });
 

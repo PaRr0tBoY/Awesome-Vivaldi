@@ -98,6 +98,10 @@
     // tab strip tabs; keep this disabled until an internal dispatcher path is proven.
     enabled: false,
   };
+  const LOADING_ANIMATION_CONFIG = {
+    // Available: "skeleton", "breath", "real", "none"
+    mode: "skeleton",
+  };
   const MOD_CONFIG_KEY = "arcPeek";
   const MOD_CONFIG_FILE = "config.json";
   const MOD_CONFIG_DIR = ".askonpage";
@@ -127,6 +131,9 @@
     });
     if (source.foregroundMode === "default" || source.foregroundMode === "theme") {
       PEEK_FOREGROUND_CONFIG.mode = source.foregroundMode;
+    }
+    if (["skeleton", "breath", "real", "none"].includes(source.loadingAnimation)) {
+      LOADING_ANIMATION_CONFIG.mode = source.loadingAnimation;
     }
     if (typeof source.scaleBackgroundPage === "boolean") {
       PEEK_BACKGROUND_CONFIG.scaleBackgroundPage = source.scaleBackgroundPage;
@@ -167,6 +174,7 @@
     webviews = new Map();
     previewCache = new Map();
     previewCaptureTasks = new Map();
+    realSkeletonCache = new Map();
     lastRecordedLinkData = null;
     closeShortcutGuard = null;
     iconUtils = new IconUtils();
@@ -525,12 +533,7 @@
     }
 
     getWebviewRevealSettleDelay() {
-      const isWindows =
-        navigator.userAgentData?.platform === "Windows" ||
-        /Windows/i.test(navigator.platform || "");
-      return isWindows
-        ? this.ARC_CONFIG.webviewRevealSettleMsWindows
-        : this.ARC_CONFIG.webviewRevealSettleMs;
+      return 0;
     }
 
     getPeekForegroundBackground() {
@@ -1543,7 +1546,8 @@
       this.mountPreviewLayer(
         peekPanel,
         previewAsset?.dataUrl || null,
-        effectiveLinkRect
+        effectiveLinkRect,
+        webviewId
       );
       this.preparePeekContentForPreview(peekPanel);
       this.setPeekWebviewVisibility(peekPanel, false);
@@ -1566,7 +1570,6 @@
         });
 
       this.webviews.get(webviewId).openingState = "animating";
-      this.startPeekNavigation(webview, webviewId);
       if (previewAsset?.dataUrl) {
         this.animatePreviewImageOut(peekPanel, {
           delayRatio: 0,
@@ -1980,7 +1983,7 @@
         },
       };
       const createProperties = {
-        url,
+        url: url || "about:blank",
         active: false,
         vivExtData: JSON.stringify(vivExtData),
       };
@@ -2485,7 +2488,7 @@
       return null;
     }
 
-    createPreviewLayer(sourcePreviewUrl, linkRect) {
+    createPreviewLayer(sourcePreviewUrl, linkRect, webviewId = "") {
       const previewLayer = document.createElement("div");
       const imageLayer = document.createElement("img");
       const hasPreview = !!sourcePreviewUrl;
@@ -2500,7 +2503,7 @@
         this.getPeekForegroundBackground()
       );
       imageLayer.style.aspectRatio = `${previewWidth} / ${previewHeight}`;
-      
+
       if (hasPreview) {
         imageLayer.src = sourcePreviewUrl;
         imageLayer.alt = "";
@@ -2509,13 +2512,211 @@
       }
 
       previewLayer.appendChild(imageLayer);
+
+      if (!hasPreview) {
+        const mode = LOADING_ANIMATION_CONFIG.mode;
+        if (mode === "breath") {
+          previewLayer.classList.add("breath-loading");
+        } else if (mode === "real") {
+          const cached = this.getCachedRealSkeleton(linkRect?.href || "");
+          if (cached) {
+            previewLayer.appendChild(cached);
+          }
+        } else if (mode === "skeleton") {
+          previewLayer.appendChild(this.createSkeletonShimmer());
+        }
+        // "none": no loading indicator
+      }
+
       return previewLayer;
     }
 
-    mountPreviewLayer(peekPanel, sourcePreviewUrl, linkRect) {
+    createSkeletonShimmer() {
+      const sk = (cls) => {
+        const el = document.createElement("div");
+        el.className = `sk ${cls}`;
+        return el;
+      };
+
+      const root = document.createElement("div");
+      root.className = "peek-skeleton";
+
+      // ① Header
+      const header = document.createElement("div");
+      header.className = "sk-zone-header";
+      const navGroup = document.createElement("div");
+      navGroup.className = "sk-nav-group";
+      navGroup.append(sk("sk-nav-item"), sk("sk-nav-item"), sk("sk-nav-item"), sk("sk-nav-item"));
+      header.append(sk("sk-logo"), navGroup, sk("sk-header-btn"));
+
+      // ② Hero
+      const hero = document.createElement("div");
+      hero.className = "sk-zone-hero";
+      hero.appendChild(sk("sk-hero-bg"));
+      const heroContent = document.createElement("div");
+      heroContent.className = "sk-hero-content";
+      heroContent.append(
+        sk("sk-hero-tag"), sk("sk-hero-title"), sk("sk-hero-title2"),
+        sk("sk-hero-sub"), sk("sk-hero-sub2"), sk("sk-hero-cta"),
+      );
+      hero.appendChild(heroContent);
+
+      // ③ Sub-nav
+      const subnav = document.createElement("div");
+      subnav.className = "sk-zone-subnav";
+      for (let i = 0; i < 6; i++) subnav.appendChild(sk("sk-subnav-item"));
+
+      // ④ Body (main + sidebar)
+      const body = document.createElement("div");
+      body.className = "sk-zone-body";
+
+      // Main content
+      const main = document.createElement("div");
+      main.className = "sk-zone-main";
+
+      // Card grid
+      const cardGrid = document.createElement("div");
+      cardGrid.className = "sk-card-grid";
+      for (let i = 0; i < 3; i++) {
+        const card = document.createElement("div");
+        card.className = "sk-card";
+        card.append(sk("sk-card-img"), sk("sk-card-tag"), sk("sk-card-t1"), sk("sk-card-t2"), sk("sk-card-meta"));
+        cardGrid.appendChild(card);
+      }
+
+      // Article list
+      const articleList = document.createElement("div");
+      articleList.className = "sk-article-list";
+      for (let i = 0; i < 3; i++) {
+        const item = document.createElement("div");
+        item.className = "sk-article-item";
+        const right = document.createElement("div");
+        right.className = "sk-article-right";
+        right.append(sk("sk-art-t"), sk("sk-art-t2"), sk("sk-art-desc"), sk("sk-art-desc2"), sk("sk-art-meta"));
+        item.append(sk("sk-article-thumb"), right);
+        articleList.appendChild(item);
+      }
+
+      main.append(sk("sk-section-title"), cardGrid, sk("sk-section-title"), articleList);
+
+      // Sidebar
+      const sidebar = document.createElement("div");
+      sidebar.className = "sk-zone-sidebar";
+
+      // Featured card
+      const sideFeatured = document.createElement("div");
+      sideFeatured.append(sk("sk-sidebar-title"), sk("sk-sidebar-card"));
+
+      // Ranking
+      const sideRanking = document.createElement("div");
+      sideRanking.appendChild(sk("sk-sidebar-title"));
+      for (let i = 0; i < 4; i++) {
+        const item = document.createElement("div");
+        item.className = "sk-sidebar-item";
+        item.append(sk("sk-sidebar-num"), sk("sk-sidebar-line"));
+        sideRanking.appendChild(item);
+      }
+
+      // Tags
+      const sideTags = document.createElement("div");
+      sideTags.appendChild(sk("sk-sidebar-title"));
+      const tagGroup = document.createElement("div");
+      tagGroup.className = "sk-tag-group";
+      [60, 78, 48, 66, 86, 52].forEach((w) => {
+        const tag = sk("sk-sidebar-tag");
+        tag.style.width = `${w}px`;
+        tagGroup.appendChild(tag);
+      });
+      sideTags.appendChild(tagGroup);
+
+      sidebar.append(sideFeatured, sideRanking, sideTags);
+
+      body.append(main, sidebar);
+
+      // ⑤ Footer
+      const footer = document.createElement("div");
+      footer.className = "sk-zone-footer";
+      const footerGrid = document.createElement("div");
+      footerGrid.className = "sk-footer-grid";
+      for (let i = 0; i < 4; i++) {
+        const col = document.createElement("div");
+        col.className = "sk-footer-col";
+        col.append(sk("sk-footer-title"), sk("sk-footer-link"), sk("sk-footer-link2"), sk("sk-footer-link3"), sk("sk-footer-link2"));
+        footerGrid.appendChild(col);
+      }
+      const footerBottom = document.createElement("div");
+      footerBottom.className = "sk-footer-bottom";
+      const footerSocial = document.createElement("div");
+      footerSocial.className = "sk-footer-social";
+      footerSocial.append(sk("sk-footer-icon"), sk("sk-footer-icon"), sk("sk-footer-icon"));
+      footerBottom.append(sk("sk-footer-copy"), footerSocial);
+      footer.append(footerGrid, footerBottom);
+
+      root.append(header, hero, subnav, body, footer);
+      return root;
+    }
+
+    /* ── Real skeleton: cache + DOM analysis ── */
+
+    getRealSkeletonCacheKey(href) {
+      if (!href) return "";
+      try {
+        return new URL(href).origin;
+      } catch (_) {
+        return href;
+      }
+    }
+
+    getCachedRealSkeleton(href) {
+      const key = this.getRealSkeletonCacheKey(href);
+      if (!key || !this.realSkeletonCache.has(key)) return null;
+      const cached = this.realSkeletonCache.get(key);
+      if (Date.now() - cached.createdAt > 10 * 60 * 1000) {
+        this.realSkeletonCache.delete(key);
+        return null;
+      }
+      const container = document.createElement("div");
+      container.innerHTML = cached.html;
+      return container.firstElementChild;
+    }
+
+    storeRealSkeleton(href, layout) {
+      const key = this.getRealSkeletonCacheKey(href);
+      if (!key) return;
+      const skeleton = this.generateRealSkeletonFromLayout(layout);
+      this.realSkeletonCache.set(key, {
+        html: skeleton.outerHTML,
+        createdAt: Date.now(),
+      });
+      return skeleton;
+    }
+
+    generateRealSkeletonFromLayout(blocks) {
+      const container = document.createElement("div");
+      container.style.cssText = "position:absolute;inset:0;pointer-events:none;overflow:hidden;";
+
+      const maxBlocks = 40;
+      const sorted = blocks
+        .filter((b) => b.w > 20 && b.h > 8)
+        .sort((a, b) => a.y - b.y || a.x - b.x)
+        .slice(0, maxBlocks);
+
+      sorted.forEach((block, i) => {
+        const el = document.createElement("div");
+        el.className = block.img ? "sk-real-block sk-real-img" : "sk-real-block";
+        el.style.cssText =
+          `left:${block.x}px;top:${block.y}px;width:${block.w}px;height:${block.h}px;` +
+          `animation-delay:${(i * 0.04).toFixed(2)}s;`;
+        container.appendChild(el);
+      });
+
+      return container;
+    }
+
+    mountPreviewLayer(peekPanel, sourcePreviewUrl, linkRect, webviewId) {
       if (!peekPanel) return null;
       this.removePreviewLayer(peekPanel);
-      const previewLayer = this.createPreviewLayer(sourcePreviewUrl, linkRect);
+      const previewLayer = this.createPreviewLayer(sourcePreviewUrl, linkRect, webviewId);
       peekPanel.prepend(previewLayer);
       return previewLayer;
     }
@@ -2622,6 +2823,7 @@
       const data = this.webviews.get(webviewId);
       const webview = data?.webview;
       if (!peekPanel || !webview || !data) return;
+
       const markStable = () => {
         const current = this.webviews.get(webviewId);
         if (!current || current.isDisposing) return;
@@ -2629,7 +2831,77 @@
         this.maybeRevealPeekWebview(webviewId);
       };
 
-      webview.addEventListener("loadstop", markStable, { once: true });
+      if (LOADING_ANIMATION_CONFIG.mode === "real") {
+        webview.addEventListener("loadstop", () => {
+          this.analyzeRealSkeletonThenReveal(webview, webviewId, markStable);
+        }, { once: true });
+      } else {
+        webview.addEventListener("loadstop", markStable, { once: true });
+      }
+    }
+
+    analyzeRealSkeletonThenReveal(webview, webviewId, markStable) {
+      const data = this.webviews.get(webviewId);
+      const href = data?.currentUrl || data?.initialUrl || "";
+
+      if (this.getCachedRealSkeleton(href)) {
+        markStable();
+        return;
+      }
+
+      const analysisCode = `
+        (() => {
+          const vw = window.innerWidth || 800;
+          const vh = window.innerHeight || 600;
+          const blocks = [];
+          const skip = new Set(['SCRIPT','STYLE','LINK','META','NOSCRIPT','SVG','PATH','BR','HR']);
+          const walk = (el, depth) => {
+            if (!el || depth > 8 || skip.has(el.tagName)) return;
+            const r = el.getBoundingClientRect();
+            if (!r.width || !r.height || r.width < 24 || r.height < 10) return;
+            if (r.bottom < -10 || r.top > vh + 10 || r.right < -10 || r.left > vw + 10) return;
+            const area = r.width * r.height;
+            const pageArea = vw * vh;
+            if (area / pageArea > 0.92) { for (const c of el.children) walk(c, depth + 1); return; }
+            const isImg = el.tagName === 'IMG' || el.tagName === 'PICTURE' || el.tagName === 'VIDEO';
+            const big = r.height > 80 && r.width > 160 && el.children.length >= 2;
+            blocks.push({
+              x: Math.round(Math.max(0, r.left)),
+              y: Math.round(Math.max(0, r.top)),
+              w: Math.round(Math.min(r.width, vw)),
+              h: Math.round(Math.min(r.height, vh)),
+              img: isImg,
+            });
+            if (big && !isImg) { for (const c of el.children) walk(c, depth + 1); }
+          };
+          const root = document.querySelector('main, [role="main"], #root > div, #app > div, body > div, body > section');
+          if (root) { for (const c of root.children) walk(c, 0); }
+          else { for (const c of document.body.children) walk(c, 0); }
+          return { blocks, vw, vh };
+        })()
+      `;
+
+      try {
+        webview.executeScript({ code: analysisCode, runAt: "document_idle" }, (results) => {
+          if (chrome.runtime.lastError) { markStable(); return; }
+          const result = Array.isArray(results) ? results[0] : results;
+          if (result?.blocks?.length) {
+            const skeleton = this.storeRealSkeleton(href, result.blocks);
+            if (skeleton) {
+              const previewLayer = this.webviews.get(webviewId)?.divContainer
+                ?.querySelector?.(":scope > .peek-panel > .peek-source-preview");
+              if (previewLayer && !previewLayer.querySelector(".sk-real-block")) {
+                const existing = previewLayer.querySelector(".peek-skeleton");
+                if (existing) existing.remove();
+                previewLayer.appendChild(skeleton);
+              }
+            }
+          }
+          markStable();
+        });
+      } catch (_) {
+        markStable();
+      }
     }
 
     maybeRevealPeekWebview(webviewId) {
@@ -2651,13 +2923,16 @@
       data.webviewRevealPending = true;
       Promise.resolve()
         .then(async () => {
-          const settleDelay = this.getWebviewRevealSettleDelay();
-          if (settleDelay > 0) {
-            await new Promise((resolve) =>
-              window.setTimeout(resolve, settleDelay)
-            );
+          const webview = data?.webview;
+          if (webview?.isConnected) {
+            try {
+              webview.executeScript({
+                code: `void document.body?.offsetHeight;`,
+                runAt: "document_idle",
+              }, () => { void chrome.runtime.lastError; });
+            } catch (_) {}
           }
-          await this.waitForAnimationFrames(2);
+          await this.waitForAnimationFrames(3);
           const current = this.webviews.get(webviewId);
           const currentPanel =
             current?.divContainer?.querySelector?.(":scope > .peek-panel");
@@ -2674,8 +2949,18 @@
           }
           this.showPeekContent(currentPanel);
           this.setPeekWebviewVisibility(currentPanel, true);
-          await this.fadeForegroundLayerOut(currentPanel);
-          this.removePreviewLayer(currentPanel);
+          const previewLayer = currentPanel.querySelector(":scope > .peek-source-preview");
+          if (previewLayer && typeof previewLayer.animate === "function") {
+            const anim = previewLayer.animate(
+              [{ opacity: 1 }, { opacity: 0 }],
+              { duration: 240, easing: "ease-out", fill: "forwards" }
+            );
+            anim.finished
+              .then(() => this.removePreviewLayer(currentPanel))
+              .catch(() => this.removePreviewLayer(currentPanel));
+          } else {
+            this.removePreviewLayer(currentPanel);
+          }
           current.webviewRevealed = true;
           this.installPeekWebviewShortcutGuard(webviewId);
           this.focusPeekWebview(webviewId);
@@ -3910,7 +4195,7 @@
       overlay.style.top = `${Math.round(rect.top)}px`;
       overlay.style.width = `${Math.max(1, Math.round(rect.width))}px`;
       overlay.style.height = `${Math.max(1, Math.round(rect.height))}px`;
-      overlay.style.zIndex = "2147483000";
+      overlay.style.zIndex = "2";
       overlay.style.pointerEvents = "none";
       overlay.style.backgroundImage = `url("${dataUrl}")`;
       overlay.style.backgroundSize = "100% 100%";
@@ -4976,6 +5261,18 @@
 
     #recordLinkSnapshot(event, link = this.#getLinkElement(event)) {
       if (!link) return null;
+
+      try {
+        const url = new URL(link.href);
+        const key = `preconnect-${url.origin}`;
+        if (!document.getElementById(key)) {
+          const preconnect = document.createElement("link");
+          preconnect.id = key;
+          preconnect.rel = "preconnect";
+          preconnect.href = url.origin;
+          (document.head || document.documentElement).appendChild(preconnect);
+        }
+      } catch (_) {}
 
       const recordTarget = this.#getEventRecordTarget(event);
       const rect = this.#getPreviewRect(recordTarget, link);

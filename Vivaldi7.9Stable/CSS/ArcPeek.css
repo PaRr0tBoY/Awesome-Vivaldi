@@ -332,6 +332,431 @@ body.peek-open #browser #webpage-stack {
   opacity: 1;
 }
 
+/* Skeleton shimmer loading */
+
+@keyframes arcpeek-shimmer {
+  0% {
+    background-position: -600px 0;
+  }
+  100% {
+    background-position: 600px 0;
+  }
+}
+
+.peek-source-preview .peek-skeleton {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--colorBg) 92%, black 8%);
+}
+
+.peek-source-preview .sk {
+  background:
+    linear-gradient(
+      90deg,
+      var(--skeleton-base, rgba(128, 128, 128, 0.1)) 25%,
+      var(--skeleton-shine, rgba(255, 255, 255, 0.16)) 50%,
+      var(--skeleton-base, rgba(128, 128, 128, 0.1)) 75%
+    );
+  background-size: 1200px 100%;
+  animation: arcpeek-shimmer 2s infinite linear;
+  border-radius: 3px;
+}
+
+/* ── Header ── */
+
+.sk-zone-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.08);
+}
+
+.sk-logo {
+  width: 80px;
+  height: 20px;
+}
+
+.sk-nav-group {
+  display: flex;
+  gap: 8px;
+}
+
+.sk-nav-item {
+  width: 44px;
+  height: 11px;
+}
+
+.sk-header-btn {
+  width: 60px;
+  height: 24px;
+  border-radius: 4px;
+}
+
+/* ── Hero ── */
+
+.sk-zone-hero {
+  position: relative;
+  height: 28%;
+  min-height: 80px;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 16px 14px;
+  overflow: hidden;
+}
+
+.sk-hero-bg {
+  position: absolute;
+  inset: 0;
+}
+
+.sk-hero-content {
+  position: relative;
+  z-index: 1;
+  width: 55%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sk-hero-tag {
+  width: 56px;
+  height: 10px;
+  border-radius: 10px;
+}
+
+.sk-hero-title {
+  width: 100%;
+  height: 18px;
+}
+
+.sk-hero-title2 {
+  width: 72%;
+  height: 18px;
+}
+
+.sk-hero-sub {
+  width: 85%;
+  height: 10px;
+}
+
+.sk-hero-sub2 {
+  width: 60%;
+  height: 10px;
+}
+
+.sk-hero-cta {
+  width: 80px;
+  height: 26px;
+  border-radius: 4px;
+  margin-top: 2px;
+}
+
+/* ── Sub-nav ── */
+
+.sk-zone-subnav {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.08);
+  padding: 0 16px;
+}
+
+.sk-subnav-item {
+  width: 52px;
+  height: 10px;
+  margin: 10px 12px 10px 0;
+}
+
+/* ── Body grid ── */
+
+.sk-zone-body {
+  display: grid;
+  grid-template-columns: 1fr 30%;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── Main content ── */
+
+.sk-zone-main {
+  padding: 16px;
+  border-right: 1px solid rgba(128, 128, 128, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: hidden;
+}
+
+.sk-section-title {
+  width: 110px;
+  height: 12px;
+}
+
+/* Card grid */
+
+.sk-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.sk-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sk-card-img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 3px;
+}
+
+.sk-card-tag {
+  width: 40px;
+  height: 8px;
+}
+
+.sk-card-t1 {
+  width: 100%;
+  height: 10px;
+}
+
+.sk-card-t2 {
+  width: 75%;
+  height: 10px;
+}
+
+.sk-card-meta {
+  width: 52px;
+  height: 8px;
+}
+
+/* Article list */
+
+.sk-article-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sk-article-item {
+  display: flex;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.06);
+}
+
+.sk-article-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.sk-article-thumb {
+  width: 64px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 3px;
+}
+
+.sk-article-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.sk-art-t {
+  width: 100%;
+  height: 10px;
+}
+
+.sk-art-t2 {
+  width: 80%;
+  height: 10px;
+}
+
+.sk-art-desc {
+  width: 90%;
+  height: 8px;
+}
+
+.sk-art-desc2 {
+  width: 55%;
+  height: 8px;
+}
+
+.sk-art-meta {
+  width: 60px;
+  height: 8px;
+}
+
+/* ── Sidebar ── */
+
+.sk-zone-sidebar {
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  overflow: hidden;
+}
+
+.sk-sidebar-title {
+  width: 70px;
+  height: 11px;
+  margin-bottom: 8px;
+}
+
+.sk-sidebar-card {
+  height: 100px;
+  border-radius: 3px;
+}
+
+.sk-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.06);
+}
+
+.sk-sidebar-item:last-child {
+  border-bottom: none;
+}
+
+.sk-sidebar-num {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.sk-sidebar-line {
+  flex: 1;
+  height: 9px;
+}
+
+.sk-tag-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sk-sidebar-tag {
+  height: 20px;
+  border-radius: 10px;
+}
+
+/* ── Footer ── */
+
+.sk-zone-footer {
+  padding: 16px;
+  border-top: 1px solid rgba(128, 128, 128, 0.08);
+}
+
+.sk-footer-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.sk-footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sk-footer-title {
+  width: 60px;
+  height: 10px;
+  margin-bottom: 2px;
+}
+
+.sk-footer-link {
+  width: 100%;
+  height: 9px;
+}
+
+.sk-footer-link2 {
+  width: 72%;
+  height: 9px;
+}
+
+.sk-footer-link3 {
+  width: 55%;
+  height: 9px;
+}
+
+.sk-footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid rgba(128, 128, 128, 0.06);
+}
+
+.sk-footer-copy {
+  width: 140px;
+  height: 9px;
+}
+
+.sk-footer-social {
+  display: flex;
+  gap: 6px;
+}
+
+.sk-footer-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+/* Breath loading effect — full-layer shimmer sweep */
+
+.peek-source-preview.breath-loading::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.06) 40%,
+      rgba(255, 255, 255, 0.14) 50%,
+      rgba(255, 255, 255, 0.06) 60%,
+      transparent 100%
+    );
+  background-size: 250% 100%;
+  animation: arcpeek-shimmer 2.4s ease-in-out infinite;
+  z-index: 4;
+  pointer-events: none;
+}
+
+/* Real skeleton blocks */
+
+.sk-real-block {
+  position: absolute;
+  border-radius: 4px;
+  background:
+    linear-gradient(
+      90deg,
+      var(--skeleton-base, rgba(128, 128, 128, 0.1)) 25%,
+      var(--skeleton-shine, rgba(255, 255, 255, 0.16)) 50%,
+      var(--skeleton-base, rgba(128, 128, 128, 0.1)) 75%
+    );
+  background-size: 1200px 100%;
+  animation: arcpeek-shimmer 2s infinite linear;
+}
+
+.sk-real-img {
+  border-radius: 6px;
+}
 .peek-container .peek-sidebar-button {
   width: 38px;
   height: 38px;
