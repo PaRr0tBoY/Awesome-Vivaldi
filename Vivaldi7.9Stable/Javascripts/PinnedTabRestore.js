@@ -147,6 +147,12 @@
       _hoveredWrapper = null;
       return;
     }
+    // Always read from the focused tab (keyboard events only fire there)
+    const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true }).catch(() => []);
+    if (activeTab && activeTab.id !== _activeTabId) {
+      _activeTabId = activeTab.id;
+      injectModTracker(_activeTabId);
+    }
     if (_activeTabId) {
       const mods = await readModifiersFromPage(_activeTabId);
       const accel = mods.meta || mods.ctrl;
@@ -162,10 +168,7 @@
     const gen = ++_modTrackGen;
     _hoveredWrapper = wrapper;
     _lastModState = { alt: false, accel: false };
-    _activeTabId = getTabIdFromWrapper(wrapper);
-    console.log(LOG, "[tracking] start", { tabId: _activeTabId, gen });
-    if (_activeTabId) await injectModTracker(_activeTabId);
-    if (_modTrackGen !== gen) return; // superseded by newer call
+    _activeTabId = null;
     if (_modPollId) cancelAnimationFrame(_modPollId);
     pollModifiers();
   }
