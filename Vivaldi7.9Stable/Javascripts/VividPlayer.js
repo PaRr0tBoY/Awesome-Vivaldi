@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         VividPlayer
 // @description  Sidebar bottom media controller inspired by Zen Browser.
-// @version      2026.4.19.1
+// @version      2026.5.4.1
 // @author       Codex
 // ==/UserScript==
 
@@ -23,6 +23,8 @@
     noteSpawnMaxMs: 980,
     noteMaxConcurrent: 2,
     autoPipOnSwitch: true,   // 切换标签页时自动对上一个 tab 触发 PiP
+    minMediaDurationSec: 8,  // 总时长低于此值视为非主要内容（UI音效/广告片段）
+    minVideoArea: 30000,     // 视频面积低于此值视为装饰性（头像/图标/广告条）
   };
 
   const MESSAGE_TYPE = 'vivid-player';
@@ -166,7 +168,7 @@
         tabId, windowId: null, title: '', url: '', favIconUrl: '',
         audible: false, active: false, discarded: false,
         alertStates: new Set(), lastMediaAt: 0, suppressed: false,
-        awaitingQuietAfterSuppress: false,
+        awaitingQuietAfterSuppress: false, pendingPip: false,
         metadata: null, frameId: 0, canPip: false, pictureInPicture: false,
         hasAudibleMedia: false, mediaSessionActive: false, ended: false,
       });
@@ -1144,7 +1146,7 @@
       if (tabState.windowId !== state.currentWindowId) continue;
       if (!hasMedia(tabState) && !isAudioPlaying(tabState)) continue; // 既无 metadata 也无音频
       if (tabState.active || tabState.tabId === state.activeTabId) continue;
-      if (tabState.alertStates.has('pip') || tabState.pictureInPicture) continue;
+      if (tabState.alertStates.has('pip') || tabState.pictureInPicture || tabState.pendingPip) continue;
       if (tabState.suppressed) continue;
       playingSet.add(tabState.tabId);
     }
@@ -1299,8 +1301,11 @@
   function tryAutoPip(tabId) {
     if (!VIVID_PLAYER_CONFIG.autoPipOnSwitch) return false;
     const source = stateByTabId.get(tabId);
-    if (!source || !source.canPip) return false;
+    if (!source) return false;
     if (source.pictureInPicture) return false; // 已在 PiP 中
+    // 标记 pending：PiP 激活前跳过 miniplayer 源选择，避免闪烁
+    source.pendingPip = true;
+    setTimeout(() => { if (source.pendingPip) source.pendingPip = false; }, 2000);
     sendCommand(source.tabId, source.frameId, { action: 'picture-in-picture' });
     return true;
   }
@@ -1311,9 +1316,10 @@
     if (window[bridgeFlag]) return;
     window[bridgeFlag] = true;
 
-    chrome.runtime.onMessage.addListener((info, _sender, _sendResponse) => {
+    chrome.runtime.onMessage.addListener((info, _sender, sendResponse) => {
       if (!info || info.type !== messageType || info.action !== 'command') return;
       window.postMessage({ type: messageType + '-internal', data: info.command });
+      sendResponse({});
     });
 
     window.addEventListener('message', (event) => {
@@ -1410,6 +1416,42 @@
       return false;
     }
 
+    // ── 媒体显著性评分 ──────────────────────────────────────────────────
+    // 借鉴 Zen 的控制器映射思路，通过多维评分过滤非主要内容：
+    // 1. 总时长 <8s → 很可能是 UI 音效或广告片段
+    // 2. 视频面积太小 → 头像动画、装饰元素
+    // 3. 综合评分 <0 → 非显著媒体，优先选择更高评分的源
+
+    function computeMediaSignificance(media) {
+      let score = 0;
+      // 视频面积：大尺寸 = 主要内容
+      if (media.tagName === 'VIDEO') {
+        const area = (media.videoWidth || 0) * (media.videoHeight || 0);
+        if (area >= VIVID_PLAYER_CONFIG.minVideoArea) score += 4;
+        else if (area > 0) score += 1;
+      }
+      // controls 属性 = 用户主动嵌入的内容
+      if (media.controls) score += 3;
+      // MediaSession = 页面自身认定的主媒体
+      if (navigator.mediaSession?.metadata?.title) score += 3;
+      // 总时长评分
+      const dur = media.duration;
+      if (Number.isFinite(dur)) {
+        if (dur > 300) score += 3;        // >5min: 音乐/播客
+        else if (dur > 60) score += 2;    // >1min: 视频内容
+        else if (dur > 15) score += 1;    // >15s: 可能是有意义的内容
+        else if (dur < VIVID_PLAYER_CONFIG.minMediaDurationSec) score -= 2; // <8s: 音效/广告
+      }
+      // 纯音频且无 MediaSession → 背景音乐/通知音，降低权重
+      if (media.tagName === 'AUDIO' && !navigator.mediaSession?.metadata?.title) score -= 1;
+      return score;
+    }
+
+    function isSignificantMedia(media) {
+      if (!media || media.ended) return false;
+      return computeMediaSignificance(media) >= 0;
+    }
+
     function isTrackable(media) { return !!media && !media.ended; }
     function isAudible(media) {
       return !!media && hasAudio(media) && !media.paused && !media.ended && !media.muted && media.volume > 0;
@@ -1428,8 +1470,16 @@
     }
 
     function getCurrentMedia(preferredMedia) {
-      if (preferredMedia && isAudible(preferredMedia) && !isEmbeddedMedia(preferredMedia)) return preferredMedia;
+      if (preferredMedia && isAudible(preferredMedia) && !isEmbeddedMedia(preferredMedia) && isSignificantMedia(preferredMedia)) return preferredMedia;
       const medias = Array.from(document.querySelectorAll('video, audio'));
+      // 优先选择显著媒体（大尺寸、长时长、有 MediaSession）
+      for (let index = medias.length - 1; index >= 0; index -= 1) {
+        if (!isEmbeddedMedia(medias[index]) && isAudible(medias[index]) && isSignificantMedia(medias[index])) return medias[index];
+      }
+      for (let index = medias.length - 1; index >= 0; index -= 1) {
+        if (!isEmbeddedMedia(medias[index]) && isPlayable(medias[index]) && isSignificantMedia(medias[index])) return medias[index];
+      }
+      // fallback：无显著媒体时仍检测（兼容无 MediaSession 的自定义播放器）
       for (let index = medias.length - 1; index >= 0; index -= 1) {
         if (!isEmbeddedMedia(medias[index]) && isAudible(medias[index])) return medias[index];
       }
@@ -1889,6 +1939,7 @@
       tabState.mediaSessionActive = !info.paused;
       tabState.canPip = info.audio === undefined ? !!info.canPip : !info.audio;
       tabState.pictureInPicture = !!info.pictureInPicture;
+      tabState.pendingPip = false; // PiP 状态已确认（激活或关闭），清除 pending
       tabState.ended = false;
       reconcileSuppressedState(tabState, tabState.hasAudibleMedia);
     }
@@ -2017,8 +2068,9 @@
       chooseCandidateSource();
     });
 
-    chrome.runtime.onMessage.addListener((info, sender) => {
+    chrome.runtime.onMessage.addListener((info, sender, sendResponse) => {
       void handleRuntimeMessage(info, sender);
+      sendResponse({});
     });
 
     await refreshWindowSnapshot();

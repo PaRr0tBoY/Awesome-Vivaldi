@@ -11,6 +11,8 @@
 @import "CSS/Quietify.css";
 @import "CSS/PeekTabbar.css";
 @import "CSS/VividPlayer.css";
+@import "CSS/PinnedTabRestore.css";
+@import "CSS/InteractionFeedback.css";
 
 /* Community Mods */
 @import "CSS/DownloadPanel.css";

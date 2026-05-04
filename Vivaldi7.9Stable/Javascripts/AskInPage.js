@@ -1343,7 +1343,18 @@
     if (!normalized || isAskInPageTabUrl(normalized)) {
       return false;
     }
-    return !normalized.startsWith('chrome://') && !normalized.startsWith('vivaldi://');
+    if (
+      normalized.startsWith('chrome://') ||
+      normalized.startsWith('vivaldi://') ||
+      normalized.startsWith('chrome-extension://') ||
+      normalized.startsWith('devtools://') ||
+      normalized === 'about:blank' ||
+      normalized === 'about:srcdoc' ||
+      normalized.startsWith('data:')
+    ) {
+      return false;
+    }
+    return true;
   }
 
   function getAskInPageToolbarButton() {
@@ -2884,7 +2895,7 @@
     const results = await promisifyChrome(chrome.scripting, 'executeScript', [{
       target: {
         tabId: tab.id,
-        allFrames: true,
+        allFrames: false,
       },
       injectImmediately: true,
       func: () => {
@@ -2925,7 +2936,7 @@
     await promisifyChrome(chrome.scripting, 'executeScript', [{
       target: {
         tabId: tab.id,
-        allFrames: true,
+        allFrames: false,
       },
       injectImmediately: true,
       func: () => {
@@ -2957,7 +2968,7 @@
       await promisifyChrome(chrome.scripting, 'executeScript', [{
         target: {
           tabId: tab.id,
-          allFrames: true,
+          allFrames: false,
         },
         injectImmediately: true,
         args: [{
@@ -3193,7 +3204,7 @@
       const results = await promisifyChrome(chrome.scripting, 'executeScript', [{
         target: {
           tabId,
-          allFrames: true,
+          allFrames: false,
         },
         injectImmediately: true,
         args: [config.lightweight ? LIGHTWEIGHT_SNAPSHOT_CONFIG : null],

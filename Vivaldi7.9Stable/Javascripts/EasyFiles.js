@@ -1272,12 +1272,30 @@
     }
   });
 
+  function isScriptableUrl(url) {
+    const s = String(url || '');
+    if (!s) return false;
+    if (
+      s.startsWith('chrome://') ||
+      s.startsWith('vivaldi://') ||
+      s.startsWith('chrome-extension://') ||
+      s.startsWith('devtools://') ||
+      s === 'about:blank' ||
+      s === 'about:srcdoc' ||
+      s.startsWith('data:')
+    ) {
+      return false;
+    }
+    return true;
+  }
+
   gnoh.timeOut(
     () => {
       chrome.tabs.query(
         { windowId: window.vivaldiWindowId, windowType: "normal" },
         (tabs) => {
           tabs.forEach((tab) => {
+            if (!isScriptableUrl(tab.url || tab.pendingUrl)) return;
             chrome.scripting.executeScript({
               target: {
                 tabId: tab.id,
@@ -1285,13 +1303,13 @@
               },
               func: inject,
               args: [nameKey],
-            });
+            }, () => { void chrome.runtime.lastError; });
           });
         }
       );
 
       chrome.webNavigation.onCommitted.addListener((details) => {
-        if (details.tabId !== -1) {
+        if (details.tabId !== -1 && isScriptableUrl(details.url)) {
           chrome.scripting.executeScript({
             target: {
               tabId: details.tabId,
@@ -1299,7 +1317,7 @@
             },
             func: inject,
             args: [nameKey],
-          });
+          }, () => { void chrome.runtime.lastError; });
         }
       });
     },

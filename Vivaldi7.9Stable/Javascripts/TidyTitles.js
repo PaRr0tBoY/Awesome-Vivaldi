@@ -87,6 +87,24 @@
     applyModSettings(event.detail || {});
   });
 
+  // Reprocess tab title when PinnedTabRestore replaces pinned URL
+  document.addEventListener("pinned-tab-url-replaced", (event) => {
+    const { tabId } = event.detail || {};
+    if (!tabId) return;
+    processedTabs.delete(tabId);
+    chrome.tabs.get(tabId, (tab) => {
+      if (chrome.runtime.lastError) return;
+      let viv = {};
+      try { viv = tab.vivExtData ? JSON.parse(tab.vivExtData) : {}; } catch {}
+      // Overwrite fixedTitle with raw title (shows something while AI generates)
+      viv.fixedTitle = tab.title || "";
+      chrome.tabs.update(tabId, { vivExtData: JSON.stringify(viv) }, () => {
+        const wrapper = getLiveTabElement(tabId);
+        if (wrapper) processSingleTab(wrapper, true); // force re-generation
+      });
+    });
+  });
+
   // Language mapping
   const LANGUAGE_MAP = {
     zh: "Chinese",
@@ -380,7 +398,7 @@ Write responses (but not JSON keys) in ${languageName}.`;
   /**
    * Processes a single tab
    */
-  async function processSingleTab(tabElement) {
+  async function processSingleTab(tabElement, force = false) {
     const tabIdStr = tabElement.getAttribute("data-id");
     if (!tabIdStr) return;
 
@@ -419,8 +437,8 @@ Write responses (but not JSON keys) in ${languageName}.`;
         /* ignore */
       }
 
-      // Skip if it already has a fixedTitle
-      if (vivExtData.fixedTitle) {
+      // Skip if it already has a fixedTitle (unless forced re-generation)
+      if (vivExtData.fixedTitle && !force) {
         console.log(
           `[TidyTitles] Tab ${tabId} already has custom title ("${vivExtData.fixedTitle}"), skipping.`
         );

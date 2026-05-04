@@ -1,0 +1,110 @@
+/* Pinned Tab Restore — Zen-style pinned tab URL change indicator */
+
+/* ── Reset pin button: overlays favicon area inside .tab-header ──── */
+
+.tab .tab-header .tab-reset-pin-button {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 30px;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  background: transparent;
+  border: none;
+  border-radius: var(--currentRadius, 6px) 0 0 var(--currentRadius, 6px);
+  padding: 0;
+  pointer-events: auto;
+  transition: background 0.1s ease;
+}
+
+.tab .tab-header .tab-reset-pin-button:hover {
+  background: var(--colorFgAlpha);
+}
+
+.tab .tab-header .tab-reset-pin-button > img {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+
+/* ── Slash divider ───────────────────────────────────────────────── */
+/* favicon ends at 24px, title has padding-left 4px
+   margin-left 6px after favicon, margin-right 2px before title padding
+   so gap is 6px on left, 2+4=6px on right → equal */
+
+.tab .tab-header .pinned-tab-divider {
+  pointer-events: none;
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--colorFgFadedMore);
+  margin-left: 6px;
+  margin-right: 2px;
+  opacity: 0.5;
+  transition: opacity 0.1s ease;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* ── Sublabel ────────────────────────────────────────────────────── */
+
+.tab .tab-header .pinned-tab-sublabel {
+  position: absolute;
+  bottom: 1px;
+  left: 40px;
+  right: 4px;
+  pointer-events: none;
+  font-size: 9px;
+  line-height: 1.2;
+  color: var(--colorFgFaded);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0;
+  transition: opacity 0.1s ease-in-out;
+}
+
+/* ── Title transition ────────────────────────────────────────────── */
+
+.tab-wrapper[pinned-changed="true"] .tab .tab-header .title {
+  transition: transform 0.1s ease-in-out;
+}
+
+/* ── Pinned-changed: show reset button ───────────────────────────── */
+
+.tab-wrapper[pinned-changed="true"] .tab .tab-header .tab-reset-pin-button {
+  display: flex;
+}
+
+/* ── Hover on reset button ───────────────────────────────────────── */
+
+.tab-wrapper[pinned-changed="true"]
+  .tab .tab-header .tab-reset-pin-button:hover > img {
+  opacity: 1;
+}
+
+.tab-wrapper[pinned-changed="true"]
+  .tab .tab-header .tab-reset-pin-button:hover ~ .favicon {
+  opacity: 0 !important;
+}
+
+.tab-wrapper[pinned-changed="true"]
+  .tab .tab-header .tab-reset-pin-button:hover ~ .pinned-tab-divider {
+  opacity: 0;
+}
+
+.tab-wrapper[pinned-changed="true"]
+  .tab .tab-header .tab-reset-pin-button:hover ~ .title {
+  transform: translateY(-6px);
+}
+
+.tab-wrapper[pinned-changed="true"]
+  .tab .tab-header .tab-reset-pin-button:hover ~ .pinned-tab-sublabel {
+  opacity: 0.7;
+}

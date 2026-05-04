@@ -985,6 +985,7 @@
         const finish = (result) => {
           if (settled) return;
           settled = true;
+          window.__arcPeekOpening = false;
           chrome.tabs.onRemoved.removeListener(handleRemoved);
           resolve(result);
         };
@@ -995,6 +996,7 @@
         };
 
         chrome.tabs.onRemoved.addListener(handleRemoved);
+        window.__arcPeekOpening = true;
         chrome.tabs.remove(runtimeTab.id, () => {
           if (chrome.runtime.lastError) {
             finish("error");
@@ -1062,6 +1064,7 @@
       try {
         webview.focus?.();
       } catch (_) {}
+      if (!data.pageStable) return true;
       try {
         webview.executeScript(
           {
@@ -1360,6 +1363,7 @@
       this.hideSidebarControls(sidebarControls);
 
       webview.id = webviewId;
+      window.__arcPeekOpening = true;
       const runtime = await this.createPeekRuntimeTab(webviewId, pendingUrl);
       if (runtime?.tab?.id) {
         webview.tab_id = String(runtime.tab.id);
@@ -1410,6 +1414,8 @@
       });
       webview.addEventListener("loadstop", (event) => {
         updateCurrentPeekUrl(event, { fallbackToWebviewSrc: true });
+        const current = this.webviews.get(webviewId);
+        if (current && !current.pageStable) current.pageStable = true;
         this.installPeekWebviewShortcutGuard(webviewId);
         this.focusPeekWebview(webviewId);
         this.syncPeekNavigationControls(webviewId);
@@ -1524,6 +1530,7 @@
       peekContainer.appendChild(peekPanel);
 
       document.querySelector("#browser").appendChild(peekContainer);
+      window.__arcPeekOpening = false;
       peekContainer.tabIndex = -1;
       window.setTimeout(() => this.focusPeekWebview(webviewId), 0);
 
@@ -4961,7 +4968,7 @@
       return !!this.config?.currentTabIsPinned;
     }
 
-    #shouldAutoOpenLinkEvent(event) {
+    #shouldAutoOpenLinkEvent(event, link) {
       if (!event || event.button !== 0) return false;
 
       const autoOpenList = this.#getAutoOpenList();
@@ -4971,6 +4978,14 @@
         autoOpenList.includes("pin") &&
         this.#isCurrentTabPinned()
       ) {
+        if (link) {
+          try {
+            const linkUrl = new URL(link.href, window.location.href);
+            const linkHostname = linkUrl.hostname.toLowerCase();
+            const currentHostname = window.location.hostname.toLowerCase();
+            if (linkHostname === currentHostname) return false;
+          } catch (_e) {}
+        }
         return true;
       }
 
@@ -5030,7 +5045,7 @@
           this.#recordLinkSnapshot(event, link);
         }
 
-        if (link && this.#shouldAutoOpenLinkEvent(event)) {
+        if (link && this.#shouldAutoOpenLinkEvent(event, link)) {
           this.pendingLeftButtonRelease = true;
           this.pendingSuppressedButton = 0;
           this.#openPeekFromEvent(event);

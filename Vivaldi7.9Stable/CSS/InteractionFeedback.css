@@ -1,0 +1,159 @@
+/* ==UserStyle==
+ * @name         Interaction Feedback
+ * @description  Tiled tab Zen-style merge, drag-to-split avoidance, auto-hide pulse.
+ * @version      2026.5.4
+ * @author       PaRr0tBoY
+ * ==/UserStyle== */
+
+:root {
+  --if-split-bg: color-mix(in srgb, var(--colorBg, #2a2a2a) 90%, var(--colorFg, #ccc));
+  --if-split-active-bg: color-mix(in srgb, var(--colorHighlightBg, #5b8def) 18%, var(--colorBg, #2a2a2a));
+  --if-split-hover-bg: color-mix(in srgb, var(--colorFg, #ccc) 10%, var(--colorBg, #2a2a2a));
+  --if-split-outline: color-mix(in srgb, var(--colorFg, #ccc) 20%, transparent);
+  --if-split-divider: color-mix(in srgb, var(--colorFg, #ccc) 15%, transparent);
+  --if-split-radius: var(--radius, 4px);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Tiled Tab: Zen-Style Merge
+
+   Vivaldi already positions tiled tabs side-by-side via --PositionX.
+   We only add visual styling to make them look like one container:
+   - .if-tiled-bg: injected real element as unified background
+   - Inner tabs: transparent bg, no border-radius
+   - Dividers via ::after on tab-header
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Container background (injected by JS into first tab-position) ── */
+.if-tiled-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 0;
+  border-radius: var(--if-split-radius);
+  background-color: var(--if-split-bg);
+  outline: 1px solid var(--if-split-outline);
+  outline-offset: -1px;
+  transition: background-color 120ms ease;
+}
+
+#browser:not(.tabs-left):not(.tabs-right) .if-tiled-bg {
+  width: var(--if-tiled-total-w);
+  height: 100%;
+}
+
+#browser.tabs-left .if-tiled-bg,
+#browser.tabs-right .if-tiled-bg {
+  width: 100%;
+  height: var(--if-tiled-total-h);
+}
+
+/* ── Active group highlight ── */
+.if-tiled-active.if-tiled-first .if-tiled-bg {
+  background-color: var(--if-split-active-bg);
+}
+
+/* ── Inner tabs: strip individual styling ── */
+.if-tiled-connector .tab {
+  position: relative;
+  z-index: 1;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  outline: none !important;
+}
+
+/* ── Restore outer corners on first/last ── */
+#browser:not(.tabs-left):not(.tabs-right)
+  .tab-position.if-tiled-connector.if-tiled-first .tab {
+  border-top-left-radius: var(--if-split-radius) !important;
+  border-bottom-left-radius: var(--if-split-radius) !important;
+}
+#browser:not(.tabs-left):not(.tabs-right)
+  .tab-position.if-tiled-connector.if-tiled-last .tab {
+  border-top-right-radius: var(--if-split-radius) !important;
+  border-bottom-right-radius: var(--if-split-radius) !important;
+}
+
+#browser.tabs-left .tab-position.if-tiled-connector.if-tiled-first .tab,
+#browser.tabs-right .tab-position.if-tiled-connector.if-tiled-first .tab {
+  border-top-left-radius: var(--if-split-radius) !important;
+  border-top-right-radius: var(--if-split-radius) !important;
+}
+#browser.tabs-left .tab-position.if-tiled-connector.if-tiled-last .tab,
+#browser.tabs-right .tab-position.if-tiled-connector.if-tiled-last .tab {
+  border-bottom-left-radius: var(--if-split-radius) !important;
+  border-bottom-right-radius: var(--if-split-radius) !important;
+}
+
+/* ── Dividers (Zen: ::after on each tab except last) ── */
+#browser:not(.tabs-left):not(.tabs-right)
+  .tab-position.if-tiled-connector:not(.if-tiled-last) .tab .tab-header::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 20%;
+  width: 1px;
+  height: 60%;
+  background-color: var(--if-split-divider);
+  pointer-events: none;
+  z-index: 2;
+}
+
+#browser.tabs-left .tab-position.if-tiled-connector:not(.if-tiled-last) .tab .tab-header::after,
+#browser.tabs-right .tab-position.if-tiled-connector:not(.if-tiled-last) .tab .tab-header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 20%;
+  width: 60%;
+  height: 1px;
+  background-color: var(--if-split-divider);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.if-tiled-connector .tab .tab-header {
+  position: relative;
+}
+
+/* ── Active tab highlight ── */
+.if-tiled-active .tab {
+  background-color: var(--if-split-active-bg) !important;
+}
+
+/* ── Hover ── */
+.if-tiled-connector .tab:hover {
+  background-color: var(--if-split-hover-bg) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Drag-to-Split Avoidance Animation
+   ═══════════════════════════════════════════════════════════════════ */
+
+@keyframes if-slide-in-left {
+  from { transform: translateX(-100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes if-slide-in-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes if-slide-in-top {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes if-slide-in-bottom {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.if-drag-avoidance-overlay {
+  transition: opacity 150ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .if-tiled-bg { transition: none !important; }
+  .if-drag-avoidance-overlay { animation: none !important; }
+}

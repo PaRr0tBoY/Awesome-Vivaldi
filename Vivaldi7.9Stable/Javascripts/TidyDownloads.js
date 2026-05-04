@@ -53,6 +53,19 @@
     });
   }
 
+  function logStartupInfo() {
+    log.info(`========== TidyDownloads Module Starting ==========`);
+    log.info(`API: ${AI_CONFIG.apiEndpoint}`);
+    log.info(`Model: ${AI_CONFIG.model}`);
+    log.info(`Enabled: ${CONFIG.enabled}`);
+    log.info(`Prefer focused tab context: ${CONFIG.preferFocusedTabContext}`);
+    log.info(`Skip keywords: ${CONFIG.skipKeywords.join(", ")}`);
+    log.info(`Skip extensions: ${CONFIG.skipExtensions.join(", ")}`);
+    if (!AI_CONFIG.apiKey) {
+      log.warn(`Please set AI_CONFIG.apiKey to your API key.`);
+    }
+  }
+
   async function loadSharedAiConfig() {
     try {
       const root = await navigator.storage.getDirectory();
@@ -61,11 +74,13 @@
       const file = await fileHandle.getFile();
       applySharedAiConfig(JSON.parse(await file.text()));
     } catch (_error) {}
+    logStartupInfo();
   }
 
   loadSharedAiConfig();
   window.addEventListener("vivaldi-mod-ai-config-updated", (event) => {
     applySharedAiConfig(event.detail || {});
+    logStartupInfo();
   });
 
   // ==================== Script Configuration ====================
@@ -416,17 +431,5 @@ Write responses (but not JSON keys) in English.`;
   }
 
   // ---------- Startup ----------
-  log.info(`========== TidyDownloads Module Starting ==========`);
-  log.info(`API: ${AI_CONFIG.apiEndpoint}`);
-  log.info(`Model: ${AI_CONFIG.model}`);
-  log.info(`Enabled: ${CONFIG.enabled}`);
-  log.info(`Prefer focused tab context: ${CONFIG.preferFocusedTabContext}`);
-  log.info(`Skip keywords: ${CONFIG.skipKeywords.join(", ")}`);
-  log.info(`Skip extensions: ${CONFIG.skipExtensions.join(", ")}`);
-
-  if (!AI_CONFIG.apiKey) {
-    log.warn(`Please set AI_CONFIG.apiKey to your API key.`);
-  }
-
   init();
 })();
