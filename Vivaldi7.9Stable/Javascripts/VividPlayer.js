@@ -17,8 +17,8 @@
     stackGap: 6,
     stackCollapsedOffset1: 7,
     stackCollapsedOffset2: 13,
-    stackCollapsedInset1: 3,
-    stackCollapsedInset2: 6,
+    stackCollapsedInset1: 0,
+    stackCollapsedInset2: 0,
     noteSpawnMinMs: 540,
     noteSpawnMaxMs: 980,
     noteMaxConcurrent: 2,
@@ -921,7 +921,10 @@
       container.append(state.root);
       state.mountedContainer = container;
       if (state.containerResizeObserver) state.containerResizeObserver.disconnect();
-      state.containerResizeObserver = new ResizeObserver(() => updateCompactMode());
+      state.containerResizeObserver = new ResizeObserver(() => {
+        updateCompactMode();
+        updateStackLayout();
+      });
       state.containerResizeObserver.observe(container);
     }
     updateCompactMode();
@@ -1303,6 +1306,7 @@
     const source = stateByTabId.get(tabId);
     if (!source) return false;
     if (source.pictureInPicture) return false; // 已在 PiP 中
+    if (!source.metadata || source.metadata.paused) return false; // 暂停或状态未知 → miniplayer
     // 标记 pending：PiP 激活前跳过 miniplayer 源选择，避免闪烁
     source.pendingPip = true;
     setTimeout(() => { if (source.pendingPip) source.pendingPip = false; }, 2000);
@@ -1528,9 +1532,34 @@
     }
 
     function handlePlaybackEvent(event) {
-      if (!isTrackable(event.target)) return;
-      if (isEmbeddedMedia(event.target)) return;
-      postMediaUpdate(event.type, event.target);
+      const media = event.target;
+      if (isEmbeddedMedia(media)) return;
+
+      if (event.type === 'ended') {
+        window.postMessage({
+          type: messageType,
+          data: { type: messageType, ended: true, eventType: event.type },
+        });
+        return;
+      }
+
+      // 所有事件直接用 event.target 构造消息，不经过 getCurrentMedia
+      // 避免暂停时返回 null 或多媒体页面返回错误元素
+      window.postMessage({
+        type: messageType,
+        data: {
+          type: messageType, eventType: event.type,
+          title: getMediaTitle(), artist: getMediaArtist(),
+          image: getMediaImage(media),
+          paused: media.paused, muted: media.muted,
+          volume: media.volume, duration: media.duration,
+          currentTime: media.currentTime,
+          pictureInPicture: !!document.pictureInPictureElement,
+          audioOnly: !hasVideo(media),
+          hasAudibleMedia: isAudible(media),
+          canPip: canPip(media),
+        },
+      });
     }
 
     function attachMedia(media) {
@@ -1788,6 +1817,11 @@
             }
           }
           break;
+        case 'exit-pip':
+          if (document.pictureInPictureElement) {
+            document.exitPictureInPicture().catch(() => {});
+          }
+          break;
         case 'scroll-into-view':
           if (document.pictureInPictureEnabled && document.pictureInPictureElement) {
             document.exitPictureInPicture().catch(() => {});
@@ -1810,6 +1844,13 @@
     });
 
     scanExistingMedia();
+
+    // 切回标签页时自动退出 PiP，恢复页面内播放
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && document.pictureInPictureElement) {
+        document.exitPictureInPicture().catch(() => {});
+      }
+    });
 
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
