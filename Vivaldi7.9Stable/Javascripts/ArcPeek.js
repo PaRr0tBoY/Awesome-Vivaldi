@@ -1548,12 +1548,10 @@
         effectiveLinkRect,
         webviewId
       );
-      if (!previewAsset?.dataUrl) {
-        peekPanel.classList.add("peek-nebula-loading");
-      }
+      peekPanel.classList.add("peek-nebula-loading");
       this.preparePeekContentForPreview(peekPanel);
       this.setPeekWebviewVisibility(peekPanel, false);
-      if (!previewAsset?.dataUrl) {
+      {
         const wv = peekPanel.querySelector(".peek-content webview");
         if (wv) {
           wv.style.visibility = "";
@@ -1583,35 +1581,39 @@
           }, { once: true });
           wv.addEventListener("loadstop", () => {
             const data = this.webviews.get(webviewId);
-            if (!data || data.isDisposing || data.closingMode || data.webviewRevealed) {
-              console.log("[Nebula] loadstop SKIPPED", { isDisposing: data?.isDisposing, closingMode: data?.closingMode, webviewRevealed: data?.webviewRevealed });
-              return;
-            }
+            if (!data || data.isDisposing || data.closingMode || data.webviewRevealed) return;
             data.webviewRevealed = true;
             if (!contentLoaded) peekContent.style.pointerEvents = "";
+
+            const previewLayer = peekPanel.querySelector(":scope > .peek-source-preview");
             const current = getComputedStyle(peekContent).filter || "none";
-            const hasClass = peekPanel.classList.contains("peek-nebula-loading");
-            console.log("[Nebula] >>> loadstop | contentLoaded=", contentLoaded, "| computed filter=", current, "| inline filter=", peekContent.style.filter, "| inline transition=", peekContent.style.transition, "| hasClass=", hasClass);
-            const anim = peekContent.animate(
-              [
-                { filter: current },
-                { filter: "saturate(100%) brightness(100%) blur(0px)" },
-              ],
-              { duration: 200, easing: "ease-out", fill: "forwards" }
-            );
-            anim.finished.then(() => {
-              console.log("[Nebula] anim finished | computed filter=", getComputedStyle(peekContent).filter, "| inline filter=", peekContent.style.filter);
+
+            // Phase 1: fade out preview layer → reveals nebula-filtered content
+            const fadePreview = previewLayer && typeof previewLayer.animate === "function"
+              ? previewLayer.animate(
+                  [{ opacity: 1 }, { opacity: 0 }],
+                  { duration: 200, easing: "ease-out", fill: "forwards" }
+                ).finished
+              : Promise.resolve();
+
+            fadePreview.then(() => {
+              // Phase 2: clear nebula filter → reveals clear content
+              const anim = peekContent.animate(
+                [
+                  { filter: current },
+                  { filter: "saturate(100%) brightness(100%) blur(0px)" },
+                ],
+                { duration: 200, easing: "ease-out", fill: "forwards" }
+              );
+              return anim.finished;
+            }).then(() => {
               peekContent.style.filter = "none";
               peekContent.style.transition = "";
-              console.log("[Nebula] inline filter=none set | computed=", getComputedStyle(peekContent).filter);
-              // showPeekContent BEFORE class remove — it cancels animations which kills fill:forwards
               this.showPeekContent(peekPanel);
               this.setPeekWebviewVisibility(peekPanel, true);
               this.removePreviewLayer(peekPanel);
               peekPanel.classList.remove("peek-nebula-loading");
-              console.log("[Nebula] DONE | hasClass=", peekPanel.classList.contains("peek-nebula-loading"), "| computed filter=", getComputedStyle(peekContent).filter);
-            }).catch((err) => {
-              console.error("[Nebula] anim CATCH", err);
+            }).catch(() => {
               peekContent.style.filter = "none";
               peekContent.style.transition = "";
               this.showPeekContent(peekPanel);

@@ -284,11 +284,7 @@ body.peek-open #browser #webpage-stack {
   filter: saturate(0%) brightness(75%) blur(4px);
 }
 
-/* Make preview layer transparent so the blurred content shows through */
-.peek-container .peek-panel.peek-nebula-loading > .peek-source-preview {
-  background: transparent;
-}
-
+/* Nebula: keep dark background to fill gaps around screenshot */
 .peek-container .peek-panel.peek-nebula-loading > .peek-source-preview::before {
   opacity: 0;
 }
