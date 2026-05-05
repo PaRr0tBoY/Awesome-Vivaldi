@@ -687,8 +687,16 @@ Write responses (but not JSON keys) in ${languageName}.`;
     const languageName = getLanguageName(getBrowserLanguage());
     const tabInfo = tabs.map((t, i) => `${i + 1}. [${getHostname(t.url || "")}] ${t.title || "Untitled"}`).join("\n");
 
-    const prompt = `Name this browser tab group in 1-4 words. Be concise and specific.
-Language: ${languageName}.
+    console.log(`[TidyTitles] Stack name prompt data:\n${tabInfo}`);
+
+    const prompt = `You are naming a browser tab group. Analyze the tabs to infer what task or project the user is working on, then give it a concise thematic name.
+
+Guidelines:
+- Think about WHY these tabs are grouped together — what work is the user doing?
+- Name the WORK, not the websites. E.g. tabs about React hooks + React docs → "React学习", not "React网站合集"
+- Capture the topic or goal, e.g. "论文调研", "旅行规划", "API集成开发"
+- 1-4 words, in ${languageName}
+- Be specific but not verbose
 
 Tabs:
 ${tabInfo}
@@ -746,6 +754,8 @@ Return JSON: {"name":"the group name"}`;
   async function renameStack(stackId, withColor) {
     const tabs = await getTabsInStack(stackId);
     if (tabs.length < 2) return;
+
+    console.log(`[TidyTitles] Stack "${stackId}" raw tabs:`, tabs.map(t => ({ id: t.id, url: t.url, title: t.title })));
 
     stackIdsRenaming.add(stackId);
     applyStackShimmer(stackId, true);

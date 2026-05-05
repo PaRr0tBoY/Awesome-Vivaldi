@@ -51,7 +51,6 @@
         { key: "longPressHoldDelay", label: "Hold Delay", type: "number", min: 0, step: 10, defaultValue: 200, unit: "ms", help: "Delay before the hold feedback animation starts." },
         { key: "autoOpenList", label: "Auto Open List", type: "list", defaultValue: ["pin", "*.google.com"], placeholder: "pin, *.google.com, *.example.com", help: "Comma-separated rules that auto-open normal left-click links in Peek. Use pin for pinned tabs or domain patterns like *.google.com." },
         { key: "foregroundMode", label: "Foreground Mode", type: "select", options: ["default", "theme"], defaultValue: "theme", help: "Foreground blank layer shown while the webview loads behind it." },
-        { key: "loadingAnimation", label: "Loading Animation", type: "select", options: ["skeleton", "breath", "real", "none"], defaultValue: "skeleton", help: "Loading effect shown while page loads: skeleton (static skeleton), breath (pulsing foreground), real (dynamic skeleton from page structure, cached), none (blank)." },
         { key: "scaleBackgroundPage", label: "Scale Background", type: "boolean", defaultValue: true, help: "Scale and sink the background webpage while Peek is open." },
       ],
     },

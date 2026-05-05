@@ -581,7 +581,9 @@
       if (!wrapper || wrapper.matches(":hover")) return;
       lastPulseTime = now;
       wrapper.classList.add("show");
-      setTimeout(() => wrapper.classList.remove("show"), CONFIG.autoHidePulse.showDurationMs);
+      setTimeout(() => {
+        if (!wrapper.matches(":hover")) wrapper.classList.remove("show");
+      }, CONFIG.autoHidePulse.showDurationMs);
     }
 
     function init() {

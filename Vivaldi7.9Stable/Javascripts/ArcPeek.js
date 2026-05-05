@@ -98,10 +98,6 @@
     // tab strip tabs; keep this disabled until an internal dispatcher path is proven.
     enabled: false,
   };
-  const LOADING_ANIMATION_CONFIG = {
-    // Available: "skeleton", "breath", "real", "none"
-    mode: "skeleton",
-  };
   const MOD_CONFIG_KEY = "arcPeek";
   const MOD_CONFIG_FILE = "config.json";
   const MOD_CONFIG_DIR = ".askonpage";
@@ -131,9 +127,6 @@
     });
     if (source.foregroundMode === "default" || source.foregroundMode === "theme") {
       PEEK_FOREGROUND_CONFIG.mode = source.foregroundMode;
-    }
-    if (["skeleton", "breath", "real", "none"].includes(source.loadingAnimation)) {
-      LOADING_ANIMATION_CONFIG.mode = source.loadingAnimation;
     }
     if (typeof source.scaleBackgroundPage === "boolean") {
       PEEK_BACKGROUND_CONFIG.scaleBackgroundPage = source.scaleBackgroundPage;
@@ -174,7 +167,6 @@
     webviews = new Map();
     previewCache = new Map();
     previewCaptureTasks = new Map();
-    realSkeletonCache = new Map();
     lastRecordedLinkData = null;
     closeShortcutGuard = null;
     iconUtils = new IconUtils();
@@ -1556,8 +1548,80 @@
         effectiveLinkRect,
         webviewId
       );
+      if (!previewAsset?.dataUrl) {
+        peekPanel.classList.add("peek-nebula-loading");
+      }
       this.preparePeekContentForPreview(peekPanel);
       this.setPeekWebviewVisibility(peekPanel, false);
+      if (!previewAsset?.dataUrl) {
+        const wv = peekPanel.querySelector(".peek-content webview");
+        if (wv) {
+          wv.style.visibility = "";
+          wv.style.opacity = "1";
+        }
+        const peekContent = peekPanel.querySelector(".peek-content");
+        if (peekContent && wv) {
+          const setFilter = (blur, sat, bright, dur = "0.4s") => {
+            peekContent.style.transition = `filter ${dur} linear`;
+            peekContent.style.filter = `saturate(${sat}%) brightness(${bright}%) blur(${blur}px)`;
+            console.log(`[Nebula] setFilter blur=${blur} sat=${sat} bright=${bright} dur=${dur} | inline=${peekContent.style.filter} | computed=${getComputedStyle(peekContent).filter}`);
+          };
+          wv.addEventListener("loadstart", () => {
+            console.log("[Nebula] >>> loadstart");
+            setFilter(3, 0, 80);
+          }, { once: true });
+          wv.addEventListener("loadcommit", () => {
+            console.log("[Nebula] >>> loadcommit");
+            setFilter(1.5, 0, 88);
+          }, { once: true });
+          let contentLoaded = false;
+          wv.addEventListener("contentload", () => {
+            contentLoaded = true;
+            console.log("[Nebula] >>> contentload");
+            setFilter(0, 50, 95, "0.6s");
+            peekContent.style.pointerEvents = "";
+          }, { once: true });
+          wv.addEventListener("loadstop", () => {
+            const data = this.webviews.get(webviewId);
+            if (!data || data.isDisposing || data.closingMode || data.webviewRevealed) {
+              console.log("[Nebula] loadstop SKIPPED", { isDisposing: data?.isDisposing, closingMode: data?.closingMode, webviewRevealed: data?.webviewRevealed });
+              return;
+            }
+            data.webviewRevealed = true;
+            if (!contentLoaded) peekContent.style.pointerEvents = "";
+            const current = getComputedStyle(peekContent).filter || "none";
+            const hasClass = peekPanel.classList.contains("peek-nebula-loading");
+            console.log("[Nebula] >>> loadstop | contentLoaded=", contentLoaded, "| computed filter=", current, "| inline filter=", peekContent.style.filter, "| inline transition=", peekContent.style.transition, "| hasClass=", hasClass);
+            const anim = peekContent.animate(
+              [
+                { filter: current },
+                { filter: "saturate(100%) brightness(100%) blur(0px)" },
+              ],
+              { duration: 200, easing: "ease-out", fill: "forwards" }
+            );
+            anim.finished.then(() => {
+              console.log("[Nebula] anim finished | computed filter=", getComputedStyle(peekContent).filter, "| inline filter=", peekContent.style.filter);
+              peekContent.style.filter = "none";
+              peekContent.style.transition = "";
+              console.log("[Nebula] inline filter=none set | computed=", getComputedStyle(peekContent).filter);
+              // showPeekContent BEFORE class remove — it cancels animations which kills fill:forwards
+              this.showPeekContent(peekPanel);
+              this.setPeekWebviewVisibility(peekPanel, true);
+              this.removePreviewLayer(peekPanel);
+              peekPanel.classList.remove("peek-nebula-loading");
+              console.log("[Nebula] DONE | hasClass=", peekPanel.classList.contains("peek-nebula-loading"), "| computed filter=", getComputedStyle(peekContent).filter);
+            }).catch((err) => {
+              console.error("[Nebula] anim CATCH", err);
+              peekContent.style.filter = "none";
+              peekContent.style.transition = "";
+              this.showPeekContent(peekPanel);
+              this.setPeekWebviewVisibility(peekPanel, true);
+              this.removePreviewLayer(peekPanel);
+              peekPanel.classList.remove("peek-nebula-loading");
+            });
+          }, { once: true });
+        }
+      }
       this.armPeekWebviewReveal(peekPanel, webviewId);
       if (previewAsset?.dataUrl) {
         this.setPreviewAnimationState(peekPanel, true);
@@ -2520,205 +2584,9 @@
 
       previewLayer.appendChild(imageLayer);
 
-      if (!hasPreview) {
-        const mode = LOADING_ANIMATION_CONFIG.mode;
-        if (mode === "breath") {
-          previewLayer.classList.add("breath-loading");
-        } else if (mode === "real") {
-          const cached = this.getCachedRealSkeleton(linkRect?.href || "");
-          if (cached) {
-            previewLayer.appendChild(cached);
-          }
-        } else if (mode === "skeleton") {
-          previewLayer.appendChild(this.createSkeletonShimmer());
-        }
-        // "none": no loading indicator
-      }
-
       return previewLayer;
     }
 
-    createSkeletonShimmer() {
-      const sk = (cls) => {
-        const el = document.createElement("div");
-        el.className = `sk ${cls}`;
-        return el;
-      };
-
-      const root = document.createElement("div");
-      root.className = "peek-skeleton";
-
-      // ① Header
-      const header = document.createElement("div");
-      header.className = "sk-zone-header";
-      const navGroup = document.createElement("div");
-      navGroup.className = "sk-nav-group";
-      navGroup.append(sk("sk-nav-item"), sk("sk-nav-item"), sk("sk-nav-item"), sk("sk-nav-item"));
-      header.append(sk("sk-logo"), navGroup, sk("sk-header-btn"));
-
-      // ② Hero
-      const hero = document.createElement("div");
-      hero.className = "sk-zone-hero";
-      hero.appendChild(sk("sk-hero-bg"));
-      const heroContent = document.createElement("div");
-      heroContent.className = "sk-hero-content";
-      heroContent.append(
-        sk("sk-hero-tag"), sk("sk-hero-title"), sk("sk-hero-title2"),
-        sk("sk-hero-sub"), sk("sk-hero-sub2"), sk("sk-hero-cta"),
-      );
-      hero.appendChild(heroContent);
-
-      // ③ Sub-nav
-      const subnav = document.createElement("div");
-      subnav.className = "sk-zone-subnav";
-      for (let i = 0; i < 6; i++) subnav.appendChild(sk("sk-subnav-item"));
-
-      // ④ Body (main + sidebar)
-      const body = document.createElement("div");
-      body.className = "sk-zone-body";
-
-      // Main content
-      const main = document.createElement("div");
-      main.className = "sk-zone-main";
-
-      // Card grid
-      const cardGrid = document.createElement("div");
-      cardGrid.className = "sk-card-grid";
-      for (let i = 0; i < 3; i++) {
-        const card = document.createElement("div");
-        card.className = "sk-card";
-        card.append(sk("sk-card-img"), sk("sk-card-tag"), sk("sk-card-t1"), sk("sk-card-t2"), sk("sk-card-meta"));
-        cardGrid.appendChild(card);
-      }
-
-      // Article list
-      const articleList = document.createElement("div");
-      articleList.className = "sk-article-list";
-      for (let i = 0; i < 3; i++) {
-        const item = document.createElement("div");
-        item.className = "sk-article-item";
-        const right = document.createElement("div");
-        right.className = "sk-article-right";
-        right.append(sk("sk-art-t"), sk("sk-art-t2"), sk("sk-art-desc"), sk("sk-art-desc2"), sk("sk-art-meta"));
-        item.append(sk("sk-article-thumb"), right);
-        articleList.appendChild(item);
-      }
-
-      main.append(sk("sk-section-title"), cardGrid, sk("sk-section-title"), articleList);
-
-      // Sidebar
-      const sidebar = document.createElement("div");
-      sidebar.className = "sk-zone-sidebar";
-
-      // Featured card
-      const sideFeatured = document.createElement("div");
-      sideFeatured.append(sk("sk-sidebar-title"), sk("sk-sidebar-card"));
-
-      // Ranking
-      const sideRanking = document.createElement("div");
-      sideRanking.appendChild(sk("sk-sidebar-title"));
-      for (let i = 0; i < 4; i++) {
-        const item = document.createElement("div");
-        item.className = "sk-sidebar-item";
-        item.append(sk("sk-sidebar-num"), sk("sk-sidebar-line"));
-        sideRanking.appendChild(item);
-      }
-
-      // Tags
-      const sideTags = document.createElement("div");
-      sideTags.appendChild(sk("sk-sidebar-title"));
-      const tagGroup = document.createElement("div");
-      tagGroup.className = "sk-tag-group";
-      [60, 78, 48, 66, 86, 52].forEach((w) => {
-        const tag = sk("sk-sidebar-tag");
-        tag.style.width = `${w}px`;
-        tagGroup.appendChild(tag);
-      });
-      sideTags.appendChild(tagGroup);
-
-      sidebar.append(sideFeatured, sideRanking, sideTags);
-
-      body.append(main, sidebar);
-
-      // ⑤ Footer
-      const footer = document.createElement("div");
-      footer.className = "sk-zone-footer";
-      const footerGrid = document.createElement("div");
-      footerGrid.className = "sk-footer-grid";
-      for (let i = 0; i < 4; i++) {
-        const col = document.createElement("div");
-        col.className = "sk-footer-col";
-        col.append(sk("sk-footer-title"), sk("sk-footer-link"), sk("sk-footer-link2"), sk("sk-footer-link3"), sk("sk-footer-link2"));
-        footerGrid.appendChild(col);
-      }
-      const footerBottom = document.createElement("div");
-      footerBottom.className = "sk-footer-bottom";
-      const footerSocial = document.createElement("div");
-      footerSocial.className = "sk-footer-social";
-      footerSocial.append(sk("sk-footer-icon"), sk("sk-footer-icon"), sk("sk-footer-icon"));
-      footerBottom.append(sk("sk-footer-copy"), footerSocial);
-      footer.append(footerGrid, footerBottom);
-
-      root.append(header, hero, subnav, body, footer);
-      return root;
-    }
-
-    /* ── Real skeleton: cache + DOM analysis ── */
-
-    getRealSkeletonCacheKey(href) {
-      if (!href) return "";
-      try {
-        return new URL(href).origin;
-      } catch (_) {
-        return href;
-      }
-    }
-
-    getCachedRealSkeleton(href) {
-      const key = this.getRealSkeletonCacheKey(href);
-      if (!key || !this.realSkeletonCache.has(key)) return null;
-      const cached = this.realSkeletonCache.get(key);
-      if (Date.now() - cached.createdAt > 10 * 60 * 1000) {
-        this.realSkeletonCache.delete(key);
-        return null;
-      }
-      const container = document.createElement("div");
-      container.innerHTML = cached.html;
-      return container.firstElementChild;
-    }
-
-    storeRealSkeleton(href, layout) {
-      const key = this.getRealSkeletonCacheKey(href);
-      if (!key) return;
-      const skeleton = this.generateRealSkeletonFromLayout(layout);
-      this.realSkeletonCache.set(key, {
-        html: skeleton.outerHTML,
-        createdAt: Date.now(),
-      });
-      return skeleton;
-    }
-
-    generateRealSkeletonFromLayout(blocks) {
-      const container = document.createElement("div");
-      container.style.cssText = "position:absolute;inset:0;pointer-events:none;overflow:hidden;";
-
-      const maxBlocks = 40;
-      const sorted = blocks
-        .filter((b) => b.w > 20 && b.h > 8)
-        .sort((a, b) => a.y - b.y || a.x - b.x)
-        .slice(0, maxBlocks);
-
-      sorted.forEach((block, i) => {
-        const el = document.createElement("div");
-        el.className = block.img ? "sk-real-block sk-real-img" : "sk-real-block";
-        el.style.cssText =
-          `left:${block.x}px;top:${block.y}px;width:${block.w}px;height:${block.h}px;` +
-          `animation-delay:${(i * 0.04).toFixed(2)}s;`;
-        container.appendChild(el);
-      });
-
-      return container;
-    }
 
     mountPreviewLayer(peekPanel, sourcePreviewUrl, linkRect, webviewId) {
       if (!peekPanel) return null;
@@ -2777,6 +2645,7 @@
 
     finalizePeekOpening(peekPanel, webviewId) {
       const data = this.webviews.get(webviewId);
+      console.log("[Finalize] called | webviewRevealed=", data?.webviewRevealed, "| pageStable=", data?.pageStable, "| openingState=", data?.openingState);
       if (!data || data.isDisposing || data.closingMode || !peekPanel?.isConnected) {
         return;
       }
@@ -2791,6 +2660,7 @@
         webviewId,
         peekPanel.querySelector(".peek-sidebar-controls")
       );
+      console.log("[Finalize] about to call maybeReveal | webviewRevealed=", data?.webviewRevealed, "| pageStable=", data?.pageStable, "| openingState=", data?.openingState);
       this.maybeRevealPeekWebview(webviewId);
       this.focusPeekWebview(webviewId);
     }
@@ -2831,89 +2701,20 @@
       const webview = data?.webview;
       if (!peekPanel || !webview || !data) return;
 
-      const markStable = () => {
+      webview.addEventListener("loadstop", () => {
         const current = this.webviews.get(webviewId);
         if (!current || current.isDisposing) return;
         current.pageStable = true;
+        console.log("[ArmReveal] loadstop | webviewRevealed=", current.webviewRevealed, "| pageStable=", current.pageStable, "| openingState=", current.openingState);
         this.maybeRevealPeekWebview(webviewId);
-      };
-
-      if (LOADING_ANIMATION_CONFIG.mode === "real") {
-        webview.addEventListener("loadstop", () => {
-          this.analyzeRealSkeletonThenReveal(webview, webviewId, markStable);
-        }, { once: true });
-      } else {
-        webview.addEventListener("loadstop", markStable, { once: true });
-      }
+      }, { once: true });
     }
 
-    analyzeRealSkeletonThenReveal(webview, webviewId, markStable) {
-      const data = this.webviews.get(webviewId);
-      const href = data?.currentUrl || data?.initialUrl || "";
-
-      if (this.getCachedRealSkeleton(href)) {
-        markStable();
-        return;
-      }
-
-      const analysisCode = `
-        (() => {
-          const vw = window.innerWidth || 800;
-          const vh = window.innerHeight || 600;
-          const blocks = [];
-          const skip = new Set(['SCRIPT','STYLE','LINK','META','NOSCRIPT','SVG','PATH','BR','HR']);
-          const walk = (el, depth) => {
-            if (!el || depth > 8 || skip.has(el.tagName)) return;
-            const r = el.getBoundingClientRect();
-            if (!r.width || !r.height || r.width < 24 || r.height < 10) return;
-            if (r.bottom < -10 || r.top > vh + 10 || r.right < -10 || r.left > vw + 10) return;
-            const area = r.width * r.height;
-            const pageArea = vw * vh;
-            if (area / pageArea > 0.92) { for (const c of el.children) walk(c, depth + 1); return; }
-            const isImg = el.tagName === 'IMG' || el.tagName === 'PICTURE' || el.tagName === 'VIDEO';
-            const big = r.height > 80 && r.width > 160 && el.children.length >= 2;
-            blocks.push({
-              x: Math.round(Math.max(0, r.left)),
-              y: Math.round(Math.max(0, r.top)),
-              w: Math.round(Math.min(r.width, vw)),
-              h: Math.round(Math.min(r.height, vh)),
-              img: isImg,
-            });
-            if (big && !isImg) { for (const c of el.children) walk(c, depth + 1); }
-          };
-          const root = document.querySelector('main, [role="main"], #root > div, #app > div, body > div, body > section');
-          if (root) { for (const c of root.children) walk(c, 0); }
-          else { for (const c of document.body.children) walk(c, 0); }
-          return { blocks, vw, vh };
-        })()
-      `;
-
-      try {
-        webview.executeScript({ code: analysisCode, runAt: "document_idle" }, (results) => {
-          if (chrome.runtime.lastError) { markStable(); return; }
-          const result = Array.isArray(results) ? results[0] : results;
-          if (result?.blocks?.length) {
-            const skeleton = this.storeRealSkeleton(href, result.blocks);
-            if (skeleton) {
-              const previewLayer = this.webviews.get(webviewId)?.divContainer
-                ?.querySelector?.(":scope > .peek-panel > .peek-source-preview");
-              if (previewLayer && !previewLayer.querySelector(".sk-real-block")) {
-                const existing = previewLayer.querySelector(".peek-skeleton");
-                if (existing) existing.remove();
-                previewLayer.appendChild(skeleton);
-              }
-            }
-          }
-          markStable();
-        });
-      } catch (_) {
-        markStable();
-      }
-    }
 
     maybeRevealPeekWebview(webviewId) {
       const data = this.webviews.get(webviewId);
       const peekPanel = data?.divContainer?.querySelector?.(":scope > .peek-panel");
+      console.log("[MaybeReveal] called | webviewRevealed=", data?.webviewRevealed, "| webviewRevealPending=", data?.webviewRevealPending, "| openingState=", data?.openingState, "| pageStable=", data?.pageStable, "| closingMode=", data?.closingMode);
       if (
         !data ||
         data.isDisposing ||
@@ -2924,6 +2725,7 @@
         !data.pageStable ||
         !peekPanel?.isConnected
       ) {
+        console.log("[MaybeReveal] SKIPPED");
         return;
       }
 
@@ -2954,8 +2756,31 @@
           ) {
             return;
           }
-          this.showPeekContent(currentPanel);
-          this.setPeekWebviewVisibility(currentPanel, true);
+          const isNebula = currentPanel.classList.contains("peek-nebula-loading");
+          currentPanel.classList.remove("peek-nebula-loading");
+          if (isNebula) {
+            const peekContent = currentPanel.querySelector(".peek-content");
+            if (peekContent && typeof peekContent.animate === "function") {
+              // Capture current filter from progressive stages, then clear it
+              const current = getComputedStyle(peekContent).filter || "none";
+              peekContent.style.filter = "";
+              peekContent.style.transition = "";
+              peekContent.animate(
+                [
+                  { filter: current },
+                  { filter: "saturate(100%) brightness(100%) blur(0px)" },
+                ],
+                { duration: 300, easing: "cubic-bezier(0.2, 0.8, 0.4, 1)", fill: "forwards" }
+              );
+            }
+            setTimeout(() => {
+              this.showPeekContent(currentPanel);
+              this.setPeekWebviewVisibility(currentPanel, true);
+            }, 60);
+          } else {
+            this.showPeekContent(currentPanel);
+            this.setPeekWebviewVisibility(currentPanel, true);
+          }
           const previewLayer = currentPanel.querySelector(":scope > .peek-source-preview");
           if (previewLayer && typeof previewLayer.animate === "function") {
             const anim = previewLayer.animate(
