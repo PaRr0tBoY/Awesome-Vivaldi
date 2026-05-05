@@ -196,6 +196,75 @@
     state.root.dataset.compact = width > 0 && width < VIVID_PLAYER_CONFIG.compactMinWidth ? 'true' : 'false';
   }
 
+  // ─── Title 滚动动画 ─────────────────────────────────────────────────────
+
+  const titleScrollTimers = new WeakMap();
+
+  function startTitleScroll(el) {
+    stopTitleScroll(el);
+    const scrollMax = el.scrollWidth - el.clientWidth;
+    if (scrollMax <= 0) return;
+
+    const initialDelayMs = 800;   // hover 后等待再开始滚动
+    const pauseMs = 1200;         // 滚到头/尾后停留
+    const speedPxPerSec = 45;     // 滚动速度
+    const scrollDuration = (scrollMax / speedPxPerSec) * 1000;
+    let phase = 'initial-delay';  // initial-delay → scrolling → pause-end → rewind → pause-start
+    let startTime = performance.now();
+
+    function tick(now) {
+      const elapsed = now - startTime;
+
+      if (phase === 'initial-delay') {
+        el.scrollLeft = 0;
+        if (elapsed >= initialDelayMs) {
+          phase = 'scrolling';
+          startTime = now;
+        }
+      } else if (phase === 'scrolling') {
+        const t = Math.min(elapsed / scrollDuration, 1);
+        const ease = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+        el.scrollLeft = ease * scrollMax;
+        if (t >= 1) {
+          phase = 'pause-end';
+          startTime = now;
+        }
+      } else if (phase === 'pause-end') {
+        el.scrollLeft = scrollMax;
+        if (elapsed >= pauseMs) {
+          phase = 'rewind';
+          startTime = now;
+        }
+      } else if (phase === 'rewind') {
+        const t = Math.min(elapsed / (scrollDuration * 0.4), 1);
+        el.scrollLeft = (1 - t) * scrollMax;
+        if (t >= 1) {
+          phase = 'pause-start';
+          startTime = now;
+        }
+      } else if (phase === 'pause-start') {
+        el.scrollLeft = 0;
+        if (elapsed >= pauseMs) {
+          phase = 'scrolling';
+          startTime = now;
+        }
+      }
+
+      titleScrollTimers.set(el, requestAnimationFrame(tick));
+    }
+
+    titleScrollTimers.set(el, requestAnimationFrame(tick));
+  }
+
+  function stopTitleScroll(el) {
+    const raf = titleScrollTimers.get(el);
+    if (raf != null) {
+      cancelAnimationFrame(raf);
+      titleScrollTimers.delete(el);
+    }
+    el.scrollLeft = 0;
+  }
+
   function scheduleHiddenState() {
     if (!state.root) return;
     if (state.hideTimer) { clearTimeout(state.hideTimer); state.hideTimer = null; }
@@ -278,6 +347,11 @@
         animation: vivid-note-float var(--note-dur, 1.4s) ease-out forwards;
         will-change: transform, opacity;
         user-select: none;
+      }
+      /* title 溢出时：块级化 + 去掉省略号，让 scrollLeft 生效 */
+      .vivid-player-title[overflow] {
+        display: block;
+        text-overflow: clip;
       }
     `;
     document.head.appendChild(style);
@@ -439,23 +513,34 @@
     noteLayer.setAttribute('aria-hidden', 'true');
     stack.appendChild(noteLayer);
 
-    // Hover 展开/折叠（多卡时才展开）；同时控制音符动画
+    // Hover 展开/折叠（多卡时才展开）；同时控制音符动画和标题滚动
     stack.addEventListener('mouseenter', () => {
       state.isHovered = true;
       syncHoveredClass();
-      stopNoteAnimation(); // hover 期间停止音符动画（设计要求）
+      stopNoteAnimation();
       if (state.activeSources.length > 1) {
         animateStackTransition(true);
+      }
+      // 启动所有可见 card 的标题滚动
+      for (const refs of state.cardSlots) {
+        if (refs?.card?.style.display !== 'none' && refs.titleEl?.hasAttribute('overflow')) {
+          startTitleScroll(refs.titleEl);
+        }
       }
     });
     stack.addEventListener('mouseleave', () => {
       state.isHovered = false;
       syncHoveredClass();
       animateStackTransition(false);
-      // 离开后，如果主卡仍在播放则恢复音符动画
       const primarySource = stateByTabId.get(state.activeSources[0]);
       if (isPrimarySourceAudible(primarySource)) {
         startNoteAnimation();
+      }
+      // 停止所有标题滚动并回弹到初始位置
+      for (const refs of state.cardSlots) {
+        if (refs?.titleEl) {
+          stopTitleScroll(refs.titleEl);
+        }
       }
     });
 
@@ -1042,6 +1127,15 @@
     refs.titleEl.title = title;
     refs.subtitleEl.textContent = subtitle;
     refs.subtitleEl.title = subtitle;
+    // title 溢出检测（只标记属性，滚动由 hover 事件控制）
+    requestAnimationFrame(() => {
+      const el = refs.titleEl;
+      if (el.scrollWidth > el.clientWidth + 2) {
+        el.setAttribute('overflow', '');
+      } else {
+        el.removeAttribute('overflow');
+      }
+    });
     refs.currentTimeEl.textContent = formatTime(currentTime);
     refs.durationEl.textContent = formatTime(duration);
     if (!refs.suppressSync) refs.progressEl.value = String(percent);
@@ -1145,12 +1239,15 @@
 
   function chooseCandidateSource() {
     const playingSet = new Set();
+    const currentActiveSet = new Set(state.activeSources);
     for (const tabState of stateByTabId.values()) {
       if (tabState.windowId !== state.currentWindowId) continue;
-      if (!hasMedia(tabState) && !isAudioPlaying(tabState)) continue; // 既无 metadata 也无音频
+      if (!hasMedia(tabState) && !isAudioPlaying(tabState)) continue;
       if (tabState.active || tabState.tabId === state.activeTabId) continue;
       if (tabState.alertStates.has('pip') || tabState.pictureInPicture || tabState.pendingPip) continue;
       if (tabState.suppressed) continue;
+      // 新候选必须有声音（排除预览卡片）；已在 activeSources 中的不受影响（用户可能通过 miniplayer 静音）
+      if (!currentActiveSet.has(tabState.tabId) && !tabState.audible) continue;
       playingSet.add(tabState.tabId);
     }
 

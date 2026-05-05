@@ -140,6 +140,10 @@
   text-overflow: ellipsis;
 }
 
+#vivid-player .vivid-player-title[overflow] {
+  text-overflow: clip;
+}
+
 #vivid-player .vivid-player-title {
   font-size: 13px;
   font-weight: 650;
