@@ -71,7 +71,6 @@
   z-index: 1;
   overflow: hidden;
   border-radius: inherit;
-  transition: opacity 0.2s ease;
 }
 
 #browser #webpage-stack {
@@ -244,14 +243,13 @@ body.peek-open #browser #webpage-stack {
   will-change: transform, opacity;
 
   &[data-has-finished-animation="true"] {
-    position: relative !important;
-    width: 80% !important;
-    height: 100% !important;
-    left: auto !important;
-    top: auto !important;
-    right: auto !important;
-    bottom: auto !important;
-    margin: auto !important;
+    left: 10% !important;
+    right: 10% !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
     transform: none !important;
     box-shadow:
       0 28px 80px rgba(0, 0, 0, 0.38),
@@ -276,24 +274,61 @@ body.peek-open #browser #webpage-stack {
   }
 }
 
-/* Nebula Mode 5 — progressive filter on peek-content */
+/* Nebula Mode 5 — progressive filter on peek-content
+   opacity is NOT set here — showNebulaOnLoad sets it on real loadstart */
 .peek-container .peek-panel.peek-nebula-loading .peek-content {
-  opacity: 1 !important;
   visibility: visible !important;
   pointer-events: none;
-  filter: saturate(0%) brightness(75%) blur(4px);
+  filter: saturate(18%) brightness(90%) blur(2.2px);
 }
 
-/* Nebula: keep dark background to fill gaps around screenshot */
-.peek-container .peek-panel.peek-nebula-loading > .peek-source-preview::before {
+/* Hide webview background during loading — panel color shows through */
+.peek-container .peek-panel.peek-nebula-loading .peek-content webview {
+  background: transparent !important;
+}
+
+/* Nebula: progress bar (inside panel, above content's filter stacking context) */
+.nebula-progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--colorHighlightBg, #729b79), transparent);
+  box-shadow: 0 0 8px var(--colorHighlightBg, #729b79), 0 0 2px var(--colorHighlightBg, #729b79);
+  border-radius: 1px;
+  transition: width 0.4s ease-out;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.nebula-progress-bar.nebula-progress-done {
   opacity: 0;
+  transition:
+    width 0.18s ease-out,
+    opacity 0.24s ease-out;
+}
+
+.nebula-dispersal-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 42;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 50% 46%, color-mix(in srgb, var(--colorBg) 8%, transparent) 0 36%, transparent 70%),
+    color-mix(in srgb, var(--colorBg) 5%, transparent);
+  backdrop-filter: blur(7px) saturate(0.76) brightness(1.01);
+  -webkit-backdrop-filter: blur(7px) saturate(0.76) brightness(1.01);
+  will-change: opacity, transform, filter, clip-path;
+  transform: translateZ(0);
 }
 
 .peek-container .peek-source-preview {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 3;
+  z-index: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -402,6 +437,8 @@ body.peek-open #browser #webpage-stack {
 .peek-container .peek-sidebar-button.copy-link-button svg {
   width: 26px;
   height: 26px;
+  padding: 2px;
+  box-sizing: border-box;
 }
 
 .peek-container .peek-sidebar-button.arcpeek-feedback-reload svg {
@@ -426,6 +463,8 @@ body.peek-open #browser #webpage-stack {
 .peek-container .peek-sidebar-button.arcpeek-feedback-copy svg {
   width: 24px;
   height: 24px;
+  padding: 2px;
+  box-sizing: border-box;
   animation: arcpeek-copy-morph 0.38s cubic-bezier(0.16, 0.88, 0.22, 1) both;
 }
 
@@ -542,7 +581,8 @@ body.peek-open #browser #webpage-stack {
 }
 
 .peek-container .peek-open-actions:hover .peek-open-actions-menu,
-.peek-container .peek-open-actions:focus-within .peek-open-actions-menu {
+.peek-container .peek-open-actions:focus-within .peek-open-actions-menu,
+.peek-container .peek-sidebar-controls.peek-initial-expand .peek-open-actions-menu {
   opacity: 1;
   pointer-events: auto;
   transform: translateX(0) scale(1);

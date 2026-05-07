@@ -21,12 +21,12 @@
   ];
 
   const CONFIG_PANELS = [
+    { key: "workspaceThemeSwitcher", label: "Workspace Theme" },
     { key: "ai", label: "AI Config" },
     { key: "quickCapture", label: "Quick Capture" },
     { key: "arcPeek", label: "Arc Peek" },
     { key: "autoHidePanel", label: "Auto Hide Panel" },
     { key: "tidySeries", label: "Tidy Series" },
-    { key: "workspaceThemeSwitcher", label: "Workspace Theme" },
   ];
 
   const MOD_SETTING_SCHEMAS = {
@@ -50,7 +50,6 @@
         { key: "longPressHoldTime", label: "Hold Time", type: "number", min: 0, step: 10, defaultValue: 400, unit: "ms", help: "How long the button must be held before Peek opens." },
         { key: "longPressHoldDelay", label: "Hold Delay", type: "number", min: 0, step: 10, defaultValue: 200, unit: "ms", help: "Delay before the hold feedback animation starts." },
         { key: "autoOpenList", label: "Auto Open List", type: "list", defaultValue: ["pin", "*.google.com"], placeholder: "pin, *.google.com, *.example.com", help: "Comma-separated rules that auto-open normal left-click links in Peek. Use pin for pinned tabs or domain patterns like *.google.com." },
-        { key: "foregroundMode", label: "Foreground Mode", type: "select", options: ["default", "theme"], defaultValue: "theme", help: "Foreground blank layer shown while the webview loads behind it." },
         { key: "scaleBackgroundPage", label: "Scale Background", type: "boolean", defaultValue: true, help: "Scale and sink the background webpage while Peek is open." },
       ],
     },
@@ -76,9 +75,10 @@
     },
     workspaceThemeSwitcher: {
       title: "Workspace Theme Switcher",
-      hint: "Map each workspace to a Vivaldi theme. Workspaces without a mapping use your current theme.",
+      hint: "Map each workspace to a Vivaldi theme. Workspaces without a mapping use the saved default theme.",
       fields: [
-        { key: "workspaceThemeMap", label: "Workspace → Theme", type: "workspaceThemeMap", defaultValue: {}, help: "Left column lists your workspaces. Right column lets you pick a Vivaldi theme for each. Unmapped workspaces keep your current theme." },
+        { key: "defaultThemeId", label: "Default Theme", type: "themeSelect", defaultValue: "", help: "Theme used for unmapped workspaces. If empty, WorkspaceThemeSwitcher captures the current theme on first run and saves it in OPFS." },
+        { key: "workspaceThemeMap", label: "Workspace → Theme", type: "workspaceThemeMap", defaultValue: {}, help: "Left column lists your workspaces. Right column lets you pick a Vivaldi theme for each. Unmapped workspaces use Default Theme." },
       ],
     },
   };
@@ -167,6 +167,16 @@
     return config;
   }
 
+  function cloneSettingDefault(value) {
+    if (Array.isArray(value)) {
+      return value.slice();
+    }
+    if (value && typeof value === "object") {
+      return JSON.parse(JSON.stringify(value));
+    }
+    return value;
+  }
+
   function parseListValue(value) {
     return String(value || "")
       .split(/[\n,]/)
@@ -183,6 +193,10 @@
     };
   }
 
+  function unwrapPrefValue(value) {
+    return value && value.value !== undefined ? value.value : value;
+  }
+
   function getModDefaults(modKey) {
     const schema = MOD_SETTING_SCHEMAS[modKey];
     if (!schema) {
@@ -190,7 +204,7 @@
     }
     return Object.fromEntries(schema.fields.map((field) => [
       field.key,
-      Array.isArray(field.defaultValue) ? field.defaultValue.slice() : field.defaultValue,
+      cloneSettingDefault(field.defaultValue),
     ]));
   }
 
@@ -235,6 +249,12 @@
       if (field.type === "workspaceThemeMap") {
         if (value && typeof value === "object" && !Array.isArray(value)) {
           output[field.key] = value;
+        }
+        return;
+      }
+      if (field.type === "themeSelect") {
+        if (typeof value === "string") {
+          output[field.key] = value.trim();
         }
         return;
       }
@@ -704,12 +724,13 @@
     const values = normalizeModBlock(modKey, config.mods?.[modKey]);
     grid.innerHTML = schema.fields.map((field) => renderModField(field, values[field.key])).join("");
     if (modKey === "workspaceThemeSwitcher") {
-      initWorkspaceThemeMap(section, config);
+      initWorkspaceThemeSettings(section, config);
     }
   }
 
-  async function initWorkspaceThemeMap(section, config) {
+  async function initWorkspaceThemeSettings(section, config) {
     const container = section.querySelector("[data-workspace-theme-map]");
+    const defaultContainer = section.querySelector("[data-theme-select]");
     if (!container) return;
 
     try {
@@ -717,11 +738,26 @@
         vivaldi.prefs.get("vivaldi.workspaces.list"),
         vivaldi.prefs.get("vivaldi.themes.system"),
         vivaldi.prefs.get("vivaldi.themes.user"),
-      ]);
+      ].map((promise) => promise.then(unwrapPrefValue)));
 
       const wsList = Array.isArray(workspaces) ? workspaces : [];
       const themes = [...(systemThemes || []), ...(userThemes || [])];
-      const currentMap = config.mods?.workspaceThemeSwitcher?.workspaceThemeMap || {};
+      const settings = normalizeModBlock("workspaceThemeSwitcher", config.mods?.workspaceThemeSwitcher);
+      const currentMap = settings.workspaceThemeMap || {};
+
+      if (defaultContainer) {
+        const defaultValue = settings.defaultThemeId || "";
+        const defaultOptionsHtml = themes.map((t) => {
+          const sel = t.id === defaultValue ? " selected" : "";
+          return `<option value="${escapeHtml(t.id)}"${sel}>${escapeHtml(t.name)}</option>`;
+        }).join("");
+        defaultContainer.innerHTML = `
+          <select class="mod-config-select" data-mod-setting="defaultThemeId">
+            <option value="">Capture current theme on first run</option>
+            ${defaultOptionsHtml}
+          </select>
+        `;
+      }
 
       if (wsList.length === 0) {
         container.innerHTML = '<div class="mod-config-wt-loading">No workspaces found.</div>';
@@ -819,6 +855,16 @@
         ${label}
         <div class="mod-config-workspace-theme-map" data-workspace-theme-map="${escapeHtml(field.key)}">
           <div class="mod-config-wt-loading">Loading workspaces and themes...</div>
+        </div>
+      `;
+    }
+    if (field.type === "themeSelect") {
+      return `
+        ${label}
+        <div class="mod-config-inline-field" data-theme-select="${escapeHtml(field.key)}">
+          <select class="mod-config-select" data-mod-setting="${escapeHtml(field.key)}">
+            <option value="${escapeHtml(value || "")}">Loading themes...</option>
+          </select>
         </div>
       `;
     }
@@ -1393,7 +1439,6 @@
         align-items: center;
         gap: 8px;
       }
-      #${SECTION_ID} .mod-config-save,
       #${SECTION_ID} .mod-config-restore-common,
       #${SECTION_ID} .mod-config-import,
       #${SECTION_ID} .mod-config-export {
@@ -1412,19 +1457,6 @@
         box-shadow: none;
         cursor: pointer;
         vertical-align: middle;
-      }
-      #${SECTION_ID} .mod-config-save {
-        border: 1px solid var(--colorHighlightBg);
-        border-radius: var(--radiusHalf);
-        background: var(--colorHighlightBg);
-        color: var(--colorHighlightFg);
-        font-weight: 600;
-      }
-      #${SECTION_ID} .mod-config-save:hover {
-        filter: brightness(1.06);
-      }
-      #${SECTION_ID} .mod-config-save:active {
-        filter: brightness(0.96);
       }
       #${SECTION_ID} .mod-config-restore-common {
         border: 1px solid var(--colorBorder);
@@ -1663,7 +1695,6 @@
         </div>
         <span class="mod-config-status"></span>
         <button type="button" class="mod-config-restore-common" hidden>Restore Common</button>
-        <button type="button" class="mod-config-save">Save</button>
       </div>
     `;
     return section;
@@ -1673,11 +1704,38 @@
     refreshStorageStatus(section);
     let config = await readConfig();
     refreshStorageStatus(section);
-    setTopPanel(section, "ai");
+
+    async function persistConfig(collectFromForm) {
+      try {
+        if (collectFromForm) {
+          const panelKey = getInput(section, "configPanel").value || "ai";
+          if (panelKey === "ai") {
+            updateConfigFromForm(config, section);
+          } else {
+            config.mods[panelKey] = collectModSettings(section, panelKey);
+          }
+        }
+        await writeConfig(config);
+        dispatchConfigUpdated(config);
+        refreshStorageStatus(section);
+      } catch (error) {
+        setStatus(section, "Auto-save failed: " + (error?.message || "Unknown error"), "error");
+      }
+    }
+    setTopPanel(section, "workspaceThemeSwitcher");
+    getInput(section, "configPanel").dataset.prevPanel = "workspaceThemeSwitcher";
     fillForm(section, config, COMMON_KEY);
-    renderModSettingsForm(section, config, "quickCapture");
+    renderModSettingsForm(section, config, "workspaceThemeSwitcher");
     getInput(section, "configPanel").addEventListener("change", () => {
       const panelKey = getInput(section, "configPanel").value || "ai";
+      const prevPanel = getInput(section, "configPanel").dataset.prevPanel || "ai";
+      if (prevPanel === "ai") {
+        updateConfigFromForm(config, section);
+      } else {
+        config.mods[prevPanel] = collectModSettings(section, prevPanel);
+      }
+      persistConfig(false);
+      getInput(section, "configPanel").dataset.prevPanel = panelKey;
       setTopPanel(section, panelKey);
       if (panelKey !== "ai") {
         renderModSettingsForm(section, config, panelKey);
@@ -1686,6 +1744,7 @@
     });
     getInput(section, "module").addEventListener("change", () => {
       fillForm(section, config, getSelectedModule(section));
+      persistConfig(true);
     });
     getInput(section, "provider").addEventListener("change", () => {
       const moduleKey = getSelectedModule(section);
@@ -1697,6 +1756,7 @@
       if (!nextProviderKey) {
         applyBlockToForm(section, getCustomFallbackBlock(config, moduleKey));
         section.dataset.resetToCommon = "";
+        persistConfig(true);
         return;
       }
       const provider = getProvider(nextProviderKey);
@@ -1710,12 +1770,21 @@
       section.dataset.resetToCommon = "";
       updateRestoreCommonVisibility(section);
       hideModelList(section);
+      persistConfig(true);
     });
     getInput(section, "model").addEventListener("focus", () => {
       fetchModelsForForm(section);
     });
+    let persistTimer = null;
+    function debouncedPersist() {
+      clearTimeout(persistTimer);
+      persistTimer = setTimeout(() => persistConfig(true), 500);
+    }
     ["apiEndpoint", "apiKey", "model"].forEach((name) => {
-      getInput(section, name).addEventListener("input", () => rememberCustomDraft(section));
+      getInput(section, name).addEventListener("input", () => {
+        rememberCustomDraft(section);
+        debouncedPersist();
+      });
     });
     getInput(section, "model").addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
@@ -1730,6 +1799,7 @@
       event.preventDefault();
       getInput(section, "model").value = option.dataset.model || "";
       hideModelList(section);
+      persistConfig(true);
     });
     section.addEventListener("click", (event) => {
       const fileButton = event.target.closest("[data-mod-file-picker]");
@@ -1771,6 +1841,7 @@
             option.dataset.selected = values.has(option.dataset.value) ? "true" : "false";
           });
           updateSettingDropdownLabel(dropdown);
+          input.dispatchEvent(new Event("change", { bubbles: true }));
           return;
         }
         input.value = value;
@@ -1779,6 +1850,7 @@
         });
         updateSettingDropdownLabel(dropdown);
         hideDropdowns(section);
+        input.dispatchEvent(new Event("change", { bubbles: true }));
         return;
       }
       const option = event.target.closest(".mod-config-dropdown-option");
@@ -1795,7 +1867,8 @@
     });
     section.querySelector(".mod-config-restore-common").addEventListener("click", () => {
       restoreCommonForm(section, config);
-      setStatus(section, "Common AI Config restored. Click Save to apply.", "ok");
+      persistConfig(true);
+      setStatus(section, "Common AI Config restored.", "ok");
     });
     section.querySelector(".mod-config-export").addEventListener("click", () => {
       exportConfigFile(section, config);
@@ -1844,13 +1917,20 @@
       });
     });
     section.addEventListener("change", (event) => {
-      const input = event.target.closest("[data-mod-setting]");
-      if (!input || input.type !== "checkbox") {
+      const target = event.target;
+      const panelKey = getInput(section, "configPanel").value || "ai";
+      if (panelKey === "ai") {
         return;
       }
-      const label = input.closest(".mod-config-switch")?.querySelector("span");
-      if (label) {
-        label.textContent = input.checked ? "Enabled" : "Disabled";
+      if (target.closest("[data-mod-setting]") || target.closest("[data-ws-theme]")) {
+        if (target.type === "checkbox") {
+          const label = target.closest(".mod-config-switch")?.querySelector("span");
+          if (label) {
+            label.textContent = target.checked ? "Enabled" : "Disabled";
+          }
+        }
+        config.mods[panelKey] = collectModSettings(section, panelKey);
+        persistConfig(false);
       }
     });
     document.addEventListener("mousedown", (event) => {
@@ -1865,24 +1945,6 @@
       input.type = showing ? "password" : "text";
       event.currentTarget.title = showing ? "Show API Key" : "Hide API Key";
       event.currentTarget.setAttribute("aria-label", event.currentTarget.title);
-    });
-    section.querySelector(".mod-config-save").addEventListener("click", async () => {
-      try {
-        const panelKey = getInput(section, "configPanel").value || "ai";
-        if (panelKey === "ai") {
-          updateConfigFromForm(config, section);
-        } else {
-          config.mods[panelKey] = collectModSettings(section, panelKey);
-        }
-        await writeConfig(config);
-        config = await readConfig();
-        refreshCurrentPanel(section, config);
-        dispatchConfigUpdated(config);
-        setStatus(section, panelKey === "ai" ? "Saved and applied to new AI requests." : "Saved and applied to this mod.", "ok");
-        refreshStorageStatus(section);
-      } catch (error) {
-        setStatus(section, "Save failed: " + (error?.message || "Unknown error"), "error");
-      }
     });
   }
 

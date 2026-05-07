@@ -65,13 +65,6 @@
   // =========================
   // Visual Config
   // =========================
-  const PEEK_FOREGROUND_CONFIG = {
-    // Foreground blank layer shown while the webview loads behind it.
-    // Available values:
-    // "default" => light/dark blank color that follows system appearance
-    // "theme" => uses Vivaldi theme color var(--colorBgFaded)
-    mode: "theme",
-  };
 
   const PEEK_BACKGROUND_CONFIG = {
     // Whether the background webpage should scale/sink while Peek is open.
@@ -125,9 +118,6 @@
         ICON_CONFIG[key] = value;
       }
     });
-    if (source.foregroundMode === "default" || source.foregroundMode === "theme") {
-      PEEK_FOREGROUND_CONFIG.mode = source.foregroundMode;
-    }
     if (typeof source.scaleBackgroundPage === "boolean") {
       PEEK_BACKGROUND_CONFIG.scaleBackgroundPage = source.scaleBackgroundPage;
     }
@@ -529,14 +519,7 @@
     }
 
     getPeekForegroundBackground() {
-      if (PEEK_FOREGROUND_CONFIG.mode === "theme") {
-        return "var(--colorBg)";
-      }
-
-      const isDarkMode = window.matchMedia?.(
-        "(prefers-color-scheme: dark)"
-      )?.matches;
-      return isDarkMode ? "rgb(28, 28, 30)" : "rgb(247, 247, 248)";
+      return "color-mix(in srgb, var(--colorBg) 92%, black 8%)";
     }
 
     getPanelPointerBlockerTarget() {
@@ -650,6 +633,10 @@
 
       if (data.tabCloseListener) {
         chrome.tabs.onRemoved.removeListener(data.tabCloseListener);
+      }
+      if (data.runtimeLoadListener) {
+        chrome.tabs.onUpdated.removeListener(data.runtimeLoadListener);
+        data.runtimeLoadListener = null;
       }
       if (data.panelPointerBlocker && data.fromPanel) {
         (
@@ -999,6 +986,57 @@
       });
     }
 
+    armPeekRuntimeTabLoadTracking(webviewId, tabId) {
+      const data = this.webviews.get(webviewId);
+      const runtimeTabId = Number(tabId);
+      if (!data || !Number.isFinite(runtimeTabId) || runtimeTabId <= 0) return;
+
+      if (data.runtimeLoadListener) {
+        chrome.tabs.onUpdated.removeListener(data.runtimeLoadListener);
+      }
+
+      const handleUpdated = (updatedTabId, changeInfo = {}) => {
+        if (updatedTabId !== runtimeTabId) return;
+        const current = this.webviews.get(webviewId);
+        if (!current || current.isDisposing) {
+          chrome.tabs.onUpdated.removeListener(handleUpdated);
+          return;
+        }
+        if (this.isUsablePeekUrl(changeInfo.url)) {
+          this.recordPeekNavigation(webviewId, changeInfo.url);
+        }
+        if (changeInfo.status === "loading") {
+          current.realNavigationStarted = true;
+        }
+        if (changeInfo.status === "complete") {
+          current.realNavigationStarted = true;
+          current.pageStable = true;
+          if (current.openingState === "finished") {
+            current.finishNebula?.();
+            this.maybeRevealPeekWebview(webviewId);
+          }
+          chrome.tabs.onUpdated.removeListener(handleUpdated);
+          if (current.runtimeLoadListener === handleUpdated) {
+            current.runtimeLoadListener = null;
+          }
+        }
+      };
+
+      data.runtimeLoadListener = handleUpdated;
+      chrome.tabs.onUpdated.addListener(handleUpdated);
+      this.getTab(runtimeTabId).then((tab) => {
+        if (chrome.runtime.lastError || !tab?.id) return;
+        const current = this.webviews.get(webviewId);
+        if (!current || current.isDisposing) return;
+        if (tab.status === "loading") {
+          current.realNavigationStarted = true;
+        }
+        if (tab.status === "complete") {
+          handleUpdated(runtimeTabId, { status: "complete", url: tab.url });
+        }
+      });
+    }
+
     async closeLastPeek() {
       this.reconcilePeeks();
       if (!this.webviews.size) return;
@@ -1200,7 +1238,8 @@
     }
 
     showPeek(linkUrl, fromPanel, linkRect = undefined, meta = undefined) {
-      this.buildPeek(linkUrl, fromPanel, linkRect, meta).catch(() => {
+      this.buildPeek(linkUrl, fromPanel, linkRect, meta).catch((err) => {
+        console.error("[ArcPeek] buildPeek failed:", err);
         this.setPeekSourceLinkVisibility(linkRect?.sourceToken, false);
       });
     }
@@ -1355,25 +1394,13 @@
       this.hideSidebarControls(sidebarControls);
 
       webview.id = webviewId;
+      webview.style.opacity = "0";
+      webview.style.visibility = "hidden";
+      webview.style.pointerEvents = "none";
+      const currentData = this.webviews.get(webviewId);
+      if (currentData) currentData.pendingUrl = pendingUrl;
       window.__arcPeekOpening = true;
-      const runtime = await this.createPeekRuntimeTab(webviewId, pendingUrl);
-      if (runtime?.tab?.id) {
-        webview.tab_id = String(runtime.tab.id);
-        webview.setAttribute("tab_id", String(runtime.tab.id));
-        webview.setAttribute("parent_tab_id", "0");
-        webview.setAttribute("name", "vivaldi-arcpeek");
-        const currentData = this.webviews.get(webviewId);
-        if (currentData) {
-          currentData.relatedTabId = runtime.tab.id;
-          currentData.relatedPanelId = runtime.panelId;
-        }
-      } else {
-        webview.tab_id = `${webviewId}tabId`;
-        webview.setAttribute("src", "about:blank");
-      }
-      if (!runtime?.tab?.id) {
-        webview.dataset.pendingSrc = pendingUrl;
-      }
+      const runtimePromise = this.createPeekRuntimeTab(webviewId, pendingUrl);
 
       const updateCurrentPeekUrl = (event, options = {}) => {
         const { fallbackToWebviewSrc = false, requireTopLevel = false } = options;
@@ -1407,7 +1434,10 @@
       webview.addEventListener("loadstop", (event) => {
         updateCurrentPeekUrl(event, { fallbackToWebviewSrc: true });
         const current = this.webviews.get(webviewId);
-        if (current && !current.pageStable) current.pageStable = true;
+        // Only mark pageStable after opening animation finishes AND real URL loaded
+        if (current && !current.pageStable && current.openingState === "finished" && current.realNavigationStarted) {
+          current.pageStable = true;
+        }
         this.installPeekWebviewShortcutGuard(webviewId);
         this.focusPeekWebview(webviewId);
         this.syncPeekNavigationControls(webviewId);
@@ -1431,6 +1461,28 @@
           true
         );
       });
+
+      const runtime = await runtimePromise;
+      const runtimeData = this.webviews.get(webviewId);
+      if (runtime?.tab?.id && runtimeData) {
+        webview.tab_id = String(runtime.tab.id);
+        webview.setAttribute("tab_id", String(runtime.tab.id));
+        webview.setAttribute("parent_tab_id", "0");
+        webview.setAttribute("name", "vivaldi-arcpeek");
+        runtimeData.relatedTabId = runtime.tab.id;
+        runtimeData.relatedPanelId = runtime.panelId;
+        runtimeData.currentUrl = pendingUrl;
+        runtimeData.realNavigationStarted = true;
+        delete runtimeData.pendingUrl;
+        this.armPeekRuntimeTabLoadTracking(webviewId, runtime.tab.id);
+        if (runtime.tab.status === "complete") {
+          runtimeData.pageStable = true;
+        }
+      } else {
+        webview.tab_id = `${webviewId}tabId`;
+        webview.setAttribute("src", "about:blank");
+        webview.dataset.pendingSrc = pendingUrl;
+      }
 
       peekContainer.setAttribute("class", "peek-container");
       peekContainer.dataset.motion = "js";
@@ -1553,78 +1605,164 @@
       this.setPeekWebviewVisibility(peekPanel, false);
       {
         const wv = peekPanel.querySelector(".peek-content webview");
-        if (wv) {
-          wv.style.visibility = "";
-          wv.style.opacity = "1";
-        }
         const peekContent = peekPanel.querySelector(".peek-content");
         if (peekContent && wv) {
-          const setFilter = (blur, sat, bright, dur = "0.4s") => {
-            peekContent.style.transition = `filter ${dur} linear`;
-            peekContent.style.filter = `saturate(${sat}%) brightness(${bright}%) blur(${blur}px)`;
-            console.log(`[Nebula] setFilter blur=${blur} sat=${sat} bright=${bright} dur=${dur} | inline=${peekContent.style.filter} | computed=${getComputedStyle(peekContent).filter}`);
-          };
-          wv.addEventListener("loadstart", () => {
-            console.log("[Nebula] >>> loadstart");
-            setFilter(3, 0, 80);
-          }, { once: true });
-          wv.addEventListener("loadcommit", () => {
-            console.log("[Nebula] >>> loadcommit");
-            setFilter(1.5, 0, 88);
-          }, { once: true });
+          const progressBar = document.createElement("div");
+          progressBar.className = "nebula-progress-bar";
+          peekPanel.appendChild(progressBar);
+
+          // navigationStarted means the opening animation has handed off to Nebula.
+          let navigationStarted = false;
+          let nebulaCleanupScheduled = false;
+          let latestProgressValue = 0;
+          let latestProgress = "0%";
+          let latestFilter = { blur: 2.2, sat: 18, bright: 90, dur: "0.48s" };
+          let latestFilterStage = 0;
+          let navigationCommitted = false;
           let contentLoaded = false;
+          let loadStopped = false;
+
+          const canApplyNebula = () => {
+            const d = this.webviews.get(webviewId);
+            return !!d && !d.nebulaFinished && d.openingState === "finished" && navigationStarted;
+          };
+          const setProgress = (pct, options = {}) => {
+            const nextValue = Math.max(0, Math.min(100, Number.parseFloat(pct) || 0));
+            latestProgressValue = options.force
+              ? nextValue
+              : Math.max(latestProgressValue, nextValue);
+            latestProgress = `${latestProgressValue}%`;
+            if (!options.force && !canApplyNebula()) return;
+            progressBar.style.width = latestProgress;
+          };
+          const setFilter = (blur, sat, bright, dur = "0.4s", stage = 0) => {
+            if (stage < latestFilterStage) return;
+            latestFilterStage = stage;
+            latestFilter = { blur, sat, bright, dur };
+            if (!canApplyNebula()) return;
+            peekContent.style.transition = `filter ${dur} cubic-bezier(0.16, 0.88, 0.22, 1)`;
+            peekContent.style.filter = `saturate(${sat}%) brightness(${bright}%) blur(${blur}px)`;
+          };
+          const applyLatestNebulaState = () => {
+            if (!canApplyNebula()) return;
+            setProgress(latestProgress);
+            setFilter(
+              latestFilter.blur,
+              latestFilter.sat,
+              latestFilter.bright,
+              latestFilter.dur,
+              latestFilterStage
+            );
+          };
+
+          wv.addEventListener("loadstart", () => {
+            const d = this.webviews.get(webviewId);
+            if (d) d.realNavigationStarted = true;
+            setProgress("15%");
+            setFilter(2.2, 18, 90, "0.48s", 1);
+          });
+          wv.addEventListener("loadcommit", () => {
+            navigationCommitted = true;
+            const d = this.webviews.get(webviewId);
+            if (d) d.realNavigationStarted = true;
+            if (canApplyNebula()) {
+              this.setPeekWebviewVisibility(peekPanel, true);
+            }
+            setProgress("40%");
+            setFilter(1.05, 48, 96, "0.52s", 2);
+          });
           wv.addEventListener("contentload", () => {
             contentLoaded = true;
-            console.log("[Nebula] >>> contentload");
-            setFilter(0, 50, 95, "0.6s");
-            peekContent.style.pointerEvents = "";
-          }, { once: true });
+            const d = this.webviews.get(webviewId);
+            if (d) d.realNavigationStarted = true;
+            if (canApplyNebula()) {
+              this.setPeekWebviewVisibility(peekPanel, true);
+            }
+            setProgress("80%");
+            setFilter(0.25, 88, 99, "0.72s", 3);
+          });
           wv.addEventListener("loadstop", () => {
+            loadStopped = true;
+            const d = this.webviews.get(webviewId);
+            if (d) {
+              d.realNavigationStarted = true;
+              d.pageStable = true;
+            }
+            setProgress("100%");
+            setFilter(0, 100, 100, "0.72s", 4);
+            if (canApplyNebula() && !nebulaCleanupScheduled) {
+              nebulaCleanupScheduled = true;
+              setTimeout(() => finishNebula(), 900);
+            }
+          });
+
+          const revealNebulaContent = () => {
+            navigationStarted = true;
             const data = this.webviews.get(webviewId);
             if (!data || data.isDisposing || data.closingMode || data.webviewRevealed) return;
             data.webviewRevealed = true;
-            if (!contentLoaded) peekContent.style.pointerEvents = "";
-
-            const previewLayer = peekPanel.querySelector(":scope > .peek-source-preview");
-            const current = getComputedStyle(peekContent).filter || "none";
-
-            // Phase 1: fade out preview layer → reveals nebula-filtered content
-            const fadePreview = previewLayer && typeof previewLayer.animate === "function"
-              ? previewLayer.animate(
-                  [{ opacity: 1 }, { opacity: 0 }],
-                  { duration: 200, easing: "ease-out", fill: "forwards" }
-                ).finished
-              : Promise.resolve();
-
-            fadePreview.then(() => {
-              // Phase 2: clear nebula filter → reveals clear content
-              const anim = peekContent.animate(
-                [
-                  { filter: current },
-                  { filter: "saturate(100%) brightness(100%) blur(0px)" },
-                ],
-                { duration: 200, easing: "ease-out", fill: "forwards" }
-              );
-              return anim.finished;
-            }).then(() => {
-              peekContent.style.filter = "none";
-              peekContent.style.transition = "";
-              this.showPeekContent(peekPanel);
+            if (latestProgressValue === 0) {
+              latestProgressValue = data.realNavigationStarted ? 20 : 8;
+              latestProgress = `${latestProgressValue}%`;
+            }
+            applyLatestNebulaState();
+            peekContent.style.opacity = "1";
+            peekContent.style.pointerEvents = "";
+            if (navigationCommitted || contentLoaded || data.pageStable) {
               this.setPeekWebviewVisibility(peekPanel, true);
-              this.removePreviewLayer(peekPanel);
+              this.fadeForegroundLayerOut(peekPanel, 180);
+            } else if (data.realNavigationStarted) {
+              window.setTimeout(() => {
+                const current = this.webviews.get(webviewId);
+                if (
+                  current &&
+                  !current.isDisposing &&
+                  !current.closingMode &&
+                  !current.nebulaFinished &&
+                  navigationStarted
+                ) {
+                  this.setPeekWebviewVisibility(peekPanel, true);
+                  this.fadeForegroundLayerOut(peekPanel, 180);
+                }
+              }, 220);
+            }
+            if (loadStopped || data.pageStable) {
+              finishNebula();
+            }
+          };
+
+          const finishNebula = () => {
+            const data = this.webviews.get(webviewId);
+            if (!data || data.isDisposing || data.closingMode || data.nebulaFinished) return;
+            if (data.openingState !== "finished") return;
+            setProgress("100%", { force: true });
+            data.nebulaFinished = true;
+            data.webviewRevealed = true;
+            peekContent.style.opacity = "1";
+            peekContent.style.pointerEvents = "";
+            this.setPeekWebviewVisibility(peekPanel, true);
+            this.fadeForegroundLayerOut(peekPanel, 180);
+            this.disperseNebulaLayer(peekPanel, peekContent).finally(() => {
+              if (!peekPanel.isConnected) return;
+              peekContent.style.filter = "saturate(100%) brightness(100%) blur(0px)";
+              peekContent.style.transition = "none";
               peekPanel.classList.remove("peek-nebula-loading");
-            }).catch(() => {
-              peekContent.style.filter = "none";
-              peekContent.style.transition = "";
-              this.showPeekContent(peekPanel);
-              this.setPeekWebviewVisibility(peekPanel, true);
-              this.removePreviewLayer(peekPanel);
-              peekPanel.classList.remove("peek-nebula-loading");
+              requestAnimationFrame(() => {
+                if (!peekPanel.isConnected) return;
+                peekContent.style.filter = "";
+                peekContent.style.transition = "";
+              });
+              progressBar.classList.add("nebula-progress-done");
+              window.setTimeout(() => progressBar.remove(), 260);
             });
-          }, { once: true });
+          };
+
+          const wvData = this.webviews.get(webviewId);
+          wvData.revealNebulaContent = revealNebulaContent;
+          wvData.finishNebula = finishNebula;
+
         }
       }
-      this.armPeekWebviewReveal(peekPanel, webviewId);
       if (previewAsset?.dataUrl) {
         this.setPreviewAnimationState(peekPanel, true);
       }
@@ -2071,7 +2209,13 @@
         windowId,
       });
 
-      const tab = await this.createTab(createProperties);
+      window.__vmodSuppressTabToast = true;
+      let tab;
+      try {
+        tab = await this.createTab(createProperties);
+      } finally {
+        window.__vmodSuppressTabToast = false;
+      }
       const error = chrome.runtime.lastError?.message || "";
       this.logOpenAction("runtime-tab:create:done", {
         webviewId,
@@ -2645,24 +2789,32 @@
       ]);
     }
 
-    finalizePeekOpening(peekPanel, webviewId) {
+    async finalizePeekOpening(peekPanel, webviewId) {
       const data = this.webviews.get(webviewId);
-      console.log("[Finalize] called | webviewRevealed=", data?.webviewRevealed, "| pageStable=", data?.pageStable, "| openingState=", data?.openingState);
       if (!data || data.isDisposing || data.closingMode || !peekPanel?.isConnected) {
         return;
       }
-      if (data) {
-        data.openingState = "finished";
-      }
-      peekPanel?.setAttribute("data-has-finished-animation", "true");
-      this.releasePeekPanelLayout(peekPanel);
+      data.openingState = "finished";
+
+      peekPanel.setAttribute("data-has-finished-animation", "true");
       this.setPreviewAnimationState(peekPanel, false);
       this.setPreviewClosingState(peekPanel, false);
       this.showSidebarControls(
         webviewId,
         peekPanel.querySelector(".peek-sidebar-controls")
       );
-      console.log("[Finalize] about to call maybeReveal | webviewRevealed=", data?.webviewRevealed, "| pageStable=", data?.pageStable, "| openingState=", data?.openingState);
+
+      // Start nebula (sets navigationStarted flag, reveals content div with filter)
+      if (data.revealNebulaContent) data.revealNebulaContent();
+
+      const webview = data.webview;
+      if (webview) {
+        this.armPeekWebviewReveal(peekPanel, webviewId);
+        if (webview.dataset.pendingSrc) {
+          this.startPeekNavigation(webview, webviewId);
+        }
+      }
+
       this.maybeRevealPeekWebview(webviewId);
       this.focusPeekWebview(webviewId);
     }
@@ -2706,8 +2858,10 @@
       webview.addEventListener("loadstop", () => {
         const current = this.webviews.get(webviewId);
         if (!current || current.isDisposing) return;
-        current.pageStable = true;
-        console.log("[ArmReveal] loadstop | webviewRevealed=", current.webviewRevealed, "| pageStable=", current.pageStable, "| openingState=", current.openingState);
+        // Only mark pageStable after opening animation finishes
+        if (current.openingState === "finished") {
+          current.pageStable = true;
+        }
         this.maybeRevealPeekWebview(webviewId);
       }, { once: true });
     }
@@ -2716,7 +2870,6 @@
     maybeRevealPeekWebview(webviewId) {
       const data = this.webviews.get(webviewId);
       const peekPanel = data?.divContainer?.querySelector?.(":scope > .peek-panel");
-      console.log("[MaybeReveal] called | webviewRevealed=", data?.webviewRevealed, "| webviewRevealPending=", data?.webviewRevealPending, "| openingState=", data?.openingState, "| pageStable=", data?.pageStable, "| closingMode=", data?.closingMode);
       if (
         !data ||
         data.isDisposing ||
@@ -2727,7 +2880,6 @@
         !data.pageStable ||
         !peekPanel?.isConnected
       ) {
-        console.log("[MaybeReveal] SKIPPED");
         return;
       }
 
@@ -3072,7 +3224,64 @@
       return animation.finished.then(() => {
         if (!previewLayer.isConnected) return;
         previewLayer.style.opacity = "0";
+        this.removePreviewLayer(peekPanel);
       }).catch(() => {});
+    }
+
+    disperseNebulaLayer(peekPanel, peekContent) {
+      if (!peekPanel?.isConnected || !peekContent) return Promise.resolve();
+
+      const currentFilter = getComputedStyle(peekContent).filter || "none";
+      peekContent.style.transition = "";
+      peekContent.style.filter = currentFilter;
+
+      const hazeLayer = document.createElement("div");
+      hazeLayer.className = "nebula-dispersal-layer";
+      peekPanel.appendChild(hazeLayer);
+
+      const contentAnimation =
+        typeof peekContent.animate === "function"
+          ? peekContent.animate(
+              [
+                { filter: currentFilter },
+                { filter: "saturate(100%) brightness(100%) blur(0px)" },
+              ],
+              {
+                duration: 520,
+                easing: "cubic-bezier(0.16, 0.88, 0.22, 1)",
+                fill: "forwards",
+              }
+            ).finished
+          : Promise.resolve();
+
+      const hazeAnimation =
+        typeof hazeLayer.animate === "function"
+          ? hazeLayer.animate(
+              [
+                {
+                  opacity: 0.22,
+                  transform: "scale(0.992)",
+                  filter: "blur(2px)",
+                  clipPath: "circle(76% at 50% 50%)",
+                },
+                {
+                  opacity: 0,
+                  transform: "scale(1.035)",
+                  filter: "blur(14px)",
+                  clipPath: "circle(118% at 50% 50%)",
+                },
+              ],
+              {
+                duration: 760,
+                easing: "cubic-bezier(0.16, 0.88, 0.22, 1)",
+                fill: "forwards",
+              }
+            ).finished
+          : Promise.resolve();
+
+      return Promise.allSettled([contentAnimation, hazeAnimation]).then(() => {
+        hazeLayer.remove();
+      });
     }
 
     preparePreviewLayerForClosing(peekPanel) {
@@ -3447,6 +3656,10 @@
       if (!thisElement || thisElement.childElementCount > 0) return;
       thisElement.style.opacity = "1";
       thisElement.style.pointerEvents = "auto";
+      setTimeout(() => {
+        thisElement.classList.add("peek-initial-expand");
+        setTimeout(() => thisElement.classList.remove("peek-initial-expand"), 2000);
+      }, 200);
 
       const buttons = [
         {
@@ -4220,7 +4433,13 @@
           await this.disposePeek(webviewId, { animated: false, closeRuntimeTab: false });
           return;
         }
-        const tab = await this.createTab({ url: url, active: false });
+        window.__vmodSuppressTabToast = true;
+        let tab;
+        try {
+          tab = await this.createTab({ url: url, active: false });
+        } finally {
+          window.__vmodSuppressTabToast = false;
+        }
         this.logOpenAction("open-action:new-tab:fallback-create", {
           webviewId,
           active,
@@ -5287,8 +5506,8 @@
       splitView: '<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><path d="M64 64C28.7 64 0 92.7 0 128V384c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64H64zm160 64V384H64V128H224zm64 256V128H448V384H288z"/></svg>',
       openHere: '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M200-120q-33 0-56.5-23.5T120-200v-120h80v120h560v-480H200v120h-80v-200q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm260-140-56-56 83-84H120v-80h367l-83-84 56-56 180 180-180 180Z"/></svg>',
       backgroundTab: '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M320-80q-33 0-56.5-23.5T240-160v-80h-80q-33 0-56.5-23.5T80-320v-80h80v80h80v-320q0-33 23.5-56.5T320-720h320v-80h-80v-80h80q33 0 56.5 23.5T720-800v80h80q33 0 56.5 23.5T880-640v480q0 33-23.5 56.5T800-80H320Zm0-80h480v-480H320v480ZM80-480v-160h80v160H80Zm0-240v-80q0-33 23.5-56.5T160-880h80v80h-80v80H80Zm240-80v-80h160v80H320Zm0 640v-480 480Z"/></svg>',
-      copyLink: '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" style="padding:3;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link2-icon lucide-link-2"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></svg>',
-      check: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" style="padding:3;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon"><path d="M20 6 9 17l-5-5"/></svg>',
+      copyLink: '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link2-icon lucide-link-2"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></svg>',
+      check: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon"><path d="M20 6 9 17l-5-5"/></svg>',
     };
 
     static VIVALDI_BUTTONS = [

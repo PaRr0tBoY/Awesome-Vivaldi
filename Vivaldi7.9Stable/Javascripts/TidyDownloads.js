@@ -83,6 +83,25 @@
     logStartupInfo();
   });
 
+  const showToast = (message, options = {}) => {
+    window.VModToast?.show(message, { module: "TidyDownloads", ...options });
+  };
+
+  const isEnglishUi = () => {
+    const lang = chrome.i18n?.getUILanguage?.() || navigator.language || "";
+    return String(lang).toLowerCase().startsWith("en");
+  };
+
+  const toastText = (key, data = {}) => {
+    const en = isEnglishUi();
+    const text = {
+      renamed: en
+        ? `Renamed: ${data.newName}`
+        : `已重命名: ${data.newName}`,
+    };
+    return text[key] || key;
+  };
+
   // ==================== Script Configuration ====================
   const CONFIG = {
     // Enable AI renaming (false = use original filename)
@@ -217,6 +236,10 @@ Write responses (but not JSON keys) in English.`;
       if (!response.ok) {
         const text = await response.text();
         log.error(`AI API error ${response.status}: ${text}`);
+        showToast(`AI API 错误 (${response.status})`, {
+          type: "error",
+          copyText: `TidyDownloads API error ${response.status}: ${text}`,
+        });
         return null;
       }
 
@@ -268,8 +291,13 @@ Write responses (but not JSON keys) in English.`;
       clearTimeout(timeoutId);
       if (err.name === "AbortError") {
         log.error(`AI request timeout (${AI_CONFIG.timeout}ms)`);
+        showToast(`AI 请求超时 (${AI_CONFIG.timeout}ms)`, { type: "warning" });
       } else {
         log.error(`AI request failed: ${err.message}`);
+        showToast(`AI 请求失败: ${err.message}`, {
+          type: "error",
+          copyText: err.message,
+        });
       }
       return null;
     }
@@ -395,6 +423,10 @@ Write responses (but not JSON keys) in English.`;
         if (newName) {
           log.info(`AI rename: "${downloadItem.filename}" -> "${newName}"`);
           suggest({ filename: newName, conflictAction: "uniquify" });
+          showToast(toastText("renamed", {
+            oldName: downloadItem.filename,
+            newName,
+          }), { type: "success" });
         } else {
           suggest({ filename: null });
         }

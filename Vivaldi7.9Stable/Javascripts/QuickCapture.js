@@ -67,6 +67,23 @@
 
   const CAPTURE_MODES = new Set(['clipboard', 'file', 'default']);
 
+  const isEnglishUi = () => {
+    const lang = chrome.i18n?.getUILanguage?.() || navigator.language || '';
+    return String(lang).toLowerCase().startsWith('en');
+  };
+
+  const toastText = (key) => {
+    const en = isEnglishUi();
+    const text = {
+      copied: en ? 'Screenshot copied to clipboard' : '截图已复制到剪切板',
+    };
+    return text[key] || key;
+  };
+
+  const showToast = (message, options = {}) => {
+    window.VModToast?.show(message, { module: 'QuickCapture', ...options });
+  };
+
   const gnoh = {
     getReactProps(element) {
       if (typeof element === 'string') {
@@ -648,6 +665,9 @@
     try {
       await closeCaptureArea(captureArea, false);
       await captureUI(params);
+      if (mode === 'clipboard') {
+        showToast(toastText('copied'), { type: 'success' });
+      }
       console.info(`[QuickCapture] Captured region in ${mode} mode`, params);
     } catch (error) {
       console.error('[QuickCapture] Failed to capture region', error);

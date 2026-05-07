@@ -1,0 +1,15 @@
+{
+  "category": "CATEGORY_COMMAND_CHAIN",
+  "chain": [
+    {
+      "defaultValue": "https://grok.com",
+      "key": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "label": "在当前标签页打开链接",
+      "name": "COMMAND_OPEN_LINK_CURRENT",
+      "param": "javascript:(function() { const host = window.location.hostname; if (!/google\\.|bing\\.com|duckduckgo\\.com|baidu\\.com/.test(host)) return; const params = new URLSearchParams(window.location.search); const q = /baidu\\.com/.test(host) ? params.get('wd') : params.get('q'); if (q) window.location.href = 'https://grok.com/?q=' + encodeURIComponent(q); })();"
+    }
+  ],
+  "key": "f1e2d3c4-b5a6-7890-fedc-ba9876543210",
+  "label": "搜索引擎转Grok",
+  "name": "COMMAND_f1e2d3c4-b5a6-7890-fedc-ba9876543210"
+}

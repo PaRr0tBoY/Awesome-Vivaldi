@@ -2,6 +2,11 @@
 
 /* ── Reset pin button: overlays favicon area inside .tab-header ──── */
 
+.tab .tab-header {
+  position: relative;
+  overflow: visible;
+}
+
 .tab .tab-header .tab-reset-pin-button {
   display: none;
   position: absolute;

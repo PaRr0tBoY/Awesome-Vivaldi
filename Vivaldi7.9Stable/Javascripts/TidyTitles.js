@@ -87,6 +87,37 @@
     applyModSettings(event.detail || {});
   });
 
+  const showToast = (message, options = {}) => {
+    window.VModToast?.show(message, { module: "TidyTitles", ...options });
+  };
+
+  const isEnglishUi = () => {
+    const lang = chrome.i18n?.getUILanguage?.() || navigator.language || "";
+    return String(lang).toLowerCase().startsWith("en");
+  };
+
+  const toastText = (key, data = {}) => {
+    const en = isEnglishUi();
+    const text = {
+      stackRenamed: en
+        ? `Tab stack renamed: ${data.newName}`
+        : `标签栈已重命名: ${data.newName}`,
+      untitledStack: en ? "Untitled stack" : "未命名标签栈",
+    };
+    return text[key] || key;
+  };
+
+  const openSettings = () => {
+    chrome.tabs.query({ url: "vivaldi://settings/*" }, (tabs) => {
+      if (tabs?.length) {
+        chrome.tabs.update(tabs[0].id, { active: true });
+        chrome.windows.update(tabs[0].windowId, { focused: true });
+      } else {
+        window.location.assign("vivaldi://settings/?path=appearance");
+      }
+    });
+  };
+
   // Reprocess tab title when PinnedTabRestore replaces pinned URL
   document.addEventListener("pinned-tab-url-replaced", (event) => {
     const { tabId } = event.detail || {};
@@ -221,6 +252,10 @@
   async function generateOptimizedTitle(originalTitle, url) {
     if (!AI_CONFIG.apiKey) {
       console.warn("[TidyTitles] AI API key not configured, skipping.");
+      showToast("AI API key 未配置", {
+        type: "error",
+        button: { text: "前往设置", action: openSettings },
+      });
       return originalTitle;
     }
 
@@ -308,8 +343,13 @@ Write responses (but not JSON keys) in ${languageName}.`;
           console.warn(
             `[TidyTitles] API rate limit reached (429). Skipping for now.`
           );
+          showToast("API 请求频率过高 (429)", { type: "warning" });
         } else {
           console.error(`[TidyTitles] API error (${status}): ${errMsg}`);
+          showToast(`API 错误 (${status}): ${errMsg}`, {
+            type: "error",
+            copyText: `TidyTitles API error ${status}: ${errMsg}`,
+          });
         }
         return originalTitle;
       }
@@ -355,6 +395,10 @@ Write responses (but not JSON keys) in ${languageName}.`;
       return originalTitle;
     } catch (error) {
       console.error("[TidyTitles] API call exception:", error.message);
+      showToast(`API 调用异常: ${error.message}`, {
+        type: "error",
+        copyText: error.message,
+      });
       return originalTitle;
     } finally {
       if (typeof timeoutId !== "undefined" && timeoutId) clearTimeout(timeoutId);
@@ -398,6 +442,82 @@ Write responses (but not JSON keys) in ${languageName}.`;
   /**
    * Processes a single tab
    */
+  async function processTabById(tabId, force = false) {
+    if (processedTabs.has(tabId) && !force) {
+      console.log(
+        `[TidyTitles] Tab ${tabId} has already been processed, skipping.`
+      );
+      return;
+    }
+
+    console.log(`[TidyTitles] Start processing tab ID: ${tabId}`);
+
+    return new Promise((resolve) => {
+      chrome.tabs.get(tabId, async (tab) => {
+        if (chrome.runtime.lastError) {
+          console.warn(
+            `[TidyTitles] Could not get info for tab ${tabId}:`,
+            chrome.runtime.lastError.message
+          );
+          resolve();
+          return;
+        }
+
+        let vivExtData = {};
+        try {
+          vivExtData = tab.vivExtData ? JSON.parse(tab.vivExtData) : {};
+        } catch (e) {
+          /* ignore */
+        }
+
+        // Skip if it already has a fixedTitle (unless forced re-generation)
+        if (vivExtData.fixedTitle && !force) {
+          console.log(
+            `[TidyTitles] Tab ${tabId} already has custom title ("${vivExtData.fixedTitle}"), skipping.`
+          );
+          processedTabs.add(tabId);
+          resolve();
+          return;
+        }
+
+        // Mark as in-progress and apply loading animation via live DOM query.
+        // Do NOT hold a reference to tabElement here — Vivaldi may mutate the
+        // node's className directly (e.g. removing "active") which can wipe our
+        // class if it replaces the full className string. The innerObserver will
+        // detect this and re-add "tidy-title-loading" automatically.
+        processingTabs.add(tabId);
+        getLiveTabElement(tabId)?.classList.add("tidy-title-loading");
+
+        console.log(
+          `[TidyTitles] Requesting AI generated title for tab ${tabId} ("${tab.title}")...`
+        );
+
+        try {
+          const optimizedTitle = await generateOptimizedTitle(
+            tab.title || "",
+            tab.url || ""
+          );
+
+          if (optimizedTitle === tab.title) {
+            console.log(
+              `[TidyTitles] AI returned title is identical or generation failed, no changes made (${tabId})`
+            );
+            // Do not add to processed list on failure, allowing retry
+            return;
+          }
+
+          updateTabTitle(tabId, optimizedTitle);
+        } finally {
+          // Always clean up: remove from in-progress set and strip the animation
+          // class from whichever node is currently live in the DOM.
+          processingTabs.delete(tabId);
+          getLiveTabElement(tabId)?.classList.remove("tidy-title-loading");
+          resolve();
+        }
+      });
+    });
+  }
+
   async function processSingleTab(tabElement, force = false) {
     const tabIdStr = tabElement.getAttribute("data-id");
     if (!tabIdStr) return;
@@ -412,90 +532,49 @@ Write responses (but not JSON keys) in ${languageName}.`;
     const tabId = parseInt(rawId, 10);
     if (!Number.isInteger(tabId) || tabId <= 0) return;
 
-    if (processedTabs.has(tabId)) {
-      console.log(
-        `[TidyTitles] Tab ${tabId} has already been processed, skipping.`
-      );
+    await processTabById(tabId, force);
+  }
+
+  async function processStackTabs(stackId, force = true) {
+    if (!stackId) return;
+    const tabs = await getTabsInStackForTitleRename(stackId);
+    console.log(`[TidyTitles] Pinned stack "${stackId}": processing ${tabs.length} tabs`);
+    for (const tab of tabs) {
+      await processTabById(tab.id, force);
+    }
+  }
+
+  function getStackIdFromWrapper(wrapper) {
+    const raw = wrapper?.getAttribute("data-id")?.replace(/^tab-/, "") || "";
+    return raw.includes("-") ? raw : "";
+  }
+
+  function processPinnedTabPosition(tabPosition) {
+    const tabWrapper = tabPosition.querySelector(".tab-wrapper");
+    if (!tabWrapper) return;
+
+    if (tabPosition.classList.contains("is-substack") || tabPosition.classList.contains("is-stack")) {
+      processStackTabs(getStackIdFromWrapper(tabWrapper), true);
       return;
     }
 
-    console.log(`[TidyTitles] Start processing tab ID: ${tabId}`);
-
-    chrome.tabs.get(tabId, async (tab) => {
-      if (chrome.runtime.lastError) {
-        console.warn(
-          `[TidyTitles] Could not get info for tab ${tabId}:`,
-          chrome.runtime.lastError.message
-        );
-        return;
-      }
-
-      let vivExtData = {};
-      try {
-        vivExtData = tab.vivExtData ? JSON.parse(tab.vivExtData) : {};
-      } catch (e) {
-        /* ignore */
-      }
-
-      // Skip if it already has a fixedTitle (unless forced re-generation)
-      if (vivExtData.fixedTitle && !force) {
-        console.log(
-          `[TidyTitles] Tab ${tabId} already has custom title ("${vivExtData.fixedTitle}"), skipping.`
-        );
-        processedTabs.add(tabId);
-        return;
-      }
-
-      // Mark as in-progress and apply loading animation via live DOM query.
-      // Do NOT hold a reference to tabElement here — Vivaldi may mutate the
-      // node's className directly (e.g. removing "active") which can wipe our
-      // class if it replaces the full className string. The innerObserver will
-      // detect this and re-add "tidy-title-loading" automatically.
-      processingTabs.add(tabId);
-      getLiveTabElement(tabId)?.classList.add("tidy-title-loading");
-
-      console.log(
-        `[TidyTitles] Requesting AI generated title for tab ${tabId} ("${tab.title}")...`
-      );
-
-      try {
-        const optimizedTitle = await generateOptimizedTitle(
-          tab.title || "",
-          tab.url || ""
-        );
-
-        if (optimizedTitle === tab.title) {
-          console.log(
-            `[TidyTitles] AI returned title is identical or generation failed, no changes made (${tabId})`
-          );
-          // Do not add to processed list on failure, allowing retry
-          return;
-        }
-
-        updateTabTitle(tabId, optimizedTitle);
-      } finally {
-        // Always clean up: remove from in-progress set and strip the animation
-        // class from whichever node is currently live in the DOM.
-        processingTabs.delete(tabId);
-        getLiveTabElement(tabId)?.classList.remove("tidy-title-loading");
-      }
-    });
+    processSingleTab(tabWrapper);
   }
 
   /**
    * Checks and processes pinned tabs (used during initialization)
    */
   async function checkPinnedTabs() {
-    const pinnedTabElements = document.querySelectorAll(
-      ".tab-position.is-pinned:not(.is-substack) .tab-wrapper"
+    const pinnedTabPositions = document.querySelectorAll(
+      ".tab-position.is-pinned"
     );
 
     console.log(
-      `[TidyTitles] Init: detected ${pinnedTabElements.length} pinned tabs`
+      `[TidyTitles] Init: detected ${pinnedTabPositions.length} pinned tabs/stacks`
     );
 
-    for (const tabElement of pinnedTabElements) {
-      await processSingleTab(tabElement);
+    for (const tabPosition of pinnedTabPositions) {
+      processPinnedTabPosition(tabPosition);
     }
   }
 
@@ -556,15 +635,13 @@ Write responses (but not JSON keys) in ${languageName}.`;
 
         // ── .tab-position class mutated (is-pinned detection) ────────────
         if (!target.classList?.contains("tab-position")) continue;
-        if (target.classList.contains("is-substack")) continue;
 
         const isPinnedNow = target.classList.contains("is-pinned");
         const wasPinnedBefore =
           mutation.oldValue?.includes("is-pinned") || false;
 
         if (isPinnedNow && !wasPinnedBefore) {
-          const tabWrapper = target.querySelector(".tab-wrapper");
-          if (tabWrapper) processSingleTab(tabWrapper);
+          processPinnedTabPosition(target);
         }
       }
     });
@@ -608,7 +685,20 @@ Write responses (but not JSON keys) in ${languageName}.`;
 
     observeRoot();
     observeStacks();
-    checkPinnedTabs();
+
+    // Build initial stack membership index. This is only a baseline; later
+    // renames are driven by membership changes, not by rescanning all stacks.
+    chrome.tabs.query({ currentWindow: true }, (tabs) => {
+      for (const t of tabs) {
+        const viv = parseVivExtData(t.vivExtData);
+        const stackId = getStackIdFromViv(viv);
+        if (stackId) {
+          setTabStack(t.id, stackId);
+          rememberStackColor(stackId, viv);
+        }
+      }
+      checkPinnedTabs();
+    });
   }
 
   // ========== Stack Rename ==========
@@ -632,9 +722,89 @@ Write responses (but not JSON keys) in ${languageName}.`;
 
   const stackRenamesPending = new Set();
   const stackIdsRenaming = new Set();
-  const stackTabCounts = new Map();
-  const stacksNamedByTidyTitles = new Set();
+  const stackRenameTimers = new Map();
+  const stackLastRenameAt = new Map();
+  const tabToStack = new Map(); // tabId → stackId
+  const stackToTabs = new Map(); // stackId → Set<tabId>
+  const stackColors = new Map(); // stackId → groupColor
+  const TIDY_TABS_STACK_OWNER = "TidyTabs";
+  const STACK_RENAME_COOLDOWN_MS = 60 * 1000;
   let dynamicRenameGap = 3;
+
+  function parseVivExtData(raw) {
+    if (!raw) return {};
+    try {
+      return typeof raw === "string" ? JSON.parse(raw) : raw;
+    } catch {
+      return {};
+    }
+  }
+
+  function getStackIdFromViv(viv) {
+    return typeof viv.group === "string" && viv.group ? viv.group : "";
+  }
+
+  function rememberStackColor(stackId, viv) {
+    if (stackId && typeof viv.groupColor === "string" && viv.groupColor) {
+      stackColors.set(stackId, viv.groupColor);
+    }
+  }
+
+  function setTabStack(tabId, stackId) {
+    if (!Number.isInteger(tabId) || !stackId) return;
+    const oldStackId = tabToStack.get(tabId);
+    if (oldStackId === stackId) return;
+
+    if (oldStackId) {
+      const oldMembers = stackToTabs.get(oldStackId);
+      oldMembers?.delete(tabId);
+      if (oldMembers && oldMembers.size === 0) stackToTabs.delete(oldStackId);
+    }
+
+    tabToStack.set(tabId, stackId);
+    if (!stackToTabs.has(stackId)) stackToTabs.set(stackId, new Set());
+    stackToTabs.get(stackId).add(tabId);
+  }
+
+  function removeTabFromStackIndex(tabId) {
+    const stackId = tabToStack.get(tabId);
+    if (!stackId) return "";
+
+    tabToStack.delete(tabId);
+    const members = stackToTabs.get(stackId);
+    members?.delete(tabId);
+    if (members && members.size === 0) {
+      stackToTabs.delete(stackId);
+      stackColors.delete(stackId);
+    }
+    return stackId;
+  }
+
+  function tabHasFixedGroupTitle(tab) {
+    const viv = parseVivExtData(tab?.vivExtData);
+    return typeof viv.fixedGroupTitle === "string" && viv.fixedGroupTitle.trim();
+  }
+
+  function getStackDisplayName(tabs, stackId) {
+    for (const tab of tabs || []) {
+      const viv = parseVivExtData(tab?.vivExtData);
+      const title = typeof viv.fixedGroupTitle === "string" ? viv.fixedGroupTitle.trim() : "";
+      if (title) return title;
+    }
+    return stackId || toastText("untitledStack");
+  }
+
+  function isTidyTabsManagedStackViv(viv, stackId) {
+    return (
+      viv?.tidyStackOwner === TIDY_TABS_STACK_OWNER &&
+      viv?.tidyStackId === stackId &&
+      viv?.group === stackId
+    );
+  }
+
+  function stackHasTidyTabsOwner(tabs, stackId) {
+    return tabs.some((tab) => isTidyTabsManagedStackViv(parseVivExtData(tab.vivExtData), stackId));
+  }
 
   function loadDynamicRenameGap() {
     try {
@@ -666,17 +836,67 @@ Write responses (but not JSON keys) in ${languageName}.`;
   }
 
   async function getTabsInStack(stackId) {
+    const indexedIds = [...(stackToTabs.get(stackId) || [])];
+    const tabs = await Promise.all(indexedIds.map((tabId) => new Promise((resolve) => {
+      chrome.tabs.get(tabId, (tab) => {
+        if (chrome.runtime.lastError || !tab) {
+          removeTabFromStackIndex(tabId);
+          resolve(null);
+          return;
+        }
+
+        const viv = parseVivExtData(tab.vivExtData);
+        if (viv.group !== stackId || tab.pinned || viv.panelId) {
+          removeTabFromStackIndex(tabId);
+          if (viv.group) setTabStack(tab.id, viv.group);
+          resolve(null);
+          return;
+        }
+
+        rememberStackColor(stackId, viv);
+        resolve(tab);
+      });
+    })));
+
+    return tabs.filter(Boolean);
+  }
+
+  async function getTabsInStackForTitleRename(stackId) {
+    const indexedIds = [...(stackToTabs.get(stackId) || [])];
+    if (indexedIds.length) {
+      const tabs = await Promise.all(indexedIds.map((tabId) => new Promise((resolve) => {
+        chrome.tabs.get(tabId, (tab) => {
+          if (chrome.runtime.lastError || !tab) {
+            removeTabFromStackIndex(tabId);
+            resolve(null);
+            return;
+          }
+
+          const viv = parseVivExtData(tab.vivExtData);
+          if (viv.group !== stackId || viv.panelId) {
+            removeTabFromStackIndex(tabId);
+            if (viv.group) setTabStack(tab.id, viv.group);
+            resolve(null);
+            return;
+          }
+
+          rememberStackColor(stackId, viv);
+          resolve(tab);
+        });
+      })));
+
+      return tabs.filter(Boolean);
+    }
+
     return new Promise((resolve) => {
       chrome.tabs.query({ currentWindow: true }, (tabs) => {
         const members = [];
         for (const tab of tabs) {
-          if (!tab.vivExtData) continue;
-          try {
-            const viv = typeof tab.vivExtData === "string" ? JSON.parse(tab.vivExtData) : tab.vivExtData;
-            if (viv.group === stackId && !tab.pinned && !viv.panelId) {
-              members.push(tab);
-            }
-          } catch {}
+          const viv = parseVivExtData(tab.vivExtData);
+          if (viv.group !== stackId || viv.panelId) continue;
+          setTabStack(tab.id, stackId);
+          rememberStackColor(stackId, viv);
+          members.push(tab);
         }
         resolve(members);
       });
@@ -751,9 +971,11 @@ Return JSON: {"name":"the group name"}`;
     return null;
   }
 
-  async function renameStack(stackId, withColor) {
-    const tabs = await getTabsInStack(stackId);
-    if (tabs.length < 2) return;
+  async function renameStack(stackId, withColor, knownTabs = null) {
+    if (stackIdsRenaming.has(stackId)) return false;
+
+    const tabs = knownTabs || await getTabsInStack(stackId);
+    if (tabs.length < 2) return false;
 
     console.log(`[TidyTitles] Stack "${stackId}" raw tabs:`, tabs.map(t => ({ id: t.id, url: t.url, title: t.title })));
 
@@ -761,23 +983,16 @@ Return JSON: {"name":"the group name"}`;
     applyStackShimmer(stackId, true);
 
     try {
+      const oldName = getStackDisplayName(tabs, stackId);
       const name = await generateStackName(tabs);
-      if (!name) return;
+      if (!name) return false;
 
       let color = null;
       if (withColor && enableStackColor) {
-        // Find the color of the most recently colored stack for adjacency
-        const allTabs = await new Promise(r => chrome.tabs.query({ currentWindow: true }, r));
-        const seenGroups = new Map();
-        for (const t of allTabs) {
-          try {
-            const v = typeof t.vivExtData === "string" ? JSON.parse(t.vivExtData) : t.vivExtData;
-            if (v?.group && v.groupColor && v.group !== stackId) {
-              seenGroups.set(v.group, v.groupColor);
-            }
-          } catch {}
-        }
-        const neighborColor = [...seenGroups.values()].pop() || "";
+        const neighborColor = [...stackColors.entries()]
+          .filter(([id]) => id !== stackId)
+          .map(([, value]) => value)
+          .pop() || "";
         color = randomStackColor(neighborColor || lastAssignedColor);
       }
 
@@ -801,83 +1016,101 @@ Return JSON: {"name":"the group name"}`;
       };
 
       const updated = await applyToAll({ fixedGroupTitle: name, ...(color ? { groupColor: color } : {}) });
+      if (color) stackColors.set(stackId, color);
       console.log(`[TidyTitles] Stack "${name}" (${updated} tabs)${color ? " color=" + color : ""}`);
+      if (updated > 0) {
+        showToast(toastText("stackRenamed", { oldName, newName: name }), { type: "success" });
+      }
+      return updated > 0;
     } finally {
       stackIdsRenaming.delete(stackId);
       applyStackShimmer(stackId, false);
     }
   }
 
-  function detectStackChange(tabId, viv) {
-    const stackId = viv.group;
+  function scheduleStackRename(stackId, { withColor = false, requireGap = true, requireMissingTitle = false, delay = 500 } = {}) {
     if (!stackId) return;
+    if (stackRenameTimers.has(stackId)) clearTimeout(stackRenameTimers.get(stackId));
 
-    // New stack without fixedGroupTitle → rename + color (TidyTitles owns this)
-    if (!viv.fixedGroupTitle) {
-      if (stackRenamesPending.has(stackId)) return;
+    const timer = setTimeout(async () => {
+      stackRenameTimers.delete(stackId);
+
+      const elapsed = Date.now() - (stackLastRenameAt.get(stackId) || 0);
+      if (elapsed < STACK_RENAME_COOLDOWN_MS) {
+        scheduleStackRename(stackId, {
+          withColor,
+          requireGap,
+          requireMissingTitle,
+          delay: STACK_RENAME_COOLDOWN_MS - elapsed,
+        });
+        return;
+      }
+
+      if (stackRenamesPending.has(stackId) || stackIdsRenaming.has(stackId)) {
+        scheduleStackRename(stackId, { withColor, requireGap, requireMissingTitle, delay: 800 });
+        return;
+      }
+
+      const tabs = await getTabsInStack(stackId);
+      const count = tabs.length;
+      if (count < 2) return;
+      if (stackHasTidyTabsOwner(tabs, stackId)) return;
+      if (requireMissingTitle && tabs.some(tabHasFixedGroupTitle)) return;
+      if (requireGap && count % dynamicRenameGap !== 0) return;
+
       stackRenamesPending.add(stackId);
-      stacksNamedByTidyTitles.add(stackId);
-      stackTabCounts.delete(stackId);
-      setTimeout(() => renameStack(stackId, true), 500);
+      try {
+        const renamed = await renameStack(stackId, withColor, tabs);
+        if (renamed) stackLastRenameAt.set(stackId, Date.now());
+      } finally {
+        stackRenamesPending.delete(stackId);
+      }
+    }, delay);
+
+    stackRenameTimers.set(stackId, timer);
+  }
+
+  function handleStackMembershipChange(tabId, oldStackId, newStackId, viv) {
+    if (oldStackId === newStackId) return;
+
+    if (oldStackId) {
+      removeTabFromStackIndex(tabId);
+      scheduleStackRename(oldStackId, { requireGap: true, delay: 600 });
+    }
+
+    if (!newStackId) return;
+    setTabStack(tabId, newStackId);
+
+    if (isTidyTabsManagedStackViv(viv, newStackId)) return;
+
+    // A stack created by Vivaldi has no fixedGroupTitle yet. TidyTitles owns
+    // only that stack and can name/color it immediately once it has 2+ tabs.
+    if (!viv.fixedGroupTitle) {
+      scheduleStackRename(newStackId, { withColor: true, requireGap: false, requireMissingTitle: true });
       return;
     }
 
-    // Only process stacks that TidyTitles originally named
-    if (!stacksNamedByTidyTitles.has(stackId)) return;
-
-    // Count tabs, rename every N new tabs
-    getTabsInStack(stackId).then(tabs => {
-      const count = tabs.length;
-      const prev = stackTabCounts.get(stackId) ?? count;
-      stackTabCounts.set(stackId, count);
-      const added = count - prev;
-      if (added > 0 && count >= 2 && count % dynamicRenameGap === 0) {
-        if (!stackRenamesPending.has(stackId)) {
-          stackRenamesPending.add(stackId);
-          setTimeout(() => {
-            renameStack(stackId, false);
-            stackRenamesPending.delete(stackId);
-          }, 500);
-        }
-      }
-    });
+    scheduleStackRename(newStackId, { requireGap: true });
   }
 
   function observeStacks() {
-    const observer = new MutationObserver((mutations) => {
-      for (const m of mutations) {
-        for (const node of m.addedNodes) {
-          if (node.nodeType !== 1) continue;
-          const wrapper = node.matches?.(".tab-wrapper") ? node : node.querySelector?.(".tab-wrapper");
-          if (!wrapper) continue;
-          const raw = wrapper.getAttribute("data-id")?.replace(/^tab-/, "");
-          if (!raw || raw.includes("-")) continue;
-          const tabId = parseInt(raw, 10);
-          if (!Number.isInteger(tabId) || stackRenamesPending.has(tabId)) continue;
-          stackRenamesPending.add(tabId);
-          setTimeout(() => {
-            stackRenamesPending.delete(tabId);
-            chrome.tabs.get(tabId, (tab) => {
-              if (chrome.runtime.lastError) return;
-              try {
-                const v = typeof tab.vivExtData === "string" ? JSON.parse(tab.vivExtData) : tab.vivExtData;
-                if (v?.group) detectStackChange(tabId, v);
-              } catch {}
-            });
-          }, 500);
-        }
-      }
-    });
-
-    const root = document.getElementById("browser") || document.body;
-    observer.observe(root, { childList: true, subtree: true });
-
     chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
       if (!changeInfo.vivExtData) return;
-      try {
-        const viv = typeof changeInfo.vivExtData === "string" ? JSON.parse(changeInfo.vivExtData) : changeInfo.vivExtData;
-        if (viv?.group) detectStackChange(tabId, viv);
-      } catch {}
+      const viv = parseVivExtData(changeInfo.vivExtData);
+      const newStackId = getStackIdFromViv(viv);
+      const oldStackId = tabToStack.get(tabId) || "";
+      rememberStackColor(newStackId, viv);
+
+      // Ignore ordinary fixedTitle/groupTitle/color writes. Only a real group
+      // membership transition can schedule a stack count check.
+      if (oldStackId === newStackId) return;
+
+      handleStackMembershipChange(tabId, oldStackId, newStackId, viv);
+    });
+
+    chrome.tabs.onRemoved.addListener((removedTabId) => {
+      const stackId = removeTabFromStackIndex(removedTabId);
+      if (stackId) scheduleStackRename(stackId, { requireGap: true, delay: 600 });
     });
   }
 

@@ -165,6 +165,7 @@
 
   let debounceTimer = null;
   const processingSeparators = new Set();
+  const TIDY_TABS_STACK_OWNER = "TidyTabs";
 
   // ==================== Utility Functions ====================
 
@@ -336,7 +337,10 @@
     const viv = tab.vivExtData;
     if (stackName) viv.fixedGroupTitle = stackName;
     if (stackColor) viv.groupColor = stackColor;
+    else delete viv.groupColor;
     viv.group = stackId;
+    viv.tidyStackOwner = TIDY_TABS_STACK_OWNER;
+    viv.tidyStackId = stackId;
     return new Promise((resolve) => {
       chrome.tabs.update(tabId, { vivExtData: JSON.stringify(viv) }, () => {
         if (chrome.runtime.lastError)
@@ -346,18 +350,19 @@
     });
   };
 
-  const showNotification = (message) => {
-    if (chrome?.notifications) {
-      chrome.notifications.create({
-        type: "basic",
-        iconUrl:
-          'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><text y="32" font-size="32">⚠️</text></svg>',
-        title: "TidyTabs",
-        message,
-      });
-    } else {
-      console.error(`[TidyTabs] ${message}`);
-    }
+  const showToast = (message, options = {}) => {
+    window.VModToast?.show(message, { module: "TidyTabs", ...options });
+  };
+
+  const openSettings = () => {
+    chrome.tabs.query({ url: "vivaldi://settings/*" }, (tabs) => {
+      if (tabs?.length) {
+        chrome.tabs.update(tabs[0].id, { active: true });
+        chrome.windows.update(tabs[0].windowId, { focused: true });
+      } else {
+        window.location.assign("vivaldi://settings/?path=appearance");
+      }
+    });
   };
 
   // ==================== AI Grouping ====================
@@ -389,23 +394,17 @@
       })
       .join("\n");
 
-    const existingInfo =
-      existingStacks.length > 0
-        ? existingStacks.map((s) => `- ${s.name || "Unnamed"}`).join("\n")
-        : "None";
-
     const othersName = getOthersName();
 
     return `You are a meticulous expert organizer who follows instructions concisely. I have some tabs! Please help me sort them into groups. I'll provide you with a list of tabs, with their IDs (e.g. google.com/3), their titles, and the tab they were opened from if applicable (e.g. \u21b3 google.com/0). Think about the groupings of my browsing, and then choose a descriptive group name for each. Group based on keywords in common, domain, website purpose, and referring tab. If a tab has a unique keyword in common with tabs in a group, include it in that group. Use the unique keyword in the group name. Some tabs may be in a group of their own, but you should try to include each tab in a group if possible.
 
-Existing tab stacks:
-${existingInfo}
+Treat every tab below as raw material for a fresh regrouping. Ignore any previous browser tab stack membership or previous stack names.
 
 My tabs:
 ${tabLines}
 
 **Rules:**
-1. If a tab relates to an existing stack's title, add it there.
+1. Create new groups from the supplied tabs only.
 2. Group names: concise, specific, in ${languageName}.
 3. Tabs that don't fit any group go to "${othersName}".
 4. Each tab in exactly one group.
@@ -485,7 +484,10 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
 
   const getAIGrouping = async (tabs, existingStacks = []) => {
     if (!AI_CONFIG.apiKey) {
-      showNotification("AI API key not configured");
+      showToast("AI API key 未配置", {
+        type: "error",
+        button: { text: "前往设置", action: openSettings },
+      });
       return null;
     }
     if (tabs.length > CONFIG.maxTabsForAI)
@@ -538,7 +540,10 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
       return groups.length > 0 ? groups : null;
     } catch (error) {
       console.error("[TidyTabs] AI error:", error.message);
-      showNotification(`AI call failed: ${error.message}`);
+      showToast(`AI 调用失败: ${error.message}`, {
+        type: "error",
+        copyText: error.message,
+      });
       return null;
     } finally {
       if (timeoutId) clearTimeout(timeoutId);
@@ -795,8 +800,50 @@ Return JSON: {"name":"the group name"}`;
     return stacks;
   };
 
-  const collectTabsFromSeparator = (separator) => {
+  const collectTabsFromSeparator = async (separator) => {
     const tabs = [];
+    const seenTabIds = new Set();
+    const allTabs = await new Promise((resolve) => {
+      chrome.tabs.query({ currentWindow: true }, (queriedTabs) => {
+        resolve(chrome.runtime.lastError ? [] : queriedTabs);
+      });
+    });
+    const allTabsWithViv = allTabs.map((tab) => {
+      let vivExtData = {};
+      try {
+        vivExtData = tab.vivExtData
+          ? JSON.parse(tab.vivExtData)
+          : {};
+      } catch {}
+      return { ...tab, vivExtData };
+    });
+
+    const addTabId = (tabId) => {
+      if (!Number.isInteger(tabId) || seenTabIds.has(tabId)) return;
+      const tab = allTabsWithViv.find((item) => item.id === tabId);
+      if (!tab || tab.pinned || tab.vivExtData.panelId) return;
+      seenTabIds.add(tabId);
+      tabs.push({ id: tabId });
+    };
+
+    const getStackGroupId = (element) => {
+      const wrapper = element.querySelector(SELECTORS.TAB_WRAPPER);
+      const stackDomId = wrapper
+        ?.getAttribute("data-id")
+        ?.replace("tab-", "");
+      if (!stackDomId) return "";
+
+      const exact = allTabsWithViv.find((tab) => tab.vivExtData.group === stackDomId);
+      if (exact) return exact.vivExtData.group;
+
+      const shortId = stackDomId.slice(0, 8);
+      const matched = allTabsWithViv.find((tab) => {
+        const group = tab.vivExtData.group;
+        return typeof group === "string" && group.includes(shortId);
+      });
+      return matched?.vivExtData.group || "";
+    };
+
     let el = separator.nextElementSibling;
     while (el) {
       if (el.tagName === "SPAN") {
@@ -805,12 +852,22 @@ Return JSON: {"name":"the group name"}`;
           el.querySelector(SELECTORS.TAB_STACK) ||
           el.querySelector(SELECTORS.SUBSTACK);
         const pos = el.querySelector(SELECTORS.TAB_POSITION);
-        if (!isStack && pos && !pos.classList.contains(CLASSES.PINNED)) {
+        if (isStack) {
+          const stackId = getStackGroupId(el);
+          allTabsWithViv
+            .filter((tab) =>
+              tab.vivExtData.group === stackId &&
+              !tab.pinned &&
+              !tab.vivExtData.panelId
+            )
+            .sort((a, b) => a.index - b.index)
+            .forEach((tab) => addTabId(tab.id));
+        } else if (pos && !pos.classList.contains(CLASSES.PINNED)) {
           const wrapper = el.querySelector(SELECTORS.TAB_WRAPPER);
           const id = wrapper?.getAttribute("data-id");
           if (id) {
             const num = parseInt(id.replace("tab-", ""));
-            if (!isNaN(num)) tabs.push({ id: num });
+            if (!isNaN(num)) addTabId(num);
           }
         }
       }
@@ -961,17 +1018,15 @@ Return JSON: {"name":"the group name"}`;
       const othersGroup = groups.find((g) => OTHERS_NAMES.includes(g.name));
       await createTabStacks(groups);
       if (othersGroup) await moveGroupToEnd(othersGroup);
+      showToast(`已分组 ${groups.length} 个栈`, { type: "success" });
     }
   };
 
   const tidyTabsBelow = async (separator) => {
     const separatorKey = getSeparatorKey(separator);
-    const existingStacks = await detectExistingStacks(
-      separator.nextElementSibling
-    );
-    const tabsInfo = collectTabsFromSeparator(separator);
+    const tabsInfo = await collectTabsFromSeparator(separator);
 
-    if (tabsInfo.length < 2 && existingStacks.length === 0) return;
+    if (tabsInfo.length < 2) return;
 
     if (separatorKey) {
       processingSeparators.add(separatorKey);
@@ -984,21 +1039,22 @@ Return JSON: {"name":"the group name"}`;
       const tabs = (
         await Promise.all(tabsInfo.map((t) => getTab(t.id)))
       ).filter(Boolean);
-      if (tabs.length < 1 && existingStacks.length === 0) return;
+      if (tabs.length < 1) return;
 
       let groups =
         CONFIG.enableAIGrouping && AI_CONFIG.apiKey
-          ? (await getAIGrouping(tabs, existingStacks))
+          ? (await getAIGrouping(tabs, []))
           : null;
       if (!groups) {
         groups = groupByDomain(tabs);
-        handleOrphanTabs(groups, tabs, existingStacks);
+        handleOrphanTabs(groups, tabs, []);
       }
 
       if (groups.length > 0) {
         const othersGroup = groups.find((g) => OTHERS_NAMES.includes(g.name));
         await createTabStacks(groups);
         if (othersGroup) await moveGroupToEnd(othersGroup);
+        showToast(`已分组 ${groups.length} 个栈`, { type: "success" });
       }
 
       // Name any existing stacks that lack fixedGroupTitle

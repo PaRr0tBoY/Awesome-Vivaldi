@@ -725,6 +725,21 @@
     });
   }
 
+  const showToast = (message, options = {}) => {
+    window.VModToast?.show(message, { module: "AskInPage", ...options });
+  };
+
+  const openSettings = () => {
+    chrome.tabs.query({ url: "vivaldi://settings/*" }, (tabs) => {
+      if (tabs?.length) {
+        chrome.tabs.update(tabs[0].id, { active: true });
+        chrome.windows.update(tabs[0].windowId, { focused: true });
+      } else {
+        window.location.assign("vivaldi://settings/?path=appearance");
+      }
+    });
+  };
+
   function createSessionId() {
     return 'aip_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
   }
@@ -8273,6 +8288,10 @@
         turnNode.classList.add('is-ai-complete');
         turnNode._askTurnData = turnData;
         queueSessionSave(true);
+        showToast("AI API key 未配置", {
+          type: "error",
+          button: { text: "前往设置", action: openSettings },
+        });
         return;
       }
       showThinkingAnimation(scaffold);
@@ -8688,6 +8707,10 @@
                 isError: true,
               }
             );
+            showToast(`AI 请求失败: ${error.message || "未知错误"}`, {
+              type: "error",
+              copyText: error.message || String(error),
+            });
           }
         }
         if (retryEmptyResponseDelayMs <= 0) {

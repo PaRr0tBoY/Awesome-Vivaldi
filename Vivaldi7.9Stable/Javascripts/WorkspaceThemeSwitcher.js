@@ -5,34 +5,101 @@
   const CONFIG_FILE = "config.json";
 
   let workspaceThemeMap = {};
+  let defaultThemeId = "";
   let lastWorkspaceName = "";
   let lastThemeId = "";
   let timer = null;
   let busy = false;
   let themeCache = null;
+  let configReady = null;
+
+  const isEnglishUi = () => {
+    const lang = chrome.i18n?.getUILanguage?.() || navigator.language || "";
+    return String(lang).toLowerCase().startsWith("en");
+  };
+
+  const toastText = (key, data = {}) => {
+    const en = isEnglishUi();
+    const text = {
+      switched: en
+        ? `Theme switched: ${data.workspaceName} -> ${data.themeName}`
+        : `主题已切换: ${data.workspaceName} -> ${data.themeName}`,
+    };
+    return text[key] || key;
+  };
+
+  const showToast = (message, options = {}) => {
+    window.VModToast?.show(message, { module: "WorkspaceThemeSwitcher", ...options });
+  };
 
   // ==================== Config Loading ====================
 
+  async function getConfigFileHandle(create) {
+    const root = await navigator.storage.getDirectory();
+    const dir = await root.getDirectoryHandle(CONFIG_DIR, { create: true });
+    return dir.getFileHandle(CONFIG_FILE, { create });
+  }
+
+  function applySwitcherConfig(raw) {
+    const settings = raw?.mods?.workspaceThemeSwitcher || {};
+    const map = settings.workspaceThemeMap;
+    workspaceThemeMap = map && typeof map === "object" && !Array.isArray(map) ? map : {};
+    defaultThemeId = typeof settings.defaultThemeId === "string" ? settings.defaultThemeId.trim() : "";
+  }
+
   async function loadConfig() {
     try {
-      const root = await navigator.storage.getDirectory();
-      const dir = await root.getDirectoryHandle(CONFIG_DIR, { create: true });
-      const fileHandle = await dir.getFileHandle(CONFIG_FILE, { create: false });
+      const fileHandle = await getConfigFileHandle(false);
       const file = await fileHandle.getFile();
       const raw = JSON.parse(await file.text());
-      const map = raw?.mods?.workspaceThemeSwitcher?.workspaceThemeMap;
-      if (map && typeof map === "object") {
-        workspaceThemeMap = map;
-      }
+      applySwitcherConfig(raw);
     } catch (_error) {}
   }
 
-  loadConfig();
-  window.addEventListener("vivaldi-mod-config-updated", (event) => {
-    const map = event.detail?.mods?.workspaceThemeSwitcher?.workspaceThemeMap;
-    if (map && typeof map === "object") {
-      workspaceThemeMap = map;
+  async function saveDefaultThemeId(themeId) {
+    if (!themeId) return;
+    let raw = {};
+    try {
+      const existingHandle = await getConfigFileHandle(false);
+      const file = await existingHandle.getFile();
+      raw = JSON.parse(await file.text());
+    } catch (_error) {}
+
+    raw.schemaVersion = Math.max(3, Number(raw.schemaVersion) || 3);
+    raw.ai = raw.ai && typeof raw.ai === "object" ? raw.ai : { default: {}, overrides: {} };
+    raw.mods = raw.mods && typeof raw.mods === "object" ? raw.mods : {};
+    raw.mods.workspaceThemeSwitcher =
+      raw.mods.workspaceThemeSwitcher && typeof raw.mods.workspaceThemeSwitcher === "object"
+        ? raw.mods.workspaceThemeSwitcher
+        : {};
+    raw.mods.workspaceThemeSwitcher.defaultThemeId = themeId;
+
+    const fileHandle = await getConfigFileHandle(true);
+    const writable = await fileHandle.createWritable();
+    await writable.write(JSON.stringify(raw, null, 2));
+    await writable.close();
+  }
+
+  async function ensureDefaultThemeId() {
+    if (defaultThemeId) return defaultThemeId;
+    const currentTheme = await getPref("vivaldi.themes.current");
+    if (typeof currentTheme === "string" && currentTheme.trim()) {
+      defaultThemeId = currentTheme.trim();
+      try {
+        await saveDefaultThemeId(defaultThemeId);
+      } catch (error) {
+        console.warn("[WorkspaceThemeSwitcher] failed to save default theme", error);
+      }
     }
+    return defaultThemeId;
+  }
+
+  configReady = loadConfig();
+  window.addEventListener("vivaldi-mod-config-updated", (event) => {
+    applySwitcherConfig(event.detail);
+    lastWorkspaceName = "";
+    lastThemeId = "";
+    scheduleApply();
   });
 
   // ==================== Theme Logic ====================
@@ -101,8 +168,45 @@
     return theme ? theme.id : themeRef;
   }
 
+  async function resolveTheme(themeRef) {
+    if (!themeCache) {
+      await resolveThemeId(themeRef);
+    }
+    const theme = themeCache.find((item) => item.id === themeRef || item.name === themeRef);
+    return {
+      id: theme ? theme.id : themeRef,
+      name: theme ? theme.name : themeRef,
+    };
+  }
+
   function invalidateThemeCache() {
     themeCache = null;
+  }
+
+  // ==================== Theme Transition ====================
+
+  function captureCurrentBackground() {
+    const candidates = ["#browser", ".webpagestack", "#main", "body"];
+    for (const sel of candidates) {
+      const el = document.querySelector(sel);
+      if (!el) continue;
+      const bg = getComputedStyle(el).backgroundColor;
+      if (bg && bg !== "transparent" && bg !== "rgba(0, 0, 0, 0)") return bg;
+    }
+    return null;
+  }
+
+  async function extractThemeBackground(themeId) {
+    const [systemThemes, userThemes] = await Promise.all([
+      getPref("vivaldi.themes.system"),
+      getPref("vivaldi.themes.user"),
+    ]);
+    const allThemes = [...(systemThemes || []), ...(userThemes || [])];
+    const theme = allThemes.find((t) => t.id === themeId);
+    const settings = theme?.settings;
+    if (!Array.isArray(settings)) return null;
+    const bg = settings.find((s) => s.name === "colorBg");
+    return bg?.value || null;
   }
 
   async function applyThemeForCurrentWorkspace() {
@@ -110,26 +214,73 @@
     busy = true;
 
     try {
+      await configReady;
+      await ensureDefaultThemeId();
+
       const workspaces = await getPref("vivaldi.workspaces.list");
       const workspace =
         await getWorkspaceFromActiveTab(workspaces || []) ||
         getWorkspaceFromButton(workspaces || []);
 
       const workspaceName = workspace ? workspace.name : "__default";
-      const themeRef = workspaceThemeMap[workspaceName];
+      const themeRef = workspaceThemeMap[workspaceName] || defaultThemeId;
+      if (!themeRef) return;
 
-      // No mapping for this workspace — skip, don't touch user's theme
-      if (!themeRef) {
+      const theme = await resolveTheme(themeRef);
+      const themeId = theme.id;
+      if (!themeId) return;
+      if (workspaceName === lastWorkspaceName && themeId === lastThemeId) return;
+
+      const currentThemeId = await getPref("vivaldi.themes.current");
+      if (currentThemeId === themeId) {
         lastWorkspaceName = workspaceName;
+        lastThemeId = themeId;
         return;
       }
 
-      if (workspaceName === lastWorkspaceName) return;
+      // Smooth crossfade transition (Zen-style dual-layer overlay)
+      const TRANSITION_MS = 300;
+      const oldBg = captureCurrentBackground();
+      const newBg = await extractThemeBackground(themeId);
 
-      const themeId = await resolveThemeId(themeRef);
-      if (!themeId || themeId === lastThemeId) return;
+      let overlay = null;
+      let overlayDone = null;
+
+      if (oldBg && newBg && oldBg !== newBg) {
+        overlay = document.createElement("div");
+        overlay.id = "workspace-theme-overlay";
+        Object.assign(overlay.style, {
+          position: "fixed",
+          inset: "0",
+          zIndex: "999999",
+          backgroundColor: newBg,
+          opacity: "0",
+          pointerEvents: "none",
+          transition: `opacity ${TRANSITION_MS}ms cubic-bezier(0.22, 1, 0.36, 1)`,
+        });
+        document.body.appendChild(overlay);
+
+        // Force paint before starting transition
+        void overlay.offsetWidth;
+        overlay.style.opacity = "1";
+
+        overlayDone = new Promise((resolve) => {
+          overlay.addEventListener("transitionend", resolve, { once: true });
+        });
+      }
 
       await setPref("vivaldi.themes.current", themeId);
+
+      if (overlay) {
+        const timeout = new Promise((r) => setTimeout(r, TRANSITION_MS + 50));
+        await Promise.race([overlayDone, timeout]);
+        overlay.remove();
+      }
+
+      showToast(toastText("switched", {
+        workspaceName: workspace ? workspaceName : "Default",
+        themeName: theme.name || themeId,
+      }), { type: "success" });
 
       lastWorkspaceName = workspaceName;
       lastThemeId = themeId;
