@@ -38,14 +38,14 @@
 - [Installation](#installation)
 - [Community Mods](#community-mods)
 
+## Latest Updates
 
-## Latest Update
-
-| Demo                                                | Mods                                                              |
+| Showcase                                                | Mods                                                              |
 | --------------------------------------------------- | ----------------------------------------------------------------- |
-| ![VividPlayer](./Others/assets/VividPlayer.gif)             | `VidPlayer.css` + `VividPlayer.js`                                      |
-| ![ArcPeek](./Others/assets/ArcPeek.gif)             | `ArcPeek.css` + `ArcPeek.js`                                      |
-| ![AskInPage](./Others/assets/AskInPage.png) | `AskInPage.js`                                                |
+| ![VividToast](./Others/assets/toast.gif) | `VividToast.css` + `VividToast.js`                                                |
+| ![Mod Config Pane](./Others/assets/modconfig.png) | `ModConfig.js`                                                |
+| ![Restore Pinned Tab](./Others/assets/restorepinnedtab.gif) | `restorepinnedtab.js`                                                |
+
 
 ## Introduction
 
@@ -58,13 +58,23 @@ Please choose the modpack that matches your Vivaldi Version. Which version of Vi
 
 ## Feature Showcase
 
-| Demo                                                | Mods                                                              |
-| --------------------------------------------------- | ----------------------------------------------------------------- |
+| Showcase                                             | Mods                                                              |
+| :--------------------------------------------------- | :---------------------------------------------------------------- |
+| ![VividPeek](./Others/assets/ArcPeek.gif)             | `VividPeek.css` + `VividPeek.js`                                      |
+| ![VividPlayer](./Others/assets/VividPlayer.gif)             | `VividPlayer.css` + `VividPlayer.js`                                      |
 | ![FavouriteTabs](./Others/assets/FavouriteTabs.gif) | `FavouriteTabs.css`                                               |
-| ![VivaldiMax](./Others/assets/VivaldiMax.gif)       | `TidyTabs.css` + `TidyTabs.js` + `TidyTitles.js` |
-| ![TidyDownloads](./Others/assets/TidyDownloads.gif) | `TidyDownloads.js`                                                |
 | ![PeekTabbar](./Others/assets/PeekTabbar.gif)       | `PeekTabbar.css`                                                  |
 | ![Quietify](./Others/assets/Quietify.gif)           | `Quietify.css`                                                    |
+
+
+## Vivaldi Max(AI Features)
+
+| Showcase                                             | Mods                                                              |
+| :--------------------------------------------------- | :---------------------------------------------------------------- |
+| ![TidyTabs](./Others/assets/VivaldiMax.gif)       | `TidyTabs.css` + `TidyTabs.js` + `TidyTitles.js`                 |
+| ![TidyDownloads](./Others/assets/TidyDownloads.gif) | `TidyDownloads.js`                                                |
+| ![TidyAddress](./Others/assets/tidyaddress.gif) | `TidyAddress.js`                                                |
+| ![AskOnPage](./Others/assets/AskInPage.png) | `AskOnPage.js`                                                |
 
 ## Main File Structure
 
