@@ -2,7 +2,7 @@
 // @name         Tidy Tabs
 // @description  AI-assisted tab grouping and cleanup for Vivaldi.
 // @requirements TidyTabs.css, ClearTabs.css
-// @version      2026.4.17
+// @version      2026.5.7
 // @author       PaRr0tBoY
 // ==/UserScript==
 

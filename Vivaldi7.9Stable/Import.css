@@ -1,11 +1,11 @@
 /* My Mods */
-@import "CSS/VModToast.css";
+@import "CSS/VividToast.css";
 @import "CSS/BetterAnimation.css";
 @import "CSS/AdaptiveBF.css";
-@import "CSS/ArcPeek.css";
+@import "CSS/VividPeek.css";
 
 @import "CSS/FindInPage.css";
-@import "CSS/FluidQC.css";
+@import "CSS/VividQC.css";
 @import "CSS/TabsTrail.css";
 @import "CSS/TidyTabs.css";
 @import "CSS/RemoveClutter.css";
@@ -22,7 +22,7 @@
 @import "CSS/BtnHoverAnime.css";
 
 /* underActiveDev */
-/*@import "CSS/VivalArc.css";*/
+@import "CSS/VivalArc.css";
 /*@import "CSS/FavouriteTabs.css";*/
 /*@import "CSS/SmoothPanel.css";*/
 

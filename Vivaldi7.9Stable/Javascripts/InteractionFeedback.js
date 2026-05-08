@@ -2,7 +2,7 @@
 // @name         Interaction Feedback
 // @description  Mouse gesture trails, tiled tab indicators with Zen-style merge, drag-to-split avoidance animation, and auto-hide tabbar pulse.
 // @requirements InteractionFeedback.css
-// @version      2026.5.4
+// @version      2026.5.5
 // @author       PaRr0tBoY
 // ==/UserScript==
 

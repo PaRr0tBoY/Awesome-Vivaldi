@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         VividPlayer
 // @description  Sidebar bottom media controller inspired by Zen Browser.
-// @version      2026.5.4.1
+// @version      2026.5.8
 // @author       PaRr0tBoY, Codex
 // ==/UserScript==
 

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         TidyDownloads
 // @description  Uses chrome.downloads.onDeterminingFilename to dynamically rename downloads.
-// @version      2026.4.17
+// @version      2026.5.7
 // @author       PaRr0tBoY
 // ==/UserScript==
 

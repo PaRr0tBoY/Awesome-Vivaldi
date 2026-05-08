@@ -2,7 +2,7 @@
 // @name         Pinned Tab Restore
 // @description  Zen-style pinned tab URL change tracking with reset button and visual indicators.
 // @requirements PinnedTabRestore.css
-// @version      2026.5.4
+// @version      2026.5.5
 // @author       PaRr0tBoY
 // ==/UserScript==
 
@@ -242,6 +242,7 @@
         } else {
           // Plain click: Restore to original URL
           chrome.tabs.update(tabId, { url: origUrl });
+          unmarkChanged(wrapper);
         }
       });
 

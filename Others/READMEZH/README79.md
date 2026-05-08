@@ -41,23 +41,26 @@
   - [Vivaldi 设置](#vivaldi-设置)
   - [安装 CSS 修改](#安装-css-修改)
   - [安装 JavaScripts 修改](#安装-javascripts-修改)
+- [更新](#更新)
+- [开发](#开发)
 - [常见问题](#常见问题)
 
 ## 最新更新
 
 | 演示                                                   | 修改                              |
 | ------------------------------------------------------ | --------------------------------- |
-| ![ArcPeek](../../Others/assets/ArcPeek.gif)            | `ArcPeek.css` + `ArcPeek.js`      |
-| ![AskInPage](../../Others/assets/AskInPage.png)        | `AskInPage.js`                    |
-| ![TidyDownloads](../../Others/assets/TidyDownloads.gif) | `TidyDownloads.js`                |
+| ![VividToast](../../Others/assets/toast.gif)           | `VividToast.css` + `VividToast.js` |
+| ![Mod Config Pane](../../Others/assets/modconfig.png)  | `ModConfig.js`                    |
+| ![Restore Pinned Tab](../../Others/assets/restorepinnedtab.gif) | `restorepinnedtab.js`    |
 
 
 ## 功能展示
 
 | 演示                                                    | 修改                                                              |
 | :------------------------------------------------------ | :---------------------------------------------------------------- |
+| ![VividPeek](../../Others/assets/ArcPeek.gif)           | `VividPeek.css` + `VividPeek.js`                                  |
+| ![VividPlayer](../../Others/assets/VividPlayer.gif)     | `VividPlayer.css` + `VividPlayer.js`                              |
 | ![FavouriteTabs](../../Others/assets/FavouriteTabs.gif) | `FavouriteTabs.css`                                               |
-| ![VivaldiMax](../../Others/assets/VivaldiMax.gif)       | `TidyTabs.css` + `TidyTabs.js` + `TidyTitles.js`                 |
 | ![PeekTabbar](../../Others/assets/PeekTabbar.gif)       | `PeekTabbar.css`                                                  |
 | ![Quietify](../../Others/assets/Quietify.gif)           | `Quietify.css`                                                    |
 
@@ -68,28 +71,28 @@
 | 文件                  | 描述                                                  |
 | :-------------------- | :---------------------------------------------------- |
 | `AdaptiveBF.css`      | 在不需要时隐藏前进/后退按钮                           |
-| `ArcPeek.css`         | Arc 预览体验（需配合 `ArcPeek.js`）                   |
+| `VividPeek.css`       | Arc 预览体验（需配合 `VividPeek.js`）                 |
 | `BetterAnimation.css` | 更流畅的滚动动画                                      |
 | `BtnHoverAnime.css`   | 按钮悬停动画 _（默认禁用）_                           |
 | `DownloadPanel.css`   | 下载面板主题                                          |
 | `Extensions.css`      | 扩展下拉列表样式，溢出处理                            |
 | `FavouriteTabs.css`   | Arc 风格收藏标签网格（前 9 个固定标签）               |
 | `FindInPage.css`      | 浮动查找栏                                            |
-| `FluidQC.css`         | Arc 风格快速命令样式                                  |
+| `VividQC.css`         | Arc 风格快速命令样式                                  |
 | `LineBreak.css`       | 工具类 / 可忽略                                       |
 | `PeekTabbar.css`      | 悬停时预览标签栏，支持两级堆叠                        |
 | `Quietify.css`        | 更精致的音频指示器                                    |
 | `RemoveClutter.css`   | 隐藏滚动条和视觉杂乱                                  |
 | `TabsTrail.css`       | 活动/悬停标签的绿色轨迹                               |
 | `TidyTabs.css`        | AI 标签分组 _（需要 `TidyTabs.js`）_                  |
-| `VivalArc.css`        | Arc 主题移植 _（与此修改包不兼容）_                   |
+| `VividToast.css`      | Toast 通知样式 _（配合 `VividToast.js`）_             |
 
 ### JavaScripts
 
 | 文件                     | 描述                                             |
 | :----------------------- | :----------------------------------------------- |
-| `ArcPeek.js`             | Arc 预览对话框支持 _（配合 `ArcPeek.css`）_      |
-| `AskInPage.js`           | 用于页面问答、摘要和改写的 AI 侧边栏             |
+| `VividPeek.js`           | Arc 预览对话框支持 _（配合 `VividPeek.css`）_    |
+| `AskOnPage.js`           | 用于页面问答、摘要和改写的 AI 侧边栏             |
 | `AutoHidePanel.js`       | 自动隐藏侧边栏                                   |
 | `EasyFiles.js`           | Opera 风格的文件附件，支持剪贴板和下载内容       |
 | `GlobalMediaControls.js` | 全局媒体控制面板（Chrome 风格）                  |
@@ -101,8 +104,9 @@
 | `TidyDownloads.js`       | 用 AI 清理下载文件名                             |
 | `TidyTabs.js`            | AI 标签分组 _（配合 `TidyTabs.css`）_            |
 | `TidyTitles.js`          | AI 标签标题清理                                  |
-| `WorkspaceTabManager.js` | Workspace Board 面板，用来查看和管理工作区标签   |
+| `TabManager.js`          | Workspace Board 面板，用来查看和管理工作区标签   |
 | `VividAddress.js`        | 将地址栏可见后缀改写为 AI 生成的 slug            |
+| `VividToast.js`          | Toast 通知逻辑 _（配合 `VividToast.css`）_       |
 
 ## 如何安装
 
@@ -179,7 +183,7 @@ Vivaldi 中你唯一需要修改的文件是 window.html，它位于：
     <script src="TidyTitles.js"></script>
     <script src="TidyTabs.js"></script>
     <script src="TidyDownloads.js"></script>
-    <script src="AskInPage.js"></script>
+    <script src="AskOnPage.js"></script>
     <script src="TabScroll.js"></script>
     <script src="MonochromeIcons.js"></script>
     <script src="VividAddress.js"></script>
@@ -187,7 +191,7 @@ Vivaldi 中你唯一需要修改的文件是 window.html，它位于：
     <script src="GlobalMediaControls.js"></script>
     <script src="EasyFiles.js"></script>
     <script src="ModConfig.js"></script>
-    <script src="ArcPeek.js"></script>
+    <script src="VividPeek.js"></script>
   </body>
 </html>
 ```
@@ -215,6 +219,87 @@ Vivaldi 中你唯一需要修改的文件是 window.html，它位于：
 7. 修改后点击 **Save**。可以用 **Import** / **Export** 在不同配置或用户资料间迁移设置。
 
 设置会保存在浏览器本地 Origin Private File System 的 `.askonpage/config.json` 中，支持的修改项会自动读取这些保存值。
+
+## 更新
+
+如果你已经安装过此修改包，可以通过克隆仓库并重新安装来更新到最新版本：
+
+```bash
+# 克隆或拉取最新更改
+git clone https://github.com/PaRr0tBoY/Awesome-Vivaldi.git
+# 或者如果已经克隆过：
+cd path/to/Awesome-Vivaldi
+git pull
+
+# 重新安装 CSS 修改
+# 将 Vivaldi7.9Stable/ 的内容复制到你的 Vivaldi CSS 修改文件夹
+
+# 重新安装 JavaScript 修改
+# 将 Vivaldi7.9Stable/Javascripts/ 的内容复制到你的 Vivaldi 资源目录
+# 然后更新 window.html 中的脚本引用
+```
+
+## 开发
+
+### 架构概览
+
+- **CSS 修改**：通过 `Import.css` 中的 `@import` 引用。将新 CSS 文件放入 `CSS/` 文件夹，并在 `Import.css` 中添加 import 语句。
+- **JavaScript 修改**：通过 `window.html` 中的 `<script>` 标签引用。将新 JS 文件放入 `Javascripts/` 文件夹，并在 `window.html` 中添加脚本引用。
+
+### 文件元数据
+
+每个文件应在顶部包含元数据以描述其用途、作者和用法：
+
+#### CSS 文件（UserStyle 格式）
+
+```css
+/* ==UserStyle==
+ * @name         你的修改名称
+ * @description  简要描述这个修改的功能
+ * @version      YYYY.MM.DD
+ * @author       你的名字
+ * @website      https://github.com/PaRr0tBoY/Awesome-Vivaldi
+ * ==/UserStyle==
+ */
+```
+
+#### JavaScript 文件（UserScript 格式）
+
+```javascript
+// ==UserScript==
+// @name         YourMod
+// @description  简要描述这个修改的功能
+// @version      YYYY.MM.DD
+// @author       Your Name
+// ==/UserScript==
+```
+
+### 检查 Vivaldi UI
+
+使用 `vivaldi:inspect/#apps` 可以检查 Vivaldi 自身的 UI 元素。点击 `window.html` 的蓝色 **inspect** 按钮即可打开浏览器 chrome 的 DevTools。[Vivaldi UI Inspect 教程](https://forum.vivaldi.net/post/135732)有详细介绍。
+
+### CSS 注意事项
+
+- **CSS 变量可能在版本间失效**：始终用 DevTools 的 Computed Styles 验证。关键尺寸用硬编码 `px` 值比依赖 `var()` fallback 更可靠。
+- **CSS Anchor Positioning 不可靠**：Vivaldi 支持不完整。用 `left: 50%; transform: translateX(-50%)` 替代 `anchor-center`。
+- **`:has()` 实现反向选择**：当后面的 DOM 元素需要影响前面的元素时（Vivaldi DOM 中很常见），在共同父元素上使用 `:has()`。
+- **Vivaldi 通过 JS 设置内联样式**：用 `position: fixed !important` 或 `!important` 覆盖内联 `top`/`left` 计算。
+
+### JavaScript 注意事项
+
+- **window.html 脚本是 MV3 风格**：`chrome.scripting.executeScript` 可用，但 `chrome.tabs.executeScript` 不可用。
+- **MutationObserver 需要持久锚点**：工作区切换会重建 `.tab-strip`。将 observer 附加到 `#browser`（安全锚点），在 strip 重建时重新绑定内部 observer。
+- **注入前验证 URL**：`chrome.tabs.executeScript` 在 `chrome://` / `vivaldi://` 页面会抛错。始终先检查 `tab.url`。
+
+### 资源
+
+要了解 Vivaldi 的内部 API 并为此修改包做贡献，请查看：
+
+- **[PrettyBundle.js](../../../Others/UsefulResources/Source/source/pretty-bundle.js)** 和 **[common.css](../../../Others/UsefulResources/Source/source/common.css)** — Vivaldi 的核心 bundle 文件，揭示内部 API
+- **[Doc/](../../../Doc/)** — Vivaldi JavaScript 修改 API 文档
+- **Vivaldi Browser Source**: https://github.com/ric2b/Vivaldi-browser
+- **DeepWiki (Vivaldi Source)**: https://deepwiki.com/ric2b/Vivaldi-browser
+- **Lonm's Vivaldi Modders API Reference**: https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/everything.html
 
 ## 常见问题
 

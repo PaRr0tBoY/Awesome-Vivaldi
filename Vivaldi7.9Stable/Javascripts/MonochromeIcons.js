@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Monochrome Icons
 // @description  Makes web panel thumbnails monochrome depending on theme colors.
-// @version      2024.11.1
+// @version      2026.4.17
 // @author       luetage,AltCode
 // @website      https://forum.vivaldi.net/post/791344
 // ==/UserScript==

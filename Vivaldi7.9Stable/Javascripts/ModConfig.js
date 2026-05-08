@@ -1,3 +1,10 @@
+// ==UserScript==
+// @name         ModConfig
+// @description  Injects shared AI configuration controls into Vivaldi settings.
+// @version      2026.5.7
+// @author       PaRr0tBoY
+// ==/UserScript==
+
 // ModConfig.js
 // Injects shared AI configuration controls into Vivaldi settings.
 

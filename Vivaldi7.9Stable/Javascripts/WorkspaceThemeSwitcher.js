@@ -1,3 +1,10 @@
+// ==UserScript==
+// @name         Workspace Theme Switcher
+// @description  Automatically applies custom themes when switching workspaces.
+// @version      2026.5.7
+// @author       PaRr0tBoY
+// ==/UserScript==
+
 (() => {
   "use strict";
 

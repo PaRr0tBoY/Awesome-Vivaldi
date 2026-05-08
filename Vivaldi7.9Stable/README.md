@@ -41,27 +41,38 @@
   - [Vivaldi Settings](#vivaldi-settings) 
   - [CSS Mods](#to-install-css-mods)
   - [Javascripts Mods](#to-install-javascripts-mods)
+- [Update](#update)
+- [Development](#development)
 - [Frequently Asked Questions](#faq)
 
 ## Latest Updates
 
-| Demo                                                | Mods                                                              |
+| Showcase                                                | Mods                                                              |
 | --------------------------------------------------- | ----------------------------------------------------------------- |
-| ![VividPlayer](../Others/assets/VividPlayer.gif)             | `VidPlayer.css` + `VividPlayer.js`                                      |
-| ![ArcPeek](../Others/assets/ArcPeek.gif)             | `ArcPeek.css` + `ArcPeek.js`                                      |
-| ![AskInPage](../Others/assets/AskInPage.png) | `AskInPage.js`                                                |
+| ![VividToast](../Others/assets/toast.gif) | `VividToast.css` + `VividToast.js`                                                |
+| ![Mod Config Pane](../Others/assets/modconfig.png) | `ModConfig.js`                                                |
+| ![Restore Pinned Tab](../Others/assets/restorepinnedtab.gif) | `restorepinnedtab.js`                                                |
 
 
 ## Feature Showcase
 
 | Showcase                                             | Mods                                                              |
 | :--------------------------------------------------- | :---------------------------------------------------------------- |
+| ![VividPeek](../Others/assets/ArcPeek.gif)             | `VividPeek.css` + `VividPeek.js`                                      |
+| ![VividPlayer](../Others/assets/VividPlayer.gif)             | `VidvidPlayer.css` + `VividPlayer.js`                                      |
 | ![FavouriteTabs](../Others/assets/FavouriteTabs.gif) | `FavouriteTabs.css`                                               |
-| ![VivaldiMax](../Others/assets/VivaldiMax.gif)       | `TidyTabs.css` + `TidyTabs.js` + `TidyTitles.js`                 |
-| ![TidyDownloads](../Others/assets/TidyDownloads.gif) | `TidyDownloads.js`                                                |
 | ![PeekTabbar](../Others/assets/PeekTabbar.gif)       | `PeekTabbar.css`                                                  |
 | ![Quietify](../Others/assets/Quietify.gif)           | `Quietify.css`                                                    |
 
+
+## Vivaldi Max(AI Features)
+
+| Showcase                                             | Mods                                                              |
+| :--------------------------------------------------- | :---------------------------------------------------------------- |
+| ![TidyTabs](../Others/assets/VivaldiMax.gif)       | `TidyTabs.css` + `TidyTabs.js` + `TidyTitles.js`                 |
+| ![TidyDownloads](../Others/assets/TidyDownloads.gif) | `TidyDownloads.js`                                                |
+| ![TidyAddress](../Others/assets/tidyaddress.gif) | `TidyAddress.js`                                                |
+| ![AskOnPage](../Others/assets/AskInPage.png) | `AskOnPage.js`                                                |
 ## Mod List
 
 ### CSS
@@ -69,14 +80,14 @@
 | File                  | Description                                                 |
 | --------------------- | ----------------------------------------------------------- |
 | `AdaptiveBF.css`      | Hide back/forward buttons when unnecessary                  |
-| `ArcPeek.css`         | Arc peek experience (pair with `ArcPeek.js`)                |
+| `VividPeek.css`       | Arc peek experience (pair with `VividPeek.js`)              |
 | `BetterAnimation.css` | Smoother overscroll animation                               |
 | `BtnHoverAnime.css`   | Button hover animation _(disabled by default)_              |
 | `DownloadPanel.css`   | Download panel theming                                      |
 | `Extensions.css`      | Extensions dropdown as list, overflow handling              |
 | `FavouriteTabs.css`   | Arc-like favorite tabs grid (first 9 pinned tabs)           |
 | `FindInPage.css`      | Floating find bar                                           |
-| `FluidQC.css`         | Arc-like quick command styling                              |
+| `VividQC.css`         | Arc-like quick command styling                              |
 | `LineBreak.css`       | Utility / omit it                                           |
 | `PeekTabbar.css`      | Peek tabbar on hover with 2-level stacking                  |
 | `Quietify.css`        | Sleeker audio indicator                                     |
@@ -89,8 +100,8 @@
 
 | File                     | Description                                                     |
 | ------------------------ | --------------------------------------------------------------- |
-| `ArcPeek.js`             | Arc peek dialog support _(pairs with `ArcPeek.css`)_            |
-| `AskInPage.js`           | AI side panel for page questions, summaries, and rewrites       |
+| `VividPeek.js`           | Arc peek dialog support _(pairs with `VividPeek.css`)_          |
+| `AskOnPage.js`           | AI side panel for page questions, summaries, and rewrites       |
 | `AutoHidePanel.js`       | Auto-hide side panel                                            |
 | `EasyFiles.js`           | Opera-inspired file attachment via clipboard & downloads        |
 | `GlobalMediaControls.js` | Global Media Controls panel (Chrome-like)                       |
@@ -102,7 +113,7 @@
 | `TidyDownloads.js`       | AI download filename cleanup                                    |
 | `TidyTabs.js`            | AI tab grouping _(pairs with `TidyTabs.css`)_                   |
 | `TidyTitles.js`          | AI tab title cleanup                                            |
-| `WorkspaceTabManager.js` | Workspace Board panel for viewing and managing workspace tabs   |
+| `TabManager.js`          | Workspace Board panel for viewing and managing workspace tabs   |
 | `VividAddress.js`        | Rewrites the visible URL suffix into an AI-generated slug       |
 
 ## How to install
@@ -178,7 +189,7 @@ To install, Just copy all the content under ./Javascripts/ to your `<YOURVIVALDI
     <script src="TidyTitles.js"></script>
     <script src="TidyTabs.js"></script>
     <script src="TidyDownloads.js"></script>
-    <script src="AskInPage.js"></script>
+    <script src="AskOnPage.js"></script>
     <script src="TabScroll.js"></script>
     <script src="MonochromeIcons.js"></script>
     <script src="VividAddress.js"></script>
@@ -186,7 +197,7 @@ To install, Just copy all the content under ./Javascripts/ to your `<YOURVIVALDI
     <script src="GlobalMediaControls.js"></script>
     <script src="EasyFiles.js"></script>
     <script src="ModConfig.js"></script>
-    <script src="ArcPeek.js"></script>
+    <script src="VividPeek.js"></script>
   </body>
 </html>
 ```
@@ -214,6 +225,87 @@ To install, Just copy all the content under ./Javascripts/ to your `<YOURVIVALDI
 7. Click **Save** after changing settings. Use **Import** / **Export** to move the same config between profiles.
 
 Settings are stored in the browser's local Origin Private File System under `.askonpage/config.json`, and supported mods reload the saved values automatically.
+
+## Update
+
+If you have previously installed this modpack, you can update to the latest version by cloning the repository and re-running the installation:
+
+```bash
+# Clone or pull the latest changes
+git clone https://github.com/PaRr0tBoY/Awesome-Vivaldi.git
+# Or if you already have it cloned:
+cd path/to/Awesome-Vivaldi
+git pull
+
+# Re-install CSS mods
+# Copy the contents of Vivaldi7.9Stable/ to your Vivaldi CSS mods folder
+
+# Re-install JavaScript mods
+# Copy the contents of Vivaldi7.9Stable/Javascripts/ to your Vivaldi resources directory
+# Then update window.html with any new script references
+```
+
+## Development
+
+### Architecture Overview
+
+- **CSS Mods**: Referenced via `@import` in `Import.css`. Place new CSS files in the `CSS/` folder and add an import statement in `Import.css`.
+- **JavaScript Mods**: Referenced via `<script>` tags in `window.html`. Place new JS files in the `Javascripts/` folder and add a script reference in `window.html`.
+
+### File Metadata
+
+Each file should include metadata at the top to describe its purpose, author, and usage:
+
+#### CSS Files (UserStyle format)
+
+```css
+/* ==UserStyle==
+ * @name         Your Mod Name
+ * @description  Brief description of what this mod does
+ * @version      YYYY.MM.DD
+ * @author       Your Name
+ * @website      https://github.com/PaRr0tBoY/Awesome-Vivaldi
+ * ==/UserStyle==
+ */
+```
+
+#### JavaScript Files (UserScript format)
+
+```javascript
+// ==UserScript==
+// @name         YourMod
+// @description  Brief description of what this mod does
+// @version      YYYY.MM.DD
+// @author       Your Name
+// ==/UserScript==
+```
+
+### Inspecting Vivaldi UI
+
+Use `vivaldi:inspect/#apps` to inspect Vivaldi's own UI elements. Click the blue **inspect** button of `window.html` to open DevTools for the browser chrome. The [Vivaldi UI Inspect Tutorial](https://forum.vivaldi.net/post/135732) covers this in detail.
+
+### CSS Gotchas
+
+- **CSS variables may break between versions**: Always verify with Computed Styles in DevTools. Hardcoded `px` values are safer than relying on `var()` fallbacks.
+- **CSS Anchor Positioning is unreliable**: Vivaldi has incomplete support. Use `left: 50%; transform: translateX(-50%)` instead of `anchor-center`.
+- **`:has()` enables backwards selection**: When a later DOM element needs to style an earlier one (common in Vivaldi's DOM order), use `:has()` on a common parent.
+- **Vivaldi sets inline styles via JS**: Use `position: fixed !important` or `!important` overrides to escape inline `top`/`left` calculations.
+
+### JavaScript Gotchas
+
+- **window.html scripts are MV3-like**: `chrome.scripting.executeScript` works, but `chrome.tabs.executeScript` does not.
+- **MutationObserver needs persistent anchors**: Workspace switching rebuilds `.tab-strip`. Attach observers to `#browser` (safe anchor) and rebind inner observers when the strip is rebuilt.
+- **URL validation before injection**: `chrome.tabs.executeScript` throws on `chrome://` / `vivaldi://` pages. Always check `tab.url` first.
+
+### Resources
+
+To learn about Vivaldi's internal APIs and contribute to the modpack, check out:
+
+- **[PrettyBundle.js](../Others/UsefulResources/Source/source/pretty-bundle.js)** and **[common.css](../Others/UsefulResources/Source/source/common.css)** — Vivaldi's core bundle files that reveal internal APIs
+- **[Doc/](../Doc/)** — Documentation on Vivaldi's JavaScript mods API
+- **Vivaldi Browser Source**: https://github.com/ric2b/Vivaldi-browser
+- **DeepWiki (Vivaldi Source)**: https://deepwiki.com/ric2b/Vivaldi-browser
+- **Lonm's Vivaldi Modders API Reference**: https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/everything.html
 
 ## FAQ
 

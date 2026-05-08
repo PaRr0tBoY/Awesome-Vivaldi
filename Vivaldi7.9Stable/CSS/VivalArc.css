@@ -1,7 +1,7 @@
 /* ==UserStyle==
  * @name         VivalArc
  * @description  Arc-inspired Vivaldi UI styling.
- * @version      1.0.3
+ * @version      2026.5.8
  * @author       tovifun
  * @website      https://github.com/PaRr0tBoY/Awesome-Vivaldi
  * ==/UserStyle==
@@ -56,7 +56,6 @@
 /* Hide bottom status bar in non-top/bottom tabbar mode, mimic Arc minimalist style */
 :not(.tabs-bottom):not(.tabs-top)#browser > footer {
   display: none;
-  background: var(--colorBgAlphaHeavier);
 }
 
 /* ==================== Default Browser Popup ==================== */
@@ -419,50 +418,6 @@
   border-radius: var(--radiusHalf);
 }
 
-/* Background color effect on toolbar button hover */
-#browser:not(.tabs-top):not(.tabs-bottom).color-behind-tabs-off
-  .toolbar-mainbar
-  .toolbar-extensions
-  > .button-toolbar
-  > button:hover,
-#browser:not(.tabs-top):not(.tabs-bottom).color-behind-tabs-off
-  .toolbar-mainbar
-  .page-zoom-controls
-  > .button-toolbar
-  > button:hover,
-#browser:not(.tabs-top):not(.tabs-bottom).color-behind-tabs-off
-  .toolbar-mainbar
-  > .button-toolbar
-  > button:hover,
-#browser:not(.tabs-top):not(.tabs-bottom).color-behind-tabs-off
-  .toolbar-mainbar
-  .toolbar-extensions
-  > .toolbar-group
-  > .button-toolbar
-  > button:hover,
-#browser:not(.tabs-top):not(.tabs-bottom).color-behind-tabs-off
-  .toolbar-mainbar
-  .page-zoom-controls
-  > .toolbar-group
-  > .button-toolbar
-  > button:hover,
-#browser:not(.tabs-top):not(.tabs-bottom).color-behind-tabs-off
-  .toolbar-mainbar
-  > .toolbar-group
-  > .button-toolbar
-  > button:hover,
-#browser:not(.tabs-top):not(.tabs-bottom).color-behind-tabs-off
-  .ExtensionIcon:hover,
-#browser:not(.tabs-top):not(.tabs-bottom).color-behind-tabs-off
-  .ExtensionIcon--Hidden:hover,
-#browser:not(.tabs-top):not(.tabs-bottom).color-behind-tabs-off
-  .ExtensionIcon--Hidden:active,
-#browser:not(.tabs-top):not(.tabs-bottom).color-behind-tabs-off
-  .bookmark-bar
-  button:hover {
-  background-color: var(--colorFgAlpha);
-}
-
 /* ==================== Bookmark Bar Area ==================== */
 /* Bookmark bar uses tabbar background color, and adds rounded corner effect */
 #browser:not(.tabs-top):not(.tabs-bottom).color-behind-tabs-off.bookmark-bar-top
@@ -575,79 +530,6 @@
 #browser:not(.tabs-top):not(.tabs-bottom) #panels-container {
   padding-top: 0px;
   border: 0;
-}
-
-/* Add rounded corners to panel buttons in icon mode */
-.icons #switch .addwebpanel-wrapper > button,
-.icons #switch > .button-toolbar,
-.icons #switch > * > .button-toolbar,
-.icons #switch > button {
-  border-radius: calc(var(--radiusHalf));
-}
-
-/* Background color effect on panel button hover */
-#browser:not(.tabs-top):not(.tabs-bottom)
-  .icons
-  #switch
-  .addwebpanel-wrapper
-  > button:not(.toolbar-spacer, .toolbar-spacer-flexible, .divider):hover,
-#browser:not(.tabs-top):not(.tabs-bottom)
-  .icons
-  #switch
-  > .button-toolbar:not(
-    .toolbar-spacer,
-    .toolbar-spacer-flexible,
-    .divider
-  ):hover,
-#browser:not(.tabs-top):not(.tabs-bottom)
-  .icons
-  #switch
-  > *
-  .button-toolbar:not(
-    .toolbar-spacer,
-    .toolbar-spacer-flexible,
-    .divider
-  ):hover,
-#browser:not(.tabs-top):not(.tabs-bottom)
-  .icons
-  #switch
-  > button:not(.toolbar-spacer, .toolbar-spacer-flexible, .divider):hover {
-  background: var(--colorFgAlpha);
-}
-
-/* Panel container bottom margin and transparent background */
-#browser:not(.tabs-top):not(.tabs-bottom) #panels-container {
-  margin-bottom: var(--window-border);
-  background: var(--colorToviTransparent);
-}
-
-/* Panel container background color in overlay mode */
-#browser:not(.tabs-top):not(.tabs-bottom) #panels-container.overlay {
-  background: var(--colorBgAlphaBlur);
-}
-
-/* Panel container transparent background in icon mode */
-#browser:not(.tabs-top):not(.tabs-bottom) #panels-container.icons {
-  background: var(--colorToviTransparent);
-}
-
-/* Panel group background color in non-icon mode */
-#browser:not(.tabs-top):not(.tabs-bottom)
-  #panels-container:not(.icons)
-  .panel-group {
-  background: var(--colorBgAlphaBlur);
-}
-
-/* Add rounded corner effect to panel group */
-#browser:not(.tabs-top):not(.tabs-bottom) #panels-container .panel-group {
-  border-radius: var(--radiusCap);
-}
-
-/* Remove rounded corners for panel group in overlay mode */
-#browser:not(.tabs-top):not(.tabs-bottom)
-  #panels-container.overlay
-  .panel-group {
-  border-radius: 0;
 }
 
 /* ==================== Webview Container Area ==================== */
@@ -794,7 +676,7 @@
 /* Tab indicator border style */
 .tab-indicator {
   border-top: 4px solid transparent;
-  border-bottom: 10px solid tranparent;
+  border-bottom: 10px solid transparent;
   transition-duration: 0.1s;
   transition: 0.1s;
 }
@@ -802,7 +684,7 @@
 /* Tab indicator hover effect */
 .tab-indicator:hover {
   border-top: 0px solid transparent;
-  border-bottom: 10px solid tranparent;
+  border-bottom: 10px solid transparent;
   transition-duration: 0.1s;
   transition: 0.1s;
 }
@@ -844,27 +726,23 @@
   box-shadow: none;
 }
 
-/* Set tab subcontainer to transparent background */
-
 /* ==================== Transparent Startpage Navigation Area ==================== */
 /* Remove shadow and background of startpage navigation to achieve transparent effect */
 .startpage .startpage-navigation {
-  box-shadow: none !important;
-}
-.startpage .startpage-navigation {
   background: transparent !important;
+  box-shadow: none !important;
 }
 .startpage .startpage-navigation .startpage-navigation-group {
   border: 0 !important;
 }
 
 /* Remove shadow and background image of startpage navigation buttons */
-button.button-startpage {
+button.button-startpage,
+button.button-startpage:active {
   box-shadow: none !important;
+  background: none !important;
 }
+
 button.button-startpage:after {
   background-image: none !important;
-}
-button.button-startpage:active {
-  background: none !important;
 }

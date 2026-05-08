@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Quick Capture
 // @description  Captures the hovered element region using clipboard, file, or Vivaldi screenshot selection modes.
-// @version      2026.4.17
+// @version      2026.5.7
 // @author       Tam710562, maubg, PaRr0tBoY
 // ==/UserScript==
 
