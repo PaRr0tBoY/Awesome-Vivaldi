@@ -1,5 +1,5 @@
 <div align="center">
-    <img width="200" height="200" src="../Others/Image/IMG5682.png">
+    <img width="200" height="200" src="../Others/assets/IMG5682.png">
 </div>
 
 <div align="center">
@@ -15,7 +15,7 @@
 
 <div align="center">
 
-**English** | [简体中文](../Others/READMEZH/README79.md)
+**English** | [简体中文](../Doc/READMEZH/README79.md)
 
 </div>
 
@@ -101,21 +101,19 @@
 
 | File                     | Description                                                     |
 | ------------------------ | --------------------------------------------------------------- |
-| `VividPeek.js`           | Arc peek dialog support _(pairs with `VividPeek.css`)_          |
-| `AskOnPage.js`           | AI side panel for page questions, summaries, and rewrites       |
-| `AutoHidePanel.js`       | Auto-hide side panel                                            |
-| `EasyFiles.js`           | Opera-inspired file attachment via clipboard & downloads        |
-| `GlobalMediaControls.js` | Global Media Controls panel (Chrome-like)                       |
-| `ModConfig.js`           | Shared settings panel for AI keys and supported mods             |
-| `MonochromeIcons.js`     | Monochrome web panel icons to reduce visual noise               |
-| `QuickCapture.js`        | Auto-select capture area with clipboard/file/default modes      |
-| `SelectCloseTabs.js`     | Mark tabs in the tab cycler, then close them in one batch       |
-| `TabScroll.js`           | Click active tab: scroll to top / previous position             |
-| `TidyDownloads.js`       | AI download filename cleanup                                    |
-| `TidyTabs.js`            | AI tab grouping _(pairs with `TidyTabs.css`)_                   |
-| `TidyTitles.js`          | AI tab title cleanup                                            |
-| `TabManager.js`          | Workspace Board panel for viewing and managing workspace tabs   |
-| `VividAddress.js`        | Rewrites the visible URL suffix into an AI-generated slug       |
+| `VividPeek.js`           | [Arc peek dialog support](../Doc/mod/VividPeek.md) _(pairs with `VividPeek.css`)_ |
+| `AskOnPage.js`           | [AI side panel for page questions, summaries, and rewrites](../Doc/mod/AskOnPage.md) |
+| `AutoHidePanel.js`       | [Auto-hide side panel](../Doc/mod/AutoHidePanel.md)            |
+| `EasyFiles.js`           | [Opera-inspired file attachment via clipboard & downloads](../Doc/mod/EasyFiles.md) |
+| `ModConfig.js`           | [Shared settings panel for AI keys and supported mods](../Doc/mod/ModConfig.md) |
+| `MonochromeIcons.js`     | [Monochrome web panel icons to reduce visual noise](../Doc/mod/MonochromeIcons.md) |
+| `QuickCapture.js`        | [Auto-select capture area with clipboard/file/default modes](../Doc/mod/QuickCapture.md) |
+| `TidyDownloads.js`       | [AI download filename cleanup](../Doc/mod/TidyDownloads.md)    |
+| `TidyTabs.js`            | [AI tab grouping](../Doc/mod/TidyTabs.md) _(pairs with `TidyTabs.css`)_ |
+| `TidyTitles.js`          | [AI tab title cleanup](../Doc/mod/TidyTitles.md)               |
+| `TabManager.js`          | [Workspace Board panel for viewing and managing workspace tabs](../Doc/mod/TabManager.md) |
+| `TidyAddress.js`         | [Rewrites the visible URL suffix into an AI-generated slug](../Doc/mod/TidyAddress.md) |
+| `VividToast.js`          | [Toast notification logic](../Doc/mod/VividToast.md) _(pairs with `VividToast.css`)_ |
 
 ## How to install
 

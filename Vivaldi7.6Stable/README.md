@@ -1,5 +1,5 @@
 <div align="center">
-    <img width="200" height="200" src="../Others/Image/IMG5682.png">
+    <img width="200" height="200" src="../Others/assets/IMG5682.png">
 </div>
 
 <div align="center">
@@ -15,7 +15,7 @@
 
 <div align="center">
 
-**English** | [简体中文](../Others/READMEZH/README76.md)
+**English** | [简体中文](../Doc/READMEZH/README76.md)
 
 </div>
 
