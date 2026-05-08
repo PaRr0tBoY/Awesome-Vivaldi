@@ -22,14 +22,16 @@
     noteSpawnMinMs: 540,
     noteSpawnMaxMs: 980,
     noteMaxConcurrent: 2,
+    progressUpdateMinMs: 700,
     autoPipOnSwitch: true,   // 切换标签页时自动对上一个 tab 触发 PiP
     minMediaDurationSec: 8,  // 总时长低于此值视为非主要内容（UI音效/广告片段）
     minVideoArea: 30000,     // 视频面积低于此值视为装饰性（头像/图标/广告条）
   };
 
   const MESSAGE_TYPE = 'vivid-player';
+  const GLOBAL_MEDIA_CONTROLS_TYPE = 'global-media-controls';
   const ROOT_ID = 'vivid-player';
-  const INJECT_MAIN_FLAG = '__vividPlayerMainInjected';
+  const INJECT_MAIN_FLAG = '__vividPlayerMainInjected_20260508_audio_element_v2';
   const INJECT_BRIDGE_FLAG = '__vividPlayerBridgeInjected';
   const NOTE_CHARS = ['♪', '♫', '♩', '♬'];
   const stateByTabId = new Map();
@@ -78,7 +80,8 @@
 
   const transportDebugState = {
     recentEvents: [],
-    maxRecentEvents: 20,
+    maxRecentEvents: 40,
+    lastLogByKey: new Map(),
   };
 
   const icons = {
@@ -116,7 +119,80 @@
     });
   }
 
+  function getTransportDebugKey(event, payload = {}) {
+    if (event === 'candidate-select') {
+      const candidates = Array.isArray(payload.candidates) ? payload.candidates : [];
+      const decisions = candidates
+        .filter((item) => item.decision !== 'include')
+        .map((item) => `${item.state?.tabId || ''}:${item.decision}:${item.state?.suppressedReason || ''}:${item.state?.paused ? 1 : 0}:${item.state?.progressSource || ''}`)
+        .join(',');
+      return `${event}:${(payload.nextSources || []).join(',')}:${decisions}`;
+    }
+    if (event === 'media-update') {
+      const stateInfo = payload.state || {};
+      return `${event}:${stateInfo.tabId || ''}:${payload.eventType || ''}:${stateInfo.mediaId || ''}:${stateInfo.progressSource || ''}:${stateInfo.paused ? 1 : 0}:${stateInfo.muted ? 1 : 0}:${Math.round(Number(stateInfo.duration) || 0)}`;
+    }
+    if (event.startsWith('browser-playing')) {
+      const stateInfo = payload.state || {};
+      return `${event}:${stateInfo.tabId || ''}:${payload.reason || ''}:${stateInfo.paused ? 1 : 0}:${stateInfo.progressSource || ''}`;
+    }
+    if (event.startsWith('suppress-')) {
+      const stateInfo = payload.state || {};
+      return `${event}:${stateInfo.tabId || ''}:${payload.reason || ''}:${payload.eventType || ''}:${stateInfo.suppressedReason || ''}`;
+    }
+    if (event === 'command-complete' && !payload.error) {
+      return `${event}:${payload.tabId || ''}:${payload.frameId ?? ''}:${payload.action || ''}:ok`;
+    }
+    return `${event}:${JSON.stringify(payload).slice(0, 500)}`;
+  }
+
+  function shouldLogTransportDebug(event, payload = {}) {
+    if (event === 'command-complete' && !payload.error) return false;
+    if (event === 'browser-playing-ignored' && String(payload.reason || '').includes('real-media-source')) return false;
+    if (event === 'candidate-select') {
+      const previous = (payload.previousSources || []).join(',');
+      const next = (payload.nextSources || []).join(',');
+      const candidates = Array.isArray(payload.candidates) ? payload.candidates : [];
+      const hasImportantDecision = candidates.some((item) => (
+        item.decision === 'skip-suppressed' ||
+        item.decision === 'clear-stale-user-close' ||
+        item.decision === 'skip-not-verified-audible' ||
+        item.state?.progressSource === 'none'
+      ));
+      if (previous === next && !hasImportantDecision) return false;
+    }
+    if (event === 'media-update') {
+      const eventType = payload.eventType || '';
+      const stateInfo = payload.state || {};
+      if (stateInfo.progressSource === GLOBAL_MEDIA_CONTROLS_TYPE) {
+        const importantExternal = eventType.endsWith('-playing') || eventType.endsWith('-pause') || !stateInfo.duration;
+        if (!importantExternal) return false;
+      }
+      const importantEvent = eventType === 'play-call' || eventType === 'play' || eventType === 'playing' || eventType === 'pause' || eventType === 'mediasession-metadata';
+      const noProgress = !stateInfo.mediaId && (!stateInfo.duration || stateInfo.progressSource === 'none');
+      if (!importantEvent && !noProgress && stateInfo.progressSource === 'media-element') return false;
+    }
+    if (event === 'media-update-ignored') {
+      const stateInfo = payload.state || {};
+      return stateInfo.progressSource === GLOBAL_MEDIA_CONTROLS_TYPE;
+    }
+    const key = getTransportDebugKey(event, payload);
+    const now = Date.now();
+    const last = transportDebugState.lastLogByKey.get(key) || 0;
+    const minInterval = event === 'media-update' ? 6000 : event === 'candidate-select' ? 8000 : 800;
+    if (now - last < minInterval) return false;
+    transportDebugState.lastLogByKey.set(key, now);
+    if (transportDebugState.lastLogByKey.size > 120) {
+      const cutoff = now - 30000;
+      for (const [entryKey, stamp] of transportDebugState.lastLogByKey.entries()) {
+        if (stamp < cutoff) transportDebugState.lastLogByKey.delete(entryKey);
+      }
+    }
+    return true;
+  }
+
   function pushTransportDebug(event, payload = {}) {
+    if (!shouldLogTransportDebug(event, payload)) return;
     const entry = { stamp: new Date().toISOString(), event, payload };
     transportDebugState.recentEvents.push(entry);
     if (transportDebugState.recentEvents.length > transportDebugState.maxRecentEvents) {
@@ -162,15 +238,27 @@
     }
   }
 
+  async function getAllFrameIds(tabId) {
+    if (!chrome.webNavigation?.getAllFrames) return [0];
+    try {
+      const frames = await callApi(chrome.webNavigation.getAllFrames.bind(chrome.webNavigation), { tabId });
+      return Array.isArray(frames) ? frames.map((frame) => frame.frameId).filter((id) => Number.isInteger(id)) : [0];
+    } catch (_error) {
+      return [0];
+    }
+  }
+
   function getTabState(tabId) {
     if (!stateByTabId.has(tabId)) {
       stateByTabId.set(tabId, {
         tabId, windowId: null, title: '', url: '', favIconUrl: '',
         audible: false, active: false, discarded: false,
-        alertStates: new Set(), lastMediaAt: 0, suppressed: false,
-        awaitingQuietAfterSuppress: false, pendingPip: false,
-        metadata: null, frameId: 0, canPip: false, pictureInPicture: false,
+        alertStates: new Set(), lastMediaAt: 0, suppressed: false, suppressedAt: 0, suppressedReason: '',
+        awaitingQuietAfterSuppress: false, pendingPip: false, pendingPipTimer: null,
+        metadata: null, frameId: null, canPip: false, pictureInPicture: false,
         hasAudibleMedia: false, mediaSessionActive: false, ended: false,
+        mediaId: null, forceMiniPlayer: false, progressSource: '', lastExternalMediaAt: 0,
+        lastPauseCommandAt: 0, lastPlayCommandAt: 0,
       });
     }
     return stateByTabId.get(tabId);
@@ -427,7 +515,11 @@
       const source = stateByTabId.get(refs.tabId);
       if (!source) return;
       chrome.tabs.update(source.tabId, { active: true }).catch(() => {});
-      sendCommand(source.tabId, source.frameId, { action: 'scroll-into-view', frameId: source.frameId });
+      sendCommand(source.tabId, source.frameId, {
+        action: 'scroll-into-view',
+        frameId: source.frameId,
+        mediaId: source.mediaId,
+      });
     });
 
     playPauseButton.addEventListener('click', () => {
@@ -435,29 +527,36 @@
       const source = stateByTabId.get(refs.tabId);
       if (!source) return;
       const action = source.metadata?.paused ? 'play' : 'pause';
-      sendCommand(source.tabId, source.frameId, { action });
+      if (action === 'pause') source.lastPauseCommandAt = Date.now();
+      else source.lastPlayCommandAt = Date.now();
+      sendCommand(source.tabId, source.frameId, { action, mediaId: source.mediaId });
     });
 
     muteButton.addEventListener('click', () => {
       if (!refs.tabId) return;
       const source = stateByTabId.get(refs.tabId);
       if (!source) return;
-      sendCommand(source.tabId, source.frameId, { action: 'muted' });
+      sendCommand(source.tabId, source.frameId, { action: 'muted', mediaId: source.mediaId });
     });
 
     pipButton.addEventListener('click', () => {
       if (!refs.tabId) return;
       const source = stateByTabId.get(refs.tabId);
       if (!source) return;
-      sendCommand(source.tabId, source.frameId, { action: 'picture-in-picture' });
+      sendCommand(source.tabId, source.frameId, { action: 'picture-in-picture', mediaId: source.mediaId });
     });
 
     closeButton.addEventListener('click', () => {
       if (!refs.tabId) return;
       const source = stateByTabId.get(refs.tabId);
       if (!source) return;
-      markSourceSuppressed(source, true);
-      sendCommand(source.tabId, source.frameId, { action: 'close' });
+      markSourceSuppressed(source, true, 'user-close');
+      source.forceMiniPlayer = false;
+      source.lastPauseCommandAt = Date.now();
+      if (source.metadata) source.metadata = { ...source.metadata, paused: true };
+      source.hasAudibleMedia = false;
+      source.mediaSessionActive = false;
+      sendCommand(source.tabId, source.frameId, { action: 'close', mediaId: source.mediaId });
       chooseCandidateSource();
     });
 
@@ -466,7 +565,7 @@
       const source = stateByTabId.get(refs.tabId);
       if (!source) return;
       pushTransportDebug('ui-click', { action: 'previous-track', tabId: refs.tabId });
-      sendCommand(source.tabId, source.frameId, { action: 'previous-track' });
+      sendCommand(source.tabId, source.frameId, { action: 'previous-track', mediaId: source.mediaId });
     });
 
     nextButton.addEventListener('click', () => {
@@ -474,7 +573,7 @@
       const source = stateByTabId.get(refs.tabId);
       if (!source) return;
       pushTransportDebug('ui-click', { action: 'next-track', tabId: refs.tabId });
-      sendCommand(source.tabId, source.frameId, { action: 'next-track' });
+      sendCommand(source.tabId, source.frameId, { action: 'next-track', mediaId: source.mediaId });
     });
 
     return refs;
@@ -1059,22 +1158,110 @@
     return stateByTabId.get(state.currentSourceTabId) || null;
   }
 
-  function markSourceSuppressed(tabState, awaitQuiet = true) {
-    if (!tabState) return;
-    tabState.suppressed = true;
-    tabState.awaitingQuietAfterSuppress = awaitQuiet;
+  function getDebugTabState(tabState) {
+    if (!tabState) return null;
+    return {
+      tabId: tabState.tabId,
+      title: tabState.metadata?.title || tabState.title || '',
+      host: getHostname(tabState.url),
+      audible: !!tabState.audible,
+      active: !!tabState.active,
+      alertStates: Array.from(tabState.alertStates || []),
+      suppressed: !!tabState.suppressed,
+      suppressedReason: tabState.suppressedReason || '',
+      suppressAgeMs: tabState.suppressedAt ? Date.now() - tabState.suppressedAt : 0,
+      pauseCommandAgeMs: tabState.lastPauseCommandAt ? Date.now() - tabState.lastPauseCommandAt : 0,
+      playCommandAgeMs: tabState.lastPlayCommandAt ? Date.now() - tabState.lastPlayCommandAt : 0,
+      awaitingQuietAfterSuppress: !!tabState.awaitingQuietAfterSuppress,
+      paused: !!tabState.metadata?.paused,
+      muted: !!tabState.metadata?.muted,
+      volume: Number.isFinite(tabState.metadata?.volume) ? tabState.metadata.volume : null,
+      hasAudibleMedia: !!tabState.hasAudibleMedia,
+      mediaSessionActive: !!tabState.mediaSessionActive,
+      frameId: tabState.frameId,
+      mediaId: tabState.mediaId || null,
+      currentTime: Number.isFinite(tabState.metadata?.currentTime) ? tabState.metadata.currentTime : null,
+      duration: Number.isFinite(tabState.metadata?.duration) ? tabState.metadata.duration : null,
+      progressSource: tabState.progressSource || '',
+      externalAgeMs: tabState.lastExternalMediaAt ? Date.now() - tabState.lastExternalMediaAt : 0,
+    };
   }
 
-  function reconcileSuppressedState(tabState, audibleNow) {
+  function markSourceSuppressed(tabState, awaitQuiet = true, reason = 'manual') {
+    if (!tabState) return;
+    tabState.suppressed = true;
+    tabState.suppressedAt = Date.now();
+    tabState.suppressedReason = reason;
+    tabState.awaitingQuietAfterSuppress = awaitQuiet;
+    pushTransportDebug('suppress-set', {
+      reason,
+      awaitQuiet,
+      state: getDebugTabState(tabState),
+    });
+  }
+
+  function isPlaybackStartEvent(eventType) {
+    return eventType === 'play' ||
+      eventType === 'play-call' ||
+      eventType === 'playing' ||
+      eventType === 'global-media-controls-playing' ||
+      eventType === 'mediasession-play' ||
+      eventType === 'dom-play';
+  }
+
+  function reconcileSuppressedState(tabState, audibleNow, eventType = '') {
     if (!tabState?.suppressed) return;
+    const suppressAge = Date.now() - (tabState.suppressedAt || 0);
+    if (audibleNow && isPlaybackStartEvent(eventType)) {
+      if (tabState.suppressedReason === 'user-close' && suppressAge < 3000) {
+        pushTransportDebug('suppress-retained', {
+          reason: 'recent-user-close',
+          eventType,
+          audibleNow,
+          state: getDebugTabState(tabState),
+        });
+        return;
+      }
+      pushTransportDebug('suppress-clear', {
+        reason: 'playback-start',
+        eventType,
+        audibleNow,
+        state: getDebugTabState(tabState),
+      });
+      tabState.suppressed = false;
+      tabState.awaitingQuietAfterSuppress = false;
+      tabState.suppressedReason = '';
+      return;
+    }
     if (tabState.awaitingQuietAfterSuppress) {
       if (!audibleNow) {
         tabState.awaitingQuietAfterSuppress = false;
+        pushTransportDebug('suppress-quiet-observed', {
+          eventType,
+          state: getDebugTabState(tabState),
+        });
+      } else if (tabState.suppressedReason !== 'user-close' && suppressAge > 1500 && (eventType === 'playing' || eventType === 'mediasession-tick')) {
+        pushTransportDebug('suppress-clear', {
+          reason: 'stale-audible-timeout',
+          eventType,
+          audibleNow,
+          state: getDebugTabState(tabState),
+        });
+        tabState.suppressed = false;
+        tabState.awaitingQuietAfterSuppress = false;
+        tabState.suppressedReason = '';
       }
       return;
     }
     if (audibleNow) {
+      pushTransportDebug('suppress-clear', {
+        reason: 'audible-after-quiet',
+        eventType,
+        audibleNow,
+        state: getDebugTabState(tabState),
+      });
       tabState.suppressed = false;
+      tabState.suppressedReason = '';
     }
   }
 
@@ -1083,12 +1270,149 @@
     return !tabState.metadata.paused && !tabState.metadata.muted && Number(tabState.metadata.volume ?? 1) > 0;
   }
 
+  function hasVerifiedAudibleMedia(tabState) {
+    return !!tabState && (tabState.hasAudibleMedia || isMetadataAudible(tabState));
+  }
+
+  function ensureAudibleFallback(tabState) {
+    if (!tabState || tabState.discarded || !tabState.audible || tabState.metadata) return;
+    tabState.metadata = {
+      title: tabState.title || 'Playing media',
+      artist: getHostname(tabState.url) || '',
+      image: '',
+      paused: false,
+      muted: false,
+      volume: 1,
+      duration: 0,
+      currentTime: 0,
+    };
+    tabState.hasAudibleMedia = true;
+    tabState.mediaSessionActive = true;
+    tabState.canPip = false;
+    tabState.frameId = null;
+    tabState.mediaId = null;
+    tabState.ended = false;
+    tabState.lastMediaAt = Date.now();
+  }
+
+  function markBrowserReportedPlaying(tabState, reason = 'browser-playing') {
+    if (!tabState || tabState.discarded) return;
+    if (tabState.mediaId || tabState.progressSource === 'media-element' || tabState.progressSource === GLOBAL_MEDIA_CONTROLS_TYPE) {
+      pushTransportDebug('browser-playing-ignored', {
+        reason: reason + '-strong-media-source',
+        state: getDebugTabState(tabState),
+      });
+      return;
+    }
+    const pauseAge = Date.now() - (tabState.lastPauseCommandAt || 0);
+    if (tabState.lastPauseCommandAt > tabState.lastPlayCommandAt && pauseAge < 2500) {
+      pushTransportDebug('browser-playing-ignored', {
+        reason: reason + '-recent-pause-command',
+        pauseAge,
+        state: getDebugTabState(tabState),
+      });
+      return;
+    }
+    const suppressAge = Date.now() - (tabState.suppressedAt || 0);
+    if (tabState.suppressed && tabState.suppressedReason === 'user-close' && suppressAge < 3000) {
+      pushTransportDebug('browser-playing-ignored', {
+        reason,
+        suppressAge,
+        state: getDebugTabState(tabState),
+      });
+      return;
+    }
+    if (!tabState.metadata) {
+      ensureAudibleFallback(tabState);
+      pushTransportDebug('browser-playing-fallback', {
+        reason,
+        state: getDebugTabState(tabState),
+      });
+      return;
+    }
+    tabState.metadata = {
+      ...tabState.metadata,
+      paused: false,
+    };
+    tabState.hasAudibleMedia = !tabState.metadata.muted && Number(tabState.metadata.volume ?? 1) > 0;
+    tabState.mediaSessionActive = true;
+    tabState.ended = false;
+    tabState.lastMediaAt = Date.now();
+    pushTransportDebug('browser-playing', {
+      reason,
+      state: getDebugTabState(tabState),
+    });
+  }
+
+  function applyExternalMediaState(info, sender, sourceName) {
+    if (!info || !sender?.tab) return false;
+    const tabId = sender.tab.id;
+    const tabState = getTabState(tabId);
+    const eventType = info.paused ? `${sourceName}-pause` : `${sourceName}-playing`;
+    tabState.windowId = sender.tab.windowId;
+    tabState.title = sender.tab.title || tabState.title;
+    tabState.url = sender.tab.url || tabState.url;
+    tabState.favIconUrl = sender.tab.favIconUrl || tabState.favIconUrl;
+    tabState.audible = !!sender.tab.audible || !info.paused;
+    tabState.frameId = sender.frameId ?? null;
+    tabState.metadata = {
+      title: info.title || tabState.metadata?.title || tabState.title || '',
+      artist: info.artist || '',
+      image: info.image || '',
+      paused: !!info.paused,
+      muted: !!info.muted,
+      volume: Number.isFinite(info.volume) ? Number(info.volume) : 1,
+      duration: Number.isFinite(info.duration) ? Number(info.duration) : 0,
+      currentTime: Number.isFinite(info.currentTime) ? Number(info.currentTime) : 0,
+    };
+    tabState.progressSource = sourceName;
+    tabState.lastExternalMediaAt = Date.now();
+    tabState.mediaId = null;
+    tabState.hasAudibleMedia = !tabState.metadata.paused && !tabState.metadata.muted && tabState.metadata.volume > 0;
+    tabState.mediaSessionActive = !tabState.metadata.paused;
+    tabState.canPip = info.audio === undefined ? false : !info.audio;
+    tabState.pictureInPicture = !!info.pictureInPicture;
+    tabState.ended = false;
+    if (!tabState.metadata.paused) tabState.lastMediaAt = Date.now();
+    reconcileSuppressedState(tabState, tabState.hasAudibleMedia, eventType);
+    pushTransportDebug('media-update', {
+      eventType,
+      frameId: sender.frameId ?? null,
+      progressSource: sourceName,
+      state: getDebugTabState(tabState),
+    });
+    return sender.tab.windowId === state.currentWindowId;
+  }
+
+  function isWeakVividMediaUpdate(info) {
+    if (!info || info.ended) return false;
+    if (info.mediaId || info.progressSource === 'media-element') return false;
+    const eventType = info.eventType || '';
+    return info.progressSource === 'none' ||
+      eventType === 'scan-mediasession' ||
+      eventType === 'mediasession-metadata' ||
+      eventType === 'mediasession-position' ||
+      eventType === 'mediasession-tick' ||
+      eventType === 'mediasession-pause' ||
+      eventType === 'mediasession-play';
+  }
+
+  function hasFreshExternalMediaState(tabState) {
+    return !!tabState &&
+      tabState.progressSource === GLOBAL_MEDIA_CONTROLS_TYPE &&
+      tabState.lastExternalMediaAt &&
+      Date.now() - tabState.lastExternalMediaAt < 10000;
+  }
+
   function isAudioPlaying(tabState) {
     if (!tabState || tabState.discarded) return false;
-    if (tabState.mediaSessionActive) return true;
-    if (tabState.alertStates.has('playing') || tabState.audible) return true;
-    if (tabState.hasAudibleMedia || isMetadataAudible(tabState)) return true;
+    if (hasVerifiedAudibleMedia(tabState)) return true;
+    if (tabState.mediaSessionActive && tabState.metadata && !tabState.metadata.paused) return true;
     return false;
+  }
+
+  function shouldForceMiniPlayer(tabState) {
+    return !!tabState?.forceMiniPlayer && hasMedia(tabState);
   }
 
   function setHidden(hidden) {
@@ -1105,6 +1429,27 @@
     if (state.clearSourceTimer) { clearTimeout(state.clearSourceTimer); state.clearSourceTimer = null; }
   }
 
+  function clearPendingPip(tabState, resync = true) {
+    if (!tabState) return;
+    if (tabState.pendingPipTimer) {
+      clearTimeout(tabState.pendingPipTimer);
+      tabState.pendingPipTimer = null;
+    }
+    if (!tabState.pendingPip) return;
+    tabState.pendingPip = false;
+    if (resync) chooseCandidateSource();
+  }
+
+  function markPendingPip(tabState) {
+    if (!tabState) return;
+    if (tabState.pendingPipTimer) clearTimeout(tabState.pendingPipTimer);
+    tabState.pendingPip = true;
+    tabState.pendingPipTimer = setTimeout(() => {
+      tabState.pendingPipTimer = null;
+      if (!tabState.pictureInPicture) clearPendingPip(tabState, true);
+    }, 2500);
+  }
+
   // ─── UI 同步 ───────────────────────────────────────────────────────────────
 
   /** 同步单个 card slot 的内容 */
@@ -1118,9 +1463,12 @@
     const paused = !!source.metadata?.paused;
     const muted = !!source.metadata?.muted || (source.metadata?.volume === 0);
     const percent = duration > 0 ? Math.max(0, Math.min(100, (currentTime / duration) * 100)) : 0;
+    const hasMetadata = !!source.metadata;
+    const canControlPlayback = hasMetadata && !source.ended;
+    const canPip = !!source.canPip && canControlPlayback;
 
     refs.card.dataset.playing = paused ? 'false' : 'true';
-    refs.card.dataset.canPip = source.canPip ? 'true' : 'false';
+    refs.card.dataset.canPip = canPip ? 'true' : 'false';
     refs.card.dataset.themeMode = VIVID_PLAYER_CONFIG.theme === 'classic' ? 'classic' : 'theme';
 
     refs.titleEl.textContent = title;
@@ -1144,7 +1492,7 @@
     refs.playPauseButton.setAttribute('aria-label', paused ? 'Play' : 'Pause');
     refs.muteButton.innerHTML = muted ? icons.mute : icons.unmute;
     refs.muteButton.setAttribute('aria-label', muted ? 'Unmute' : 'Mute');
-    refs.pipButton.hidden = !source.canPip;
+    refs.pipButton.hidden = !canPip;
 
     // favicon
     const iconUrl = source?.favIconUrl || '';
@@ -1240,15 +1588,60 @@
   function chooseCandidateSource() {
     const playingSet = new Set();
     const currentActiveSet = new Set(state.activeSources);
+    const candidateDebug = [];
+    const rememberCandidate = (tabState, decision) => {
+      if (!tabState) return;
+      if (!tabState.metadata && !tabState.audible && !tabState.suppressed && !currentActiveSet.has(tabState.tabId)) return;
+      candidateDebug.push({
+        decision,
+        state: getDebugTabState(tabState),
+        hasMedia: hasMedia(tabState),
+        isAudioPlaying: isAudioPlaying(tabState),
+        hasVerifiedAudibleMedia: hasVerifiedAudibleMedia(tabState),
+        shouldForceMiniPlayer: shouldForceMiniPlayer(tabState),
+      });
+    };
     for (const tabState of stateByTabId.values()) {
-      if (tabState.windowId !== state.currentWindowId) continue;
-      if (!hasMedia(tabState) && !isAudioPlaying(tabState)) continue;
-      if (tabState.active || tabState.tabId === state.activeTabId) continue;
-      if (tabState.alertStates.has('pip') || tabState.pictureInPicture || tabState.pendingPip) continue;
-      if (tabState.suppressed) continue;
-      // 新候选必须有声音（排除预览卡片）；已在 activeSources 中的不受影响（用户可能通过 miniplayer 静音）
-      if (!currentActiveSet.has(tabState.tabId) && !tabState.audible) continue;
+      if (tabState.windowId !== state.currentWindowId) {
+        rememberCandidate(tabState, 'skip-window');
+        continue;
+      }
+      ensureAudibleFallback(tabState);
+      if (!hasMedia(tabState) && !isAudioPlaying(tabState)) {
+        rememberCandidate(tabState, 'skip-no-media');
+        continue;
+      }
+      if (tabState.active || tabState.tabId === state.activeTabId) {
+        rememberCandidate(tabState, 'skip-active-tab');
+        continue;
+      }
+      if (tabState.alertStates.has('pip') || tabState.pictureInPicture || tabState.pendingPip) {
+        rememberCandidate(tabState, 'skip-pip');
+        continue;
+      }
+      if (tabState.suppressed) {
+        if (tabState.suppressedReason === 'user-close' && isAudioPlaying(tabState) && Date.now() - (tabState.suppressedAt || 0) > 3000) {
+          tabState.suppressed = false;
+          tabState.suppressedReason = '';
+          tabState.awaitingQuietAfterSuppress = false;
+          rememberCandidate(tabState, 'clear-stale-user-close');
+        } else {
+          rememberCandidate(tabState, 'skip-suppressed');
+          continue;
+        }
+      }
+      if (shouldForceMiniPlayer(tabState)) {
+        playingSet.add(tabState.tabId);
+        rememberCandidate(tabState, 'include-forced');
+        continue;
+      }
+      // 新候选必须来自页面注入层确认过的有声媒体，不能只信 tab.audible。
+      if (!currentActiveSet.has(tabState.tabId) && !hasVerifiedAudibleMedia(tabState)) {
+        rememberCandidate(tabState, 'skip-not-verified-audible');
+        continue;
+      }
       playingSet.add(tabState.tabId);
+      rememberCandidate(tabState, 'include');
     }
 
     // 保留已有顺序中仍在播放的 tab
@@ -1269,13 +1662,29 @@
     for (const id of combined.slice(3)) {
       const excess = stateByTabId.get(id);
       if (excess) {
-        markSourceSuppressed(excess, true);
+        markSourceSuppressed(excess, true, 'overflow-limit');
         sendCommand(excess.tabId, excess.frameId, { action: 'pause' }).catch?.(() => {});
       }
     }
 
+    const previousSources = state.activeSources.slice();
     state.activeSources = top3;
     state.currentSourceTabId = top3[0] ?? null;
+    if (
+      previousSources.join(',') !== top3.join(',') ||
+      candidateDebug.some((item) => (
+        item.decision === 'skip-suppressed' ||
+        item.decision === 'clear-stale-user-close' ||
+        item.decision === 'skip-not-verified-audible' ||
+        item.state?.progressSource === 'none'
+      ))
+    ) {
+      pushTransportDebug('candidate-select', {
+        previousSources,
+        nextSources: top3,
+        candidates: candidateDebug,
+      });
+    }
     cancelPendingSourceClear();
     scheduleSyncUi();
   }
@@ -1331,7 +1740,11 @@
         const source = stateByTabId.get(refs.tabId);
         if (source) {
           chrome.tabs.update(source.tabId, { active: true }).catch(() => {});
-          sendCommand(source.tabId, source.frameId, { action: 'scroll-into-view', frameId: source.frameId });
+          sendCommand(source.tabId, source.frameId, {
+            action: 'scroll-into-view',
+            frameId: source.frameId,
+            mediaId: source.mediaId,
+          });
         }
       }
     }
@@ -1356,21 +1769,39 @@
     tabState.audible = !!tab.audible;
     tabState.active = !!tab.active;
     tabState.discarded = !!tab.discarded || !!tabPrivate.discarded;
-    if (tabState.active) state.activeTabId = tabId;
+    if (tabState.audible) markBrowserReportedPlaying(tabState, 'tab-snapshot-audible');
+    ensureAudibleFallback(tabState);
+    if (tabState.active) {
+      state.activeTabId = tabId;
+      tabState.forceMiniPlayer = false;
+      tabState.suppressed = false;
+      tabState.suppressedReason = '';
+      tabState.awaitingQuietAfterSuppress = false;
+    }
 
     if (tabState.discarded) {
       tabState.awaitingQuietAfterSuppress = false;
+      tabState.suppressedReason = '';
       tabState.hasAudibleMedia = false;
       tabState.mediaSessionActive = false;
       tabState.metadata = null;
       tabState.pictureInPicture = false;
+      tabState.mediaId = null;
+      tabState.forceMiniPlayer = false;
+      clearPendingPip(tabState, false);
       tabState.ended = true;
     }
   }
 
   // ─── 命令发送 ─────────────────────────────────────────────────────────────
 
-  function sendCommand(tabId, frameId, command) {
+  async function sendCommand(tabId, frameId, command) {
+    const shouldBroadcast = frameId == null && !command.mediaId;
+    const frameIds = shouldBroadcast ? await getAllFrameIds(tabId) : [frameId];
+    await Promise.all(frameIds.map((targetFrameId) => sendCommandToFrame(tabId, targetFrameId, command, shouldBroadcast)));
+  }
+
+  function sendCommandToFrame(tabId, frameId, command, broadcast = false) {
     return new Promise((resolve) => {
       try {
         const message = {
@@ -1378,13 +1809,38 @@
           action: 'command',
           command: { ...command, frameId },
         };
+        pushTransportDebug('command-send', {
+          action: command.action,
+          tabId,
+          frameId: frameId ?? null,
+          mediaId: command.mediaId || null,
+          targetedFrame: frameId != null,
+          broadcast,
+        });
         chrome.tabs.sendMessage(
           tabId,
           message,
-          frameId ? { frameId } : undefined,
-          () => { resolve(); }
+          frameId != null ? { frameId } : undefined,
+          () => {
+            const error = chrome.runtime?.lastError;
+            pushTransportDebug('command-complete', {
+              action: command.action,
+              tabId,
+              frameId: frameId ?? null,
+              error: error?.message || '',
+            });
+            resolve();
+          }
         );
-      } catch (_error) { resolve(); }
+      } catch (error) {
+        pushTransportDebug('command-error', {
+          action: command?.action || '',
+          tabId,
+          frameId: frameId ?? null,
+          error: error?.message || String(error),
+        });
+        resolve();
+      }
     });
   }
 
@@ -1403,11 +1859,14 @@
     const source = stateByTabId.get(tabId);
     if (!source) return false;
     if (source.pictureInPicture) return false; // 已在 PiP 中
+    if (!source.canPip || !hasVerifiedAudibleMedia(source)) return false;
     if (!source.metadata || source.metadata.paused) return false; // 暂停或状态未知 → miniplayer
-    // 标记 pending：PiP 激活前跳过 miniplayer 源选择，避免闪烁
-    source.pendingPip = true;
-    setTimeout(() => { if (source.pendingPip) source.pendingPip = false; }, 2000);
-    sendCommand(source.tabId, source.frameId, { action: 'picture-in-picture' });
+    markPendingPip(source);
+    sendCommand(source.tabId, source.frameId, {
+      action: 'picture-in-picture',
+      autoPip: true,
+      mediaId: source.mediaId,
+    });
     return true;
   }
 
@@ -1429,12 +1888,32 @@
     });
   }
 
-  function injectMain(messageType, mainFlag) {
+  function injectMain(messageType, mainFlag, playerConfig) {
     if (window[mainFlag]) return;
     window[mainFlag] = true;
+    const config = Object.assign({
+      minMediaDurationSec: 8,
+      minVideoArea: 30000,
+      progressUpdateMinMs: 700,
+    }, playerConfig || {});
 
     const observedFlag = 'vividPlayerObserved';
+    const mediaIds = new WeakMap();
+    const mediaById = new Map();
+    const knownMedia = new Set();
+    let nextMediaId = 1;
     let currentMedia = null;
+    let currentMediaId = null;
+    let lastProgressPostAt = 0;
+    let lastMediaSessionPostAt = 0;
+    let lastMediaSessionSignature = '';
+    let lastMediaSessionTrackKey = '';
+    let latestPositionState = {};
+    const mediaSessionVirtualState = {
+      paused: null,
+      muted: false,
+      volume: 1,
+    };
 
     // ── MediaSession handler 劫持 ──────────────────────────────────────────
     // 保存页面注册的 previoustrack/nexttrack handler，直接调用比发 MediaKey 事件可靠得多。
@@ -1446,20 +1925,71 @@
         return _origSetActionHandler(action, handler);
       };
     }
+    if (navigator.mediaSession && typeof navigator.mediaSession.setPositionState === 'function') {
+      const _origSetPositionState = navigator.mediaSession.setPositionState.bind(navigator.mediaSession);
+      navigator.mediaSession.setPositionState = function (stateInfo) {
+        latestPositionState = Object.assign({}, stateInfo || {}, { updatedAt: performance.now() });
+        lastMediaSessionTrackKey = getMediaTitle() + '|' + getMediaArtist();
+        const result = _origSetPositionState(stateInfo);
+        postMediaSessionUpdate('mediasession-position');
+        return result;
+      };
+    }
+    if (navigator.mediaSession) {
+      try {
+        const mediaSessionProto = Object.getPrototypeOf(navigator.mediaSession);
+        const metadataDescriptor = Object.getOwnPropertyDescriptor(mediaSessionProto, 'metadata');
+        if (metadataDescriptor?.configurable) {
+          Object.defineProperty(navigator.mediaSession, 'metadata', {
+            configurable: true,
+            enumerable: metadataDescriptor.enumerable,
+            get() {
+              return metadataDescriptor.get ? metadataDescriptor.get.call(navigator.mediaSession) : undefined;
+            },
+            set(value) {
+              if (metadataDescriptor.set) metadataDescriptor.set.call(navigator.mediaSession, value);
+              latestPositionState = {};
+              lastMediaSessionTrackKey = getMediaTitle() + '|' + getMediaArtist();
+              postMediaSessionUpdate('mediasession-metadata');
+            },
+          });
+        }
+      } catch (_error) { /* metadata hook is best-effort only */ }
+    }
 
     // ── 媒体元素劫持 ──────────────────────────────────────────────────────
 
     const playVideoOriginal = HTMLVideoElement.prototype.play;
     HTMLVideoElement.prototype.play = function () {
       if (!this[observedFlag]) attachMedia(this);
-      return playVideoOriginal.apply(this, arguments);
+      const result = playVideoOriginal.apply(this, arguments);
+      return result;
     };
 
     const playAudioOriginal = HTMLAudioElement.prototype.play;
     HTMLAudioElement.prototype.play = function () {
       if (!this[observedFlag]) attachMedia(this);
-      return playAudioOriginal.apply(this, arguments);
+      const result = playAudioOriginal.apply(this, arguments);
+      setTimeout(() => postMediaUpdate('play-call', this), 0);
+      return result;
     };
+
+    const documentCreateElementOriginal = Document.prototype.createElement;
+    Document.prototype.createElement = function () {
+      const element = documentCreateElementOriginal.apply(this, arguments);
+      if (element?.matches?.('video, audio')) attachMedia(element);
+      return element;
+    };
+
+    const audioConstructorOriginal = window.Audio;
+    if (typeof audioConstructorOriginal === 'function') {
+      window.Audio = function () {
+        const audio = new audioConstructorOriginal(...arguments);
+        attachMedia(audio);
+        return audio;
+      };
+      window.Audio.prototype = audioConstructorOriginal.prototype;
+    }
 
     const addEventListenerVideoOriginal = HTMLVideoElement.prototype.addEventListener;
     HTMLVideoElement.prototype.addEventListener = function () {
@@ -1501,9 +2031,21 @@
       );
     }
 
+    function getMediaId(media) {
+      if (!media) return null;
+      if (!mediaIds.has(media)) {
+        const id = 'media-' + nextMediaId;
+        nextMediaId += 1;
+        mediaIds.set(media, id);
+        mediaById.set(id, media);
+      }
+      return mediaIds.get(media);
+    }
+
     /** 判断媒体元素是否属于页面主体内容（排除 iframe 内嵌、零尺寸、完全离屏的媒体） */
     function isEmbeddedMedia(media) {
       if (!media) return true;
+      if (media.tagName === 'AUDIO') return false;
       // iframe 内的媒体（广告、第三方嵌入）
       try {
         if (media.ownerDocument !== document) return true;
@@ -1528,7 +2070,7 @@
       // 视频面积：大尺寸 = 主要内容
       if (media.tagName === 'VIDEO') {
         const area = (media.videoWidth || 0) * (media.videoHeight || 0);
-        if (area >= VIVID_PLAYER_CONFIG.minVideoArea) score += 4;
+        if (area >= config.minVideoArea) score += 4;
         else if (area > 0) score += 1;
       }
       // controls 属性 = 用户主动嵌入的内容
@@ -1541,7 +2083,7 @@
         if (dur > 300) score += 3;        // >5min: 音乐/播客
         else if (dur > 60) score += 2;    // >1min: 视频内容
         else if (dur > 15) score += 1;    // >15s: 可能是有意义的内容
-        else if (dur < VIVID_PLAYER_CONFIG.minMediaDurationSec) score -= 2; // <8s: 音效/广告
+        else if (dur < config.minMediaDurationSec) score -= 2; // <8s: 音效/广告
       }
       // 纯音频且无 MediaSession → 背景音乐/通知音，降低权重
       if (media.tagName === 'AUDIO' && !navigator.mediaSession?.metadata?.title) score -= 1;
@@ -1553,11 +2095,28 @@
       return computeMediaSignificance(media) >= 0;
     }
 
-    function isTrackable(media) { return !!media && !media.ended; }
     function isAudible(media) {
       return !!media && hasAudio(media) && !media.paused && !media.ended && !media.muted && media.volume > 0;
     }
     function isPlayable(media) { return !!media && !media.paused && !media.ended; }
+
+    function isEligibleMedia(media, options = {}) {
+      if (!media || media.ended || isEmbeddedMedia(media)) return false;
+      if (options.requireAudible && !isAudible(media)) return false;
+      if (options.requirePlayable && !isPlayable(media)) return false;
+      if (options.requireSignificant && !isSignificantMedia(media)) return false;
+      if (options.requirePip && !canPip(media)) return false;
+      return true;
+    }
+
+    function getKnownMediaElements() {
+      const medias = new Set();
+      knownMedia.forEach((media) => {
+        if (media && !media.ended) medias.add(media);
+      });
+      document.querySelectorAll('video, audio').forEach((media) => medias.add(media));
+      return Array.from(medias);
+    }
 
     function getMediaTitle() { return navigator.mediaSession?.metadata?.title || document.title || ''; }
     function getMediaArtist() { return navigator.mediaSession?.metadata?.artist || ''; }
@@ -1570,38 +2129,213 @@
       return icon?.href || '';
     }
 
-    function getCurrentMedia(preferredMedia) {
-      if (preferredMedia && isAudible(preferredMedia) && !isEmbeddedMedia(preferredMedia) && isSignificantMedia(preferredMedia)) return preferredMedia;
-      const medias = Array.from(document.querySelectorAll('video, audio'));
-      // 优先选择显著媒体（大尺寸、长时长、有 MediaSession）
-      for (let index = medias.length - 1; index >= 0; index -= 1) {
-        if (!isEmbeddedMedia(medias[index]) && isAudible(medias[index]) && isSignificantMedia(medias[index])) return medias[index];
-      }
-      for (let index = medias.length - 1; index >= 0; index -= 1) {
-        if (!isEmbeddedMedia(medias[index]) && isPlayable(medias[index]) && isSignificantMedia(medias[index])) return medias[index];
-      }
-      // fallback：无显著媒体时仍检测（兼容无 MediaSession 的自定义播放器）
-      for (let index = medias.length - 1; index >= 0; index -= 1) {
-        if (!isEmbeddedMedia(medias[index]) && isAudible(medias[index])) return medias[index];
-      }
-      for (let index = medias.length - 1; index >= 0; index -= 1) {
-        if (!isEmbeddedMedia(medias[index]) && isPlayable(medias[index])) return medias[index];
+    function getMediaSessionImage() {
+      const artwork = navigator.mediaSession?.metadata?.artwork;
+      if (Array.isArray(artwork) && artwork.length) return artwork[artwork.length - 1]?.src || artwork[0]?.src || '';
+      const icon = document.querySelector('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]');
+      return icon?.href || '';
+    }
+
+    function parseClockValue(text) {
+      if (!text) return null;
+      const parts = String(text).trim().split(':').map((part) => parseInt(part, 10));
+      if (!parts.length || parts.some((part) => !Number.isFinite(part))) return null;
+      if (parts.length === 2) return parts[0] * 60 + parts[1];
+      if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+      return null;
+    }
+
+    function parseProgressText(text) {
+      if (!text) return null;
+      const matches = String(text).match(/\d{1,2}:\d{2}(?::\d{2})?/g);
+      if (!matches || matches.length < 2) return null;
+      const currentTime = parseClockValue(matches[0]);
+      const duration = parseClockValue(matches[1]);
+      if (!Number.isFinite(currentTime) || !Number.isFinite(duration) || duration <= 0) return null;
+      return { currentTime, duration, source: 'dom-text' };
+    }
+
+    function normalizeProgressNumber(value, max) {
+      const numeric = Number(value);
+      if (!Number.isFinite(numeric) || numeric < 0) return null;
+      if (Number.isFinite(max) && max > 36000) return numeric / 1000;
+      return numeric;
+    }
+
+    function readDomProgress() {
+      const selectors = [
+        '[data-testid*="progress" i][aria-valuenow]',
+        '[data-testid*="progress" i] [aria-valuenow]',
+        '[aria-label*="progress" i][aria-valuenow]',
+        '[aria-label*="进度" i][aria-valuenow]',
+        '[aria-label*="播放进度" i][aria-valuenow]',
+        '[role="slider"][aria-valuenow][aria-valuemax]',
+        '[role="progressbar"][aria-valuenow][aria-valuemax]',
+        'input[type="range"][max]',
+      ];
+      const seen = new Set();
+      for (const selector of selectors) {
+        const elements = Array.from(document.querySelectorAll(selector)).slice(0, 8);
+        for (const element of elements) {
+          if (!element || seen.has(element)) continue;
+          seen.add(element);
+          const textProgress = parseProgressText(
+            element.getAttribute('aria-valuetext') ||
+            element.getAttribute('aria-label') ||
+            element.getAttribute('title') ||
+            element.textContent ||
+            ''
+          );
+          if (textProgress) return textProgress;
+
+          const rawNow = element.getAttribute('aria-valuenow') ?? element.value;
+          const rawMax = element.getAttribute('aria-valuemax') ?? element.max;
+          const max = Number(rawMax);
+          if (!Number.isFinite(max) || max <= 0 || max <= 100) continue;
+          const currentTime = normalizeProgressNumber(rawNow, max);
+          const duration = normalizeProgressNumber(max, max);
+          if (Number.isFinite(currentTime) && Number.isFinite(duration) && duration > 0) {
+            return { currentTime: Math.min(currentTime, duration), duration, source: 'dom-range' };
+          }
+        }
       }
       return null;
     }
 
-    function getCommandMedia(preferredMedia) {
-      if (preferredMedia && isTrackable(preferredMedia) && !isEmbeddedMedia(preferredMedia)) return preferredMedia;
-      const medias = Array.from(document.querySelectorAll('video, audio'));
+    function readMediaSessionProgress(paused) {
+      const duration = Number(latestPositionState.duration);
+      const basePosition = Number(latestPositionState.position);
+      if (!Number.isFinite(duration) || duration <= 0 || !Number.isFinite(basePosition)) return null;
+      const playbackRate = Number.isFinite(latestPositionState.playbackRate) ? latestPositionState.playbackRate : 1;
+      const elapsed = paused || !Number.isFinite(latestPositionState.updatedAt)
+        ? 0
+        : ((performance.now() - latestPositionState.updatedAt) / 1000) * playbackRate;
+      const currentTime = Math.max(0, Math.min(duration, basePosition + elapsed));
+      return { currentTime, duration, source: 'mediasession-position' };
+    }
+
+    function applyMediaSessionOverrides(overrides = {}) {
+      if (overrides.paused !== undefined) mediaSessionVirtualState.paused = !!overrides.paused;
+      if (overrides.muted !== undefined) mediaSessionVirtualState.muted = !!overrides.muted;
+      if (Number.isFinite(overrides.volume)) mediaSessionVirtualState.volume = overrides.volume;
+    }
+
+    function getVirtualMediaSessionPaused(overrides = {}) {
+      const playbackState = navigator.mediaSession?.playbackState || '';
+      if (overrides.paused !== undefined) return !!overrides.paused;
+      if (playbackState === 'paused') return true;
+      if (playbackState === 'playing') return false;
+      if (mediaSessionVirtualState.paused !== null) return mediaSessionVirtualState.paused;
+      return false;
+    }
+
+    function buildMediaSessionPayload(eventType, overrides = {}) {
+      const paused = getVirtualMediaSessionPaused(overrides);
+      const muted = overrides.muted ?? mediaSessionVirtualState.muted;
+      const volume = Number.isFinite(overrides.volume) ? overrides.volume : mediaSessionVirtualState.volume;
+      const title = getMediaTitle();
+      const artist = getMediaArtist();
+      const trackKey = title + '|' + artist;
+      if (trackKey !== lastMediaSessionTrackKey) {
+        latestPositionState = {};
+        lastMediaSessionTrackKey = trackKey;
+      }
+      const mediaSessionProgress = readMediaSessionProgress(paused);
+      const progress = mediaSessionProgress || { currentTime: 0, duration: 0, source: 'none' };
+      return {
+        type: messageType,
+        eventType,
+        mediaId: null,
+        title,
+        artist,
+        image: getMediaSessionImage(),
+        paused,
+        muted,
+        volume,
+        duration: progress.duration,
+        currentTime: progress.currentTime,
+        progressSource: progress.source,
+        pictureInPicture: false,
+        audioOnly: true,
+        hasAudibleMedia: overrides.hasAudibleMedia ?? (!paused && !muted && volume > 0),
+        canPip: false,
+      };
+    }
+
+    function postMediaSessionUpdate(eventType, overrides = {}) {
+      if (!navigator.mediaSession?.metadata?.title) return;
+      applyMediaSessionOverrides(overrides);
+      const now = performance.now();
+      const payload = buildMediaSessionPayload(eventType, overrides);
+      const signature = [
+        eventType,
+        payload.title,
+        payload.artist,
+        navigator.mediaSession?.playbackState || '',
+        payload.paused ? 'paused' : 'playing',
+        payload.muted ? 'muted' : 'unmuted',
+        payload.volume,
+        payload.currentTime || 0,
+        payload.duration || 0,
+      ].join('|');
+      if (signature === lastMediaSessionSignature && now - lastMediaSessionPostAt < config.progressUpdateMinMs) return;
+      lastMediaSessionSignature = signature;
+      lastMediaSessionPostAt = now;
+      window.postMessage({
+        type: messageType,
+        data: payload,
+      });
+    }
+
+    function getCurrentMedia(preferredMedia) {
+      if (preferredMedia && isEligibleMedia(preferredMedia)) return preferredMedia;
+      const medias = getKnownMediaElements();
+      // 只有有声媒体才能首次成为控制源，避免 hover 预览视频污染状态。
       for (let index = medias.length - 1; index >= 0; index -= 1) {
-        if (!isEmbeddedMedia(medias[index]) && isTrackable(medias[index])) return medias[index];
+        if (isEligibleMedia(medias[index], { requireAudible: true, requireSignificant: true })) return medias[index];
+      }
+      for (let index = medias.length - 1; index >= 0; index -= 1) {
+        if (isEligibleMedia(medias[index], { requireAudible: true })) return medias[index];
       }
       return null;
+    }
+
+    function getCommandMedia(preferredMedia, mediaId, options = {}) {
+      const byId = mediaId ? mediaById.get(mediaId) : null;
+      if (byId && isEligibleMedia(byId, options)) return byId;
+      if (preferredMedia && isEligibleMedia(preferredMedia, options)) return preferredMedia;
+      const medias = getKnownMediaElements();
+      for (let index = medias.length - 1; index >= 0; index -= 1) {
+        if (isEligibleMedia(medias[index], { ...options, requireAudible: true })) return medias[index];
+      }
+      for (let index = medias.length - 1; index >= 0; index -= 1) {
+        if (isEligibleMedia(medias[index], options)) return medias[index];
+      }
+      return null;
+    }
+
+    function buildMediaPayload(eventType, media) {
+      return {
+        type: messageType, eventType,
+        mediaId: getMediaId(media),
+        title: getMediaTitle(), artist: getMediaArtist(),
+        image: getMediaImage(media),
+        paused: media.paused, muted: media.muted,
+        volume: media.volume, duration: media.duration,
+        currentTime: media.currentTime,
+        progressSource: 'media-element',
+        pictureInPicture: document.pictureInPictureElement === media,
+        audioOnly: !hasVideo(media),
+        hasAudibleMedia: isAudible(media),
+        canPip: canPip(media),
+        pipLeftToMini: eventType === 'leavepictureinpicture' && document.visibilityState !== 'visible',
+      };
     }
 
     function postMediaUpdate(eventType, media) {
       const nextMedia = getCurrentMedia(media);
       currentMedia = nextMedia;
+      currentMediaId = getMediaId(nextMedia);
 
       if (!nextMedia) {
         window.postMessage({
@@ -1613,18 +2347,7 @@
 
       window.postMessage({
         type: messageType,
-        data: {
-          type: messageType, eventType,
-          title: getMediaTitle(), artist: getMediaArtist(),
-          image: getMediaImage(nextMedia),
-          paused: nextMedia.paused, muted: nextMedia.muted,
-          volume: nextMedia.volume, duration: nextMedia.duration,
-          currentTime: nextMedia.currentTime,
-          pictureInPicture: !!document.pictureInPictureElement,
-          audioOnly: !hasVideo(nextMedia),
-          hasAudibleMedia: isAudible(nextMedia),
-          canPip: canPip(nextMedia),
-        },
+        data: buildMediaPayload(eventType, nextMedia),
       });
     }
 
@@ -1633,34 +2356,37 @@
       if (isEmbeddedMedia(media)) return;
 
       if (event.type === 'ended') {
+        if (media !== currentMedia) return;
         window.postMessage({
           type: messageType,
           data: { type: messageType, ended: true, eventType: event.type },
         });
+        currentMedia = null;
+        currentMediaId = null;
         return;
       }
 
-      // 所有事件直接用 event.target 构造消息，不经过 getCurrentMedia
-      // 避免暂停时返回 null 或多媒体页面返回错误元素
+      const isCurrent = media === currentMedia || getMediaId(media) === currentMediaId;
+      if (!isCurrent && !isEligibleMedia(media, { requireAudible: true, requireSignificant: true })) {
+        return;
+      }
+      if (event.type === 'timeupdate') {
+        const now = performance.now();
+        if (now - lastProgressPostAt < config.progressUpdateMinMs) return;
+        lastProgressPostAt = now;
+      }
+      currentMedia = media;
+      currentMediaId = getMediaId(media);
       window.postMessage({
         type: messageType,
-        data: {
-          type: messageType, eventType: event.type,
-          title: getMediaTitle(), artist: getMediaArtist(),
-          image: getMediaImage(media),
-          paused: media.paused, muted: media.muted,
-          volume: media.volume, duration: media.duration,
-          currentTime: media.currentTime,
-          pictureInPicture: !!document.pictureInPictureElement,
-          audioOnly: !hasVideo(media),
-          hasAudibleMedia: isAudible(media),
-          canPip: canPip(media),
-        },
+        data: buildMediaPayload(event.type, media),
       });
     }
 
     function attachMedia(media) {
-      if (!media || media[observedFlag]) return;
+      if (!media) return;
+      knownMedia.add(media);
+      if (media[observedFlag]) return;
       media[observedFlag] = true;
       ['play', 'playing', 'pause', 'ended', 'timeupdate', 'volumechange',
        'enterpictureinpicture', 'leavepictureinpicture', 'loadedmetadata', 'durationchange',
@@ -1670,11 +2396,12 @@
     }
 
     function scanExistingMedia() {
-      const allMedia = Array.from(document.querySelectorAll('video, audio'));
+      const allMedia = getKnownMediaElements();
       const mainMedia = allMedia.filter((m) => !isEmbeddedMedia(m));
       mainMedia.forEach(attachMedia);
       const media = getCurrentMedia(currentMedia);
       if (media) postMediaUpdate('scan', media);
+      else postMediaSessionUpdate('scan-mediasession');
     }
 
     function triggerMediaKey(key) {
@@ -1709,16 +2436,19 @@
     function getTransportSelectors(action) {
       return action === 'previous-track'
         ? [
+            '.prv', '.j-flag.prv', '[class~="prv" i]',
             '[data-testid*="previous" i]', '[data-test*="previous" i]',
             '[aria-label*="previous" i]', '[aria-label*="prev" i]',
-            '[title*="previous" i]', '[title*="prev" i]',
-            '[class*="previous" i]', '[class*="prev" i]',
-            '[id*="previous" i]', '[id*="prev" i]',
+            '[aria-label*="上一" i]', '[title*="previous" i]', '[title*="prev" i]',
+            '[title*="上一" i]', '[class*="previous" i]', '[class*="prev" i]',
+            '[id*="previous" i]', '[id*="prev" i]', '[id*="prv" i]',
           ]
         : [
+            '.nxt', '.j-flag.nxt', '[class~="nxt" i]',
             '[data-testid*="next" i]', '[data-test*="next" i]',
-            '[aria-label*="next" i]', '[title*="next" i]',
-            '[class*="next" i]', '[id*="next" i]',
+            '[aria-label*="next" i]', '[aria-label*="下一" i]',
+            '[title*="next" i]', '[title*="下一" i]',
+            '[class*="next" i]', '[id*="next" i]', '[id*="nxt" i]',
           ];
     }
 
@@ -1728,11 +2458,113 @@
         : ['下一首', '下一曲', '下一個', '下一个', 'next', 'forward'];
     }
 
+    function getPlaybackSelectors(action) {
+      if (action === 'pause') {
+        return [
+          '[aria-label*="pause" i]', '[title*="pause" i]', '[class*="pause" i]', '[data-testid*="pause" i]',
+          '[data-testid*="playpause" i]', '[data-testid*="play-pause" i]',
+        ];
+      }
+      if (action === 'play') {
+        return [
+          '[aria-label*="play" i]', '[title*="play" i]', '[class*="play" i]', '[data-testid*="play" i]',
+          '[data-testid*="playpause" i]', '[data-testid*="play-pause" i]',
+        ];
+      }
+      return [
+        '[aria-label*="mute" i]', '[aria-label*="unmute" i]', '[aria-label*="volume" i]',
+        '[title*="mute" i]', '[title*="unmute" i]', '[title*="volume" i]',
+        '[class*="mute" i]', '[class*="volume" i]', '[data-testid*="volume" i]',
+      ];
+    }
+
+    function getPlaybackLabels(action) {
+      if (action === 'pause') return ['pause', '暂停'];
+      if (action === 'play') return ['play', '播放'];
+      return ['mute', 'unmute', 'volume', '静音', '取消静音', '音量'];
+    }
+
+    function clickPlaybackButton(action) {
+      const labels = getPlaybackLabels(action);
+      const active = document.activeElement;
+      const activeText = (
+        active?.getAttribute?.('aria-label') ||
+        active?.getAttribute?.('title') ||
+        active?.textContent ||
+        ''
+      ).toLowerCase();
+      if (active && typeof active.click === 'function' && labels.some((label) => activeText.includes(label.toLowerCase()))) {
+        active.click();
+        return { clicked: true, selector: 'activeElement', matchedText: activeText.slice(0, 80) };
+      }
+      for (const selector of getPlaybackSelectors(action)) {
+        const candidates = Array.from(document.querySelectorAll(selector));
+        const match = candidates.find((element) => (
+          element &&
+          typeof element.click === 'function' &&
+          !element.disabled &&
+          element.getAttribute('aria-disabled') !== 'true'
+        ));
+        if (match) {
+          match.click();
+          return {
+            clicked: true,
+            selector,
+            matchedText: (
+              match.getAttribute('aria-label') ||
+              match.getAttribute('title') ||
+              match.textContent || ''
+            ).trim().slice(0, 80),
+          };
+        }
+      }
+      return { clicked: false, selector: null, matchedText: '' };
+    }
+
+    function findTransportButton(action) {
+      const labels = getTransportLabels(action);
+      const selectors = getTransportSelectors(action);
+      for (const selector of selectors) {
+        const candidates = Array.from(document.querySelectorAll(selector));
+        const labeled = candidates.find((element) => {
+          if (!element || typeof element.click !== 'function') return false;
+          if (element.disabled || element.getAttribute('aria-disabled') === 'true') return false;
+          const text = (
+            element.getAttribute('aria-label') ||
+            element.getAttribute('title') ||
+            element.textContent || ''
+          ).toLowerCase();
+          return labels.some((label) => text.includes(label.toLowerCase()));
+        });
+        if (labeled) return labeled;
+      }
+      return null;
+    }
+
     function collectTransportDiagnostics(action) {
       const media = getCommandMedia(currentMedia);
-      const msAction = action === 'previous-track' ? 'previoustrack' : 'nexttrack';
-      const selectors = getTransportSelectors(action);
-      const labels = getTransportLabels(action);
+      const mediaElements = getKnownMediaElements().slice(0, 12).map((element) => ({
+        tagName: element.tagName || '',
+        currentSrc: element.currentSrc || element.src || '',
+        paused: !!element.paused,
+        muted: !!element.muted,
+        volume: Number.isFinite(element.volume) ? element.volume : null,
+        currentTime: Number.isFinite(element.currentTime) ? element.currentTime : null,
+        duration: Number.isFinite(element.duration) ? element.duration : null,
+        hasAudio: hasAudio(element),
+        embedded: isEmbeddedMedia(element),
+        significant: isSignificantMedia(element),
+      }));
+      const msActionMap = {
+        'previous-track': 'previoustrack',
+        'next-track': 'nexttrack',
+        play: 'play',
+        pause: 'pause',
+      };
+      const msAction = msActionMap[action] || '';
+      const isPlaybackAction = action === 'play' || action === 'pause' || action === 'muted';
+      const selectors = isPlaybackAction ? getPlaybackSelectors(action) : getTransportSelectors(action);
+      const labels = isPlaybackAction ? getPlaybackLabels(action) : getTransportLabels(action);
       const selectorSnapshots = [];
 
       selectors.forEach((selector) => {
@@ -1766,6 +2598,10 @@
           metadataTitle: navigator.mediaSession?.metadata?.title || '',
           metadataArtist: navigator.mediaSession?.metadata?.artist || '',
           playbackState: navigator.mediaSession?.playbackState || '',
+          virtualState: { ...mediaSessionVirtualState },
+          latestPositionState: { ...latestPositionState },
+          mediaSessionProgress: readMediaSessionProgress(getVirtualMediaSessionPaused()) || null,
+          domProgress: readDomProgress(),
         },
         currentMedia: media ? {
           tagName: media.tagName || '',
@@ -1776,33 +2612,35 @@
           currentTime: Number.isFinite(media.currentTime) ? media.currentTime : null,
           duration: Number.isFinite(media.duration) ? media.duration : null,
         } : null,
+        mediaElements,
         activeElement: describeElement(document.activeElement),
         selectorSnapshots,
       };
     }
 
     function clickTransportButton(action) {
-      const labels = getTransportLabels(action);
       const selectors = getTransportSelectors(action);
+      const labeled = findTransportButton(action);
+      if (labeled) {
+        labeled.click();
+        return {
+          clicked: true,
+          selector: 'labeled-button',
+          matchedText: (
+            labeled.getAttribute('aria-label') ||
+            labeled.getAttribute('title') ||
+            labeled.textContent || ''
+          ).trim().slice(0, 80),
+        };
+      }
       for (const selector of selectors) {
         const candidates = Array.from(document.querySelectorAll(selector));
-        const match =
-          candidates.find((element) => {
-            if (!element || typeof element.click !== 'function') return false;
-            if (element.disabled || element.getAttribute('aria-disabled') === 'true') return false;
-            const text = (
-              element.getAttribute('aria-label') ||
-              element.getAttribute('title') ||
-              element.textContent || ''
-            ).toLowerCase();
-            return labels.some((label) => text.includes(label.toLowerCase()));
-          }) ||
-          candidates.find((element) => (
-            element &&
-            typeof element.click === 'function' &&
-            !element.disabled &&
-            element.getAttribute('aria-disabled') !== 'true'
-          ));
+        const match = candidates.find((element) => (
+          element &&
+          typeof element.click === 'function' &&
+          !element.disabled &&
+          element.getAttribute('aria-disabled') !== 'true'
+        ));
         if (match) {
           match.click();
           return {
@@ -1874,6 +2712,61 @@
       return buttonResult.clicked;
     }
 
+    function triggerPlaybackAction(action) {
+      const diagnostics = collectTransportDiagnostics(action);
+      const msAction = action === 'muted' ? '' : action;
+      const nextMuted = action === 'muted' ? !mediaSessionVirtualState.muted : mediaSessionVirtualState.muted;
+      const overrides = {
+        paused: action === 'pause' ? true : action === 'play' ? false : undefined,
+        muted: action === 'muted' ? nextMuted : undefined,
+        volume: action === 'muted' ? (nextMuted ? 0 : 1) : undefined,
+      };
+      overrides.hasAudibleMedia = !(overrides.paused ?? getVirtualMediaSessionPaused()) &&
+        !(overrides.muted ?? mediaSessionVirtualState.muted) &&
+        (Number.isFinite(overrides.volume) ? overrides.volume : mediaSessionVirtualState.volume) > 0;
+      if (msAction && typeof _savedMsHandlers[msAction] === 'function') {
+        try {
+          _savedMsHandlers[msAction]({ action: msAction });
+          postMediaSessionUpdate('mediasession-' + action, overrides);
+          window.postMessage({
+            type: messageType,
+            data: {
+              type: messageType,
+              eventType: 'transport-debug',
+              transportAction: action,
+              transportDebug: {
+                mediaKey: 'mediaSession-handler',
+                strategy: 'mediaSession-handler',
+                buttonResult: { clicked: true, selector: 'mediaSession', matchedText: msAction },
+                mediaTitle: getMediaTitle(),
+                diagnostics,
+              },
+            },
+          });
+          return true;
+        } catch (_error) {}
+      }
+
+      const buttonResult = clickPlaybackButton(action);
+      postMediaSessionUpdate('dom-' + action, overrides);
+      window.postMessage({
+        type: messageType,
+        data: {
+          type: messageType,
+          eventType: 'transport-debug',
+          transportAction: action,
+          transportDebug: {
+            mediaKey: 'dom-control',
+            strategy: buttonResult.clicked ? 'dom-click' : 'dom-miss',
+            buttonResult,
+            mediaTitle: getMediaTitle(),
+            diagnostics,
+          },
+        },
+      });
+      return buttonResult.clicked;
+    }
+
     window.__vividPlayerDebug = Object.assign(window.__vividPlayerDebug || {}, {
       collectTransportDiagnostics,
       triggerTransportAction,
@@ -1891,8 +2784,35 @@
       ) return;
 
       const info = event.data.data;
-      currentMedia = getCommandMedia(currentMedia);
-      if (!currentMedia) return;
+      const commandOptions = info.action === 'picture-in-picture' && info.autoPip
+        ? { requireAudible: true, requireSignificant: true, requirePip: true }
+        : { requirePip: info.action === 'picture-in-picture' };
+      currentMedia = getCommandMedia(currentMedia, info.mediaId, commandOptions);
+      currentMediaId = getMediaId(currentMedia);
+      if (!currentMedia) {
+        if (info.action === 'previous-track' || info.action === 'next-track') {
+          triggerTransportAction(info.action);
+        } else if (info.action === 'play' || info.action === 'pause' || info.action === 'muted' || info.action === 'close') {
+          triggerPlaybackAction(info.action === 'close' ? 'pause' : info.action);
+        } else {
+          window.postMessage({
+            type: messageType,
+            data: {
+              type: messageType,
+              eventType: 'transport-debug',
+              transportAction: info.action,
+              transportDebug: {
+                mediaKey: 'no-current-media',
+                strategy: 'no-current-media',
+                buttonResult: { clicked: false, selector: null, matchedText: '' },
+                mediaTitle: getMediaTitle(),
+                diagnostics: collectTransportDiagnostics(info.action),
+              },
+            },
+          });
+        }
+        return;
+      }
 
       switch (info.action) {
         case 'play':
@@ -1941,6 +2861,10 @@
     });
 
     scanExistingMedia();
+    setInterval(() => {
+      if (!currentMedia) scanExistingMedia();
+      else if (!isEligibleMedia(currentMedia)) currentMedia = null;
+    }, 1000);
 
     // 切回标签页时自动退出 PiP，恢复页面内播放
     document.addEventListener('visibilitychange', () => {
@@ -1971,7 +2895,11 @@
         target,
         world: 'MAIN',
         func: injectMain,
-        args: [MESSAGE_TYPE, INJECT_MAIN_FLAG],
+        args: [MESSAGE_TYPE, INJECT_MAIN_FLAG, {
+          minMediaDurationSec: VIVID_PLAYER_CONFIG.minMediaDurationSec,
+          minVideoArea: VIVID_PLAYER_CONFIG.minVideoArea,
+          progressUpdateMinMs: VIVID_PLAYER_CONFIG.progressUpdateMinMs,
+        }],
       });
       await chrome.scripting.executeScript({
         target,
@@ -2000,13 +2928,22 @@
       tabState.audible = !!tab.audible;
       tabState.active = !!tab.active;
       tabState.discarded = !!tab.discarded;
-      if (tab.active) state.activeTabId = tab.id;
+      if (tabState.audible) markBrowserReportedPlaying(tabState, 'window-snapshot-audible');
+      ensureAudibleFallback(tabState);
+      if (tab.active) {
+        state.activeTabId = tab.id;
+        tabState.forceMiniPlayer = false;
+        tabState.suppressed = false;
+        tabState.suppressedReason = '';
+        tabState.awaitingQuietAfterSuppress = false;
+      }
       await ensureInjection(tab.id);
     }));
 
     for (const tabId of Array.from(stateByTabId.keys())) {
       const tabState = stateByTabId.get(tabId);
       if (tabState.windowId === state.currentWindowId && !seenTabIds.has(tabId)) {
+        clearPendingPip(tabState, false);
         stateByTabId.delete(tabId);
       }
     }
@@ -2018,11 +2955,13 @@
     const tabState = getTabState(tabId);
     tabState.windowId = windowId;
     tabState.alertStates = new Set(Array.isArray(tabStates) ? tabStates : []);
-    const audibleNow = tabState.alertStates.has('playing') || tabState.hasAudibleMedia || isMetadataAudible(tabState);
     if (tabState.alertStates.has('playing')) {
-      tabState.lastMediaAt = Date.now();
+      tabState.audible = true;
+      markBrowserReportedPlaying(tabState, 'tabsPrivate-playing');
     }
-    reconcileSuppressedState(tabState, audibleNow);
+    ensureAudibleFallback(tabState);
+    const audibleNow = tabState.alertStates.has('playing') || tabState.hasAudibleMedia || isMetadataAudible(tabState);
+    reconcileSuppressedState(tabState, audibleNow, tabState.alertStates.has('playing') ? 'playing' : '');
     if (!tabState.alertStates.has('playing')) tabState.audible = false;
 
     if (windowId === state.currentWindowId) {
@@ -2034,6 +2973,25 @@
 
   async function handleRuntimeMessage(info, sender) {
     if (!info || !sender.tab) return;
+    if (info.type === GLOBAL_MEDIA_CONTROLS_TYPE) {
+      if (info.paused !== undefined) {
+        const shouldChoose = applyExternalMediaState(info, sender, GLOBAL_MEDIA_CONTROLS_TYPE);
+        if (shouldChoose) chooseCandidateSource();
+      } else if (info.ended) {
+        const tabState = getTabState(sender.tab.id);
+        tabState.hasAudibleMedia = false;
+        tabState.mediaSessionActive = false;
+        tabState.canPip = false;
+        tabState.pictureInPicture = false;
+        tabState.ended = true;
+        tabState.metadata = tabState.metadata && { ...tabState.metadata, paused: true };
+        tabState.progressSource = GLOBAL_MEDIA_CONTROLS_TYPE;
+        tabState.lastExternalMediaAt = Date.now();
+        reconcileSuppressedState(tabState, false, `${GLOBAL_MEDIA_CONTROLS_TYPE}-ended`);
+        if (sender.tab.windowId === state.currentWindowId) chooseCandidateSource();
+      }
+      return;
+    }
     if (info.type !== MESSAGE_TYPE) return;
 
     const tabId = sender.tab.id;
@@ -2043,7 +3001,6 @@
     tabState.url = sender.tab.url || tabState.url;
     tabState.favIconUrl = sender.tab.favIconUrl || tabState.favIconUrl;
     tabState.audible = !!sender.tab.audible;
-    tabState.frameId = sender.frameId || 0;
     if (!tabState.lastMediaAt) tabState.lastMediaAt = Date.now();
 
     if (info.eventType === 'transport-debug') {
@@ -2062,7 +3019,23 @@
       return;
     }
 
+    if (info.paused !== undefined && hasFreshExternalMediaState(tabState) && isWeakVividMediaUpdate(info)) {
+      pushTransportDebug('media-update-ignored', {
+        reason: 'fresh-global-media-controls',
+        eventType: info.eventType || '',
+        progressSource: info.progressSource || '',
+        incoming: {
+          paused: !!info.paused,
+          currentTime: Number.isFinite(info.currentTime) ? info.currentTime : null,
+          duration: Number.isFinite(info.duration) ? info.duration : null,
+        },
+        state: getDebugTabState(tabState),
+      });
+      return;
+    }
+
     if (!info.ended && info.paused !== undefined) {
+      tabState.frameId = sender.frameId ?? null;
       tabState.metadata = {
         title: info.title || tabState.metadata?.title || '',
         artist: info.artist || '',
@@ -2073,16 +3046,51 @@
         duration: Number.isFinite(info.duration) ? info.duration : 0,
         currentTime: Number.isFinite(info.currentTime) ? info.currentTime : 0,
       };
+      tabState.progressSource = info.progressSource || '';
+      tabState.mediaId = info.mediaId || tabState.mediaId;
       tabState.hasAudibleMedia = !!info.hasAudibleMedia;
       tabState.mediaSessionActive = !info.paused;
       tabState.canPip = info.audio === undefined ? !!info.canPip : !info.audio;
       tabState.pictureInPicture = !!info.pictureInPicture;
-      tabState.pendingPip = false; // PiP 状态已确认（激活或关闭），清除 pending
+      if (info.pictureInPicture || info.eventType === 'enterpictureinpicture' || info.eventType === 'leavepictureinpicture') {
+        clearPendingPip(tabState, false);
+      } else if (tabState.pendingPip && (info.eventType === 'pause' || info.paused || !tabState.hasAudibleMedia)) {
+        clearPendingPip(tabState, false);
+      }
+      if (info.pipLeftToMini) {
+        tabState.forceMiniPlayer = true;
+        tabState.suppressed = false;
+        tabState.suppressedReason = '';
+        tabState.awaitingQuietAfterSuppress = false;
+      }
       tabState.ended = false;
-      reconcileSuppressedState(tabState, tabState.hasAudibleMedia);
+      reconcileSuppressedState(tabState, tabState.hasAudibleMedia, info.eventType || '');
+      if (
+        info.eventType === 'mediasession-metadata' ||
+        info.eventType === 'mediasession-position' ||
+        info.eventType === 'play-call' ||
+        info.eventType === 'pause' ||
+        info.eventType === 'play' ||
+        info.eventType === 'playing' ||
+        info.progressSource !== tabState.lastLoggedProgressSource ||
+        info.mediaId !== tabState.lastLoggedMediaId ||
+        !!info.paused !== tabState.lastLoggedPaused ||
+        Math.round(Number(info.duration) || 0) !== tabState.lastLoggedDuration
+      ) {
+        pushTransportDebug('media-update', {
+          eventType: info.eventType || '',
+          frameId: sender.frameId ?? null,
+          progressSource: info.progressSource || '',
+          state: getDebugTabState(tabState),
+        });
+        tabState.lastLoggedProgressSource = info.progressSource || '';
+        tabState.lastLoggedMediaId = info.mediaId || '';
+        tabState.lastLoggedPaused = !!info.paused;
+        tabState.lastLoggedDuration = Math.round(Number(info.duration) || 0);
+      }
     }
 
-    if (info.eventType === 'play' || info.eventType === 'playing') {
+    if (info.eventType === 'play' || info.eventType === 'play-call' || info.eventType === 'playing') {
       tabState.lastMediaAt = Date.now();
     }
 
@@ -2097,6 +3105,9 @@
       tabState.pictureInPicture = false;
       tabState.ended = true;
       tabState.metadata = tabState.metadata && { ...tabState.metadata, paused: true };
+      tabState.mediaId = null;
+      tabState.forceMiniPlayer = false;
+      clearPendingPip(tabState, false);
       reconcileSuppressedState(tabState, false);
     }
 
@@ -2159,10 +3170,16 @@
       if (changeInfo.title != null) tabState.title = changeInfo.title;
       if (changeInfo.audible != null) tabState.audible = changeInfo.audible;
       if (changeInfo.favIconUrl != null) tabState.favIconUrl = changeInfo.favIconUrl;
+      if (changeInfo.audible === true) markBrowserReportedPlaying(tabState, 'tabs-onUpdated-audible');
+      ensureAudibleFallback(tabState);
       if (changeInfo.discarded) {
         tabState.awaitingQuietAfterSuppress = false;
+        tabState.suppressedReason = '';
         tabState.hasAudibleMedia = false;
         tabState.metadata = null;
+        tabState.mediaId = null;
+        tabState.forceMiniPlayer = false;
+        clearPendingPip(tabState, false);
       }
       if (changeInfo.status === 'loading' || changeInfo.status === 'complete') {
         void ensureInjection(tabId);
@@ -2171,6 +3188,7 @@
     });
 
     registerListener(chrome.tabs, 'onRemoved', (tabId) => {
+      clearPendingPip(stateByTabId.get(tabId), false);
       stateByTabId.delete(tabId);
       if (state.activeSources.includes(tabId)) {
         state.activeSources = state.activeSources.filter((id) => id !== tabId);
@@ -2182,6 +3200,7 @@
     });
 
     registerListener(chrome.tabs, 'onReplaced', (addedTabId, removedTabId) => {
+      clearPendingPip(stateByTabId.get(removedTabId), false);
       stateByTabId.delete(removedTabId);
       void refreshTabSnapshot(addedTabId).then(() => chooseCandidateSource());
     });
@@ -2194,12 +3213,16 @@
         const tabState = stateByTabId.get(details.tabId);
         if (tabState) {
           tabState.suppressed = false;
+          tabState.suppressedReason = '';
           tabState.awaitingQuietAfterSuppress = false;
           tabState.metadata = null;
           tabState.hasAudibleMedia = false;
           tabState.mediaSessionActive = false;
           tabState.ended = false;
           tabState.lastMediaAt = 0;
+          tabState.mediaId = null;
+          tabState.forceMiniPlayer = false;
+          clearPendingPip(tabState, false);
         }
       }
       await ensureInjection(details.tabId, [details.frameId]);

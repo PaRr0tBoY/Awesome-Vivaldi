@@ -3658,7 +3658,7 @@
       thisElement.style.pointerEvents = "auto";
       setTimeout(() => {
         thisElement.classList.add("peek-initial-expand");
-        setTimeout(() => thisElement.classList.remove("peek-initial-expand"), 2000);
+        setTimeout(() => thisElement.classList.remove("peek-initial-expand"), 1200);
       }, 200);
 
       const buttons = [

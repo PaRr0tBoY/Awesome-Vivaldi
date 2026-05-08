@@ -729,7 +729,7 @@ Write responses (but not JSON keys) in ${languageName}.`;
   const stackColors = new Map(); // stackId → groupColor
   const TIDY_TABS_STACK_OWNER = "TidyTabs";
   const STACK_RENAME_COOLDOWN_MS = 60 * 1000;
-  let dynamicRenameGap = 3;
+  let dynamicRenameGap = 5;
 
   function parseVivExtData(raw) {
     if (!raw) return {};
