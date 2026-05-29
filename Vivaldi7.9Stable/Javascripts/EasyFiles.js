@@ -8,6 +8,8 @@
 (() => {
   "use strict";
 
+  let vivaldiWindowId = null;
+
   const gnoh = {
     stream: {
       async compress(input, outputType = "arrayBuffer", format = "gzip") {
@@ -238,7 +240,7 @@
       }
 
       function onKeyCloseDialog(windowId, key) {
-        if (windowId === vivaldiWindowId && key === "Esc") {
+        if (Number(windowId) === vivaldiWindowId && key === "Esc") {
           closeDialog(true);
         }
       }
@@ -252,7 +254,7 @@
       ) {
         if (
           config.autoClose &&
-          windowId === vivaldiWindowId &&
+          Number(windowId) === vivaldiWindowId &&
           mousedown &&
           !document
             .elementFromPoint(clientX, clientY)
@@ -653,103 +655,151 @@
 
   async function readClipboard(accept) {
     const clipboardFiles = [];
-
     try {
-      const supportedTypes = [
-        {
-          extension: "png",
-          mimeType: "Image/png",
-        },
-        {
-          extension: "jpeg",
-          mimeType: "Image/jpeg",
-        },
-        {
-          extension: "jpg",
-          mimeType: "Image/jpeg",
-        },
-      ];
-
-      const supportedType = supportedTypes.find((s) =>
-        gnoh.file.verifyAccept(
-          { fileName: "image." + s.extension, mimeType: s.mimeType },
-          accept
-        )
-      );
-
-      const pasteData = await simulatePaste();
-
-      for (const item of pasteData.items) {
-        const file = item.file;
-        let checkType = false;
-        if (item.isFile) {
-          if (item.isRealFile) {
-            checkType = gnoh.file.verifyAccept(
-              { fileName: file.name, mimeType: file.type },
-              accept
-            );
-          } else {
-            checkType = supportedType && file.type === "Image/png";
-          }
-        }
-
-        if (checkType && (!maxAllowedSize || file.size <= maxAllowedSize)) {
-          let blob = new Blob([file], { type: file.type });
-
-          if (!item.isRealFile && supportedType.mimeType === "Image/jpeg") {
-            blob = await convertPngToJpeg(blob);
-          }
-
-          const arrayBuffer = await blob.arrayBuffer();
-          const compressedArrayBuffer = await gnoh.stream.compress(arrayBuffer);
-          const compressedBase64String = btoa(
-            new Uint8Array(compressedArrayBuffer).reduce(
-              (data, byte) => data + String.fromCharCode(byte),
-              ""
-            )
-          );
-          const fileData = gnoh.array.chunks(compressedBase64String, chunkSize);
-          const clipboardFile = {
-            fileData: fileData,
-            fileDataLength: fileData.length,
-            mimeType: blob.type,
-            size: blob.size,
-            category: "clipboard",
-          };
-
-          if (item.isRealFile) {
-            clipboardFile.fileName = file.name;
-          } else {
-            clipboardFile.extension = supportedType.extension;
-          }
-
-          switch (clipboardFile.mimeType) {
-            case "Image/jpeg":
-            case "Image/png":
-            case "Image/svg+xml":
-            case "Image/webp":
-            case "Image/gif":
-            case "Image/bmp":
-              try {
-                clipboardFile.previewUrl = await vivaldi.utilities.storeImage({
-                  data: arrayBuffer,
-                  mimeType: blob.type,
-                });
-              } catch (error) {
-                console.warn(
-                  "Failed to create preview for clipboard image",
-                  error
+      if (navigator.clipboard && typeof navigator.clipboard.read === "function") {
+        const clipboardItems = await navigator.clipboard.read();
+        for (const item of clipboardItems) {
+          for (const type of item.types) {
+            const lowerType = type.toLowerCase();
+            const isImage = lowerType.startsWith("image/");
+            
+            if (isImage) {
+              const blob = await item.getType(type);
+              const extension = lowerType.split("/")[1] || "png";
+              const fileName = `image.${extension}`;
+              
+              const isAccepted = gnoh.file.verifyAccept(
+                { fileName, mimeType: type },
+                accept
+              );
+              
+              if (isAccepted && (!maxAllowedSize || blob.size <= maxAllowedSize)) {
+                const arrayBuffer = await blob.arrayBuffer();
+                const compressedArrayBuffer = await gnoh.stream.compress(arrayBuffer);
+                const compressedBase64String = btoa(
+                  new Uint8Array(compressedArrayBuffer).reduce(
+                    (data, byte) => data + String.fromCharCode(byte),
+                    ""
+                  )
                 );
-                // Continue without preview if it fails
+                const fileData = gnoh.array.chunks(compressedBase64String, chunkSize);
+                const clipboardFile = {
+                  fileData: fileData,
+                  fileDataLength: fileData.length,
+                  mimeType: type,
+                  size: blob.size,
+                  category: "clipboard",
+                  extension: extension,
+                  fileName: `image_${Date.now()}.${extension}`
+                };
+                
+                try {
+                  clipboardFile.previewUrl = await vivaldi.utilities.storeImage({
+                    data: arrayBuffer,
+                    mimeType: type,
+                  });
+                } catch (error) {
+                  console.warn("Failed to create preview for clipboard image:", error);
+                }
+                
+                clipboardFiles.push(clipboardFile);
               }
-              break;
+            }
           }
-
-          clipboardFiles.push(clipboardFile);
         }
       }
     } catch (error) {
-      console.error(error);
+      console.warn("[EasyFiles] navigator.clipboard.read() failed, falling back to legacy paste:", error);
+    }
+    
+    if (clipboardFiles.length === 0) {
+      try {
+        const pasteData = await simulatePaste();
+        
+        const supportedTypes = [
+          { extension: "png", mimeType: "image/png" },
+          { extension: "jpeg", mimeType: "image/jpeg" },
+          { extension: "jpg", mimeType: "image/jpeg" },
+        ];
+
+        const supportedType = supportedTypes.find((s) =>
+          gnoh.file.verifyAccept(
+            { fileName: "image." + s.extension, mimeType: s.mimeType },
+            accept
+          )
+        );
+
+        for (const item of pasteData.items) {
+          const file = item.file;
+          let checkType = false;
+          if (item.isFile) {
+            const lowerFileMime = (file.type || "").toLowerCase();
+            if (item.isRealFile) {
+              checkType = gnoh.file.verifyAccept(
+                { fileName: file.name, mimeType: lowerFileMime },
+                accept
+              );
+            } else {
+              checkType = supportedType && lowerFileMime === "image/png";
+            }
+          }
+
+          if (checkType && (!maxAllowedSize || file.size <= maxAllowedSize)) {
+            const lowerMime = file.type.toLowerCase();
+            let blob = new Blob([file], { type: file.type });
+
+            if (!item.isRealFile && supportedType.mimeType === "image/jpeg") {
+              blob = await convertPngToJpeg(blob);
+            }
+
+            const arrayBuffer = await blob.arrayBuffer();
+            const compressedArrayBuffer = await gnoh.stream.compress(arrayBuffer);
+            const compressedBase64String = btoa(
+              new Uint8Array(compressedArrayBuffer).reduce(
+                (data, byte) => data + String.fromCharCode(byte),
+                ""
+              )
+            );
+            const fileData = gnoh.array.chunks(compressedBase64String, chunkSize);
+            const clipboardFile = {
+              fileData: fileData,
+              fileDataLength: fileData.length,
+              mimeType: file.type,
+              size: blob.size,
+              category: "clipboard",
+            };
+
+            if (item.isRealFile) {
+              clipboardFile.fileName = file.name;
+            } else {
+              clipboardFile.extension = supportedType.extension;
+            }
+
+            const checkPreviewMime = lowerMime;
+            if (
+              checkPreviewMime === "image/jpeg" ||
+              checkPreviewMime === "image/png" ||
+              checkPreviewMime === "image/svg+xml" ||
+              checkPreviewMime === "image/webp" ||
+              checkPreviewMime === "image/gif" ||
+              checkPreviewMime === "image/bmp"
+            ) {
+              try {
+                clipboardFile.previewUrl = await vivaldi.utilities.storeImage({
+                  data: arrayBuffer,
+                  mimeType: file.type,
+                });
+              } catch (error) {
+                console.warn("Failed to create preview for legacy clipboard image", error);
+              }
+            }
+
+            clipboardFiles.push(clipboardFile);
+          }
+        }
+      } catch (legacyError) {
+        console.error("[EasyFiles] Legacy clipboard read failed:", legacyError);
+      }
     }
 
     return clipboardFiles;
@@ -779,11 +829,12 @@
   }
 
   async function getDownloadedFiles(accept) {
-    const downloadedFiles = await chrome.downloads.search({
-      exists: true,
-      state: "complete",
-      orderBy: ["-startTime"],
-    });
+    try {
+      const downloadedFiles = await chrome.downloads.search({
+        exists: true,
+        state: "complete",
+        orderBy: ["-startTime"],
+      });
 
     const result = {};
     for (let downloadedFile of downloadedFiles) {
@@ -840,9 +891,12 @@
         }
       }
     }
-
     return Object.values(result);
+  } catch (e) {
+    console.error("[EasyFiles] Error querying downloaded files:", e);
+    return [];
   }
+}
 
   function createFileIcon(extension) {
     let colorBg = { r: 255, g: 255, b: 255 };
@@ -1210,7 +1264,7 @@
 
   vivaldi.tabsPrivate.onWebviewClickCheck.addListener(
     (windowId, mousedown, button, clientX, clientY) => {
-      if (windowId === vivaldiWindowId && mousedown && button === 0) {
+      if (Number(windowId) === vivaldiWindowId && mousedown && button === 0) {
         pointerPosition.x = clientX;
         pointerPosition.y = clientY;
       }
@@ -1218,7 +1272,7 @@
   );
 
   chrome.runtime.onMessage.addListener(async (info, sender, sendResponse) => {
-    if (sender.tab.windowId === vivaldiWindowId && info.type === nameKey) {
+    if (Number(sender.tab.windowId) === vivaldiWindowId && info.type === nameKey) {
       switch (info.action) {
         case "click":
           const [clipboardFiles, downloadedFiles] = await Promise.all([
@@ -1291,8 +1345,9 @@
 
   gnoh.timeOut(
     () => {
+      vivaldiWindowId = Number(window.vivaldiWindowId);
       chrome.tabs.query(
-        { windowId: window.vivaldiWindowId, windowType: "normal" },
+        { windowId: vivaldiWindowId, windowType: "normal" },
         (tabs) => {
           tabs.forEach((tab) => {
             if (!isScriptableUrl(tab.url || tab.pendingUrl)) return;
