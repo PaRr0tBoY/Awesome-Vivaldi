@@ -252,9 +252,9 @@
   async function generateOptimizedTitle(originalTitle, url) {
     if (!AI_CONFIG.apiKey) {
       console.warn("[TidyTitles] AI API key not configured, skipping.");
-      showToast("AI API key 未配置", {
+      showToast("AI API key not configured", {
         type: "error",
-        button: { text: "前往设置", action: openSettings },
+        button: { text: "Go to Settings", action: openSettings },
       });
       return originalTitle;
     }
@@ -304,7 +304,7 @@ Write responses (but not JSON keys) in ${languageName}.`;
 
       if (isGLM) {
         payload.thinking = { type: "disabled" };
-      } else {
+      } else if (AI_CONFIG.apiEndpoint?.includes("openrouter.ai")) {
         payload.include_reasoning = false;
       }
 
@@ -343,10 +343,10 @@ Write responses (but not JSON keys) in ${languageName}.`;
           console.warn(
             `[TidyTitles] API rate limit reached (429). Skipping for now.`
           );
-          showToast("API 请求频率过高 (429)", { type: "warning" });
+          showToast("API request frequency too high (429)", { type: "warning" });
         } else {
           console.error(`[TidyTitles] API error (${status}): ${errMsg}`);
-          showToast(`API 错误 (${status}): ${errMsg}`, {
+          showToast(`API error (${status}): ${errMsg}`, {
             type: "error",
             copyText: `TidyTitles API error ${status}: ${errMsg}`,
           });
@@ -395,7 +395,7 @@ Write responses (but not JSON keys) in ${languageName}.`;
       return originalTitle;
     } catch (error) {
       console.error("[TidyTitles] API call exception:", error.message);
-      showToast(`API 调用异常: ${error.message}`, {
+      showToast(`API call exception: ${error.message}`, {
         type: "error",
         copyText: error.message,
       });
@@ -933,8 +933,11 @@ Return JSON: {"name":"the group name"}`;
         stream: false,
         response_format: { type: "json_object" },
       };
-      if (isGLM) payload.thinking = { type: "disabled" };
-      else payload.include_reasoning = false;
+      if (isGLM) {
+        payload.thinking = { type: "disabled" };
+      } else if (AI_CONFIG.apiEndpoint?.includes("openrouter.ai")) {
+        payload.include_reasoning = false;
+      }
 
       const controller = AI_CONFIG.timeout > 0 ? new AbortController() : null;
       const timeoutId = AI_CONFIG.timeout > 0 ? setTimeout(() => controller.abort(), AI_CONFIG.timeout) : null;
@@ -996,27 +999,66 @@ Return JSON: {"name":"the group name"}`;
         color = randomStackColor(neighborColor || lastAssignedColor);
       }
 
+
+
+      const updateTabProperties = async (tabId, fields) => {
+        // 1. Keep compatibility metadata written via standard chrome.tabs.update
+        return new Promise((resolve) => {
+          chrome.tabs.get(tabId, (tab) => {
+            if (chrome.runtime.lastError || !tab) {
+              resolve();
+              return;
+            }
+            let viv = {};
+            try {
+              viv = typeof tab.vivExtData === "string" ? JSON.parse(tab.vivExtData) : (tab.vivExtData || {});
+            } catch {}
+            
+            Object.assign(viv, fields);
+            
+            chrome.tabs.update(tabId, { vivExtData: JSON.stringify(viv) }, () => {
+              if (chrome.runtime.lastError) {
+                console.error("[TidyTitles] [chrome.tabs.update] Error:", chrome.runtime.lastError.message);
+              } else {
+                console.log(`[TidyTitles] [updateTabProperties] Updated tabId=${tabId} vivExtData:`, JSON.stringify(viv));
+              }
+              resolve();
+            });
+          });
+        });
+      };
+
       const applyToAll = async (fields) => {
         let updated = 0;
         for (const tab of tabs) {
-          await new Promise((resolve) => {
-            chrome.tabs.get(tab.id, (t) => {
-              if (chrome.runtime.lastError) { resolve(); return; }
-              let viv = {};
-              try { viv = t.vivExtData ? JSON.parse(t.vivExtData) : {}; } catch {}
-              Object.assign(viv, fields);
-              chrome.tabs.update(tab.id, { vivExtData: JSON.stringify(viv) }, () => {
-                updated++;
-                resolve();
-              });
-            });
-          });
+          await updateTabProperties(tab.id, fields);
+          updated++;
         }
         return updated;
       };
 
       const updated = await applyToAll({ fixedGroupTitle: name, ...(color ? { groupColor: color } : {}) });
       if (color) stackColors.set(stackId, color);
+      
+      // Natively rename/color the tab stack in Vivaldi UI
+      if (window.vivaldi?.tabsPrivate?.setGroupProperties) {
+        try {
+          await new Promise((resolve) => {
+            window.vivaldi.tabsPrivate.setGroupProperties({ groupExtId: stackId, groupTitle: name }, () => {
+              if (color) {
+                window.vivaldi.tabsPrivate.setGroupProperties({ groupExtId: stackId, groupColor: color }, () => {
+                  resolve();
+                });
+              } else {
+                resolve();
+              }
+            });
+          });
+        } catch (e) {
+          console.warn("[TidyTitles] renameStack setGroupProperties threw:", e.message);
+        }
+      }
+
       console.log(`[TidyTitles] Stack "${name}" (${updated} tabs)${color ? " color=" + color : ""}`);
       if (updated > 0) {
         showToast(toastText("stackRenamed", { oldName, newName: name }), { type: "success" });

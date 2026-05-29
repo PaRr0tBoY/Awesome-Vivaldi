@@ -52,7 +52,7 @@
       const fileHandle = await dir.getFileHandle(MOD_AI_CONFIG_FILE, { create: false });
       const file = await fileHandle.getFile();
       applySharedAiConfig(JSON.parse(await file.text()));
-    } catch (_error) {}
+    } catch (_error) { }
   }
 
   loadSharedAiConfig();
@@ -346,7 +346,7 @@
 
       if (/bigmodel\.cn/.test(AI_CONFIG.apiEndpoint)) {
         payload.thinking = { type: "disabled" };
-      } else {
+      } else if (AI_CONFIG.apiEndpoint?.includes("openrouter.ai")) {
         payload.include_reasoning = false;
       }
 
