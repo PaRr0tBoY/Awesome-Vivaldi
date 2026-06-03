@@ -236,7 +236,7 @@ Write responses (but not JSON keys) in English.`;
       if (!response.ok) {
         const text = await response.text();
         log.error(`AI API error ${response.status}: ${text}`);
-        showToast(`AI API 错误 (${response.status})`, {
+        showToast(`AI API error (${response.status})`, {
           type: "error",
           copyText: `TidyDownloads API error ${response.status}: ${text}`,
         });
@@ -291,10 +291,10 @@ Write responses (but not JSON keys) in English.`;
       clearTimeout(timeoutId);
       if (err.name === "AbortError") {
         log.error(`AI request timeout (${AI_CONFIG.timeout}ms)`);
-        showToast(`AI 请求超时 (${AI_CONFIG.timeout}ms)`, { type: "warning" });
+        showToast(`AI request timeout (${AI_CONFIG.timeout}ms)`, { type: "warning" });
       } else {
         log.error(`AI request failed: ${err.message}`);
-        showToast(`AI 请求失败: ${err.message}`, {
+        showToast(`AI request failed: ${err.message}`, {
           type: "error",
           copyText: err.message,
         });

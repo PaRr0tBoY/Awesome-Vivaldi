@@ -331,23 +331,66 @@
     return pick;
   };
 
-  const addTabToStack = async (tabId, stackId, stackName, stackColor) => {
-    const tab = await getTab(tabId);
-    if (!tab?.vivExtData) return;
-    const viv = tab.vivExtData;
-    if (stackName) viv.fixedGroupTitle = stackName;
-    if (stackColor) viv.groupColor = stackColor;
-    else delete viv.groupColor;
-    viv.group = stackId;
-    viv.tidyStackOwner = TIDY_TABS_STACK_OWNER;
-    viv.tidyStackId = stackId;
+
+
+  const updateTabProperties = async (tabId, fields) => {
+    // 1. Keep compatibility metadata written via standard chrome.tabs.update
     return new Promise((resolve) => {
-      chrome.tabs.update(tabId, { vivExtData: JSON.stringify(viv) }, () => {
-        if (chrome.runtime.lastError)
-          console.error("[TidyTabs]", chrome.runtime.lastError.message);
-        resolve();
+      chrome.tabs.get(tabId, (tab) => {
+        if (chrome.runtime.lastError || !tab) {
+          resolve();
+          return;
+        }
+        let viv = {};
+        try {
+          viv = typeof tab.vivExtData === "string" ? JSON.parse(tab.vivExtData) : (tab.vivExtData || {});
+        } catch {}
+        
+        Object.assign(viv, fields);
+        
+        chrome.tabs.update(tabId, { vivExtData: JSON.stringify(viv) }, () => {
+          if (chrome.runtime.lastError) {
+            console.error("[TidyTabs] [chrome.tabs.update] Error:", chrome.runtime.lastError.message);
+          } else {
+            console.log(`[TidyTabs] [updateTabProperties] Updated tabId=${tabId} vivExtData:`, JSON.stringify(viv));
+          }
+          resolve();
+        });
       });
     });
+  };
+
+  const addTabToStack = async (tabId, stackId, stackName, stackColor, parentExtId) => {
+    console.log(`[TidyTabs] [addTabToStack] Starting for tabId=${tabId}, stackId=${stackId}, stackName="${stackName}", stackColor="${stackColor}", parentExtId="${parentExtId || ''}"`);
+    
+    const freshTab = await getTab(tabId);
+    let viv = {};
+    if (freshTab?.vivExtData) {
+      viv = typeof freshTab.vivExtData === "string" ? JSON.parse(freshTab.vivExtData) : freshTab.vivExtData;
+    }
+    
+    const extId = viv.ext_id || crypto.randomUUID();
+    
+    const fields = {
+      ext_id: extId,
+      group: stackId,
+      tidyStackOwner: TIDY_TABS_STACK_OWNER,
+      tidyStackId: stackId
+    };
+    if (stackName) fields.fixedGroupTitle = stackName;
+    if (stackColor) fields.groupColor = stackColor;
+    if (parentExtId) {
+      fields.parent_ext_id = parentExtId;
+    } else {
+      fields.parent_ext_id = null;
+    }
+    
+    await updateTabProperties(tabId, fields);
+    
+    const verifyTab = await getTab(tabId);
+    console.log(`[TidyTabs] [addTabToStack] Verified tabId=${tabId} vivExtData after update:`, JSON.stringify(verifyTab?.vivExtData));
+    
+    return extId;
   };
 
   const showToast = (message, options = {}) => {
@@ -484,9 +527,9 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
 
   const getAIGrouping = async (tabs, existingStacks = []) => {
     if (!AI_CONFIG.apiKey) {
-      showToast("AI API key 未配置", {
+      showToast("AI API key Unconfigured", {
         type: "error",
-        button: { text: "前往设置", action: openSettings },
+        button: { text: "Go to Settings", action: openSettings },
       });
       return null;
     }
@@ -522,7 +565,6 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
           temperature: AI_CONFIG.temperature,
           max_tokens: AI_CONFIG.maxTokens,
           response_format: { type: "text" },
-          stream_options: { include_usage: true },
         }),
         signal: controller?.signal,
       });
@@ -540,7 +582,7 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
       return groups.length > 0 ? groups : null;
     } catch (error) {
       console.error("[TidyTabs] AI error:", error.message);
-      showToast(`AI 调用失败: ${error.message}`, {
+      showToast(`AI call failed: ${error.message}`, {
         type: "error",
         copyText: error.message,
       });
@@ -581,7 +623,7 @@ Language: ${languageName}.
 Tabs:
 ${tabInfo}
 
-Return JSON: {"name":"the group name"}`;
+Return JSON strictly in this format, with no markdown backticks: {"name":"the group name"}`;
 
     try {
       const isGLM = AI_CONFIG.apiEndpoint?.includes("bigmodel.cn");
@@ -593,8 +635,11 @@ Return JSON: {"name":"the group name"}`;
         stream: false,
         response_format: { type: "json_object" },
       };
-      if (isGLM) payload.thinking = { type: "disabled" };
-      else payload.include_reasoning = false;
+      if (isGLM) {
+        payload.thinking = { type: "disabled" };
+      } else if (AI_CONFIG.apiEndpoint?.includes("openrouter.ai")) {
+        payload.include_reasoning = false;
+      }
 
       const controller = AI_CONFIG.timeout > 0 ? new AbortController() : null;
       const timeoutId = AI_CONFIG.timeout > 0
@@ -662,16 +707,22 @@ Return JSON: {"name":"the group name"}`;
       if (!name) continue;
 
       for (const tab of tabs) {
-        await new Promise((resolve) => {
-          chrome.tabs.get(tab.id, (t) => {
-            if (chrome.runtime.lastError) { resolve(); return; }
-            let viv = {};
-            try { viv = t.vivExtData ? JSON.parse(t.vivExtData) : {}; } catch {}
-            viv.fixedGroupTitle = name;
-            chrome.tabs.update(tab.id, { vivExtData: JSON.stringify(viv) }, resolve);
-          });
-        });
+        await updateTabProperties(tab.id, { fixedGroupTitle: name });
       }
+      
+      // Natively rename the tab stack in Vivaldi UI
+      if (window.vivaldi?.tabsPrivate?.setGroupProperties) {
+        try {
+          await new Promise((resolve) => {
+            window.vivaldi.tabsPrivate.setGroupProperties({ groupExtId: stackId, groupTitle: name }, () => {
+              resolve();
+            });
+          });
+        } catch (e) {
+          console.warn("[TidyTabs] renameUnnamedStacks setGroupProperties threw:", e.message);
+        }
+      }
+
       console.log(`[TidyTabs] Named unnamed stack: "${name}" (${tabs.length} tabs)`);
     }
   };
@@ -702,16 +753,22 @@ Return JSON: {"name":"the group name"}`;
 
       const color = randomStackColor();
       for (const tab of tabs) {
-        await new Promise((resolve) => {
-          chrome.tabs.get(tab.id, (t) => {
-            if (chrome.runtime.lastError) { resolve(); return; }
-            let viv = {};
-            try { viv = t.vivExtData ? JSON.parse(t.vivExtData) : {}; } catch {}
-            viv.groupColor = color;
-            chrome.tabs.update(tab.id, { vivExtData: JSON.stringify(viv) }, resolve);
-          });
-        });
+        await updateTabProperties(tab.id, { groupColor: color });
       }
+      
+      // Natively color the tab stack in Vivaldi UI
+      if (window.vivaldi?.tabsPrivate?.setGroupProperties) {
+        try {
+          await new Promise((resolve) => {
+            window.vivaldi.tabsPrivate.setGroupProperties({ groupExtId: stackId, groupColor: color }, () => {
+              resolve();
+            });
+          });
+        } catch (e) {
+          console.warn("[TidyTabs] colorUncoloredStacks setGroupProperties threw:", e.message);
+        }
+      }
+
       console.log(`[TidyTabs] Colored stack ${stackId.slice(0, 8)}... → ${color}`);
     }
   };
@@ -721,12 +778,12 @@ Return JSON: {"name":"the group name"}`;
   const createTabStacks = async (groups) => {
     let lastColor = "";
     for (const group of groups) {
-      const stackId = group.stackId || crypto.randomUUID();
       const color = group.isExisting ? null : (CONFIG.enableStackColor ? randomStackColor(lastColor) : null);
       if (color) lastColor = color;
       group.tabs.sort((a, b) => a.index - b.index);
       const targetIndex = group.tabs[0].index;
 
+      // 1. Move all tabs in this group to be adjacent first
       for (let i = 0; i < group.tabs.length; i++) {
         const tab = group.tabs[i];
         await new Promise((resolve) => {
@@ -736,7 +793,106 @@ Return JSON: {"name":"the group name"}`;
             resolve();
           });
         });
-        await addTabToStack(tab.id, stackId, group.name, color);
+      }
+
+      // 2. Wait for Vivaldi React UI to settle and process the moves
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // 3. Group tabs natively using Vivaldi's private tabsPrivate.move stacking API
+      const tabIds = group.tabs.map((t) => t.id);
+      console.log(`[TidyTabs] Grouping tabIds natively via tabsPrivate.move:`, JSON.stringify(tabIds));
+      
+      const vivaldiGroupId = await new Promise(async (resolve) => {
+        try {
+          const params = {
+            tabIds: tabIds,
+            target: tabIds[0],
+            tweaks: ["do-not-reparent", "create-new-group", "target-is-tab"],
+            debug: "TidyTabs.createTabStack"
+          };
+          
+          const promiseOrVal = window.vivaldi.tabsPrivate.move(params, (res) => {
+            if (chrome.runtime.lastError) {
+              console.error("[TidyTabs] tabsPrivate.move callback error:", chrome.runtime.lastError.message);
+              resolve(null);
+            } else {
+              console.log("[TidyTabs] tabsPrivate.move callback success, native group ID =", res?.group);
+              resolve(res?.group || null);
+            }
+          });
+          
+          if (promiseOrVal && typeof promiseOrVal.then === "function") {
+            const res = await promiseOrVal;
+            console.log("[TidyTabs] tabsPrivate.move promise success, native group ID =", res?.group);
+            resolve(res?.group || null);
+          }
+        } catch (err) {
+          console.error("[TidyTabs] tabsPrivate.move exception:", err.message);
+          resolve(null);
+        }
+      });
+
+      // 4. Update the tabs metadata (ext_id, parent_ext_id, tidyStackOwner, etc.) for compatibility with custom scripts
+      if (vivaldiGroupId !== null) {
+        // Set group title and color natively via vivaldi.tabsPrivate.setGroupProperties
+        if (window.vivaldi?.tabsPrivate?.setGroupProperties) {
+          try {
+            await new Promise((resolve) => {
+              const gIdStr = String(vivaldiGroupId);
+              window.vivaldi.tabsPrivate.setGroupProperties({ groupExtId: gIdStr, groupTitle: group.name }, () => {
+                if (chrome.runtime.lastError) {
+                  console.warn("[TidyTabs] Native setGroupProperties for title failed:", chrome.runtime.lastError.message);
+                } else {
+                  console.log("[TidyTabs] Native group title set successfully:", group.name);
+                }
+                if (color) {
+                  window.vivaldi.tabsPrivate.setGroupProperties({ groupExtId: gIdStr, groupColor: color }, () => {
+                    if (chrome.runtime.lastError) {
+                      console.warn("[TidyTabs] Native setGroupProperties for color failed:", chrome.runtime.lastError.message);
+                    } else {
+                      console.log("[TidyTabs] Native group color set successfully:", color);
+                    }
+                    resolve();
+                  });
+                } else {
+                  resolve();
+                }
+              });
+            });
+          } catch (e) {
+            console.warn("[TidyTabs] setGroupProperties threw exception:", e.message);
+          }
+        }
+
+        // Apply metadata sequentially
+        let parentExtId = "";
+        for (let i = 0; i < group.tabs.length; i++) {
+          const tab = group.tabs[i];
+          const isParent = i === 0;
+          
+          if (isParent) {
+            parentExtId = await addTabToStack(tab.id, String(vivaldiGroupId), group.name, color, null);
+          } else {
+            await addTabToStack(tab.id, String(vivaldiGroupId), group.name, color, parentExtId);
+          }
+          await new Promise((resolve) => setTimeout(resolve, 50));
+        }
+      } else {
+        // Safe Fallback: if tabsPrivate.move is not supported or failed, fall back to our metadata writes
+        console.warn("[TidyTabs] Stacking failed, falling back to metadata writes.");
+        const stackId = group.stackId || crypto.randomUUID();
+        let parentExtId = "";
+        for (let i = 0; i < group.tabs.length; i++) {
+          const tab = group.tabs[i];
+          const isParent = i === 0;
+          
+          if (isParent) {
+            parentExtId = await addTabToStack(tab.id, stackId, group.name, color, null);
+          } else {
+            await addTabToStack(tab.id, stackId, group.name, color, parentExtId);
+          }
+          await new Promise((resolve) => setTimeout(resolve, 50));
+        }
       }
     }
   };
@@ -1018,7 +1174,7 @@ Return JSON: {"name":"the group name"}`;
       const othersGroup = groups.find((g) => OTHERS_NAMES.includes(g.name));
       await createTabStacks(groups);
       if (othersGroup) await moveGroupToEnd(othersGroup);
-      showToast(`已分组 ${groups.length} 个栈`, { type: "success" });
+      showToast(`Successfully grouped ${groups.length} stacks`, { type: "success" });
     }
   };
 
@@ -1054,7 +1210,7 @@ Return JSON: {"name":"the group name"}`;
         const othersGroup = groups.find((g) => OTHERS_NAMES.includes(g.name));
         await createTabStacks(groups);
         if (othersGroup) await moveGroupToEnd(othersGroup);
-        showToast(`已分组 ${groups.length} 个栈`, { type: "success" });
+        showToast(`Successfully grouped ${groups.length} stacks`, { type: "success" });
       }
 
       // Name any existing stacks that lack fixedGroupTitle
@@ -1174,8 +1330,6 @@ Return JSON: {"name":"the group name"}`;
       }
     }).observe(root, { childList: true, subtree: true });
   };
-
-  // ==================== Init ====================
 
   const init = () => {
     console.log("[TidyTabs] ✓ Initialization complete");
