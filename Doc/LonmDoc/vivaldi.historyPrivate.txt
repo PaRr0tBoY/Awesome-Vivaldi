@@ -1,0 +1,278 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/historyPrivate.html#top)
+
+## vivaldi.historyPrivate Modders API Reference
+
+Use the `vivaldi.historyPrivate` API to interact with the browser's record of visited pages. You can query for URLs and visits in the browser's history. To override the history page with your own version, see [Override Pages](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/override).
+
+## Navigation
+
+### Types
+
+-   [TransitionType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/historyPrivate.html#TransitionType)
+-   [HistoryPrivateItem](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/historyPrivate.html#HistoryPrivateItem)
+-   [TopUrlItem](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/historyPrivate.html#TopUrlItem)
+
+### Listeners
+
+-   [onVisitModified](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/historyPrivate.html#onVisitModified)
+
+### Methods
+
+-   [deleteVisits](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/historyPrivate.html#deleteVisits)
+-   [getTopUrlsPerDay](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/historyPrivate.html#getTopUrlsPerDay)
+-   [visitSearch](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/historyPrivate.html#visitSearch)
+-   [updateTopSites](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/historyPrivate.html#updateTopSites)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/historyPrivate.html#TransitionType)TransitionType
+
+`ENUM`
+
+The transition type for this visit from its referrer.
+
+-   link
+-   typed
+-   auto\_bookmark
+-   auto\_subframe
+-   manual\_subframe
+-   generated
+-   auto\_toplevel
+-   form\_submit
+-   reload
+-   keyword
+-   keyword\_generated
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/historyPrivate.html#HistoryPrivateItem)HistoryPrivateItem
+
+An object encapsulating one result of a history query. Properties marked with 'Used for statistics' can be removed if we make a new API function for stats.
+
+Properties:
+
+id
+
+```
+string
+```
+
+The unique identifier for the item.
+
+url
+
+```
+string
+```
+
+The URL navigated to by a user.
+
+address
+
+```
+string
+```
+
+Used for statistics. The address of the page navigated to by a user.
+
+title
+
+```
+string
+```
+
+The title of the page when it was last loaded.
+
+visitTime
+
+```
+number
+```
+
+When this page was visited, represented in milliseconds since the epoch.
+
+transitionType
+
+```
+TransitionType
+```
+
+Used for statistics. The transition type for this visit from its referrer.
+
+dateKey
+
+```
+string
+```
+
+Date string of the visit. Format: YYYY-MM-DD
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/historyPrivate.html#TopUrlItem)TopUrlItem
+
+An object encapsulating one result of a top url history query.
+
+Properties:
+
+date
+
+```
+string
+```
+
+The date of the visit for the top url
+
+url
+
+```
+string
+```
+
+The url visited
+
+numberOfVisit
+
+(optional)
+
+```
+integer
+```
+
+The visit count of the url.
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/historyPrivate.html#onVisitModified)onVisitModified
+
+Fired when one or more URLs are removed from the history service. When all visits have been removed the URL is purged from history.
+
+Parameters:
+
+modified
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+urls
+
+(optional)
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   string
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/historyPrivate.html#deleteVisits)deleteVisits
+
+Deletes all visits of the given URL for a certain period.
+
+Parameters:
+
+details
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+url
+
+```
+string
+```
+
+The URL to remove.
+
+time
+
+```
+number
+```
+
+The visit time of the item to remove, represented in milliseconds since the epoch. IMPORTANT: This must be the exact visit time, to the microsecond. If it is truncated, then the deletion will not be synced.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/historyPrivate.html#getTopUrlsPerDay)getTopUrlsPerDay
+
+Retrives top url per day. Sorted by number of visits within the day
+
+Parameters:
+
+maxTopUrlResults
+
+```
+number
+```
+
+The number of top urls to return per day.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/historyPrivate.html#visitSearch)visitSearch
+
+Retrives all visits. Sorted by visit time descending.
+
+Parameters:
+
+query
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+startTime
+
+(optional)
+
+```
+number
+```
+
+Limit results to those visited after this date, represented in milliseconds since the epoch. If not specified, this defaults to 24 hours in the past.
+
+endTime
+
+(optional)
+
+```
+number
+```
+
+Limit results to those visited before this date, represented in milliseconds since the epoch.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/historyPrivate.html#updateTopSites)updateTopSites
+
+Requests an update for top sites

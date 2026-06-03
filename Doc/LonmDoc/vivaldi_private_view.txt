@@ -1,0 +1,251 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/webViewPrivate.html#top)
+
+## vivaldi.webViewPrivate Modders API Reference
+
+none
+
+## Navigation
+
+### Types
+
+-   [ThumbnailParams](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/webViewPrivate.html#ThumbnailParams)
+
+### Listeners
+
+### Methods
+
+-   [getThumbnail](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/webViewPrivate.html#getThumbnail)
+-   [showPageInfo](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/webViewPrivate.html#showPageInfo)
+-   [setIsFullscreen](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/webViewPrivate.html#setIsFullscreen)
+-   [getPageHistory](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/webViewPrivate.html#getPageHistory)
+-   [allowBlockedInsecureContent](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/webViewPrivate.html#allowBlockedInsecureContent)
+-   [sendRequest](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/webViewPrivate.html#sendRequest)
+-   [getPageSelection](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/webViewPrivate.html#getPageSelection)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/webViewPrivate.html#ThumbnailParams)ThumbnailParams
+
+Object passed to various thumbnail capture functions.
+
+Properties:
+
+width
+
+(optional)
+
+```
+integer
+```
+
+The width of the scaled output bitmap.
+
+height
+
+(optional)
+
+```
+integer
+```
+
+The height of the scaled output bitmap.
+
+scale
+
+(optional)
+
+```
+number
+```
+
+Set scale of the output bitmap, defaults to 0.5. Note that |width.height| will be used if both |scale| and |width.height| are set.
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/webViewPrivate.html#getThumbnail)getThumbnail
+
+⚠ NO DESCRIPTION PROVIDED
+
+Parameters:
+
+instanceId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+params
+
+```
+ThumbnailParams
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/webViewPrivate.html#showPageInfo)showPageInfo
+
+⚠ NO DESCRIPTION PROVIDED
+
+Parameters:
+
+instanceId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+position
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+left
+
+```
+integer
+```
+
+Anchor left position, screen coordinates.
+
+top
+
+```
+integer
+```
+
+Anchor top position, screen coordinates.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/webViewPrivate.html#setIsFullscreen)setIsFullscreen
+
+⚠ NO DESCRIPTION PROVIDED
+
+Parameters:
+
+instanceId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+isFullscreen
+
+```
+boolean
+```
+
+This is used to set a webview as fullscreen or not. This is needed for updating the pseudo-style :fullscreen when going in and out of fullscreen not via element.requestFullscreen and element.cancelFullscreen .
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/webViewPrivate.html#getPageHistory)getPageHistory
+
+⚠ NO DESCRIPTION PROVIDED
+
+Parameters:
+
+instanceId
+
+```
+integer
+```
+
+The instance ID of the guest process.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/webViewPrivate.html#allowBlockedInsecureContent)allowBlockedInsecureContent
+
+Will load all blocked content in a page.
+
+Parameters:
+
+instanceId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/webViewPrivate.html#sendRequest)sendRequest
+
+Navigates the webview to a given URL but with greater control over the sent request.
+
+Parameters:
+
+instanceId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+url
+
+```
+string
+```
+
+The URL of the page to navigate to.
+
+transitionType
+
+```
+historyPrivate.TransitionType
+```
+
+How the URL was reached.
+
+fromUrlField
+
+```
+boolean
+```
+
+Whether the request came from the url field
+
+usePost
+
+```
+boolean
+```
+
+Whether to perform the navigation via POST.
+
+postData
+
+```
+string
+```
+
+When using POST, this will be the body of the request.
+
+extraHeaders
+
+```
+string
+```
+
+Extra headers to pass with the request. See OpenURLParams in chromium code.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/webViewPrivate.html#getPageSelection)getPageSelection
+
+Get any selected text in the page.
+
+Parameters:
+
+instanceId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED

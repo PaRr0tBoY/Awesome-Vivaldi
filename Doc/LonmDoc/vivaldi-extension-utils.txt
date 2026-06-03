@@ -1,0 +1,826 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#top)
+
+## vivaldi.extensionActionUtils Modders API Reference
+
+Helper functions for Vivaldi to reuse Chromes extension UI.
+
+## Navigation
+
+### Types
+
+-   [ActionType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#ActionType)
+-   [ExtensionType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#ExtensionType)
+-   [MenuType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#MenuType)
+-   [GlobalErrorType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#GlobalErrorType)
+-   [MenuItem](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#MenuItem)
+-   [SidePanelInfo](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#SidePanelInfo)
+-   [SidePanelOptions](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#SidePanelOptions)
+-   [ExtensionInfo](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#ExtensionInfo)
+-   [ExtensionInstallError](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#ExtensionInstallError)
+-   [ExtensionActionParams](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#ExtensionActionParams)
+
+### Listeners
+
+-   [onAdded](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#onAdded)
+-   [onRemoved](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#onRemoved)
+-   [onUpdated](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#onUpdated)
+-   [onClearAllValuesForTab](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#onClearAllValuesForTab)
+-   [onCommandAdded](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#onCommandAdded)
+-   [onCommandRemoved](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#onCommandRemoved)
+-   [onExtensionDisabledInstallErrorAdded](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#onExtensionDisabledInstallErrorAdded)
+-   [onExtensionDisabledInstallErrorRemoved](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#onExtensionDisabledInstallErrorRemoved)
+-   [onSidePanelOptionChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#onSidePanelOptionChanged)
+-   [onSidePanelActionRequested](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#onSidePanelActionRequested)
+
+### Methods
+
+-   [getToolbarExtensions](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#getToolbarExtensions)
+-   [executeExtensionAction](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#executeExtensionAction)
+-   [removeExtension](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#removeExtension)
+-   [showExtensionOptions](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#showExtensionOptions)
+-   [getExtensionMenu](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#getExtensionMenu)
+-   [executeMenuAction](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#executeMenuAction)
+-   [showGlobalError](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#showGlobalError)
+-   [triggerGlobalErrors](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#triggerGlobalErrors)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#ActionType)ActionType
+
+`ENUM`
+
+browser- or pageAction.
+
+-   browser
+-   page
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#ExtensionType)ExtensionType
+
+`ENUM`
+
+Regular extension- or componentAction. Component actions will go through ToolbarActionViewController
+
+-   extensionAction
+-   componentAction
+
+`ENUM`
+
+What type of menu item.
+
+-   normal
+-   checkbox
+-   radio
+-   separator
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#GlobalErrorType)GlobalErrorType
+
+`ENUM`
+
+Type of global error. Disabled because of permission increase, or installed by third-party.
+
+-   installed
+-   upgrade
+
+Menu item representing a single menu item.
+
+Properties:
+
+name
+
+```
+string
+```
+
+The name of the item as shown in the menu.
+
+id
+
+```
+string
+```
+
+The id for the item.
+
+enabled
+
+```
+boolean
+```
+
+Is the item enabled.
+
+visible
+
+```
+boolean
+```
+
+Is the item visible.
+
+checked
+
+```
+boolean
+```
+
+Is the item checked.
+
+menuType
+
+```
+MenuType
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+submenu
+
+(optional)
+
+Sub menu items if the extension supplies a custom menu.
+
+`Array` of:
+
+-   MenuItem
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#SidePanelInfo)SidePanelInfo
+
+Side Panel description (if exists).
+
+Properties:
+
+url
+
+```
+string
+```
+
+Side Panel URL.
+
+activeUrl
+
+```
+string
+```
+
+Side Panel URL.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#SidePanelOptions)SidePanelOptions
+
+⚠ NO DESCRIPTION PROVIDED
+
+Properties:
+
+tabId
+
+(optional)
+
+```
+integer
+```
+
+If specified, the side panel options will only apply to the tab with this id. If omitted, these options set the default behavior (used for any tab that doesn't have specific settings). Note: if the same path is set for this tabId and the default tabId, then the panel for this tabId will be a different instance than the panel for the default tabId.
+
+path
+
+(optional)
+
+```
+string
+```
+
+The path to the side panel HTML file to use. This must be a local resource within the extension package.
+
+extensionId
+
+(optional)
+
+```
+string
+```
+
+The path to the side panel HTML file to use. This must be a local resource within the extension package.
+
+resourceUrl
+
+(optional)
+
+```
+string
+```
+
+The path to the side panel HTML file to use. This must be a local resource within the extension package.
+
+enabled
+
+(optional)
+
+```
+boolean
+```
+
+Whether the side panel should be enabled. This is optional. The default value is true.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#ExtensionInfo)ExtensionInfo
+
+Extension action per tab id.
+
+Properties:
+
+tabId
+
+```
+integer
+```
+
+tab id, or kDefaultTabId(-1) if the information should be used for all tabs.
+
+id
+
+```
+string
+```
+
+The unique extension identifier.
+
+badgeTooltip
+
+(optional)
+
+```
+string
+```
+
+Tooltip for the button.
+
+badgeText
+
+(optional)
+
+```
+string
+```
+
+Badgetext, typically room for four chars.
+
+badgeIcon
+
+(optional)
+
+```
+string
+```
+
+data-url for the current icon.
+
+badgeTextColor
+
+(optional)
+
+```
+string
+```
+
+Text color for the badge text, currently unused.
+
+badgeBackgroundColor
+
+(optional)
+
+```
+string
+```
+
+Background color for the badge text.
+
+enabled
+
+(optional)
+
+```
+boolean
+```
+
+Whether the extension is enabled or not.
+
+actionType
+
+(optional)
+
+```
+ActionType
+```
+
+The type of the extensionAction, either pageaction or browseraction.
+
+visible
+
+(optional)
+
+```
+boolean
+```
+
+Visibility of the action button, defaults to true.
+
+allowInIncognito
+
+(optional)
+
+```
+boolean
+```
+
+Whether the action is available in incognito windows or not.
+
+extensionType
+
+(optional)
+
+```
+ExtensionType
+```
+
+The type of the extensionAction, either pageaction or browseraction. Defaults to |extensionAction|.
+
+name
+
+```
+string
+```
+
+Name of extension.
+
+homepage
+
+(optional)
+
+```
+string
+```
+
+Homepage of extension.
+
+optionspage
+
+(optional)
+
+```
+string
+```
+
+Address of extension options page.
+
+optionsInNewTab
+
+(optional)
+
+```
+boolean
+```
+
+false if the options page should be opened embedded, true if it opens in a new tab.
+
+keyboardShortcut
+
+(optional)
+
+```
+string
+```
+
+Keyboard shortcut to toggle this extension.
+
+sidePanel
+
+(optional)
+
+```
+SidePanelInfo
+```
+
+contains sidepanel URL.
+
+blocked
+
+(optional)
+
+```
+boolean
+```
+
+Whether the extension is blocked or not.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#ExtensionInstallError)ExtensionInstallError
+
+Extension error.
+
+Properties:
+
+id
+
+```
+string
+```
+
+The unique extension identifier.
+
+name
+
+```
+string
+```
+
+Extension name.
+
+errorType
+
+(optional)
+
+```
+GlobalErrorType
+```
+
+The type of the extensionAction, either pageaction or browseraction. Defaults to |extensionAction|.
+
+commandId
+
+```
+integer
+```
+
+Int id to lookup an error on action.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#ExtensionActionParams)ExtensionActionParams
+
+Describes action when the extension button is clicked
+
+Properties:
+
+extensionId
+
+(optional)
+
+```
+string
+```
+
+Related extensionId
+
+popupUrl
+
+(optional)
+
+```
+string
+```
+
+relative url for the popup document if exists.
+
+openPanelOnActionClick
+
+(optional)
+
+```
+boolean
+```
+
+openPanelOnActionClick value set by chrome.sidePanel.setPanelBehavior
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#onAdded)onAdded
+
+Fired when an extension has been loaded.
+
+Parameters:
+
+extension
+
+```
+ExtensionInfo
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#onRemoved)onRemoved
+
+Fired when an extension has been unloaded.
+
+Parameters:
+
+extension
+
+```
+ExtensionInfo
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#onUpdated)onUpdated
+
+Fired when an extensionAction is changed.
+
+Parameters:
+
+extension
+
+```
+ExtensionInfo
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#onClearAllValuesForTab)onClearAllValuesForTab
+
+Fired on ExtensionAction::ClearAllValuesForTab().
+
+Parameters:
+
+extensionId
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+tabId
+
+```
+number
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#onCommandAdded)onCommandAdded
+
+Fired when a keyboard shortcut is added to an extension.
+
+Parameters:
+
+extensionId
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+shortcut
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#onCommandRemoved)onCommandRemoved
+
+Fired when a keyboard shortcut is removed from an extension.
+
+Parameters:
+
+extensionId
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+shortcut
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#onExtensionDisabledInstallErrorAdded)onExtensionDisabledInstallErrorAdded
+
+Fired when an extensionerror is created. Can be of various kinds of GlobalErrors
+
+Parameters:
+
+error
+
+```
+ExtensionInstallError
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#onExtensionDisabledInstallErrorRemoved)onExtensionDisabledInstallErrorRemoved
+
+Fired when an extensionerror is handled or removed. Can be of various kinds of GlobalErrors.
+
+Parameters:
+
+error
+
+```
+ExtensionInstallError
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#onSidePanelOptionChanged)onSidePanelOptionChanged
+
+Fired when side panel opetion changed
+
+Parameters:
+
+extendionId
+
+```
+string
+```
+
+The unique extension identifier.
+
+options
+
+```
+SidePanelOptions
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#onSidePanelActionRequested)onSidePanelActionRequested
+
+Fired when side panel action requested
+
+Parameters:
+
+extendionId
+
+```
+string
+```
+
+The unique extension identifier.
+
+Action
+
+```
+string
+```
+
+The unique action identifier.
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#getToolbarExtensions)getToolbarExtensions
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#executeExtensionAction)executeExtensionAction
+
+execute browserAction or pageAction for extension
+
+Parameters:
+
+extensionId
+
+```
+string
+```
+
+windowId
+
+```
+integer
+```
+
+id of the application window.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#removeExtension)removeExtension
+
+Removes a specified extension.
+
+Parameters:
+
+extensionId
+
+```
+string
+```
+
+The id for the extension we want to remove.
+
+windowId
+
+```
+integer
+```
+
+id of the application window. Used to find the Browser object.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#showExtensionOptions)showExtensionOptions
+
+Shows options for the given extension
+
+Parameters:
+
+extensionId
+
+```
+string
+```
+
+The id for the extension we want to remove.
+
+windowId
+
+```
+integer
+```
+
+id of the application window. Used to find the Browser object.
+
+Gets the context menu for the given extension
+
+Parameters:
+
+extensionId
+
+```
+string
+```
+
+The id for the extension we want to get the menu for.
+
+Execute menu action for extension.
+
+Parameters:
+
+extensionId
+
+```
+string
+```
+
+windowId
+
+```
+integer
+```
+
+id of the application window.
+
+menuId
+
+```
+string
+```
+
+id of the menu item.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#showGlobalError)showGlobalError
+
+Show the dialog for an extension install error.
+
+Parameters:
+
+commandId
+
+```
+integer
+```
+
+The id for the error.
+
+windowId
+
+```
+integer
+```
+
+id of the application window. Used to find the Browser object.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/extensionActionUtils.html#triggerGlobalErrors)triggerGlobalErrors
+
+Loop through any pending global extension errors and fire events for the ui.

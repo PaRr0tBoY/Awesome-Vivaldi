@@ -1,0 +1,43 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/editcommand.html#top)
+
+## vivaldi.editcommand Modders API Reference
+
+Use the `chrome.editcommand` to run edit commands.
+
+## Navigation
+
+### Types
+
+## Navigation
+
+### Listeners
+
+## Navigation
+
+### Methods
+
+-   [execute](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/editcommand.html#execute)
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/editcommand.html#execute)execute
+
+⚠ NO DESCRIPTION PROVIDED
+
+Parameters:
+
+command
+
+```
+string
+```
+
+The command to be executed.
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED

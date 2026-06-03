@@ -1,0 +1,98 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/settings.html#top)
+
+## vivaldi.settings Modders API Reference
+
+Use the `vivaldi.settings` to change settings.
+
+## Navigation
+
+### Types
+
+-   [ContentSettingsTypeEnum](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/settings.html#ContentSettingsTypeEnum)
+-   [ContentSettingEnum](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/settings.html#ContentSettingEnum)
+-   [ContentSettingItem](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/settings.html#ContentSettingItem)
+
+### Listeners
+
+### Methods
+
+-   [setContentSetting](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/settings.html#setContentSetting)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/settings.html#ContentSettingsTypeEnum)ContentSettingsTypeEnum
+
+`ENUM`
+
+ContentSettingsType, see /components/content\_settings/core/common/content\_settings\_types.h
+
+-   plugins
+-   popups
+-   geolocation
+-   notifications
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/settings.html#ContentSettingEnum)ContentSettingEnum
+
+`ENUM`
+
+ContentSetting, see /components/content\_settings/core/common/content\_settings\_types.h
+
+-   allow
+-   block
+-   ask
+-   session\_only
+-   num\_settings
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/settings.html#ContentSettingItem)ContentSettingItem
+
+A full content setting description.
+
+Properties:
+
+primary\_pattern
+
+```
+string
+```
+
+URL pattern to match for the setting.
+
+secondary\_pattern
+
+```
+string
+```
+
+This is only used for certain types. See https://developer.chrome.com/extensions/contentSettings#patterns
+
+type
+
+```
+ContentSettingsTypeEnum
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+setting
+
+```
+ContentSettingEnum
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/settings.html#setContentSetting)setContentSetting
+
+Set a contentSetting outside the extension space.
+
+Parameters:
+
+settingsItem
+
+```
+ContentSettingItem
+```
+
+⚠ NO DESCRIPTION PROVIDED

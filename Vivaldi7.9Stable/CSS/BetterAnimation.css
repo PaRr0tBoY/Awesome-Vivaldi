@@ -1,0 +1,37 @@
+/* ==UserStyle==
+ * @name         Better Animation
+ * @description  Smooths Vivaldi auto-hide wrapper transitions.
+ * @version      2026.4.17
+ * @author       PaRr0tBoY
+ * @website      https://github.com/PaRr0tBoY/Awesome-Vivaldi
+ * ==/UserStyle==
+ */
+
+.auto-hide-wrapper.left.show {
+  transition: transform 300ms cubic-bezier(0.25, 0.8, 0.25, 1.08) !important;
+}
+
+.auto-hide-wrapper.right.show {
+  transition: transform 300ms cubic-bezier(0.25, 0.8, 0.25, 1.08) !important;
+}
+
+.auto-hide-wrapper.top.show {
+  transition: transform 300ms cubic-bezier(0.25, 0.8, 0.25, 1.02) !important;
+}
+
+.auto-hide-wrapper.bottom.show {
+  transition: transform 300ms cubic-bezier(0.25, 0.8, 0.25, 1.02) !important;
+}
+
+/* .auto-hide-wrapper.top{
+  transition: transform 300ms cubic-bezier(.4,0,.6,1) !important;
+}
+.auto-hide-wrapper.bottom{
+  transition: transform 300ms cubic-bezier(.4,0,.6,1) !important;
+}
+.auto-hide-wrapper.left{
+  transition: transform 300ms cubic-bezier(.4,0,.6,1) !important;
+}
+.auto-hide-wrapper.right {
+  transition: transform 300ms cubic-bezier(.4,0,.6,1) !important;
+} */

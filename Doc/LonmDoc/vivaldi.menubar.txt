@@ -1,0 +1,290 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubar.html#top)
+
+## vivaldi.menubar Modders API Reference
+
+Use the `vivaldi.menubar` API to set up and manage Mac main menu bar.
+
+## Navigation
+
+### Types
+
+-   [Mode](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubar.html#Mode)
+-   [Edge](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubar.html#Edge)
+-   [ItemType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubar.html#ItemType)
+-   [MenuItem](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubar.html#MenuItem)
+
+### Listeners
+
+-   [onActivated](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubar.html#onActivated)
+
+### Methods
+
+-   [getHasWindows](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubar.html#getHasWindows)
+-   [setup](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubar.html#setup)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubar.html#Mode)Mode
+
+`ENUM`
+
+What part menubar to manipulate
+
+-   all
+-   update
+-   tabs
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubar.html#Edge)Edge
+
+`ENUM`
+
+Defines position of menu items added in chrome code wrt container items.
+
+-   above
+-   below
+-   off
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubar.html#ItemType)ItemType
+
+`ENUM`
+
+What kind of item.
+
+-   command
+-   checkbox
+-   radio
+-   folder
+-   container
+-   separator
+
+One menu item.
+
+Properties:
+
+name
+
+```
+string
+```
+
+Text in item.
+
+action
+
+```
+string
+```
+
+Action to execute.
+
+id
+
+```
+integer
+```
+
+The unique id of item.
+
+items
+
+(optional)
+
+Child menu items.
+
+`Array` of:
+
+-   MenuItem
+
+visible
+
+(optional)
+
+```
+boolean
+```
+
+Whether this menu item is visible or not. Defaults to true.
+
+type
+
+(optional)
+
+```
+ItemType
+```
+
+'normal' or 'checkbox'. Defaults to 'normal'.
+
+checked
+
+(optional)
+
+```
+boolean
+```
+
+true if the checkbox is checked, otherwise false. Only applies for type='checkbox'.
+
+enabled
+
+(optional)
+
+```
+boolean
+```
+
+false if the item should appear as grayed out. Assumed true if not set.
+
+withNoWindow
+
+```
+boolean
+```
+
+true if the item should remain normal when no windows are open. If false the item will be grayed out.
+
+emphasized
+
+(optional)
+
+```
+boolean
+```
+
+true if the item should appear in an emphasized style (typically bold).
+
+shortcut
+
+(optional)
+
+```
+string
+```
+
+String which illustrates a shortcut. The presence of a string will not execute menu action.
+
+url
+
+(optional)
+
+```
+string
+```
+
+Url that can be used to determine a corresponding icon.
+
+parameter
+
+(optional)
+
+```
+string
+```
+
+Parameter to command. Sent back unaltered.
+
+index
+
+(optional)
+
+```
+integer
+```
+
+Index in menu list. Can only be used insert into an existing list.
+
+edge
+
+(optional)
+
+```
+Edge
+```
+
+Where to place extra menu items
+
+icon
+
+(optional)
+
+```
+string
+```
+
+Icon in PNG format encoded as base64.
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubar.html#onActivated)onActivated
+
+Fired when a main menu item is activated.
+
+Parameters:
+
+window
+
+```
+integer
+```
+
+id of window where command occurred.
+
+action
+
+```
+string
+```
+
+Action to execute.
+
+parameter
+
+```
+string
+```
+
+Free format parameter to 'command'. Can be empty.
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubar.html#getHasWindows)getHasWindows
+
+Returns true if there is one or more windows present in any profile.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/menubar.html#setup)setup
+
+Setup application's main menu.
+
+Parameters:
+
+items
+
+Menu items with string label.
+
+`Array` of:
+
+-   MenuItem

@@ -1,0 +1,229 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sitePermissions.html#top)
+
+## vivaldi.sitePermissions Modders API Reference
+
+API for handling per-site permissions in Chrome Extensions.
+
+## Navigation
+
+### Types
+
+-   [PermissionSetting](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sitePermissions.html#PermissionSetting)
+-   [Permission](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sitePermissions.html#Permission)
+-   [PermissionOptions](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sitePermissions.html#PermissionOptions)
+-   [PermissionChangeEvent](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sitePermissions.html#PermissionChangeEvent)
+
+### Listeners
+
+-   [onPermissionChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sitePermissions.html#onPermissionChanged)
+
+### Methods
+
+-   [getAvailablePermissions](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sitePermissions.html#getAvailablePermissions)
+-   [getOverriddenSites](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sitePermissions.html#getOverriddenSites)
+-   [getOverridesForSite](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sitePermissions.html#getOverridesForSite)
+-   [setSitePermission](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sitePermissions.html#setSitePermission)
+-   [resetSitePermissions](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sitePermissions.html#resetSitePermissions)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sitePermissions.html#PermissionSetting)PermissionSetting
+
+`ENUM`
+
+⚠ NO DESCRIPTION PROVIDED
+
+-   allow
+-   block
+-   ask
+-   sessionOnly
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sitePermissions.html#Permission)Permission
+
+⚠ NO DESCRIPTION PROVIDED
+
+Properties:
+
+origin
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+permission
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+setting
+
+```
+PermissionSetting
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sitePermissions.html#PermissionOptions)PermissionOptions
+
+⚠ NO DESCRIPTION PROVIDED
+
+Properties:
+
+permission
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+options
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   PermissionSetting
+
+default
+
+```
+PermissionSetting
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sitePermissions.html#PermissionChangeEvent)PermissionChangeEvent
+
+Fired when site permission changes.
+
+Properties:
+
+origin
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+permission
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sitePermissions.html#onPermissionChanged)onPermissionChanged
+
+Fired when a site permission changes.
+
+Parameters:
+
+event
+
+```
+PermissionChangeEvent
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sitePermissions.html#getAvailablePermissions)getAvailablePermissions
+
+Returns all available site permissions and their possible settings, including the default.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sitePermissions.html#getOverriddenSites)getOverriddenSites
+
+Returns a list of all sites with overridden permissions.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sitePermissions.html#getOverridesForSite)getOverridesForSite
+
+Returns a list of permission overrides for a specific site.
+
+Parameters:
+
+origin
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sitePermissions.html#setSitePermission)setSitePermission
+
+Sets the permission override for a given site.
+
+Parameters:
+
+origin
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+permission
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+setting
+
+```
+PermissionSetting
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/sitePermissions.html#resetSitePermissions)resetSitePermissions
+
+Resets all site permissions to default.
+
+Parameters:
+
+origin
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED

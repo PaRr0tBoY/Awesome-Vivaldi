@@ -1,0 +1,156 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/readingListPrivate.html#top)
+
+## vivaldi.readingListPrivate Modders API Reference
+
+Use the `vivaldi.readingListPrivate` API to manipulate the reading list.
+
+## Navigation
+
+### Types
+
+-   [ReadingListEntry](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/readingListPrivate.html#ReadingListEntry)
+
+### Listeners
+
+-   [onModelChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/readingListPrivate.html#onModelChanged)
+
+### Methods
+
+-   [add](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/readingListPrivate.html#add)
+-   [remove](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/readingListPrivate.html#remove)
+-   [getAll](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/readingListPrivate.html#getAll)
+-   [setReadStatus](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/readingListPrivate.html#setReadStatus)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/readingListPrivate.html#ReadingListEntry)ReadingListEntry
+
+Object passed to the update and returned in the get function.
+
+Properties:
+
+url
+
+```
+string
+```
+
+The url of the entry. This is also the unique key.
+
+title
+
+```
+string
+```
+
+The title of the entry.
+
+read
+
+```
+boolean
+```
+
+Has entry been read.
+
+lastUpdate
+
+```
+number
+```
+
+Last updated in micro seconds since Jan 1st 1970.
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/readingListPrivate.html#onModelChanged)onModelChanged
+
+Fired when the reading list data model has changed.
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/readingListPrivate.html#add)add
+
+Add a new entry to the reading list.
+
+Parameters:
+
+url
+
+```
+string
+```
+
+The url of the entry. This is also the unique key. Only http/https urls are supported.
+
+title
+
+```
+string
+```
+
+The title of the entry.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/readingListPrivate.html#remove)remove
+
+Remove an entry from the reading list.
+
+Parameters:
+
+url
+
+```
+string
+```
+
+The url of the entry.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/readingListPrivate.html#getAll)getAll
+
+Returns all reading list entries.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/readingListPrivate.html#setReadStatus)setReadStatus
+
+Sets the read status on a url.
+
+Parameters:
+
+url
+
+```
+string
+```
+
+url to set read status on.
+
+read
+
+```
+boolean
+```
+
+true for read, false for unread.

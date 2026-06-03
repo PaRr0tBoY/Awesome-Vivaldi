@@ -1,0 +1,62 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/dnsOverHttpsPrivate.html#top)
+
+## vivaldi.dnsOverHttpsPrivate Modders API Reference
+
+Function(s) to handle DNS over HTTPS data.
+
+## Navigation
+
+### Types
+
+-   [DohEntry](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/dnsOverHttpsPrivate.html#DohEntry)
+
+### Listeners
+
+## Navigation
+
+### Methods
+
+-   [dataFetcher](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/dnsOverHttpsPrivate.html#dataFetcher)
+-   [configTest](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/dnsOverHttpsPrivate.html#configTest)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/dnsOverHttpsPrivate.html#DohEntry)DohEntry
+
+⚠ NO DESCRIPTION PROVIDED
+
+Properties:
+
+name
+
+```
+string
+```
+
+value
+
+```
+string
+```
+
+policy
+
+```
+string
+```
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/dnsOverHttpsPrivate.html#dataFetcher)dataFetcher
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/dnsOverHttpsPrivate.html#configTest)configTest
+
+Parameters:
+
+config
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED

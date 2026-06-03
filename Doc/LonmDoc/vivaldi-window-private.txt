@@ -1,0 +1,670 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#top)
+
+## vivaldi.windowPrivate Modders API Reference
+
+Use the `vivaldi.windowPrivate` API for vivaldi windows.
+
+## Navigation
+
+### Types
+
+-   [WindowState](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#WindowState)
+-   [CreateWindowOptions](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#CreateWindowOptions)
+-   [WindowType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#WindowType)
+-   [FocusedElementInfo](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#FocusedElementInfo)
+-   [ControlButtonsPosition](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#ControlButtonsPosition)
+-   [ToastParameters](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#ToastParameters)
+
+### Listeners
+
+-   [onWindowDidChangeScreens](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#onWindowDidChangeScreens)
+-   [onStateChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#onStateChanged)
+-   [onPositionChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#onPositionChanged)
+-   [onActivated](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#onActivated)
+-   [onBeforeUnloadDialogOpened](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#onBeforeUnloadDialogOpened)
+-   [onWindowClosed](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#onWindowClosed)
+-   [onPageInfoPopupChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#onPageInfoPopupChanged)
+-   [onActiveTabStatusText](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#onActiveTabStatusText)
+-   [onWebContentsHasWindow](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#onWebContentsHasWindow)
+-   [onToastMessage](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#onToastMessage)
+
+### Methods
+
+-   [create](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#create)
+-   [getCurrentId](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#getCurrentId)
+-   [setState](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#setState)
+-   [updateMaximizeButtonPosition](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#updateMaximizeButtonPosition)
+-   [getFocusedElementInfo](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#getFocusedElementInfo)
+-   [isOnScreenWithNotch](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#isOnScreenWithNotch)
+-   [setControlButtonsPosition](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#setControlButtonsPosition)
+-   [performHapticFeedback](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#performHapticFeedback)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#WindowState)WindowState
+
+`ENUM`
+
+The state of this browser window.
+
+-   normal: Normal window state (i.e. not minimized, maximized, or fullscreen).
+-   minimized: Minimized window state.
+-   maximized: Maximized window state.
+-   fullscreen: Fullscreen window state.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#CreateWindowOptions)CreateWindowOptions
+
+Object passed to the |create| function.
+
+Properties:
+
+bounds
+
+(optional)
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+left
+
+(optional)
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+top
+
+(optional)
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+width
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+height
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+minWidth
+
+(optional)
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+minHeight
+
+(optional)
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+windowDecoration
+
+(optional)
+
+```
+boolean
+```
+
+Enable window decoration. Defaults to false.
+
+incognito
+
+(optional)
+
+```
+boolean
+```
+
+Incogito window. Default is false.
+
+focused
+
+(optional)
+
+```
+boolean
+```
+
+If true, opens a active window. Default is true.
+
+state
+
+(optional)
+
+```
+WindowState
+```
+
+The state to set the window to. Default is normal window state (i.e. not minimized, maximized, or fullscreen).
+
+tabUrl
+
+(optional)
+
+```
+string
+```
+
+The url to be added as a new tab, this will be added to the tab model. Not used for settings, popups, etc.
+
+vivExtData
+
+(optional)
+
+```
+string
+```
+
+Extra data to attach to the window.
+
+windowKey
+
+(optional)
+
+```
+string
+```
+
+Id to identify the window. If a window with a given id is created while another window with the same id already exists, the currently opened window will be focused instead of creating a new window.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#WindowType)WindowType
+
+`ENUM`
+
+The type of this browser window.
+
+-   normal: This is a normal browser window.
+-   settings: This is a settings window.
+-   popup: This is a popup window.
+-   devtools: This is a devtools window.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#FocusedElementInfo)FocusedElementInfo
+
+Information about the HTML element having focus.
+
+Properties:
+
+tagName
+
+```
+string
+```
+
+Element tag name
+
+type
+
+```
+string
+```
+
+Element type
+
+editable
+
+```
+boolean
+```
+
+True if element is editable.
+
+role
+
+```
+string
+```
+
+Element role
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#ControlButtonsPosition)ControlButtonsPosition
+
+`ENUM`
+
+The control buttons position. (used only on macOS for 'traffic lights')
+
+-   hidden: ⚠ NO DESCRIPTION PROVIDED
+-   native: ⚠ NO DESCRIPTION PROVIDED
+-   lightPadding: ⚠ NO DESCRIPTION PROVIDED
+-   mediumPadding: ⚠ NO DESCRIPTION PROVIDED
+-   heavyPadding: ⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#ToastParameters)ToastParameters
+
+Parameters used to create a toast notification, typically showed as an overlay above the browser window.
+
+Properties:
+
+body
+
+```
+string
+```
+
+Message to present.
+
+action
+
+(optional)
+
+```
+string
+```
+
+If an action button is needed, this is the buttone text.
+
+image
+
+```
+string
+```
+
+Image to show as base64 encoded.
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#onWindowDidChangeScreens)onWindowDidChangeScreens
+
+Fired when the window has changed screens include a parameter that says whether the new screen has a notch.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+hasNotch
+
+```
+boolean
+```
+
+Screen has a notch (true) or without notch (false).
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#onStateChanged)onStateChanged
+
+Fired when the window state changes (minimize/maximize/fullscreen).
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+state
+
+```
+WindowState
+```
+
+The new state set to the window.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#onPositionChanged)onPositionChanged
+
+Fired when the window changes position.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#onActivated)onActivated
+
+Fired when the window changes activation.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+activated
+
+```
+boolean
+```
+
+Changed activation state.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#onBeforeUnloadDialogOpened)onBeforeUnloadDialogOpened
+
+Fired when a beforeunload dialog is shown for a tab.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+tabId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#onWindowClosed)onWindowClosed
+
+Fired when a window is closed, even for guest windows.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Fired when a page information popup visibility changes.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+visible
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#onActiveTabStatusText)onActiveTabStatusText
+
+Fired when the active tab has new loadstate text. Will reset to string
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+statusText
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#onWebContentsHasWindow)onWebContentsHasWindow
+
+Fired when the webcontents has a window object. chrome.windows.getviews find this now.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#onToastMessage)onToastMessage
+
+Fire .
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+params
+
+```
+ToastParameters
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#create)create
+
+Create a window with additional Vivaldi specific properties.
+
+Parameters:
+
+url
+
+```
+string
+```
+
+Url to page to show as the full window UI of the new window.
+
+options
+
+```
+CreateWindowOptions
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+type
+
+(optional)
+
+```
+WindowType
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#getCurrentId)getCurrentId
+
+Returns the window id of the window we are currently running inside.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#setState)setState
+
+Sets the window state.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+The window id of the window to change the state for.
+
+state
+
+```
+WindowState
+```
+
+The state to set the window to.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#updateMaximizeButtonPosition)updateMaximizeButtonPosition
+
+Notify C++ about the position of the maximize button to show extra native GUI like the split window menu in Windows 11.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+The window id of the window to update the coordinates of the maximize button.
+
+left
+
+```
+number
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+top
+
+```
+number
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+width
+
+```
+number
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+height
+
+```
+number
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#getFocusedElementInfo)getFocusedElementInfo
+
+Get information about currently focused element in Vivaldi window or any of its webviews.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#isOnScreenWithNotch)isOnScreenWithNotch
+
+Returns true if the screen the window is on has a notch.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#setControlButtonsPosition)setControlButtonsPosition
+
+Request a new control buttons position.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+position
+
+```
+ControlButtonsPosition
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/windowPrivate.html#performHapticFeedback)performHapticFeedback
+
+Performs a haptic feedback.

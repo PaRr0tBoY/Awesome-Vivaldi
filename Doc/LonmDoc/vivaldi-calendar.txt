@@ -1,0 +1,2936 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#top)
+
+## vivaldi.calendar Modders API Reference
+
+Use the `vivaldi.calendar` API to manipulate calendar events.
+
+## Navigation
+
+### Types
+
+-   [AccountType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#AccountType)
+-   [RecurrenceException](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#RecurrenceException)
+-   [CreateNotificationRow](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#CreateNotificationRow)
+-   [CreateInviteRow](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#CreateInviteRow)
+-   [SupportedCalendarComponents](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#SupportedCalendarComponents)
+-   [Notification](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#Notification)
+-   [Invite](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#Invite)
+-   [CalendarEvent](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#CalendarEvent)
+-   [CreateDetails](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#CreateDetails)
+-   [EventType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#EventType)
+-   [CreateEventType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#CreateEventType)
+-   [CreateEventsResults](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#CreateEventsResults)
+-   [CreateCalendarDetails](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#CreateCalendarDetails)
+-   [Calendar](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#Calendar)
+-   [updateCalendar](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#updateCalendar)
+-   [updatedAccount](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#updatedAccount)
+-   [createdAccount](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#createdAccount)
+-   [Account](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#Account)
+-   [EventTemplate](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#EventTemplate)
+
+### Listeners
+
+-   [onIcsFileOpened](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#onIcsFileOpened)
+-   [onWebcalUrlOpened](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#onWebcalUrlOpened)
+-   [onMailtoOpened](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#onMailtoOpened)
+-   [onEventCreated](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#onEventCreated)
+-   [onNotificationChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#onNotificationChanged)
+-   [onCalendarDataChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#onCalendarDataChanged)
+
+### Methods
+
+-   [getAllEvents](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#getAllEvents)
+-   [getAllEventTypes](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#getAllEventTypes)
+-   [getAllNotifications](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#getAllNotifications)
+-   [eventCreate](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#eventCreate)
+-   [eventsCreate](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#eventsCreate)
+-   [deleteEvent](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#deleteEvent)
+-   [deleteEventException](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#deleteEventException)
+-   [updateRecurrenceException](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#updateRecurrenceException)
+-   [updateEvent](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#updateEvent)
+-   [create](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#create)
+-   [getAll](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#getAll)
+-   [delete](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#delete)
+-   [update](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#update)
+-   [eventTypeCreate](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#eventTypeCreate)
+-   [eventTypeUpdate](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#eventTypeUpdate)
+-   [deleteEventType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#deleteEventType)
+-   [createEventException](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#createEventException)
+-   [createNotification](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#createNotification)
+-   [updateNotification](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#updateNotification)
+-   [deleteNotification](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#deleteNotification)
+-   [createInvite](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#createInvite)
+-   [deleteInvite](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#deleteInvite)
+-   [updateInvite](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#updateInvite)
+-   [getAllAccounts](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#getAllAccounts)
+-   [createAccount](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#createAccount)
+-   [updateAccount](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#updateAccount)
+-   [deleteAccount](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#deleteAccount)
+-   [createEventTemplate](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#createEventTemplate)
+-   [getAllEventTemplates](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#getAllEventTemplates)
+-   [updateEventTemplate](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#updateEventTemplate)
+-   [getParentExceptionId](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#getParentExceptionId)
+-   [deleteEventTemplate](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#deleteEventTemplate)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#AccountType)AccountType
+
+`ENUM`
+
+The account type. Maps to int in db: 0: Local. 1: Vivaldi.net calendar. 2: Google Calendar. 3: CalDAV. 4: Read only iCal.
+
+-   local
+-   vivaldi
+-   google
+-   caldav
+-   ical
+-   fastmail
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#RecurrenceException)RecurrenceException
+
+A object describing how an instance of event recurrence is changed.
+
+Properties:
+
+exception\_id
+
+(optional)
+
+```
+string
+```
+
+The id of the exception.
+
+cancelled
+
+(optional)
+
+```
+boolean
+```
+
+If a certain instance of recurring event is cancelled.
+
+date
+
+```
+number
+```
+
+The date of a recurring event that an exception should be added to. In milliseconds since the epoch.
+
+exception\_event\_id
+
+(optional)
+
+```
+string
+```
+
+The id of the event that serves as exception to the event in a recurrence series.
+
+parent\_event\_id
+
+(optional)
+
+```
+string
+```
+
+The id of the event that is parent to all the others events in the recurrence series.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#CreateNotificationRow)CreateNotificationRow
+
+An object describing notification to be created during event creation.
+
+Properties:
+
+name
+
+```
+string
+```
+
+Name of the notification.
+
+when
+
+```
+number
+```
+
+When this notification should fire. In milliseconds since the epoch.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#CreateInviteRow)CreateInviteRow
+
+An object describing invite to be created during event creation.
+
+Properties:
+
+name
+
+```
+string
+```
+
+Name of the invite.
+
+address
+
+```
+string
+```
+
+The invite address.
+
+partstat
+
+```
+string
+```
+
+The participation status for the event invite.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#SupportedCalendarComponents)SupportedCalendarComponents
+
+An object describing supported calendar component set.
+
+Properties:
+
+vevent
+
+```
+boolean
+```
+
+Does the calendar support vevent.
+
+vtodo
+
+```
+boolean
+```
+
+Does the calendar support vtodo.
+
+vjournal
+
+```
+boolean
+```
+
+Does the calendar support vjournal.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#Notification)Notification
+
+An object describing notification.
+
+Properties:
+
+id
+
+```
+string
+```
+
+The unique identifier for the notification. IDs are unique within the current profile, and they remain valid even after the browser is restarted.
+
+event\_id
+
+(optional)
+
+```
+string
+```
+
+The event id this notification applies to.
+
+name
+
+```
+string
+```
+
+Name of the notification.
+
+description
+
+(optional)
+
+```
+string
+```
+
+The description of the notification.
+
+when
+
+```
+number
+```
+
+When this notification should fire. In milliseconds since the epoch.
+
+period
+
+(optional)
+
+```
+number
+```
+
+If not null, when the notification will fire. In milliseconds since the epoch.
+
+delay
+
+(optional)
+
+```
+integer
+```
+
+The notification will fire after delay minutes from now. Can not be used together with when.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#Invite)Invite
+
+Object describing event invite.
+
+Properties:
+
+id
+
+```
+string
+```
+
+The id of the invite.
+
+event\_id
+
+```
+string
+```
+
+The id of the event that this invite applies to.
+
+name
+
+(optional)
+
+```
+string
+```
+
+The name of the contact to send the invite to.
+
+address
+
+```
+string
+```
+
+The address of the contact to send the invite to.
+
+sent
+
+(optional)
+
+```
+boolean
+```
+
+States if the event invite has been sent or not.
+
+partstat
+
+(optional)
+
+```
+string
+```
+
+The participation status for the event invite.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#CalendarEvent)CalendarEvent
+
+A calendar event. An event belongs to a single Calendar.
+
+Properties:
+
+id
+
+```
+string
+```
+
+The unique identifier for the event. IDs are unique within the current profile, and they remain valid even after the browser is restarted.
+
+calendarId
+
+```
+string
+```
+
+The calendar id of the event.
+
+alarmId
+
+(optional)
+
+```
+string
+```
+
+The alarm id of the event.
+
+title
+
+```
+string
+```
+
+Title of event.
+
+description
+
+(optional)
+
+```
+string
+```
+
+The event description.
+
+start
+
+(optional)
+
+```
+number
+```
+
+When this event starts, in milliseconds since the epoch.
+
+end
+
+(optional)
+
+```
+number
+```
+
+When this event ends, in milliseconds since the epoch.
+
+allDay
+
+(optional)
+
+```
+boolean
+```
+
+All day event.
+
+is\_recurring
+
+(optional)
+
+```
+boolean
+```
+
+Is this a recurring event.
+
+location
+
+(optional)
+
+```
+string
+```
+
+The location of the event.
+
+url
+
+(optional)
+
+```
+string
+```
+
+The url of the event.
+
+etag
+
+(optional)
+
+```
+string
+```
+
+The CalDAV etag id of the event.
+
+href
+
+(optional)
+
+```
+string
+```
+
+The CalDAV href id of the event.
+
+uid
+
+(optional)
+
+```
+string
+```
+
+The event uid.
+
+eventTypeId
+
+(optional)
+
+```
+string
+```
+
+The event type id.
+
+task
+
+(optional)
+
+```
+boolean
+```
+
+Whether this event is a task. Tasks can be marked as completed.
+
+complete
+
+(optional)
+
+```
+boolean
+```
+
+If this event is a task type you can mark it as complete.
+
+trash
+
+(optional)
+
+```
+boolean
+```
+
+Is this event trashed.
+
+trash\_time
+
+(optional)
+
+```
+number
+```
+
+When this event was trashed, in milliseconds since the epoch.
+
+sequence
+
+(optional)
+
+```
+integer
+```
+
+iCal sequence field according to: https://tools.ietf.org/html/rfc5545#section-3.8.7.4.
+
+ical
+
+(optional)
+
+```
+string
+```
+
+The original ical message.
+
+rrule
+
+(optional)
+
+```
+string
+```
+
+The recurring rule. In iCalendar format.
+
+recurrenceExceptions
+
+(optional)
+
+List of recurrence exceptions. Either cancelled instances or moved.
+
+`Array` of:
+
+-   RecurrenceException
+
+notifications
+
+(optional)
+
+List of notifications.
+
+`Array` of:
+
+-   Notification
+
+organizer
+
+(optional)
+
+```
+string
+```
+
+The organizer of the event.
+
+invites
+
+(optional)
+
+List of invites.
+
+`Array` of:
+
+-   Invite
+
+timezone
+
+(optional)
+
+```
+string
+```
+
+The timezone of the event.
+
+priority
+
+(optional)
+
+```
+integer
+```
+
+Priority of event or task. Must be in the range \[0..9\]. 0 is equivalent of no priority.
+
+status
+
+(optional)
+
+```
+string
+```
+
+The overall status or confirmation for the event or todo.
+
+percentage\_complete
+
+(optional)
+
+```
+integer
+```
+
+The percent completion of a todo to the organizer.
+
+categories
+
+(optional)
+
+```
+string
+```
+
+Event or todo categories. A comma separated list.
+
+component\_class
+
+(optional)
+
+```
+string
+```
+
+Access classification for a event or todo.
+
+attachment
+
+(optional)
+
+```
+string
+```
+
+Document object for a event or todo.
+
+completed
+
+(optional)
+
+```
+number
+```
+
+The date and time that a todo was actually completed.
+
+syncPending
+
+(optional)
+
+```
+boolean
+```
+
+Does this event have any pending sync changes.
+
+deletePending
+
+(optional)
+
+```
+boolean
+```
+
+Should the event be deleted locally once server deletion is completed.
+
+end\_recurring
+
+(optional)
+
+```
+number
+```
+
+When this event ends re-occurring. In milliseconds since the epoch.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#CreateDetails)CreateDetails
+
+Object passed to the create() function.
+
+Properties:
+
+title
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+description
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+start
+
+(optional)
+
+```
+number
+```
+
+When this event shoud starts, in milliseconds since the epoch.
+
+end
+
+(optional)
+
+```
+number
+```
+
+When this event should ends, in milliseconds since the epoch.
+
+allDay
+
+(optional)
+
+```
+boolean
+```
+
+Is this a all day event.
+
+is\_recurring
+
+(optional)
+
+```
+boolean
+```
+
+Is this a recurring event.
+
+location
+
+(optional)
+
+```
+string
+```
+
+The location of the event.
+
+url
+
+(optional)
+
+```
+string
+```
+
+The url of the event.
+
+calendarId
+
+```
+string
+```
+
+The calendar id of the event.
+
+etag
+
+(optional)
+
+```
+string
+```
+
+The CalDAV etag id of the event.
+
+href
+
+(optional)
+
+```
+string
+```
+
+The CalDAV href id of the event.
+
+uid
+
+(optional)
+
+```
+string
+```
+
+The event uid.
+
+task
+
+(optional)
+
+```
+boolean
+```
+
+Whether this event is a task. Tasks can be marked as completed.
+
+complete
+
+(optional)
+
+```
+boolean
+```
+
+If this event is a task type you can mark it as complete.
+
+sequence
+
+(optional)
+
+```
+integer
+```
+
+iCal sequence field according to: https://tools.ietf.org/html/rfc5545#section-3.8.7.4.
+
+ical
+
+(optional)
+
+```
+string
+```
+
+The original ical message.
+
+rrule
+
+(optional)
+
+```
+string
+```
+
+The recurring rule. In iCalendar format.
+
+eventTypeId
+
+(optional)
+
+```
+string
+```
+
+The event type id of the event.
+
+organizer
+
+(optional)
+
+```
+string
+```
+
+The organizer of the event.
+
+recurrenceExceptions
+
+(optional)
+
+List of recurrence exceptions.
+
+`Array` of:
+
+-   RecurrenceException
+
+notifications
+
+(optional)
+
+List of notifications to create.
+
+`Array` of:
+
+-   CreateNotificationRow
+
+invites
+
+(optional)
+
+List of invites to create.
+
+`Array` of:
+
+-   CreateInviteRow
+
+timezone
+
+(optional)
+
+```
+string
+```
+
+The timezone of the event to create.
+
+is\_template
+
+```
+boolean
+```
+
+Is the event a template or not.
+
+priority
+
+(optional)
+
+```
+integer
+```
+
+Priority of event or task. Must be in the range \[0..9\]. 0 is equivalent of no priority.
+
+status
+
+(optional)
+
+```
+string
+```
+
+The overall status or confirmation for the event or todo.
+
+percentage\_complete
+
+(optional)
+
+```
+integer
+```
+
+The percent completion of a todo to the organizer.
+
+categories
+
+(optional)
+
+```
+string
+```
+
+Event or todo categories. A comma separated list.
+
+component\_class
+
+(optional)
+
+```
+string
+```
+
+Access classification for a event or todo.
+
+attachment
+
+(optional)
+
+```
+string
+```
+
+Document object for a event or todo.
+
+completed
+
+(optional)
+
+```
+number
+```
+
+The date and time that a todo was actually completed.
+
+syncPending
+
+(optional)
+
+```
+boolean
+```
+
+Does this event have any pending sync changes.
+
+deletePending
+
+(optional)
+
+```
+boolean
+```
+
+Should the event be deleted locally once server deletion is completed.
+
+end\_recurring
+
+(optional)
+
+```
+number
+```
+
+When this event ends re-occurring. In milliseconds since the epoch.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#EventType)EventType
+
+A event type.
+
+Properties:
+
+id
+
+```
+string
+```
+
+The unique identifier for the event type. IDs are unique within the current profile, and they remain valid even after the browser is restarted.
+
+name
+
+```
+string
+```
+
+The event type name.
+
+color
+
+(optional)
+
+```
+string
+```
+
+The color of the event type.
+
+iconindex
+
+(optional)
+
+```
+integer
+```
+
+The event type icon index.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#CreateEventType)CreateEventType
+
+Object passed to the typeCreate() function.
+
+Properties:
+
+name
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+color
+
+(optional)
+
+```
+string
+```
+
+The color of the event type.
+
+iconindex
+
+(optional)
+
+```
+integer
+```
+
+The event type iconindex.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#CreateEventsResults)CreateEventsResults
+
+Object stating how many events were created successfully and how many creations resulted in errors.
+
+Properties:
+
+created\_count
+
+```
+integer
+```
+
+Number of events created.
+
+failed\_count
+
+```
+integer
+```
+
+Number of failed event creation attempts.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#CreateCalendarDetails)CreateCalendarDetails
+
+Object passed to the createCalendar() function.
+
+Properties:
+
+accountId
+
+```
+string
+```
+
+The id of the account the calendar belongs to.
+
+name
+
+```
+string
+```
+
+The name of the calendar to be created.
+
+description
+
+(optional)
+
+```
+string
+```
+
+The description of the calendar to be created.
+
+orderindex
+
+(optional)
+
+```
+integer
+```
+
+The UI order of the calendar.
+
+iconindex
+
+(optional)
+
+```
+integer
+```
+
+The iconindex of the calendar.
+
+color
+
+(optional)
+
+```
+string
+```
+
+The color of the calendar.
+
+hidden
+
+(optional)
+
+```
+boolean
+```
+
+If this calendar should be visible.
+
+active
+
+(optional)
+
+```
+boolean
+```
+
+If this CalDAV calendar should be polled.
+
+lastChecked
+
+(optional)
+
+```
+number
+```
+
+When this calendar last checked for updates. In milliseconds since the epoch.
+
+timezone
+
+(optional)
+
+```
+string
+```
+
+The timezone of the calendar.
+
+ctag
+
+(optional)
+
+```
+string
+```
+
+The ctag field of the CalDAV calendar.
+
+supportedCalendarComponent
+
+```
+SupportedCalendarComponents
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#Calendar)Calendar
+
+Calendar that owns events.
+
+Properties:
+
+id
+
+```
+string
+```
+
+The unique identifier for the calendar. IDs are unique within the current profile, and they remain valid even after the browser is restarted.
+
+accountId
+
+```
+string
+```
+
+The id of the account the calendar belongs to.
+
+name
+
+```
+string
+```
+
+The name of the calendar.
+
+description
+
+(optional)
+
+```
+string
+```
+
+The calendar description.
+
+orderindex
+
+(optional)
+
+```
+integer
+```
+
+The UI order of the calendar.
+
+color
+
+(optional)
+
+```
+string
+```
+
+The UI color of the calendar.
+
+hidden
+
+(optional)
+
+```
+boolean
+```
+
+States if the calendar is hidden in the UI.
+
+active
+
+(optional)
+
+```
+boolean
+```
+
+States if a CalDAV calendar should be polled.
+
+iconindex
+
+(optional)
+
+```
+integer
+```
+
+Icon index of the calendar.
+
+ctag
+
+(optional)
+
+```
+string
+```
+
+The ctag field of the CalDAV calendar.
+
+lastChecked
+
+(optional)
+
+```
+number
+```
+
+When this calendar last checked for updates. In milliseconds since the epoch.
+
+timezone
+
+(optional)
+
+```
+string
+```
+
+The timezone of the calendar.
+
+supportedCalendarComponent
+
+```
+SupportedCalendarComponents
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#updateCalendar)updateCalendar
+
+Object to update calendar.
+
+Properties:
+
+accountId
+
+(optional)
+
+```
+string
+```
+
+The id of the account the calendar belongs to.
+
+name
+
+(optional)
+
+```
+string
+```
+
+The name of the calendar.
+
+description
+
+(optional)
+
+```
+string
+```
+
+The calendar description.
+
+orderindex
+
+(optional)
+
+```
+integer
+```
+
+The UI order of the calendar.
+
+color
+
+(optional)
+
+```
+string
+```
+
+The UI color of the calendar.
+
+hidden
+
+(optional)
+
+```
+boolean
+```
+
+States if the calendar is hidden in the UI.
+
+active
+
+(optional)
+
+```
+boolean
+```
+
+States if a CalDAV calendar should be polled.
+
+iconindex
+
+(optional)
+
+```
+integer
+```
+
+Icon index of the calendar.
+
+ctag
+
+(optional)
+
+```
+string
+```
+
+The ctag field of the CalDAV calendar.
+
+lastChecked
+
+(optional)
+
+```
+number
+```
+
+When this calendar last checked for updates. In milliseconds since the epoch.
+
+timezone
+
+(optional)
+
+```
+string
+```
+
+The timezone of the calendar.
+
+supportedCalendarComponent
+
+(optional)
+
+```
+SupportedCalendarComponents
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#updatedAccount)updatedAccount
+
+Object to update calendar.
+
+Properties:
+
+name
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+username
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+url
+
+(optional)
+
+```
+string
+```
+
+The updated url of the account.
+
+account\_type
+
+(optional)
+
+```
+AccountType
+```
+
+The type of account.
+
+interval
+
+(optional)
+
+```
+integer
+```
+
+The interval how often this account should poll. In seconds.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#createdAccount)createdAccount
+
+Object to create calendar.
+
+Properties:
+
+name
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+username
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+url
+
+```
+string
+```
+
+The url of the account to create.
+
+account\_type
+
+(optional)
+
+```
+AccountType
+```
+
+The type of account.
+
+interval
+
+(optional)
+
+```
+integer
+```
+
+The interval how often this account should poll. In seconds.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#Account)Account
+
+An object describing calendar account.
+
+Properties:
+
+id
+
+```
+string
+```
+
+The unique identifier for the account. IDs are unique within the current profile, and they remain valid even after the browser is restarted.
+
+name
+
+```
+string
+```
+
+Name of the account.
+
+username
+
+```
+string
+```
+
+The username of the account.
+
+url
+
+```
+string
+```
+
+The base url of the account.
+
+account\_type
+
+(optional)
+
+```
+AccountType
+```
+
+The type of account.
+
+interval
+
+(optional)
+
+```
+integer
+```
+
+The interval how often this account should poll. In seconds.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#EventTemplate)EventTemplate
+
+A event template object.
+
+Properties:
+
+id
+
+```
+string
+```
+
+The unique identifier for the event template.
+
+name
+
+```
+string
+```
+
+The name of the event template.
+
+ical
+
+```
+string
+```
+
+The ical of the event template.
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#onIcsFileOpened)onIcsFileOpened
+
+Called when the user opens a downloaded ics file
+
+Parameters:
+
+filePath
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#onWebcalUrlOpened)onWebcalUrlOpened
+
+Called when the user opens a webcal link
+
+Parameters:
+
+url
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#onMailtoOpened)onMailtoOpened
+
+Called when the user opens a mailto link
+
+Parameters:
+
+mailto
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#onEventCreated)onEventCreated
+
+Fired when a event is created.
+
+Parameters:
+
+createdEvent
+
+```
+CalendarEvent
+```
+
+The created event.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#onNotificationChanged)onNotificationChanged
+
+Fired when notification is created, updated or deleted.
+
+Parameters:
+
+changedNotification
+
+```
+Notification
+```
+
+The created, changed or updated notification.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#onCalendarDataChanged)onCalendarDataChanged
+
+Fired when the calendar datamodel should be reloaded.
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#getAllEvents)getAllEvents
+
+Retrieves all events in calendar.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#getAllEventTypes)getAllEventTypes
+
+Retrieves all event types.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#getAllNotifications)getAllNotifications
+
+Retrieves all notifications.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#eventCreate)eventCreate
+
+Creates a event in the specified calendar.
+
+Parameters:
+
+event
+
+```
+CreateDetails
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#eventsCreate)eventsCreate
+
+Creates multiple events.
+
+Parameters:
+
+eventsList
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   CreateDetailsMinimum items: 1
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#deleteEvent)deleteEvent
+
+Deletes an event.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#deleteEventException)deleteEventException
+
+Deletes an recurring event exception.
+
+Parameters:
+
+exception\_id
+
+```
+string
+```
+
+The id of the exception to delete.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#updateRecurrenceException)updateRecurrenceException
+
+Updates the recurrence exception of an event. Specify only the properties that you want to change. Unspecified properties will be left unchanged.
+
+Parameters:
+
+recurrenceId
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+changes
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+cancelled
+
+(optional)
+
+```
+boolean
+```
+
+If a certain instance of recurring event is cancelled.
+
+date
+
+(optional)
+
+```
+number
+```
+
+The date of a recurring event that an exception should be added to. In milliseconds since the epoch.
+
+exception\_event\_id
+
+(optional)
+
+```
+string
+```
+
+The id of the event that serves as exception to the event in a recurrence series.
+
+parent\_event\_id
+
+(optional)
+
+```
+string
+```
+
+The id of the event that is parent to all the others events in the recurrence series.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#updateEvent)updateEvent
+
+Updates the properties of an event. Specify only the properties that you want to change. Unspecified properties will be left unchanged.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+changes
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+calendarId
+
+(optional)
+
+```
+string
+```
+
+The updated calendar id of event.
+
+alarmId
+
+(optional)
+
+```
+string
+```
+
+The updated alarm id of event.
+
+title
+
+(optional)
+
+```
+string
+```
+
+The updated title of event.
+
+description
+
+(optional)
+
+```
+string
+```
+
+The updated description of event.
+
+start
+
+(optional)
+
+```
+number
+```
+
+When this event shoud starts, in milliseconds since the epoch.
+
+end
+
+(optional)
+
+```
+number
+```
+
+Updated time when this event should end, in milliseconds since the epoch.
+
+allDay
+
+(optional)
+
+```
+boolean
+```
+
+Is this all day event.
+
+location
+
+(optional)
+
+```
+string
+```
+
+The location of the event.
+
+is\_recurring
+
+(optional)
+
+```
+boolean
+```
+
+Is this a recurring event.
+
+url
+
+(optional)
+
+```
+string
+```
+
+The url of the event.
+
+etag
+
+(optional)
+
+```
+string
+```
+
+The CalDAV.etag of the event.
+
+href
+
+(optional)
+
+```
+string
+```
+
+The href id of the event.
+
+uid
+
+(optional)
+
+```
+string
+```
+
+The event uid.
+
+eventTypeId
+
+(optional)
+
+```
+string
+```
+
+The event type id.
+
+task
+
+(optional)
+
+```
+boolean
+```
+
+Whether this event is a task. Tasks can be marked as completed.
+
+complete
+
+(optional)
+
+```
+boolean
+```
+
+If this event is a task type you can mark it as complete.
+
+trash
+
+(optional)
+
+```
+boolean
+```
+
+Is this event trashed.
+
+sequence
+
+(optional)
+
+```
+integer
+```
+
+iCal sequence field according to: https://tools.ietf.org/html/rfc5545#section-3.8.7.4.
+
+ical
+
+(optional)
+
+```
+string
+```
+
+The original ical message.
+
+rrule
+
+(optional)
+
+```
+string
+```
+
+The recurring rule. In iCalendar format.
+
+organizer
+
+(optional)
+
+```
+string
+```
+
+The organizer of the event.
+
+timezone
+
+(optional)
+
+```
+string
+```
+
+The timezone of the event.
+
+priority
+
+(optional)
+
+```
+integer
+```
+
+Priority of event or task. Must be in the range \[0..9\]. 0 is equivalent of no priority.
+
+status
+
+(optional)
+
+```
+string
+```
+
+The overall status or confirmation for the event or todo.
+
+percentage\_complete
+
+(optional)
+
+```
+integer
+```
+
+The percent completion of a todo to the Organizer.
+
+categories
+
+(optional)
+
+```
+string
+```
+
+Event or todo categories. A comma separated list.
+
+component\_class
+
+(optional)
+
+```
+string
+```
+
+Access classification for a event or todo.
+
+attachment
+
+(optional)
+
+```
+string
+```
+
+Access classification for a event or todo.
+
+completed
+
+(optional)
+
+```
+number
+```
+
+The date and time that a todo was actually completed.
+
+syncPending
+
+(optional)
+
+```
+boolean
+```
+
+Does this event have any pending sync changes.
+
+deletePending
+
+(optional)
+
+```
+boolean
+```
+
+Should the event be deleted locally once server deletion is completed.
+
+end\_recurring
+
+(optional)
+
+```
+number
+```
+
+When this event ends re-occurring. In milliseconds since the epoch.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#create)create
+
+Creates a calendar.
+
+Parameters:
+
+calendar
+
+```
+CreateCalendarDetails
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#getAll)getAll
+
+Returns all calendars.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#delete)delete
+
+Deletes a calendar, with all its events and event exceptions.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+The id of the calendar to be deleted.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#update)update
+
+Updates the properties of an calendar. Specify only the properties that you want to change. Unspecified properties will be left unchanged.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+changes
+
+```
+updateCalendar
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#eventTypeCreate)eventTypeCreate
+
+Creates a event type.
+
+Parameters:
+
+event\_type
+
+```
+CreateEventType
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#eventTypeUpdate)eventTypeUpdate
+
+Updates the properties of an event type. Specify only the properties that you want to change. Unspecified properties will be left unchanged.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+changes
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+name
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+color
+
+(optional)
+
+```
+string
+```
+
+The updated color of the event type.
+
+iconindex
+
+(optional)
+
+```
+integer
+```
+
+The iconindex of the event type.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#deleteEventType)deleteEventType
+
+Deletes an event type.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#createEventException)createEventException
+
+Creates an exception to event instance in recurring series.
+
+Parameters:
+
+parent\_event\_id
+
+```
+string
+```
+
+The parent id of the event in the recurrence series.
+
+exception\_event\_id
+
+(optional)
+
+```
+string
+```
+
+The id of the event that serves as exception to the event in a recurrence series.
+
+cancelled
+
+```
+boolean
+```
+
+Cancel this instance of recurring event.
+
+date
+
+(optional)
+
+```
+number
+```
+
+When the exception should happen. In milliseconds since the epoch.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#createNotification)createNotification
+
+Creates a notification.
+
+Parameters:
+
+createNotification
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+event\_id
+
+(optional)
+
+```
+string
+```
+
+The event id of the event to create the notification for.
+
+name
+
+```
+string
+```
+
+The name of the notification.
+
+description
+
+(optional)
+
+```
+string
+```
+
+The description of the notification.
+
+when
+
+```
+number
+```
+
+When the notification should fire. In milliseconds since the epoch.
+
+period
+
+(optional)
+
+```
+number
+```
+
+If not null, when the notification will fire. In milliseconds since the epoch.
+
+delay
+
+(optional)
+
+```
+integer
+```
+
+The notification will fire after delay minutes from now. Can not be used together with when.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#updateNotification)updateNotification
+
+Updates the properties of a notification. Specify only the properties that you want to change. Unspecified properties will be left unchanged.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+The id of the notification to update.
+
+changes
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+name
+
+(optional)
+
+```
+string
+```
+
+The name of the notification.
+
+description
+
+(optional)
+
+```
+string
+```
+
+The description of the notification.
+
+when
+
+(optional)
+
+```
+number
+```
+
+When the notification should fire. In milliseconds since the epoch.
+
+period
+
+(optional)
+
+```
+number
+```
+
+If not null, when the notification will fire. In milliseconds since the epoch.
+
+delay
+
+(optional)
+
+```
+integer
+```
+
+The notification will fire after delay minutes from now. Can not be used together with when.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#deleteNotification)deleteNotification
+
+Deletes a notification.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#createInvite)createInvite
+
+Creates an invite for event.
+
+Parameters:
+
+createInvite
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+event\_id
+
+```
+string
+```
+
+The event id of the event to create the invite for.
+
+address
+
+```
+string
+```
+
+The email address to send the invite to.
+
+name
+
+```
+string
+```
+
+The name of the persion to send the invite to.
+
+partstat
+
+(optional)
+
+```
+string
+```
+
+The participation status for the event invite
+
+sent
+
+(optional)
+
+```
+boolean
+```
+
+Has the invite been sent.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#deleteInvite)deleteInvite
+
+Deletes an invite.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+The invite id to delete.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#updateInvite)updateInvite
+
+Updates an invite for event.
+
+Parameters:
+
+updateInvite
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+id
+
+```
+string
+```
+
+The id of the invite to update.
+
+address
+
+(optional)
+
+```
+string
+```
+
+The email address to send the invite to.
+
+name
+
+(optional)
+
+```
+string
+```
+
+The name of the persion to send the invite to.
+
+partstat
+
+(optional)
+
+```
+string
+```
+
+The participation status for the event invite.
+
+sent
+
+(optional)
+
+```
+boolean
+```
+
+Has the invite been sent.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#getAllAccounts)getAllAccounts
+
+Retrieves all calendar accounts.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#createAccount)createAccount
+
+Creates an account.
+
+Parameters:
+
+toCreate
+
+```
+createdAccount
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#updateAccount)updateAccount
+
+Updates the properties of an account. Specify only the properties that you want to change. Unspecified properties will be left unchanged.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+changes
+
+```
+updatedAccount
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#deleteAccount)deleteAccount
+
+Deletes an account and its calendars, events, recurring\_exceptions, notifications etc
+
+Parameters:
+
+id
+
+```
+string
+```
+
+The account id to be deleted
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#createEventTemplate)createEventTemplate
+
+Creates an event template.
+
+Parameters:
+
+name
+
+```
+string
+```
+
+The event template name.
+
+ical
+
+```
+string
+```
+
+The event template ical.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#getAllEventTemplates)getAllEventTemplates
+
+Retrieves all event templates.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#updateEventTemplate)updateEventTemplate
+
+Updates the properties of an event template. Specify only the properties that you want to change. Unspecified properties will be left unchanged.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+The id of the event template to update.
+
+changes
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+name
+
+(optional)
+
+```
+string
+```
+
+The updated name of the event template.
+
+ical
+
+(optional)
+
+```
+string
+```
+
+The updated ical of the event template.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#getParentExceptionId)getParentExceptionId
+
+Returns the parent event id of a exception event id.
+
+Parameters:
+
+exception\_event\_id
+
+```
+string
+```
+
+The id of the event exception to return the parent event id for.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/calendar.html#deleteEventTemplate)deleteEventTemplate
+
+Deletes an event template.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+The id of the event template to delete.

@@ -1,0 +1,522 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#top)
+
+## vivaldi.importData Modders API Reference
+
+Use the `vivaldi.importData.getProfiles` to display installed browsers.
+
+## Navigation
+
+### Types
+
+-   [import\_types](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#import_types)
+-   [UserProfileItem](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#UserProfileItem)
+-   [ProfileItem](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#ProfileItem)
+
+### Listeners
+
+-   [onImportStarted](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#onImportStarted)
+-   [onImportEnded](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#onImportEnded)
+-   [onImportItemStarted](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#onImportItemStarted)
+-   [onImportItemEnded](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#onImportItemEnded)
+-   [onImportItemFailed](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#onImportItemFailed)
+
+### Methods
+
+-   [getProfiles](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#getProfiles)
+-   [startImport](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#startImport)
+-   [openThunderbirdMailbox](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#openThunderbirdMailbox)
+-   [closeThunderbirdMailbox](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#closeThunderbirdMailbox)
+-   [readMessageFromThunderbirdMailbox](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#readMessageFromThunderbirdMailbox)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#import_types)import\_types
+
+`ENUM`
+
+⚠ NO DESCRIPTION PROVIDED
+
+-   internet\_explorer
+-   firefox
+-   safari
+-   bookmarks\_file
+-   opera
+-   opera\_bookmark
+-   chrome
+-   chromium
+-   vivaldi
+-   yandex
+-   opera\_opium\_beta
+-   opera\_opium\_dev
+-   brave
+-   edge
+-   edge\_chromium
+-   thunderbird
+-   opera\_opium
+-   arc
+-   opera\_gx
+-   unknown
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#UserProfileItem)UserProfileItem
+
+UserProfileItem. Contains info for userprofile
+
+Properties:
+
+profileDisplayName
+
+```
+string
+```
+
+The profile display name.
+
+profileName
+
+```
+string
+```
+
+The profile name.
+
+profilePath
+
+(optional)
+
+```
+string
+```
+
+The profile path, if it is different than parent profile.
+
+index
+
+(optional)
+
+```
+integer
+```
+
+The user profile index, if it is different than parent profile.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#ProfileItem)ProfileItem
+
+ProfileItem.
+
+Properties:
+
+import\_type
+
+```
+import_types
+```
+
+The type of import profile item
+
+name
+
+```
+string
+```
+
+Import item name.
+
+index
+
+```
+integer
+```
+
+The profile item index.
+
+history
+
+```
+boolean
+```
+
+Does profile support history.
+
+favorites
+
+```
+boolean
+```
+
+Does profile support favorites.
+
+passwords
+
+```
+boolean
+```
+
+Does profile support passwords.
+
+supportsMasterPassword
+
+```
+boolean
+```
+
+Does profile support a master password to decode passwords.
+
+speeddial
+
+```
+boolean
+```
+
+Does profile support Speed Dial.
+
+notes
+
+```
+boolean
+```
+
+Does profile support notes.
+
+email
+
+```
+boolean
+```
+
+Does profile support email.
+
+contacts
+
+```
+boolean
+```
+
+Does profile support contacts.
+
+extensions
+
+```
+boolean
+```
+
+Does profile support extensions import.
+
+tabs
+
+```
+boolean
+```
+
+Does profile support open tab import.
+
+hasDefaultInstall
+
+```
+boolean
+```
+
+Is a default installation detected.
+
+detectedProfilePath
+
+```
+string
+```
+
+Is the path on disk to the detected profile.
+
+requiresInteractiveImport
+
+```
+boolean
+```
+
+Does the profile require interactive (file/directory picker dialog) selection by the user.
+
+requiresAccessPermission
+
+```
+boolean
+```
+
+Does the profile require explicit access permission to the profile folder/file.
+
+suggestedProfilePath
+
+```
+string
+```
+
+Suggested default profile path for profile selection dialog.
+
+dialogType
+
+```
+string
+```
+
+What type of dialog should be used for interactive import. Possible values are 'file' or 'folder'.
+
+mailPath
+
+```
+string
+```
+
+The path on disk to the detected mail profile
+
+UserProfiles
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   UserProfileItem
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#onImportStarted)onImportStarted
+
+Fired when a import session has started.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#onImportEnded)onImportEnded
+
+Fired when a import session has ended.
+
+Parameters:
+
+error\_count
+
+```
+integer
+```
+
+Number of data types that failed to import.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#onImportItemStarted)onImportItemStarted
+
+Fired when a import session for a data type has started.
+
+Parameters:
+
+item
+
+```
+string
+```
+
+Name of data type.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#onImportItemEnded)onImportItemEnded
+
+Fired when a import session for a data type has ended.
+
+Parameters:
+
+item
+
+```
+string
+```
+
+Name of data type.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#onImportItemFailed)onImportItemFailed
+
+Fired when a import session for a data type has failed.
+
+Parameters:
+
+item
+
+```
+string
+```
+
+Name of data type.
+
+error
+
+```
+string
+```
+
+Error message that can be shown to the user.
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#getProfiles)getProfiles
+
+Retrieves import data profiles.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#startImport)startImport
+
+Start import process.
+
+Parameters:
+
+profileIndex
+
+```
+integer
+```
+
+Index of the profile we want to import. This is a null based index of results from getProfiles.
+
+askUserForFileLocation
+
+```
+boolean
+```
+
+Show file dialog to user.
+
+profileName
+
+```
+string
+```
+
+Name of profile.
+
+typesToImport
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+history
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+favorites
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+passwords
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+speeddial
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+notes
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+extensions
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+tabs
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+masterPassword
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+importPath
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#openThunderbirdMailbox)openThunderbirdMailbox
+
+Opens Thunderbird mailbox from disk and seek to seekPosition. If called with already opened file it only seeks to seekPosition. If called with a new path it closes the current file and opens the new one.
+
+Parameters:
+
+path
+
+```
+string
+```
+
+Path to mailbox.
+
+seekPosition
+
+(optional)
+
+```
+string
+```
+
+Seek to this position after opening, serialized as a string because V8's integer type is too small for large mbox files.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#closeThunderbirdMailbox)closeThunderbirdMailbox
+
+Closes currently open thunderbird mailbox, if any
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/importData.html#readMessageFromThunderbirdMailbox)readMessageFromThunderbirdMailbox
+
+Read one message from currently open Thunderbird mailbox.

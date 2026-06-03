@@ -1,0 +1,296 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarkContextMenu.html#top)
+
+## vivaldi.bookmarkContextMenu Modders API Reference
+
+Use the `vivaldi.bookmarkContextMenu` API to show a bookmark menu for the bookmark bar.
+
+## Navigation
+
+### Types
+
+-   [Rect](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarkContextMenu.html#Rect)
+-   [FolderEntry](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarkContextMenu.html#FolderEntry)
+-   [SortOrder](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarkContextMenu.html#SortOrder)
+-   [SortField](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarkContextMenu.html#SortField)
+-   [Edge](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarkContextMenu.html#Edge)
+-   [Icons](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarkContextMenu.html#Icons)
+
+### Listeners
+
+-   [onOpen](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarkContextMenu.html#onOpen)
+-   [onClose](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarkContextMenu.html#onClose)
+-   [onDragStart](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarkContextMenu.html#onDragStart)
+
+### Methods
+
+-   [show](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarkContextMenu.html#show)
+-   [close](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarkContextMenu.html#close)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarkContextMenu.html#Rect)Rect
+
+Position and size of element in menu bar.
+
+Properties:
+
+x
+
+```
+integer
+```
+
+Left position of item that opens menu, screen coordinates.
+
+y
+
+```
+integer
+```
+
+Top position of item that opens menu, screen coordinates.
+
+width
+
+```
+integer
+```
+
+Width of item that opens menu.
+
+height
+
+```
+integer
+```
+
+Height of item that opens menu.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarkContextMenu.html#FolderEntry)FolderEntry
+
+⚠ NO DESCRIPTION PROVIDED
+
+Properties:
+
+id
+
+```
+string
+```
+
+Bookmark folder id.
+
+offset
+
+```
+integer
+```
+
+Offset into folder.
+
+folderGroup
+
+```
+boolean
+```
+
+When true, sorted content will have folders first or last in list.
+
+rect
+
+```
+Rect
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarkContextMenu.html#SortOrder)SortOrder
+
+`ENUM`
+
+Defines how to sort container items.
+
+-   ascending
+-   descending
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarkContextMenu.html#SortField)SortField
+
+`ENUM`
+
+Defines what element to use as sort key.
+
+-   title
+-   url
+-   nickname
+-   description
+-   dateAdded
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarkContextMenu.html#Edge)Edge
+
+`ENUM`
+
+Defines position of menu items added in chrome code wrt bookmark items.
+
+-   above
+-   below
+-   off
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarkContextMenu.html#Icons)Icons
+
+Icons
+
+Icons encoded as base64.
+
+`Array` of:
+
+-   string
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarkContextMenu.html#onOpen)onOpen
+
+Fires before menu opens.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+Menu id, same as the bookmark folder to be shown.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarkContextMenu.html#onClose)onClose
+
+Fires before menu closes.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarkContextMenu.html#onDragStart)onDragStart
+
+Fires when drag starts.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+Bookmark or folder id.
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarkContextMenu.html#show)show
+
+Shows a context menu.
+
+Parameters:
+
+properties
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+siblings
+
+List of menu entries.
+
+`Array` of:
+
+-   FolderEntry
+
+id
+
+```
+string
+```
+
+Bookmark folder id. Must match an id in the sibling list.
+
+edge
+
+(optional)
+
+```
+Edge
+```
+
+Where to place extra menu items
+
+sortField
+
+(optional)
+
+```
+SortField
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+sortOrder
+
+(optional)
+
+```
+SortOrder
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+icons
+
+```
+Icons
+```
+
+Default and folder icons.
+
+dragged
+
+List of bookmark and/or folder ids.
+
+`Array` of:
+
+-   string
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarkContextMenu.html#close)close
+
+Closes active context menu.

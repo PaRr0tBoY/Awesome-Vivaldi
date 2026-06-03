@@ -1,0 +1,30 @@
+/* ==UserStyle==
+ * @name         Floating Find In Page Panel
+ * @description  Floating find-in-page panel, as it should be.
+ * @version      2026.4.17
+ * @author       PaRr0tBoY
+ * @website      https://github.com/PaRr0tBoY/Awesome-Vivaldi
+ * ==/UserStyle==
+ */
+
+.find-in-page-wrapper {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0 auto !important;
+  padding: 0.1rem 0.3rem;
+  border-radius: var(--radius);
+  z-index: 1;
+}
+
+.button-toolbar.button-narrow {
+  order: 1;
+}
+
+span.fip-input-label {
+  display: none;
+}
+/* .find-in-page-wrapper:not(:has(input[type=search]:focus-within)) {
+  display: none;
+} */

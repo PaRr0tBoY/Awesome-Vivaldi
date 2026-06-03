@@ -1,0 +1,170 @@
+/* ==UserStyle==
+ * @name         Peek Tabbar
+ * @description  This mod allow you to peek tabbar content when in 2-level tab stacking layout.
+ * @version      2026.4.17
+ * @author       PaRr0tBoY
+ * @website      https://github.com/PaRr0tBoY/Awesome-Vivaldi
+ * ==/UserStyle==
+ */
+
+/* ================================================ */
+/* Notice */
+/* This mod disabled tabbar resizing and window dragging behavior on tabbar */
+/* You can still resize tabbar after disabling auto-hide for tabbar */
+/* You can still drag removing window on address bar */
+/* ================================================ */
+
+:root {
+  --animation-test-speed: 120ms;
+}
+
+body:is(
+    :has(#tabs-tabbar-container.left),
+    :has(#tabs-tabbar-container.right)
+  ):has(#tabs-subcontainer)
+  #tabs-container {
+  max-width: 18%;
+  min-width: 18%;
+  transition: min-width var(--animation-test-speed) ease-in 300ms,
+    max-width var(--animation-test-speed) ease-in 300ms;
+}
+
+body:is(
+    :has(#tabs-tabbar-container.left),
+    :has(#tabs-tabbar-container.right)
+  ):has(#tabs-container)
+  #tabs-subcontainer {
+  max-width: 82%;
+  min-width: 82%;
+  transition: min-width var(--animation-test-speed) ease-in 300ms,
+    max-width var(--animation-test-speed) ease-in 300ms;
+  transform-origin: left center !important;
+}
+
+body:is(
+    :has(#tabs-tabbar-container.left),
+    :has(#tabs-tabbar-container.right)
+  ):has(#tabs-subcontainer)
+  #tabs-container:hover {
+  max-width: 82% !important;
+  min-width: 82% !important;
+  transition: min-width var(--animation-test-speed) ease-out 300ms,
+    max-width var(--animation-test-speed) ease-out 300ms;
+}
+
+body:is(
+    :has(#tabs-tabbar-container.left),
+    :has(#tabs-tabbar-container.right)
+  ):has(#tabs-container:hover)
+  #tabs-subcontainer {
+  max-width: 18% !important;
+  min-width: 18% !important;
+  transition: min-width var(--animation-test-speed) ease-out 300ms,
+    max-width var(--animation-test-speed) ease-out 300ms;
+}
+
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  #tabs-container {
+  container-type: inline-size;
+  container-name: tabs-container;
+}
+
+@container tabs-container (max-width: 120px) {
+  .toolbar-large .ToolbarButton-Button {
+    display: none !important;
+  }
+}
+
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  #browser
+  #tabs-tabbar-container.left
+  ::-webkit-scrollbar,
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  #browser
+  #tabs-tabbar-container.right
+  ::-webkit-scrollbar {
+  display: none;
+}
+
+body:is(
+    :has(#tabs-tabbar-container.left),
+    :has(#tabs-tabbar-container.right)
+  ):has(.auto-hide-wrapper)
+  #tabs-tabbar-container
+  .SlideBar {
+  display: none !important;
+}
+
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  .tabs-right#browser.density-on
+  .accordion-toggle-arrow:after,
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  .tabs-right#browser.density-on
+  .tab-wrapper:after {
+  display: none !important;
+}
+
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  #tabs-tabbar-container,
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  #tabs-tabbar-container
+  * {
+  -webkit-app-region: no-drag !important;
+}
+
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  #tabs-tabbar-container
+  .toolbar-spacer,
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  #tabs-tabbar-container
+  .toolbar-spacer-flexible,
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  #tabs-tabbar-container
+  .toolbar-spacer-panel,
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  #tabs-tabbar-container
+  .toolbar-divider {
+  -webkit-app-region: no-drag !important;
+}
+
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  #tabs-tabbar-container
+  .button-ntp,
+body:is(:has(#tabs-tabbar-container.left), :has(#tabs-tabbar-container.right))
+  #tabs-tabbar-container
+  .tab-header {
+  -webkit-app-region: no-drag !important;
+}
+
+body:is(
+    :has(#tabs-tabbar-container.left),
+    :has(#tabs-tabbar-container.right)
+  ):has(#tabs-subcontainer):has(
+    #tabs-tabbar-container .ToolbarButton-Button.button-pressed
+  )
+  #tabs-container {
+  max-width: 82% !important;
+  min-width: 82% !important;
+  transition: min-width 200ms ease-out 300ms, max-width 200ms ease-out 300ms;
+}
+
+body:is(
+    :has(#tabs-tabbar-container.left),
+    :has(#tabs-tabbar-container.right)
+  ):has(#tabs-subcontainer):has(
+    #tabs-tabbar-container .ToolbarButton-Button.button-pressed
+  )
+  #tabs-subcontainer {
+  max-width: 18% !important;
+  min-width: 18% !important;
+  transition: min-width 200ms ease-out 300ms, max-width 200ms ease-out 300ms;
+}
+
+body:is(
+    :has(#tabs-tabbar-container.left),
+    :has(#tabs-tabbar-container.right)
+  ):has(#vivaldi-tooltip:hover)
+  .auto-hide-wrapper.has-tabbar {
+  transition: transform 300ms cubic-bezier(0.25, 0.8, 0.25, 1.08) !important;
+  transform: translateX(0) !important;
+}

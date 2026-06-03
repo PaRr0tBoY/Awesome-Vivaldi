@@ -1,0 +1,113 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/zoom.html#top)
+
+## vivaldi.zoom Modders API Reference
+
+Use the `vivaldi.zoom` to zoom the Vivaldi html UI.
+
+## Navigation
+
+### Types
+
+### Listeners
+
+-   [onDefaultZoomChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/zoom.html#onDefaultZoomChanged)
+-   [onUIZoomChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/zoom.html#onUIZoomChanged)
+
+### Methods
+
+-   [setVivaldiUIZoom](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/zoom.html#setVivaldiUIZoom)
+-   [getVivaldiUIZoom](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/zoom.html#getVivaldiUIZoom)
+-   [setDefaultZoom](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/zoom.html#setDefaultZoom)
+-   [getDefaultZoom](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/zoom.html#getDefaultZoom)
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/zoom.html#onDefaultZoomChanged)onDefaultZoomChanged
+
+Fired when the default zoom changes.
+
+Parameters:
+
+zoomlevel
+
+```
+number
+```
+
+The new zoom level
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/zoom.html#onUIZoomChanged)onUIZoomChanged
+
+Fired when the UI zoom changes.
+
+Parameters:
+
+zoomlevel
+
+```
+number
+```
+
+The new UI zoom level
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/zoom.html#setVivaldiUIZoom)setVivaldiUIZoom
+
+⚠ NO DESCRIPTION PROVIDED
+
+Parameters:
+
+zoomFactor
+
+```
+number
+```
+
+The new value for Vivaldi UI zoom factor.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/zoom.html#getVivaldiUIZoom)getVivaldiUIZoom
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/zoom.html#setDefaultZoom)setDefaultZoom
+
+⚠ NO DESCRIPTION PROVIDED
+
+Parameters:
+
+zoomFactor
+
+```
+number
+```
+
+The new Vivaldi default global zoom factor.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/zoom.html#getDefaultZoom)getDefaultZoom
+
+⚠ NO DESCRIPTION PROVIDED

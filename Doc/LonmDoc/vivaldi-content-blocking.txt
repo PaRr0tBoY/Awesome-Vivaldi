@@ -1,0 +1,1339 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#top)
+
+## vivaldi.contentBlocking Modders API Reference
+
+Provides control over the Adblocking service and other implemented content blocking measures
+
+## Navigation
+
+### Types
+
+-   [RuleGroup](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#RuleGroup)
+-   [ExceptionList](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#ExceptionList)
+-   [PresetKind](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#PresetKind)
+-   [FetchResult](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#FetchResult)
+-   [RulesInfo](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#RulesInfo)
+-   [AdBlockMetadata](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#AdBlockMetadata)
+-   [RuleSourceSettings](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#RuleSourceSettings)
+-   [RuleSource](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#RuleSource)
+-   [BlockedCounter](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#BlockedCounter)
+-   [AdBlockingStatsData](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#AdBlockingStatsData)
+-   [BlockedUrlsInfo](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#BlockedUrlsInfo)
+-   [TrackerInfo](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#TrackerInfo)
+-   [BlockedTrackersInfo](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#BlockedTrackersInfo)
+-   [TabBlockedUrlsInfo](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#TabBlockedUrlsInfo)
+-   [AdAttributionDomain](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#AdAttributionDomain)
+-   [AllowedAdAttributionTrackers](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#AllowedAdAttributionTrackers)
+-   [URLPartnerInfo](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#URLPartnerInfo)
+
+### Listeners
+
+-   [onRuleSourceAdded](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#onRuleSourceAdded)
+-   [onRuleSourceUpdated](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#onRuleSourceUpdated)
+-   [onRuleSourceEnabled](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#onRuleSourceEnabled)
+-   [onRuleSourceDisabled](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#onRuleSourceDisabled)
+-   [onRuleSourceRemoved](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#onRuleSourceRemoved)
+-   [onStateChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#onStateChanged)
+-   [onExceptionsChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#onExceptionsChanged)
+-   [onUrlsBlocked](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#onUrlsBlocked)
+-   [onAdAttributionDomainChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#onAdAttributionDomainChanged)
+-   [onAdAttributionTrackersAllowed](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#onAdAttributionTrackersAllowed)
+
+### Methods
+
+-   [addKnownSourceFromURL](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#addKnownSourceFromURL)
+-   [addKnownSourceFromFile](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#addKnownSourceFromFile)
+-   [setKnownSourceSettings](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#setKnownSourceSettings)
+-   [enableSource](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#enableSource)
+-   [disableSource](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#disableSource)
+-   [fetchSourceNow](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#fetchSourceNow)
+-   [deleteKnownSource](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#deleteKnownSource)
+-   [resetPresetSources](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#resetPresetSources)
+-   [getRuleSource](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#getRuleSource)
+-   [getRuleSources](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#getRuleSources)
+-   [setActiveExceptionsList](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#setActiveExceptionsList)
+-   [getActiveExceptionsList](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#getActiveExceptionsList)
+-   [addExceptionForDomain](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#addExceptionForDomain)
+-   [removeExceptionForDomain](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#removeExceptionForDomain)
+-   [removeAllExceptions](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#removeAllExceptions)
+-   [getExceptions](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#getExceptions)
+-   [getAllExceptionLists](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#getAllExceptionLists)
+-   [getBlockedUrlsInfo](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#getBlockedUrlsInfo)
+-   [getAdBlockingStats](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#getAdBlockingStats)
+-   [clearAdBlockingStats](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#clearAdBlockingStats)
+-   [isExemptOfFiltering](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#isExemptOfFiltering)
+-   [isExemptByPartnerURL](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#isExemptByPartnerURL)
+-   [getAdAttributionDomain](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#getAdAttributionDomain)
+-   [getAdAttributionAllowedTrackers](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#getAdAttributionAllowedTrackers)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#RuleGroup)RuleGroup
+
+`ENUM`
+
+Used to specify whether a specific operation should apply to tracking blocking or adblocking.
+
+-   tracking
+-   ad\_blocking
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#ExceptionList)ExceptionList
+
+`ENUM`
+
+Used to inform whether the exception list used in a rule group is a list of exemptions or a list for which process is enabled
+
+-   process\_list
+-   exempt\_list
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#PresetKind)PresetKind
+
+`ENUM`
+
+Which rough category a given preset list falls in
+
+-   ads
+-   trackers
+-   partners
+-   annoyances
+-   cookie\_notices
+-   other
+-   regional
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#FetchResult)FetchResult
+
+`ENUM`
+
+The result of a fetch operation on a rule source.
+
+-   success: Fetch completed successfully.
+-   download\_failed: For an online source, failed to download using the provided URL.
+-   file\_not\_found: For a local source, the file provided didn't seem to exist.
+-   file\_read\_error: For a local source, the file provided couldn't be read.
+-   file\_unsupported: The rules file is of an invalid format or doesn't contain any valid rule.
+-   failed\_saving\_parsed\_rules: The rules were fetched and compiled properly, but the result couldn't be saved to the profile.
+-   unknown: No fetching attempt has completed yet.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#RulesInfo)RulesInfo
+
+Information about the rules themselves and more detailed parsing results
+
+Properties:
+
+valid\_rules
+
+```
+integer
+```
+
+The number of entries in the file that resulted in a rule being compiled.
+
+unsupported\_rules
+
+```
+integer
+```
+
+The number of entries in the file that resolved to valid rules that either didn't make sense or are not supported at this time.
+
+invalid\_rules
+
+```
+integer
+```
+
+The number of entries in the file that resolved to valid rules that could not be parsed to a rule or were explicitly against the spec.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#AdBlockMetadata)AdBlockMetadata
+
+Information extracted from the adblock file comments. If the user added a malicous source, these could be anything. Handle with care.
+
+Properties:
+
+homepage
+
+```
+string
+```
+
+URL pointing to the original website for this list.
+
+title
+
+```
+string
+```
+
+List name.
+
+expires
+
+```
+integer
+```
+
+How often the list is refreshed, in hours.
+
+license
+
+```
+string
+```
+
+URL pointing to licensing info for the list.
+
+version
+
+```
+integer
+```
+
+Version number of the list.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#RuleSourceSettings)RuleSourceSettings
+
+Parameters used when parsing the rules list. Can only be modified when the source is disabled
+
+Properties:
+
+allow\_abp\_snippets
+
+```
+boolean
+```
+
+If false, any present abp snippet rules will be ignored.
+
+naked\_hostname\_is\_pure\_host
+
+```
+boolean
+```
+
+If true, any rule that looks like just a host name will be converted to match only the host part of the url.
+
+use\_whole\_document\_allow
+
+```
+boolean
+```
+
+If true, any allow rule using the document type will cause all resources loaded by matching documents to be allowed (ABP beahvior).
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#RuleSource)RuleSource
+
+Information about a loaded rule source, including its fetching status and metadata retrieved when extracting rules from it
+
+Properties:
+
+source\_url
+
+```
+string
+```
+
+For an online source, this is the url that was provided when setting it up.
+
+source\_file
+
+```
+string
+```
+
+For an local source, this is the file that was provided when setting it up.
+
+is\_from\_url
+
+```
+boolean
+```
+
+indicates whether the rule source is online or local, and which of the source\_url and source\_file fields is valid
+
+settings
+
+```
+RuleSourceSettings
+```
+
+See RuleSourceSettings.
+
+id
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+rules\_list\_checksum
+
+```
+string
+```
+
+Checksum of the compiled rule file derived from this source. This will be the empty string if the rule source has never been fetched succesfully.
+
+unsafe\_adblock\_metadata
+
+```
+AdBlockMetadata
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+last\_update
+
+```
+number
+```
+
+The last time the source was successfully fetched and the corresponding rules updated. Represented in milliseconds since the epoch.
+
+next\_fetch
+
+```
+number
+```
+
+The next time a fetching and updating from the rule source will be attempted. Represented in milliseconds since the epoch.
+
+is\_fetching
+
+```
+boolean
+```
+
+Whether fetching of the rule source is in progress
+
+last\_fetch\_result
+
+```
+FetchResult
+```
+
+The result of the last fetch attempt
+
+rules\_info
+
+```
+RulesInfo
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+preset\_id
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+preset\_kind
+
+(optional)
+
+```
+PresetKind
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+removable
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+loaded
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#BlockedCounter)BlockedCounter
+
+How often requests relating to a domain were blocked
+
+Properties:
+
+domain
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+ads\_blocked
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+trackers\_blocked
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#AdBlockingStatsData)AdBlockingStatsData
+
+Statistics for trackers and ads blocked.
+
+Properties:
+
+reporting\_start
+
+```
+number
+```
+
+The time at which the counters have been initialized or reset.
+
+total\_ads\_blocked
+
+```
+integer
+```
+
+Number of ads blocked.
+
+total\_trackers\_blocked
+
+```
+integer
+```
+
+Number of trackers blocked.
+
+blocked\_domains
+
+Counter with domains blocked.
+
+`Array` of:
+
+-   BlockedCounter
+
+blocked\_for\_origin
+
+Counter with a domain that was an origin for blocking.
+
+`Array` of:
+
+-   BlockedCounter
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#BlockedUrlsInfo)BlockedUrlsInfo
+
+Information about a blocked URL
+
+Properties:
+
+url
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+blocked\_count
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#TrackerInfo)TrackerInfo
+
+Information for a given tracker
+
+Properties:
+
+source\_id
+
+```
+integer
+```
+
+The id of the rule source from which this info was obtained.
+
+info
+
+```
+any
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#BlockedTrackersInfo)BlockedTrackersInfo
+
+Information about a blocked tracker
+
+Properties:
+
+domain
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+blocked\_urls
+
+blocked urls that belong to this tracker
+
+`Array` of:
+
+-   BlockedUrlsInfo
+
+tracker\_info
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   TrackerInfo
+
+blocked\_count
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#TabBlockedUrlsInfo)TabBlockedUrlsInfo
+
+Information about urls that got blocked, per tab
+
+Properties:
+
+tab\_id
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+total\_blocked\_count
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+blocked\_trackers\_info
+
+blocked urls that belong to a known tracker, alongside with tracker information.
+
+`Array` of:
+
+-   BlockedTrackersInfo
+
+blocked\_urls\_info
+
+blocked urls for which there is no tracker information.
+
+`Array` of:
+
+-   BlockedUrlsInfo
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#AdAttributionDomain)AdAttributionDomain
+
+Information about which domain ad attribution is enabled for, if any, for a given tab
+
+Properties:
+
+tab\_id
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+domain
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+active
+
+```
+boolean
+```
+
+True if the tab is currently on the ad attribution domain, causing ad attribution to be enabled.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#AllowedAdAttributionTrackers)AllowedAdAttributionTrackers
+
+Information about which trackers have been allowed for ad attribution, per tab
+
+Properties:
+
+tab\_id
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+tracker\_urls
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   string
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#URLPartnerInfo)URLPartnerInfo
+
+Information about the URL given - Is it a partner? What name does it have?
+
+Properties:
+
+status
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+name
+
+```
+string
+```
+
+Name of the partner, or empty if unknown (in which case a generic message should be used)
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#onRuleSourceAdded)onRuleSourceAdded
+
+Fired when a known rule source has been added
+
+Parameters:
+
+rule\_source
+
+```
+RuleSource
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#onRuleSourceUpdated)onRuleSourceUpdated
+
+The properties of a rule source have been updated, either because a fetch started or completed.
+
+Parameters:
+
+rule\_source
+
+```
+RuleSource
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#onRuleSourceEnabled)onRuleSourceEnabled
+
+Fired when a known rule source has been enabled
+
+Parameters:
+
+source\_id
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#onRuleSourceDisabled)onRuleSourceDisabled
+
+Fired when a known rule source has been disabled
+
+Parameters:
+
+source\_id
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#onRuleSourceRemoved)onRuleSourceRemoved
+
+Fired when a known rule source has been removed
+
+Parameters:
+
+source\_id
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#onStateChanged)onStateChanged
+
+Fired when an exception state has changed.
+
+Parameters:
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#onExceptionsChanged)onExceptionsChanged
+
+Fired when the list of exceptions has changed.
+
+Parameters:
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+exception\_list
+
+```
+ExceptionList
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#onUrlsBlocked)onUrlsBlocked
+
+Fired when urls have been blocked by either the ad-blocker or the tracker-blocker. This is fired at most once per second.
+
+Parameters:
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+tab\_ids
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   integer
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#onAdAttributionDomainChanged)onAdAttributionDomainChanged
+
+Fires when the eTLD+s on which ad attribution is active changes or if the tab is navigated away from that domain.
+
+Parameters:
+
+tab\_id
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#onAdAttributionTrackersAllowed)onAdAttributionTrackersAllowed
+
+Fired when trackers have been allowed on some tabs, as a result of ad attribution.
+
+Parameters:
+
+tab\_ids
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   integer
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#addKnownSourceFromURL)addKnownSourceFromURL
+
+Adds an online rule source. Newly added sources are automatically enabled.
+
+Parameters:
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+url
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+source\_settings
+
+(optional)
+
+```
+RuleSourceSettings
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#addKnownSourceFromFile)addKnownSourceFromFile
+
+Adds an local rule source. Newly added sources are automatically enabled.
+
+Parameters:
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+file
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+source\_settings
+
+(optional)
+
+```
+RuleSourceSettings
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#setKnownSourceSettings)setKnownSourceSettings
+
+Changes the settings used when parsing the rules
+
+Parameters:
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+source\_id
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+source\_settings
+
+```
+RuleSourceSettings
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#enableSource)enableSource
+
+Enables and loads a known rule source
+
+Parameters:
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+source\_id
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#disableSource)disableSource
+
+Disables and unloads a known rule source
+
+Parameters:
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+source\_id
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#fetchSourceNow)fetchSourceNow
+
+Forces fetching of a loaded rule source. Does nothing if a fetch is already in progress
+
+Parameters:
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+source\_id
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#deleteKnownSource)deleteKnownSource
+
+Remove a known rule source. The source will be disabled before removal.
+
+Parameters:
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+source\_id
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#resetPresetSources)resetPresetSources
+
+Re-adds all preset sources that were removed by the user.
+
+Parameters:
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#getRuleSource)getRuleSource
+
+Gets detailed information about a known rule source
+
+Parameters:
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+source\_id
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#getRuleSources)getRuleSources
+
+Gets detailed information about all known rule sources. Loaded sources will have extra information.
+
+Parameters:
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#setActiveExceptionsList)setActiveExceptionsList
+
+Sets whether a rule group should use a list of exempted domains or a list of domains to which it applies.
+
+Parameters:
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+state
+
+```
+ExceptionList
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#getActiveExceptionsList)getActiveExceptionsList
+
+Checks whether a rule group is using a list of exempted domains or a list of domains to which it applies
+
+Parameters:
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#addExceptionForDomain)addExceptionForDomain
+
+Adds an item to the exception list
+
+Parameters:
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+exception\_list
+
+```
+ExceptionList
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+domain
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#removeExceptionForDomain)removeExceptionForDomain
+
+Removes an item from the exception list
+
+Parameters:
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+exception\_list
+
+```
+ExceptionList
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+domain
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#removeAllExceptions)removeAllExceptions
+
+Removes all domains from the exception list
+
+Parameters:
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+exception\_list
+
+```
+ExceptionList
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#getExceptions)getExceptions
+
+Retrieves all domains from the exeption list
+
+Parameters:
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+exception\_list
+
+```
+ExceptionList
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#getAllExceptionLists)getAllExceptionLists
+
+Retrieves all the exception lists
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#getBlockedUrlsInfo)getBlockedUrlsInfo
+
+Retrieves information about which URLs have been blocked from loading in a given tab
+
+Parameters:
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+tab\_ids
+
+A list of tabs for which to retrieve blocked urls information.
+
+`Array` of:
+
+-   integer
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#getAdBlockingStats)getAdBlockingStats
+
+Retrieves the stats for ads and trackers blocked.
+
+Parameters:
+
+number\_of\_days
+
+```
+integer
+```
+
+Number of days to return statistic data. 0 or less returns all data.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#clearAdBlockingStats)clearAdBlockingStats
+
+Resets ad blocking stats.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#isExemptOfFiltering)isExemptOfFiltering
+
+Returns whether a page URL will be exempt from filtering by a given rule group, based on the active exception list.
+
+Parameters:
+
+rule\_group
+
+```
+RuleGroup
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+url
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#isExemptByPartnerURL)isExemptByPartnerURL
+
+Returns whether a page URL will be exempt from filtering by a partnership exception.
+
+Parameters:
+
+url
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+tab\_id
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#getAdAttributionDomain)getAdAttributionDomain
+
+Gets the eTLD+1 for which ad attribution is currently active on the given tabs, if any.
+
+Parameters:
+
+tab\_ids
+
+A list of tabs for which to retrieve the ad attribution stats.
+
+`Array` of:
+
+-   integer
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentBlocking.html#getAdAttributionAllowedTrackers)getAdAttributionAllowedTrackers
+
+Gets the allowed ad attribution trackers for the given tabs, if any.
+
+Parameters:
+
+tab\_ids
+
+A list of tabs for which to retrieve allowed ad attribution trackers.
+
+`Array` of:
+
+-   integer

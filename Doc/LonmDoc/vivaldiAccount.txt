@@ -1,0 +1,324 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/vivaldiAccount.html#top)
+
+## vivaldi.vivaldiAccount Modders API Reference
+
+Support for vivaldi.net authentication.
+
+## Navigation
+
+### Types
+
+-   [FetchErrorType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/vivaldiAccount.html#FetchErrorType)
+-   [FetchError](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/vivaldiAccount.html#FetchError)
+-   [AccountInfo](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/vivaldiAccount.html#AccountInfo)
+-   [State](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/vivaldiAccount.html#State)
+-   [PendingRegistration](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/vivaldiAccount.html#PendingRegistration)
+
+### Listeners
+
+-   [onAccountStateChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/vivaldiAccount.html#onAccountStateChanged)
+
+### Methods
+
+-   [login](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/vivaldiAccount.html#login)
+-   [logout](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/vivaldiAccount.html#logout)
+-   [getState](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/vivaldiAccount.html#getState)
+-   [setPendingRegistration](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/vivaldiAccount.html#setPendingRegistration)
+-   [getPendingRegistration](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/vivaldiAccount.html#getPendingRegistration)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/vivaldiAccount.html#FetchErrorType)FetchErrorType
+
+`ENUM`
+
+⚠ NO DESCRIPTION PROVIDED
+
+-   no\_error: Everything went fine
+-   network\_error: Couldn't fetch data because of a network issue.
+-   server\_error: The server provided an unexpected response to our request.
+-   invalid\_credentials: The server explicitly rejected our credentials.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/vivaldiAccount.html#FetchError)FetchError
+
+properties of an error that occured during a network request.
+
+Properties:
+
+errorType
+
+```
+FetchErrorType
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+serverMessage
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+errorCode
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/vivaldiAccount.html#AccountInfo)AccountInfo
+
+A structure detailing the informations about the currrently logged in account.
+
+Properties:
+
+accountId
+
+```
+string
+```
+
+The unique account identifier, as retrieved from the server. Typically, this is just a case-sensitive version of the username or an empty string if it hasn't been retrieved yet. The UI should check whether this is empty to determine whether the user has set up an account, even if the tokens might be missing.
+
+username
+
+```
+string
+```
+
+The username, as entered by the user.
+
+pictureUrl
+
+```
+string
+```
+
+A link to the user's avatar. This is typically an https url, but the server is free to provide any valid url.
+
+donationTier
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/vivaldiAccount.html#State)State
+
+Data reporting the current state of the account and associated tokens.
+
+Properties:
+
+accountInfo
+
+```
+AccountInfo
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+hasSavedPassword
+
+```
+boolean
+```
+
+Whether we found a password for this sync account in the password manager.
+
+hasToken
+
+```
+boolean
+```
+
+If we have a token, we are practically logged in (but we may still need to get the accountId to be fully operational).
+
+accessToken
+
+```
+string
+```
+
+The actual access token. This is provided as a temporary measure until the notification code is moved to C++.
+
+hasEncryptedToken
+
+```
+boolean
+```
+
+We found a saved encrypted token, but could not decrypt it.
+
+tokenRequestTime
+
+```
+number
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+nextTokenRequestTime
+
+```
+number
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+lastTokenFetchError
+
+```
+FetchError
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+lastAccountInfoFetchError
+
+```
+FetchError
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+isReady
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/vivaldiAccount.html#PendingRegistration)PendingRegistration
+
+Information about an account that's in the process of registering.
+
+Properties:
+
+username
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+password
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+recovery\_email
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/vivaldiAccount.html#onAccountStateChanged)onAccountStateChanged
+
+Fired whenever something changed with the account
+
+Parameters:
+
+state
+
+```
+State
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/vivaldiAccount.html#login)login
+
+Attempt to obtain an access token for vivaldi.net using the provided credentials.
+
+Parameters:
+
+username
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+password
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+savePassword
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/vivaldiAccount.html#logout)logout
+
+Clear the previously obtained tokens and forget the logged in username.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/vivaldiAccount.html#getState)getState
+
+Retrieve the current state of the account manager.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/vivaldiAccount.html#setPendingRegistration)setPendingRegistration
+
+Stores credentials for an account in the process of registering. Call without parameter to discard the currently stored credentials
+
+Parameters:
+
+registration
+
+(optional)
+
+```
+PendingRegistration
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/vivaldiAccount.html#getPendingRegistration)getPendingRegistration
+
+Retrieves the last stored credentials for a registration in progress.

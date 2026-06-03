@@ -1,0 +1,6 @@
+#!/bin/bash
+findPath="`find /Applications/Vivaldi.app -name Vivaldi\ Framework.framework`"
+cp "$findPath"/Resources/vivaldi/style/custom.css /PATH_TO_FILE/custom.css
+cp "$findPath"/Resources/vivaldi/custom.js /PATH_TO_FILE/custom.js
+echo Backup completed.
+

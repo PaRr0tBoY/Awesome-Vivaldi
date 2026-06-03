@@ -1,0 +1,321 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/devtoolsPrivate.html#top)
+
+## vivaldi.devtoolsPrivate Modders API Reference
+
+Use the `vivaldi.devtoolsPrivate` API to manage devtools.
+
+## Navigation
+
+### Types
+
+-   [DevtoolResizingStrategy](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/devtoolsPrivate.html#DevtoolResizingStrategy)
+-   [DevtoolsWindowParams](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/devtoolsPrivate.html#DevtoolsWindowParams)
+-   [PanelType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/devtoolsPrivate.html#PanelType)
+
+### Listeners
+
+-   [onDockingStateChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/devtoolsPrivate.html#onDockingStateChanged)
+-   [onDockingSizesChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/devtoolsPrivate.html#onDockingSizesChanged)
+-   [onClosed](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/devtoolsPrivate.html#onClosed)
+-   [onDevtoolsUndocked](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/devtoolsPrivate.html#onDevtoolsUndocked)
+-   [onActivateWindow](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/devtoolsPrivate.html#onActivateWindow)
+
+### Methods
+
+-   [getDockingStateSizes](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/devtoolsPrivate.html#getDockingStateSizes)
+-   [closeDevtools](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/devtoolsPrivate.html#closeDevtools)
+-   [toggleDevtools](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/devtoolsPrivate.html#toggleDevtools)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/devtoolsPrivate.html#DevtoolResizingStrategy)DevtoolResizingStrategy
+
+Object containing size and state for the inspected web contents. The devtools itself always uses the full size.
+
+Properties:
+
+inspectedLeft
+
+```
+integer
+```
+
+Left coordinate of inspected web contents.
+
+inspectedTop
+
+```
+integer
+```
+
+Top coordinate of inspected web contents.
+
+inspectedWidth
+
+```
+integer
+```
+
+Width of inspected web contents.
+
+inspectedHeight
+
+```
+integer
+```
+
+Height of inspected web contents.
+
+hideInspectedContents
+
+```
+boolean
+```
+
+false to hide the inspected contents, otherwise true.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/devtoolsPrivate.html#DevtoolsWindowParams)DevtoolsWindowParams
+
+Object containing size and state for the undocked devtools window.
+
+Properties:
+
+left
+
+```
+integer
+```
+
+Left coordinate of window.
+
+top
+
+```
+integer
+```
+
+Top coordinate of window.
+
+right
+
+```
+integer
+```
+
+Right coordinate of window.
+
+bottom
+
+```
+integer
+```
+
+Bottom coordinate of window.
+
+maximized
+
+```
+boolean
+```
+
+Should window be maximized.
+
+alwaysOnTop
+
+```
+boolean
+```
+
+Should window be always on top.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/devtoolsPrivate.html#PanelType)PanelType
+
+`ENUM`
+
+Whether to open the the element panel (inspect mode), console panel, or the default.
+
+-   console: Open devtool with the Console panel selected
+-   inspect: Open devtools with the Elements panel selected
+-   default: Open devtools with the default panel selected
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/devtoolsPrivate.html#onDockingStateChanged)onDockingStateChanged
+
+Fired when devtools changed its docking state.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+The tab id of the tab changing its devtools docking state.
+
+dockingState
+
+```
+string
+```
+
+The new devtools docking state. Possible values are right, bottom or undocked.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/devtoolsPrivate.html#onDockingSizesChanged)onDockingSizesChanged
+
+Fired when devtools changed its sizes. Use |getDockingStateSizes| to read the new sizes.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+The tab id of the tab changing its devtools docking state.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/devtoolsPrivate.html#onClosed)onClosed
+
+Fired when docked devtools closed.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+The tab id of the tab changing its devtools docking state.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/devtoolsPrivate.html#onDevtoolsUndocked)onDevtoolsUndocked
+
+Fired when devtools wants to undock and we might need to open a window for it.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+The tab id of the tab we are debugging.
+
+showWindow
+
+```
+boolean
+```
+
+Show the initial window. May be false in which case the user likely just re-selected inspect on an existing web page.
+
+params
+
+```
+DevtoolsWindowParams
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/devtoolsPrivate.html#onActivateWindow)onActivateWindow
+
+Fired when devtools wants to activate the given undocked devtools window.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+The tab id of the tab we are debugging.
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/devtoolsPrivate.html#getDockingStateSizes)getDockingStateSizes
+
+Used to request the size and state of the inspected webview.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+The tab id of the tab changing its devtools docking state.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/devtoolsPrivate.html#closeDevtools)closeDevtools
+
+Explicitly close the open devtools instance for the given tabId or windowId.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+The tab id of the tab to close devtools for.
+
+windowId
+
+(optional)
+
+```
+integer
+```
+
+The window id (not app window id) of the window to close all open devtools for.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/devtoolsPrivate.html#toggleDevtools)toggleDevtools
+
+Toggle developer tools.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+The window id for the browserwindow we want to toggle devtools for.
+
+panelType
+
+```
+PanelType
+```
+
+⚠ NO DESCRIPTION PROVIDED

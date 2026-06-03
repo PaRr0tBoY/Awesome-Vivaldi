@@ -1,0 +1,2341 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#top)
+
+## vivaldi.utilities Modders API Reference
+
+Vivaldi general support api.
+
+## Navigation
+
+### Types
+
+-   [Color](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#Color)
+-   [GetEnvVarsResponse](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#GetEnvVarsResponse)
+-   [WindowState](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#WindowState)
+-   [WindowType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#WindowType)
+-   [WindowRestoreState](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#WindowRestoreState)
+-   [WindowRestoreStateFromFullscreen](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#WindowRestoreStateFromFullscreen)
+-   [StatusbarMode](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#StatusbarMode)
+-   [WindowProperties](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#WindowProperties)
+-   [BroadcastAction](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#BroadcastAction)
+-   [DialogName](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#DialogName)
+-   [CookieMode](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#CookieMode)
+-   [FlowDirection](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#FlowDirection)
+-   [UrlValidResults](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#UrlValidResults)
+-   [WhatsNewResults](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#WhatsNewResults)
+-   [UrlFragments](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#UrlFragments)
+-   [FileExtension](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#FileExtension)
+-   [SelectFileDialogType](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#SelectFileDialogType)
+-   [SelectFileOptions](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#SelectFileOptions)
+-   [SelectLocalImageParams](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#SelectLocalImageParams)
+-   [StoreImageOptions](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#StoreImageOptions)
+-   [SharedDataValue](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#SharedDataValue)
+-   [DateFormats](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#DateFormats)
+-   [CaptureQRDestination](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#CaptureQRDestination)
+-   [GetVersionResults](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#GetVersionResults)
+-   [TranslateError](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#TranslateError)
+-   [TranslateTextResponse](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#TranslateTextResponse)
+-   [ReadImageData](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#ReadImageData)
+-   [VivaldiService](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#VivaldiService)
+-   [VivaldiStatus](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#VivaldiStatus)
+-   [VivaldiServiceState](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#VivaldiServiceState)
+-   [ExtensionInstallResult](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#ExtensionInstallResult)
+-   [CopyToClipboardOptions](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#CopyToClipboardOptions)
+
+### Listeners
+
+-   [onScroll](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onScroll)
+-   [onDialogCanceled](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onDialogCanceled)
+-   [onSharedDataUpdated](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onSharedDataUpdated)
+-   [onSuspend](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onSuspend)
+-   [onResume](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onResume)
+-   [onPasswordIconStatusChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onPasswordIconStatusChanged)
+-   [onDownloadManagerReady](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onDownloadManagerReady)
+-   [onRazerChromaReady](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onRazerChromaReady)
+-   [onTopSitesChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onTopSitesChanged)
+-   [onBroadcastMessage](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onBroadcastMessage)
+-   [onShowQRCode](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onShowQRCode)
+-   [onSessionRecoveryStart](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onSessionRecoveryStart)
+-   [onSessionRecoveryDone](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onSessionRecoveryDone)
+-   [onVivaldiSyncStatusUpdated](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onVivaldiSyncStatusUpdated)
+
+### Methods
+
+-   [print](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#print)
+-   [clearCache](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#clearCache)
+-   [clearAllRecentlyClosedSessions](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#clearAllRecentlyClosedSessions)
+-   [clearRecentlyClosedTabs](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#clearRecentlyClosedTabs)
+-   [isTabInLastSession](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#isTabInLastSession)
+-   [isUrlValid](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#isUrlValid)
+-   [canOpenUrlExternally](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#canOpenUrlExternally)
+-   [getUrlFragments](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getUrlFragments)
+-   [urlToThumbnailText](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#urlToThumbnailText)
+-   [getSelectedText](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getSelectedText)
+-   [selectFile](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#selectFile)
+-   [openFolder](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#openFolder)
+-   [selectLocalImage](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#selectLocalImage)
+-   [cleanUnusedImages](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#cleanUnusedImages)
+-   [storeImage](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#storeImage)
+-   [getVersion](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getVersion)
+-   [getEnvVars](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getEnvVars)
+-   [getMediaAvailableState](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getMediaAvailableState)
+-   [setSharedData](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#setSharedData)
+-   [getSharedData](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getSharedData)
+-   [takeMutex](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#takeMutex)
+-   [releaseMutex](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#releaseMutex)
+-   [getSystemDateFormat](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getSystemDateFormat)
+-   [getSystemCountry](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getSystemCountry)
+-   [setLanguage](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#setLanguage)
+-   [getLanguage](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getLanguage)
+-   [setVivaldiAsDefaultBrowser](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#setVivaldiAsDefaultBrowser)
+-   [isVivaldiDefaultBrowser](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#isVivaldiDefaultBrowser)
+-   [launchNetworkSettings](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#launchNetworkSettings)
+-   [savePage](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#savePage)
+-   [openPage](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#openPage)
+-   [broadcastMessage](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#broadcastMessage)
+-   [setDefaultContentSettings](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#setDefaultContentSettings)
+-   [getDefaultContentSettings](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getDefaultContentSettings)
+-   [setBlockThirdPartyCookies](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#setBlockThirdPartyCookies)
+-   [getBlockThirdPartyCookies](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getBlockThirdPartyCookies)
+-   [openTaskManager](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#openTaskManager)
+-   [createQRCode](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#createQRCode)
+-   [getStartupAction](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getStartupAction)
+-   [setStartupAction](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#setStartupAction)
+-   [canShowWhatsNewPage](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#canShowWhatsNewPage)
+-   [showPasswordDialog](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#showPasswordDialog)
+-   [setDialogPosition](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#setDialogPosition)
+-   [isRazerChromaAvailable](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#isRazerChromaAvailable)
+-   [isRazerChromaReady](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#isRazerChromaReady)
+-   [setRazerChromaColor](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#setRazerChromaColor)
+-   [isDownloadManagerReady](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#isDownloadManagerReady)
+-   [setContentSettings](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#setContentSettings)
+-   [isDialogOpen](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#isDialogOpen)
+-   [focusDialog](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#focusDialog)
+-   [startChromecast](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#startChromecast)
+-   [generateQRCode](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#generateQRCode)
+-   [getGAPIKey](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getGAPIKey)
+-   [getVivaldiNetOAuthClientSecret](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getVivaldiNetOAuthClientSecret)
+-   [getVivaldiNetOAuthClientId](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getVivaldiNetOAuthClientId)
+-   [getGOAuthClientId](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getGOAuthClientId)
+-   [getGOAuthClientSecret](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getGOAuthClientSecret)
+-   [getMOAuthClientId](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getMOAuthClientId)
+-   [getYOAuthClientId](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getYOAuthClientId)
+-   [getYOAuthClientSecret](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getYOAuthClientSecret)
+-   [getFOAuthClientId](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getFOAuthClientId)
+-   [getAOLOAuthClientId](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getAOLOAuthClientId)
+-   [getAOLOAuthClientSecret](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getAOLOAuthClientSecret)
+-   [getOSGeolocationState](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getOSGeolocationState)
+-   [openOSGeolocationSettings](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#openOSGeolocationSettings)
+-   [getCommandLineValue](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getCommandLineValue)
+-   [hasCommandLineSwitch](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#hasCommandLineSwitch)
+-   [osCrypt](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#osCrypt)
+-   [osDecrypt](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#osDecrypt)
+-   [translateText](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#translateText)
+-   [showManageSSLCertificates](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#showManageSSLCertificates)
+-   [setProtocolHandling](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#setProtocolHandling)
+-   [browserWindowReady](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#browserWindowReady)
+-   [readImage](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#readImage)
+-   [isRTL](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#isRTL)
+-   [emulateUserInput](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#emulateUserInput)
+-   [isVivaldiPinnedToLaunchBar](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#isVivaldiPinnedToLaunchBar)
+-   [pinVivaldiToLaunchBar](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#pinVivaldiToLaunchBar)
+-   [downloadsDrag](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#downloadsDrag)
+-   [acknowledgeCrashedSession](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#acknowledgeCrashedSession)
+-   [silentlyInstallExtension](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#silentlyInstallExtension)
+-   [allowVPNIncognito](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#allowVPNIncognito)
+-   [requestVivaldiSyncStatus](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#requestVivaldiSyncStatus)
+-   [openPrivacyReportDialog](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#openPrivacyReportDialog)
+-   [updatePrimarySelection](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#updatePrimarySelection)
+-   [showAdditionalStartupPages](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#showAdditionalStartupPages)
+-   [copyToClipboard](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#copyToClipboard)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#Color)Color
+
+Object defining an RGB color.
+
+Properties:
+
+red
+
+```
+integer
+```
+
+Red color.
+
+green
+
+```
+integer
+```
+
+Green color.
+
+blue
+
+```
+integer
+```
+
+Blue color.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#GetEnvVarsResponse)GetEnvVarsResponse
+
+GetEnvVarsResponse
+
+```
+object
+```
+
+Object containing valid environment variable values.
+
+Object Properties:
+
+type
+
+```
+string
+```
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#WindowState)WindowState
+
+`ENUM`
+
+The state of this browser window.
+
+-   normal: Normal window state (i.e. not minimized, maximized, or fullscreen).
+-   minimized: Minimized window state.
+-   maximized: Maximized window state.
+-   fullscreen: Fullscreen window state.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#WindowType)WindowType
+
+`ENUM`
+
+Type of window. normal is a browser-window.
+
+-   normal
+-   popup
+-   settings
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#WindowRestoreState)WindowRestoreState
+
+`ENUM`
+
+State of window after going out of fullscreen.
+
+-   normal
+-   minimized
+-   maximized
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#WindowRestoreStateFromFullscreen)WindowRestoreStateFromFullscreen
+
+`ENUM`
+
+State of window after going out of html-fullscreen.
+
+-   normal
+-   minimized
+-   maximized
+-   fullscreen
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#StatusbarMode)StatusbarMode
+
+`ENUM`
+
+Statusbar view setting. 'on' | 'off' | 'overlay' (StatusBarDisplayValues from gen/prefs/prefNames.js)
+
+-   on
+-   off
+-   overlay
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#WindowProperties)WindowProperties
+
+Type WindowState in ./stores/WindowStore.js
+
+Properties:
+
+type
+
+```
+WindowType
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+state
+
+(optional)
+
+```
+WindowState
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+restoreStateFullscreen
+
+```
+WindowRestoreState
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+restoreStateHtml5Fullscreen
+
+```
+WindowRestoreStateFromFullscreen
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+nativeDecorations
+
+```
+boolean
+```
+
+Window is uses native window-controls.
+
+incognito
+
+```
+boolean
+```
+
+Window is incognito.
+
+guest
+
+```
+boolean
+```
+
+Window is guest.
+
+html5FullScreen
+
+```
+boolean
+```
+
+Window is fullscreened through htmlelement.requestFullScreen.
+
+active
+
+```
+boolean
+```
+
+Window is active.
+
+minimalUI
+
+(optional)
+
+```
+boolean
+```
+
+Window is incognito.
+
+visibleUI
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+bookmarksBar
+
+```
+boolean
+```
+
+Showing bookmarksbar.
+
+addressBar
+
+```
+boolean
+```
+
+Showing addressbar.
+
+panelToggle
+
+```
+boolean
+```
+
+Showing panel-toggle.
+
+tabs
+
+```
+boolean
+```
+
+Showing tabs.
+
+statusBar
+
+```
+StatusbarMode
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#BroadcastAction)BroadcastAction
+
+Identifies broadcast type. Only one property should be used.
+
+Properties:
+
+startDragging
+
+(optional)
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+endDragging
+
+(optional)
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+translate
+
+(optional)
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+winId
+
+```
+number
+```
+
+The window where translation takes place.
+
+lang
+
+```
+string
+```
+
+Language of text to be translated.
+
+text
+
+```
+string
+```
+
+Text to be translated.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#DialogName)DialogName
+
+`ENUM`
+
+Name of the dialog to set position for.
+
+-   chromecast: The Chromecast dialog with source and destination. Centered over the active webview.
+-   password: The password dialog opening to save a password.
+-   permission: The permission dialog allowing or blocking one or more permissions.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#CookieMode)CookieMode
+
+`ENUM`
+
+CookieMode enumeration, corresponds to CookieControlsMode in chromium/components/content\_settings/core/browser/cookie\_settings.h
+
+-   off: All cookies allowed.
+-   BlockThirdParty: Block third party cookies.
+-   BlockThirdPartyIncognitoOnly: Block third party cookies in incognito mode only.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#FlowDirection)FlowDirection
+
+`ENUM`
+
+The direction a dialog would be opened from the given rect.
+
+-   down: Dialog should position itself below the given rect.
+-   up: Dialog should position itself above the given rect.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#UrlValidResults)UrlValidResults
+
+Object that describes the validitity of a given url.
+
+Properties:
+
+urlValid
+
+```
+boolean
+```
+
+The url is a correctly formatted url. This might be true even if the protocol is not valid.
+
+isBrowserUrl
+
+```
+boolean
+```
+
+The url can be shown directly by the browser.
+
+schemeParsed
+
+```
+string
+```
+
+The parsed and authorative protocol scheme as parsed by Chromium.
+
+normalizedUrl
+
+```
+string
+```
+
+Returns the raw spec, i.e., the full text of the URL, in canonical UTF-8, if the URL is valid.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#WhatsNewResults)WhatsNewResults
+
+Object that describes how a What's new page can be used.
+
+Properties:
+
+show
+
+```
+boolean
+```
+
+true if the What's new page can be shown, otherwise false.
+
+firstrun
+
+```
+boolean
+```
+
+true if this the first time the Whats new page is shown. Do not use if 'show' is false.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#UrlFragments)UrlFragments
+
+Object with url fragments, including top level domain which is eTLD aware.
+
+Properties:
+
+scheme
+
+(optional)
+
+```
+string
+```
+
+If URL cannot be parsed at all, this will be absent
+
+username
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+password
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+host
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+port
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+path
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+query
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+ref
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+tld
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+urlForSecurityDisplay
+
+(optional)
+
+```
+string
+```
+
+URL formatted for security display, meaning formatted in unicode in a way to avoid IDN homograph attack.
+
+tldForSecurityDisplay
+
+(optional)
+
+```
+string
+```
+
+TLD for security display
+
+hostForSecurityDisplay
+
+(optional)
+
+```
+string
+```
+
+Host for security display
+
+pathForSecurityDisplay
+
+(optional)
+
+```
+string
+```
+
+Path for security display
+
+queryForSecurityDisplay
+
+(optional)
+
+```
+string
+```
+
+Query for security display
+
+refForSecurityDisplay
+
+(optional)
+
+```
+string
+```
+
+ref for security display
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#FileExtension)FileExtension
+
+A single extension item used for filtering
+
+Properties:
+
+ext
+
+```
+string
+```
+
+Extension ending, eg. 'jpg'
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#SelectFileDialogType)SelectFileDialogType
+
+`ENUM`
+
+The type of selectfile dialog to show.
+
+-   file: This is a file select dialog.
+-   save\_file: This is a file select dialog, allowing to choose a nonexistent file for saving.
+-   folder: This is a folder select dialog.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#SelectFileOptions)SelectFileOptions
+
+Option object for selectFile.
+
+Properties:
+
+windowId
+
+```
+integer
+```
+
+Id of the window to show the file selection dialog against.
+
+title
+
+```
+string
+```
+
+Title of the file select dialog.
+
+type
+
+```
+SelectFileDialogType
+```
+
+Type of file select dialog, defaults to 'file'.
+
+accepts
+
+(optional)
+
+Extensions to filter file names on.
+
+`Array` of:
+
+-   FileExtension
+
+defaultPath
+
+(optional)
+
+```
+string
+```
+
+The file's default path and name.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#SelectLocalImageParams)SelectLocalImageParams
+
+Option object for selectLocalImage.
+
+Properties:
+
+windowId
+
+```
+integer
+```
+
+Id of the window to show the file selection dialog against.
+
+title
+
+```
+string
+```
+
+Title for the file selection dialog.
+
+profileImage
+
+(optional)
+
+```
+boolean
+```
+
+Store the image path as the path for a custom profile avatar.
+
+themeId
+
+(optional)
+
+```
+string
+```
+
+The id of theme to store the background image in.
+
+thumbnailBookmarkId
+
+(optional)
+
+```
+string
+```
+
+The bookmark id where to store the selected local path.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#StoreImageOptions)StoreImageOptions
+
+Option object for storeImage.
+
+Properties:
+
+url
+
+(optional)
+
+```
+string
+```
+
+The URL to read the data from. Currently only the file URL is supported.
+
+data
+
+(optional)
+
+```
+binary
+```
+
+The image data.
+
+mimeType
+
+(optional)
+
+```
+string
+```
+
+The type of the image.
+
+themeId
+
+(optional)
+
+```
+string
+```
+
+The id of theme to store the image as theme background.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#SharedDataValue)SharedDataValue
+
+Data key+value pair.
+
+Properties:
+
+key
+
+```
+string
+```
+
+The data key.
+
+value
+
+```
+any
+```
+
+The data value.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#DateFormats)DateFormats
+
+An object containing various system date/time formats
+
+Properties:
+
+shortDateFormat
+
+```
+string
+```
+
+Short date format.
+
+longDateFormat
+
+```
+string
+```
+
+Long date format.
+
+timeFormat
+
+```
+string
+```
+
+12/24 hour time format string
+
+firstDayOfWeek
+
+```
+number
+```
+
+The first day of the week. 0-6 (Sunday to Saturday)
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#CaptureQRDestination)CaptureQRDestination
+
+`ENUM`
+
+Where to store the generated QR code
+
+-   dataurl: Store as a returned data url.
+-   file: Store in the download location.
+-   clipboard: Store in the clipboard
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#GetVersionResults)GetVersionResults
+
+⚠ NO DESCRIPTION PROVIDED
+
+Properties:
+
+vivaldiVersion
+
+```
+string
+```
+
+The Vivaldi version as a string.
+
+chromiumVersion
+
+```
+string
+```
+
+The Chromium version as a string.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#TranslateError)TranslateError
+
+`ENUM`
+
+The error messages translate can return.
+
+-   no\_error
+-   network
+-   unknown\_language
+-   unsupported\_language
+-   timeout
+-   error
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#TranslateTextResponse)TranslateTextResponse
+
+⚠ NO DESCRIPTION PROVIDED
+
+Properties:
+
+error
+
+```
+TranslateError
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+detectedSourceLanguage
+
+```
+string
+```
+
+Language code of the detected language code of the provided source text, if any.
+
+sourceText
+
+The original source strings.
+
+`Array` of:
+
+-   string
+
+translatedText
+
+The translated text corresponding to the given sourceText.
+
+`Array` of:
+
+-   string
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#ReadImageData)ReadImageData
+
+An object that defines the data read from the image file.
+
+Properties:
+
+data
+
+Read image as raw bytes.
+
+`Array` of:
+
+-   integer
+
+type
+
+```
+string
+```
+
+Mime type of the read image.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#VivaldiService)VivaldiService
+
+`ENUM`
+
+Name of service
+
+-   sync
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#VivaldiStatus)VivaldiStatus
+
+`ENUM`
+
+The states of a remote service
+
+-   operational: Up an running.
+-   maintenance: Down for maintenance.
+-   minoroutage: Down for a minor problem.
+-   majoroutage: Down for a major problem.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#VivaldiServiceState)VivaldiServiceState
+
+The actual state of a remote service
+
+Properties:
+
+service
+
+```
+VivaldiService
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+status
+
+```
+VivaldiStatus
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#ExtensionInstallResult)ExtensionInstallResult
+
+An object holding result of extension installation request.
+
+Properties:
+
+success
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+error
+
+```
+string
+```
+
+Installation error description, in case installation failed.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#CopyToClipboardOptions)CopyToClipboardOptions
+
+Option object for copyToClipboard.
+
+Properties:
+
+confidential
+
+(optional)
+
+```
+boolean
+```
+
+Mark copy as confidential.
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onScroll)onScroll
+
+Fires for Mac when scroll device changes.
+
+Parameters:
+
+scrollType
+
+```
+integer
+```
+
+Device that triggers scrolling. 1: Mouse, 2: Trackpad 3: Inertial
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onDialogCanceled)onDialogCanceled
+
+Called when the javascript dialog was canceled.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onSharedDataUpdated)onSharedDataUpdated
+
+Fires when a shared data value has changed or been added.
+
+Parameters:
+
+key
+
+```
+string
+```
+
+Name of the key for the value.
+
+value
+
+```
+any
+```
+
+The new value for the key.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onSuspend)onSuspend
+
+Fired when the computer is about to suspend.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onResume)onResume
+
+Fired when the computer has resumed from suspension.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onPasswordIconStatusChanged)onPasswordIconStatusChanged
+
+Fires for password icon status change.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+Window id to show/hide icon for
+
+show
+
+```
+boolean
+```
+
+Whether to show or hide icon
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onDownloadManagerReady)onDownloadManagerReady
+
+Fired when the download manager has loaded all its data.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onRazerChromaReady)onRazerChromaReady
+
+Fired when the Razer Chroma API has been initialized.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onTopSitesChanged)onTopSitesChanged
+
+Fired when topsites list has changed.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onBroadcastMessage)onBroadcastMessage
+
+Test.
+
+Parameters:
+
+message
+
+```
+BroadcastAction
+```
+
+The message to receive.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onShowQRCode)onShowQRCode
+
+Fired when Chromium wants us to show a QR code for the given url.
+
+Parameters:
+
+url
+
+```
+string
+```
+
+The url to show the QR code for.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onSessionRecoveryStart)onSessionRecoveryStart
+
+Fired when the session recovery starts.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onSessionRecoveryDone)onSessionRecoveryDone
+
+Fired when the session recovery is done.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#onVivaldiSyncStatusUpdated)onVivaldiSyncStatusUpdated
+
+Fired when backend has received information of Vivaldi sync service.
+
+Parameters:
+
+mode
+
+```
+VivaldiStatus
+```
+
+The state of the remote service.
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#print)print
+
+Open print preview dialog.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+WindowId of browser printing active tab.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#clearCache)clearCache
+
+Clears browser cache.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#clearAllRecentlyClosedSessions)clearAllRecentlyClosedSessions
+
+Clears the list of recently closed tabs and/or windows.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#clearRecentlyClosedTabs)clearRecentlyClosedTabs
+
+Clears one or more recently closed tabs.
+
+Parameters:
+
+ids
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   string
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#isTabInLastSession)isTabInLastSession
+
+Checks whether a given tab is part of the last loaded session
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+The tab id to check if part of the session
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#isUrlValid)isUrlValid
+
+Validates given URL. Returns UrlValidResults with the results.
+
+Parameters:
+
+url
+
+```
+string
+```
+
+The URL to validate
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#canOpenUrlExternally)canOpenUrlExternally
+
+Check if the browser can potentially open the URL using an external application or an extension. This should only be called if it is already known that the URL is a valid one and is not handled by the browser directly to get a valid result.
+
+Parameters:
+
+url
+
+```
+string
+```
+
+The URL to check
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getUrlFragments)getUrlFragments
+
+Splits given URL. Returns UrlFragments including top level domain which is eTLD aware.
+
+Parameters:
+
+url
+
+```
+string
+```
+
+The URL to process.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#urlToThumbnailText)urlToThumbnailText
+
+Gets the text for a fallback speeddial thumbnail
+
+Parameters:
+
+url
+
+```
+string
+```
+
+The URL to get the text from.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getSelectedText)getSelectedText
+
+Returns selected text in page with given id
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+The page to examine
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#selectFile)selectFile
+
+Select a single file and returns the file name.
+
+Parameters:
+
+options
+
+```
+SelectFileOptions
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#openFolder)openFolder
+
+Opens file manager with given folder path.
+
+Parameters:
+
+path
+
+```
+string
+```
+
+Folder path to open.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#selectLocalImage)selectLocalImage
+
+Ask the user to select an image file and store its path as a data mapping URL in a bookmark or a preference.
+
+Parameters:
+
+params
+
+```
+SelectLocalImageParams
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#cleanUnusedImages)cleanUnusedImages
+
+Cleans unused images (thumbnails)
+
+Parameters:
+
+createdBefore
+
+```
+integer
+```
+
+Run only if createdBefore <= the number of the images created sinct the last cleanup.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#storeImage)storeImage
+
+Save image from the memory blob to the image store and return related chrome:// URL.
+
+Parameters:
+
+options
+
+```
+StoreImageOptions
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getVersion)getVersion
+
+Gets the Vivaldi version and Chromium versions.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getEnvVars)getEnvVars
+
+Gathers values of environment variables specified in the first argument, returns a list of pairs containing keys and values (or none in case the variable does not exist)
+
+Parameters:
+
+keys
+
+list of names of environment variables
+
+`Array` of:
+
+-   string
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getMediaAvailableState)getMediaAvailableState
+
+Windows: Returns whether this version of the OS has media codecs installed. Might return false on N versions of Windows.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#setSharedData)setSharedData
+
+Sets the given data to be kept in-memory for the duration of the Vivaldi setting (until Vivaldi exits).
+
+Parameters:
+
+keyValuePair
+
+```
+SharedDataValue
+```
+
+The Key-value.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getSharedData)getSharedData
+
+Gets the given data from the in-memory storage.
+
+Parameters:
+
+keyValuePair
+
+```
+SharedDataValue
+```
+
+The Key-value, the value is the default value returned if the key does not exist.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#takeMutex)takeMutex
+
+Uses the in-memory storage to synchronize access to a resource accross several vivaldi extension processes (until Vivaldi exits).
+
+Parameters:
+
+name
+
+```
+string
+```
+
+A name uniquely identifying the mutex.
+
+wait
+
+(optional)
+
+```
+boolean
+```
+
+Whether to wait for the mutex to be available or to to throw an error if it isn't. Defaults to true.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#releaseMutex)releaseMutex
+
+Relinquish use of a mutex obtained in takeSharedMutex.
+
+Parameters:
+
+handle
+
+```
+any
+```
+
+The handle to the mutex, returned from takeSharedMutex.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getSystemDateFormat)getSystemDateFormat
+
+Returns various date/time system formats
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getSystemCountry)getSystemCountry
+
+Return the system settings for the country if available.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#setLanguage)setLanguage
+
+Sets the Vivaldi language code.
+
+Parameters:
+
+locale
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getLanguage)getLanguage
+
+Gets the active Vivaldi language code.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#setVivaldiAsDefaultBrowser)setVivaldiAsDefaultBrowser
+
+Set Vivaldi as the default browser.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#isVivaldiDefaultBrowser)isVivaldiDefaultBrowser
+
+Is Vivaldi the default browser.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#launchNetworkSettings)launchNetworkSettings
+
+Launch network settings.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#savePage)savePage
+
+Saves web page.
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+Id to of page being saved.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#openPage)openPage
+
+Open web page.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+WindowId of browser opening a local file.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#broadcastMessage)broadcastMessage
+
+Broadcast a message to all windows. Works from regular to private windows as well.
+
+Parameters:
+
+message
+
+```
+BroadcastAction
+```
+
+The message to send.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#setDefaultContentSettings)setDefaultContentSettings
+
+Set Vivaldi default content settings.
+
+Parameters:
+
+contentSetting
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+value
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getDefaultContentSettings)getDefaultContentSettings
+
+Set Vivaldi default content settings.
+
+Parameters:
+
+contentSetting
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#setBlockThirdPartyCookies)setBlockThirdPartyCookies
+
+Set Vivaldi default content settings.
+
+Parameters:
+
+cookieMode
+
+```
+CookieMode
+```
+
+Cookie control for third party cookies.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getBlockThirdPartyCookies)getBlockThirdPartyCookies
+
+Set Vivaldi default content settings.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#openTaskManager)openTaskManager
+
+Opens Vivaldi task manager dialog.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#createQRCode)createQRCode
+
+Opens the QR Code bubble window for the given page.
+
+Parameters:
+
+id
+
+```
+integer
+```
+
+The id of the page.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getStartupAction)getStartupAction
+
+Returns the startup action.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#setStartupAction)setStartupAction
+
+Returns the startup action.
+
+Parameters:
+
+startup
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+urls
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   string
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#canShowWhatsNewPage)canShowWhatsNewPage
+
+Checks whether showing the What's new page is allowed.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#showPasswordDialog)showPasswordDialog
+
+Shows password manage dialog.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+The window id the dialog belongs to.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#setDialogPosition)setDialogPosition
+
+Sets the opening position for the given Chromium-triggered dialog.
+
+Parameters:
+
+dialogName
+
+```
+DialogName
+```
+
+The window to set the position for.
+
+windowId
+
+```
+integer
+```
+
+The window id the dialog belongs to.
+
+position
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+left
+
+```
+integer
+```
+
+Anchor left position in client coordinates.
+
+top
+
+```
+integer
+```
+
+Anchor top position in client coordinates.
+
+width
+
+```
+integer
+```
+
+Anchor width.
+
+height
+
+```
+integer
+```
+
+Anchor height.
+
+flowDirection
+
+```
+FlowDirection
+```
+
+The direction the dialog should be positioned based on the rect.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#isRazerChromaAvailable)isRazerChromaAvailable
+
+Is the Razer Chroma API available.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#isRazerChromaReady)isRazerChromaReady
+
+Is the Razer Chroma API initialized and ready to accept commands.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#setRazerChromaColor)setRazerChromaColor
+
+Set the color(s) for the configured Razer Chroma lights.
+
+Parameters:
+
+colors
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   Color
+-   Array of colors to be set for the configured lights. If multiple colors are set, it will cycle quickly between them from the first to the last.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#isDownloadManagerReady)isDownloadManagerReady
+
+Checks whether the download manager has initialized. If not, register for the onDownloadManagerReady event to be notified when it's ready.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#setContentSettings)setContentSettings
+
+Set a contentsetting for a pattern .
+
+Parameters:
+
+details
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+primaryPattern
+
+```
+string
+```
+
+The pattern for the primary URL. For details on the format of a pattern, see [Content Setting Patterns](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentSettings#patterns).
+
+secondaryPattern
+
+(optional)
+
+```
+string
+```
+
+The pattern for the secondary URL. Defaults to matching all URLs. For details on the format of a pattern, see [Content Setting Patterns](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/contentSettings#patterns).
+
+type
+
+```
+string
+```
+
+The resource identifier for the content type.
+
+value
+
+```
+string
+```
+
+The setting applied by this rule. See the description of the individual ContentSetting objects for the possible values.
+
+incognito
+
+(optional)
+
+```
+boolean
+```
+
+Where to set the setting (default: regular).
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#isDialogOpen)isDialogOpen
+
+Checks whether the given native dialog is open.
+
+Parameters:
+
+dialogName
+
+```
+DialogName
+```
+
+Dialog name to check for visibility.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#focusDialog)focusDialog
+
+Focus the named dialog so keyboard navigation within it is available.
+
+Parameters:
+
+dialogName
+
+```
+DialogName
+```
+
+Dialog name to check for visibility.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#startChromecast)startChromecast
+
+Shows the Chromecast dialog.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+Window id where casting should start.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#generateQRCode)generateQRCode
+
+Generate a QR image based on the given data.
+
+Parameters:
+
+data
+
+```
+string
+```
+
+Data to encode in the QR code. The maximum length of the data is 288 bytes.
+
+destination
+
+(optional)
+
+```
+CaptureQRDestination
+```
+
+Destination of the QR capture, defaults to 'dataurl'.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getGAPIKey)getGAPIKey
+
+Returns G API key.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getVivaldiNetOAuthClientSecret)getVivaldiNetOAuthClientSecret
+
+Returns Vivaldi.net OAuth client secret.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getVivaldiNetOAuthClientId)getVivaldiNetOAuthClientId
+
+Returns Vivaldi.net OAuth client id.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getGOAuthClientId)getGOAuthClientId
+
+Returns G OAuth API client id.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getGOAuthClientSecret)getGOAuthClientSecret
+
+Returns G OAuth API client secret.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getMOAuthClientId)getMOAuthClientId
+
+Returns MS OAuth API client id.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getYOAuthClientId)getYOAuthClientId
+
+Returns Yahoo OAuth client id.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getYOAuthClientSecret)getYOAuthClientSecret
+
+Returns Yahoo OAuth client secret.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getFOAuthClientId)getFOAuthClientId
+
+Returns Fastmail OAuth client id.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getAOLOAuthClientId)getAOLOAuthClientId
+
+Returns AOL OAuth client id.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getAOLOAuthClientSecret)getAOLOAuthClientSecret
+
+Returns AOL OAuth client secret.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getOSGeolocationState)getOSGeolocationState
+
+Gets the state of OS geolocation.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#openOSGeolocationSettings)openOSGeolocationSettings
+
+Makes the OS geolocation settings visible to the user.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#getCommandLineValue)getCommandLineValue
+
+Gets the command line value for the given named argument.
+
+Parameters:
+
+value
+
+```
+string
+```
+
+Name of the command line switch without initial dashes eg. translate-server-url.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#hasCommandLineSwitch)hasCommandLineSwitch
+
+Check if the command line has switch present for the given argument.
+
+Parameters:
+
+value
+
+```
+string
+```
+
+Name of the command line switch without initial dashes eg. translate-server-url.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#osCrypt)osCrypt
+
+⚠ NO DESCRIPTION PROVIDED
+
+Parameters:
+
+plain
+
+```
+string
+```
+
+The content to encrypt
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#osDecrypt)osDecrypt
+
+⚠ NO DESCRIPTION PROVIDED
+
+Parameters:
+
+encrypted
+
+```
+string
+```
+
+The content to decrypt
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#translateText)translateText
+
+⚠ NO DESCRIPTION PROVIDED
+
+Parameters:
+
+sourceLanguageCode
+
+```
+string
+```
+
+The language code of the source text, or empty if you want the server to try to detect the language.
+
+destinationLanguageCode
+
+```
+string
+```
+
+The destination language code.
+
+sourceText
+
+The strings to translate.
+
+`Array` of:
+
+-   string
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#showManageSSLCertificates)showManageSSLCertificates
+
+Show the OS manage certificates dialog.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+The window to use as parent window for the dialog
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#setProtocolHandling)setProtocolHandling
+
+Turn on/off protocol handling for web pages.
+
+Parameters:
+
+enabled
+
+```
+boolean
+```
+
+Turn on/off protocol handling for web pages.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#browserWindowReady)browserWindowReady
+
+Signals that JS has fully set up browser window and its event listeners.
+
+Parameters:
+
+windowId
+
+```
+number
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#readImage)readImage
+
+Reads an image file from the file system from the specified URL to the object.
+
+Parameters:
+
+url
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#isRTL)isRTL
+
+Checks if current locale Right-To-Left locale.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#emulateUserInput)emulateUserInput
+
+Notifies render there has been user driven input. To be used when normal input is not detected in render because of blocking event loop handling (eg when menus are open).
+
+Parameters:
+
+windowId
+
+```
+number
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#isVivaldiPinnedToLaunchBar)isVivaldiPinnedToLaunchBar
+
+Check is Vivaldi pinned to the launch bar. If pinning is not available, throws an Error.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#pinVivaldiToLaunchBar)pinVivaldiToLaunchBar
+
+Pin Vivaldi icon to the launch bar.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#downloadsDrag)downloadsDrag
+
+Start a native drag for the downloads items.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+downloadIds
+
+Array of IDs of the download items to initiate the drag.
+
+`Array` of:
+
+-   integer
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#acknowledgeCrashedSession)acknowledgeCrashedSession
+
+Must be called in the post crash browser launch. It can either restore crashed session, or just acknowledge the crash.
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+restoreSession
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+reenableExtensions
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#silentlyInstallExtension)silentlyInstallExtension
+
+Handles silent installation of an extension, disabled after install, given it's id.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#allowVPNIncognito)allowVPNIncognito
+
+A single-purpose call that grants incognito access to ProtonVPN extension.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#requestVivaldiSyncStatus)requestVivaldiSyncStatus
+
+Looks up status. Status can be returned in callback, but if not, arrive later as an onVivaldiSyncStatusChange event.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#openPrivacyReportDialog)openPrivacyReportDialog
+
+Opens privacy report dialog
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#updatePrimarySelection)updatePrimarySelection
+
+Writes text to the primary selection buffer. This buffer is only used on Linux and allows pasting with middle mouse button.
+
+Parameters:
+
+text
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#showAdditionalStartupPages)showAdditionalStartupPages
+
+Checks whether should show additional startup pages.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/utilities.html#copyToClipboard)copyToClipboard
+
+Copy text to clipboard using ScopedClipboardWriter.
+
+Parameters:
+
+text
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+options
+
+```
+CopyToClipboardOptions
+```
+
+⚠ NO DESCRIPTION PROVIDED

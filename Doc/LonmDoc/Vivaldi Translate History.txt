@@ -1,0 +1,215 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/translateHistory.html#top)
+
+## vivaldi.translateHistory Modders API Reference
+
+Use `vivaldi.translateHistory` API fetch and save translate history elements.
+
+## Navigation
+
+### Types
+
+-   [TextItem](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/translateHistory.html#TextItem)
+-   [HistoryItem](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/translateHistory.html#HistoryItem)
+
+### Listeners
+
+-   [onAdded](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/translateHistory.html#onAdded)
+-   [onMoved](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/translateHistory.html#onMoved)
+-   [onRemoved](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/translateHistory.html#onRemoved)
+
+### Methods
+
+-   [get](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/translateHistory.html#get)
+-   [add](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/translateHistory.html#add)
+-   [remove](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/translateHistory.html#remove)
+-   [reset](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/translateHistory.html#reset)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/translateHistory.html#TextItem)TextItem
+
+Properties:
+
+code
+
+```
+string
+```
+
+Language code.
+
+text
+
+```
+string
+```
+
+Text.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/translateHistory.html#HistoryItem)HistoryItem
+
+Properties:
+
+id
+
+```
+string
+```
+
+Unique identifier.
+
+srcItem
+
+```
+TextItem
+```
+
+Text and language code of original (non-translated) data.
+
+translatedItem
+
+```
+TextItem
+```
+
+Text and language code of translated data.
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/translateHistory.html#onAdded)onAdded
+
+Fires when elements have been appended to the list.
+
+Parameters:
+
+items
+
+Elements in the order they have been added
+
+`Array` of:
+
+-   HistoryItem
+
+index
+
+```
+number
+```
+
+Index where the elements are located.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/translateHistory.html#onMoved)onMoved
+
+Fires when an element has been moved within the list.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+Identifier of element that has been moved.
+
+index
+
+```
+number
+```
+
+Index to where element has been moved.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/translateHistory.html#onRemoved)onRemoved
+
+Fires when elements have been appended to the list.
+
+Parameters:
+
+ids
+
+A list of ids that have been removed. An empty list means all.
+
+`Array` of:
+
+-   string
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/translateHistory.html#get)get
+
+Retrieves the full history.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/translateHistory.html#add)add
+
+Adds an item to the list. If item already exists that item is returned without adding a duplicate. The returned item's id it set up in the call.
+
+Parameters:
+
+item
+
+```
+HistoryItem
+```
+
+Data to add. Note, the id element is ignored.
+
+index
+
+```
+number
+```
+
+Where to add element. -1 indicates end of list.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/translateHistory.html#remove)remove
+
+Removes one or more items.
+
+Parameters:
+
+ids
+
+List of identifiers representing items to be removed.
+
+`Array` of:
+
+-   string
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/translateHistory.html#reset)reset
+
+Removes items with matching timestamp.
+
+Parameters:
+
+since
+
+```
+number
+```
+
+In milliseconds since epoch. Remove all items with a timestamp greater or equal to this value.

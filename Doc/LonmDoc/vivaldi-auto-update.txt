@@ -1,0 +1,487 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#top)
+
+## vivaldi.autoUpdate Modders API Reference
+
+Use the `vivaldi.autoupdate` API to interact with (Win)Sparkle.
+
+## Navigation
+
+### Types
+
+-   [UpdateOperationStatusEnum](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#UpdateOperationStatusEnum)
+-   [UpdateOperationStatus](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#UpdateOperationStatus)
+-   [UpdateNotFoundReason](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#UpdateNotFoundReason)
+-   [About](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#About)
+-   [AboutPaths](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#AboutPaths)
+
+### Listeners
+
+-   [onDidFindValidUpdate](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#onDidFindValidUpdate)
+-   [onUpdaterDidNotFindUpdate](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#onUpdaterDidNotFindUpdate)
+-   [onWillDownloadUpdate](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#onWillDownloadUpdate)
+-   [onDidDownloadUpdate](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#onDidDownloadUpdate)
+-   [onWillInstallUpdateOnQuit](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#onWillInstallUpdateOnQuit)
+-   [onNeedRestartToReloadCodecs](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#onNeedRestartToReloadCodecs)
+-   [onUpdaterWillRelaunchApplication](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#onUpdaterWillRelaunchApplication)
+-   [onUpdaterDidRelaunchApplication](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#onUpdaterDidRelaunchApplication)
+-   [onDidAbortWithError](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#onDidAbortWithError)
+-   [onUpdateFinished](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#onUpdateFinished)
+-   [onUpdateProgress](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#onUpdateProgress)
+
+### Methods
+
+-   [checkForUpdates](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#checkForUpdates)
+-   [startUpdate](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#startUpdate)
+-   [isUpdateNotifierEnabled](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#isUpdateNotifierEnabled)
+-   [enableUpdateNotifier](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#enableUpdateNotifier)
+-   [disableUpdateNotifier](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#disableUpdateNotifier)
+-   [installUpdateAndRestart](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#installUpdateAndRestart)
+-   [getAutoInstallUpdates](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#getAutoInstallUpdates)
+-   [setAutoInstallUpdates](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#setAutoInstallUpdates)
+-   [getLastCheckTime](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#getLastCheckTime)
+-   [getUpdateStatus](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#getUpdateStatus)
+-   [hasAutoUpdates](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#hasAutoUpdates)
+-   [needsCodecRestart](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#needsCodecRestart)
+-   [runStartupChecks](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#runStartupChecks)
+-   [getAboutInfo](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#getAboutInfo)
+-   [getAboutPathsInfo](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#getAboutPathsInfo)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#UpdateOperationStatusEnum)UpdateOperationStatusEnum
+
+`ENUM`
+
+⚠ NO DESCRIPTION PROVIDED
+
+-   noUpdate
+-   didAbortWithError
+-   didFindValidUpdate
+-   willDownloadUpdate
+-   didDownloadUpdate
+-   willInstallUpdateOnQuit
+-   updaterDidRelaunchApplication
+-   needRestartToReloadCodecs
+-   error
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#UpdateOperationStatus)UpdateOperationStatus
+
+A structure describing the status of an update operation if any.
+
+Properties:
+
+status
+
+```
+UpdateOperationStatusEnum
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+version
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+releaseNotesUrl
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#UpdateNotFoundReason)UpdateNotFoundReason
+
+`ENUM`
+
+⚠ NO DESCRIPTION PROVIDED
+
+-   Unknown
+-   OnLatestVersion
+-   OnNewerThanLatestVersion
+-   SystemIsTooOld
+-   SystemIsTooNew
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#About)About
+
+A structure describing various properties of Vivaldi.
+
+Properties:
+
+userAgent
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+commandLine
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+macLinker
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+JSVersion
+
+```
+string
+```
+
+Javascript version.
+
+JSEngine
+
+```
+string
+```
+
+Javascript engine version. Currently hardcoded to V8. See version\_ui.cc #237
+
+channel
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+cl
+
+```
+string
+```
+
+Version control specific identifier of this release.
+
+annotatedVersion
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+copyright
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+companyName
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#AboutPaths)AboutPaths
+
+A structure showing file paths. Runs async on FILE thread
+
+Properties:
+
+exePath
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+profilePath
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+fullOSVersion
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#onDidFindValidUpdate)onDidFindValidUpdate
+
+Fired when a valid update is found.
+
+Parameters:
+
+releaseNotesUrl
+
+```
+string
+```
+
+URL of the release notes of the update.
+
+version
+
+```
+string
+```
+
+The version of the update or an empty string if not known
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#onUpdaterDidNotFindUpdate)onUpdaterDidNotFindUpdate
+
+Fired if checkForUpdates did not find an update.
+
+Parameters:
+
+reason
+
+```
+UpdateNotFoundReason
+```
+
+Enum reason why the updated did not find an update.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#onWillDownloadUpdate)onWillDownloadUpdate
+
+Fired when an update will be downloaded.
+
+Parameters:
+
+version
+
+```
+string
+```
+
+The version of the update or an empty string if not known
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#onDidDownloadUpdate)onDidDownloadUpdate
+
+Fired when an update has been downloaded.
+
+Parameters:
+
+version
+
+```
+string
+```
+
+The version of the update or an empty string if not known
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#onWillInstallUpdateOnQuit)onWillInstallUpdateOnQuit
+
+Fired when an update will be installed on restart or quit.
+
+Parameters:
+
+version
+
+```
+string
+```
+
+The version that will be installed on quit or an empty string if not known
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#onNeedRestartToReloadCodecs)onNeedRestartToReloadCodecs
+
+Fired when an update to audio/video support (including Widevine) happened while the application was running, and restart is needed to reload.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#onUpdaterWillRelaunchApplication)onUpdaterWillRelaunchApplication
+
+Fired just before the updater restarts the application.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#onUpdaterDidRelaunchApplication)onUpdaterDidRelaunchApplication
+
+Fired when an application has been restarted due to an update.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#onDidAbortWithError)onDidAbortWithError
+
+Fired when an update fails.
+
+Parameters:
+
+description
+
+```
+string
+```
+
+Description of the error.
+
+reason
+
+```
+string
+```
+
+The reason for the error.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#onUpdateFinished)onUpdateFinished
+
+Signal sent when update completed without installation. Currently, only sent by macOS for exit on silent error.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#onUpdateProgress)onUpdateProgress
+
+Progress listener during update and install.
+
+Parameters:
+
+status
+
+```
+UpdateOperationStatusEnum
+```
+
+Status of update.
+
+version
+
+```
+string
+```
+
+Version to upgrade to.
+
+progress
+
+```
+number
+```
+
+The progress of download/installation.
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#checkForUpdates)checkForUpdates
+
+Check for Vivaldi browser updates.
+
+Parameters:
+
+withUi
+
+```
+boolean
+```
+
+Indicates whether we want the auto-update ui to appear.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#startUpdate)startUpdate
+
+Start Vivaldi update check.
+
+Parameters:
+
+shouldStartUpdate
+
+```
+boolean
+```
+
+Should the update check start downloading the update.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#isUpdateNotifierEnabled)isUpdateNotifierEnabled
+
+Checks whether the update notifier is set to run on startup.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#enableUpdateNotifier)enableUpdateNotifier
+
+Sets the update notifier to run on startup and launches it.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#disableUpdateNotifier)disableUpdateNotifier
+
+Removes the update notifier from autorun and attempts to terminate it.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#installUpdateAndRestart)installUpdateAndRestart
+
+Installs update & restart. Should be called after an onWillInstallUpdateOnQuit event has occurred.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#getAutoInstallUpdates)getAutoInstallUpdates
+
+Checks whether we automatically install updates
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#setAutoInstallUpdates)setAutoInstallUpdates
+
+Change automatically install updates setting
+
+Parameters:
+
+autoinstall
+
+```
+boolean
+```
+
+Indicates whether we want to automatically install updates.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#getLastCheckTime)getLastCheckTime
+
+Get the date & time we last checked for an update. Returns milliseconds since epoch.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#getUpdateStatus)getUpdateStatus
+
+Get a status of an update operation if any
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#hasAutoUpdates)hasAutoUpdates
+
+Return true if automatic updates are supported.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#needsCodecRestart)needsCodecRestart
+
+Return true if restart is needed due to codec update.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#runStartupChecks)runStartupChecks
+
+Runs startup checks after the autoupdate UI is prepared.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#getAboutInfo)getAboutInfo
+
+Return various system information. OS, command line parameters etc..
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/autoUpdate.html#getAboutPathsInfo)getAboutPathsInfo
+
+Return various system information. OS, command line parameters etc..

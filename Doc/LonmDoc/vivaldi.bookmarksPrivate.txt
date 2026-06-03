@@ -1,0 +1,453 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarksPrivate.html#top)
+
+## vivaldi.bookmarksPrivate Modders API Reference
+
+Use the `vivaldi.bookmarksPrivate.updateSpeedDialsForWindowsJumplist` API to update bookmarks
+
+## Navigation
+
+### Types
+
+-   [FolderIds](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarksPrivate.html#FolderIds)
+-   [SpeedDialInfo](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarksPrivate.html#SpeedDialInfo)
+-   [BookmarkTreeNode](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarksPrivate.html#BookmarkTreeNode)
+
+### Listeners
+
+-   [onFaviconChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarksPrivate.html#onFaviconChanged)
+-   [onMetaInfoChanged](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarksPrivate.html#onMetaInfoChanged)
+
+### Methods
+
+-   [updateSpeedDialsForWindowsJumplist](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarksPrivate.html#updateSpeedDialsForWindowsJumplist)
+-   [emptyTrash](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarksPrivate.html#emptyTrash)
+-   [updatePartners](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarksPrivate.html#updatePartners)
+-   [isCustomThumbnail](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarksPrivate.html#isCustomThumbnail)
+-   [getFolderIds](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarksPrivate.html#getFolderIds)
+-   [export](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarksPrivate.html#export)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarksPrivate.html#FolderIds)FolderIds
+
+Ids for a set of folders.
+
+Properties:
+
+bookmarks
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+mobile
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+trash
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarksPrivate.html#SpeedDialInfo)SpeedDialInfo
+
+Object passed to the updateSpeedDialsForWindowsJumplist function.
+
+Properties:
+
+title
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+url
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarksPrivate.html#BookmarkTreeNode)BookmarkTreeNode
+
+Copied from bookmarks.json
+
+Properties:
+
+id
+
+```
+string
+```
+
+The unique identifier for the node. IDs are unique within the current profile, and they remain valid even after the browser is restarted.
+
+parentId
+
+(optional)
+
+```
+string
+```
+
+The `id` of the parent folder. Omitted for the root node.
+
+index
+
+(optional)
+
+```
+integer
+```
+
+The 0-based position of this node within its parent folder.
+
+url
+
+(optional)
+
+```
+string
+```
+
+The URL navigated to when a user clicks the bookmark. Omitted for folders.
+
+displayUrl
+
+(optional)
+
+```
+string
+```
+
+The destination URL when a user clicks the bookmark. Omitted for folders.
+
+title
+
+```
+string
+```
+
+The text displayed for the node.
+
+nickname
+
+```
+string
+```
+
+The nickname for the node. Vivaldi extended property
+
+description
+
+```
+string
+```
+
+The description text for the node. Vivaldi extended property
+
+thumbnail
+
+```
+string
+```
+
+chrome://thumb/ pointing to the stored url of the thumbnail
+
+partner
+
+```
+string
+```
+
+Partner id for the node. Vivaldi extended property
+
+speeddial
+
+```
+boolean
+```
+
+Boolean variable, stating if a folder is a speeddial folder
+
+themeColor
+
+```
+string
+```
+
+The theme color from the website, to use as the background of the speed dials thumbnail, if no other thumbnail is available
+
+bookmarkbar
+
+```
+boolean
+```
+
+Boolean variable, stating if a folder is a bookmark bar folder
+
+trash
+
+```
+boolean
+```
+
+true if this is the trash folder. Read only.
+
+dateAdded
+
+(optional)
+
+```
+number
+```
+
+When this node was created, in milliseconds since the epoch (`new Date(dateAdded)`).
+
+dateGroupModified
+
+(optional)
+
+```
+number
+```
+
+When the contents of this folder last changed, in milliseconds since the epoch.
+
+faviconUrl
+
+(optional)
+
+```
+string
+```
+
+If present this url should be used to retrive a favicon.
+
+uuid
+
+```
+string
+```
+
+The unique identifier for the node. IDs are unique within the current profile, and they remain valid even after the browser is restarted.
+
+children
+
+(optional)
+
+An ordered list of children of this node.
+
+`Array` of:
+
+-   BookmarkTreeNode
+
+## Listeners
+
+### How to use listeners
+
+Each listener type has the same functions, used for each listener API in the same way:
+
+#### .addListener(`function` callback)
+
+Adds a function to a listener for an event
+
+#### .removeListener(`function` callback)
+
+Removes a function to a listener for an event
+
+#### .hasListener(`function` callback)
+
+Returns a boolean if a function is attached to a listener for an event
+
+#### .hasListeners()
+
+Returns a boolean if a listener has any attached functions
+
+#### .dispatch()
+
+Returns array of promises dispatched to the listener
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarksPrivate.html#onFaviconChanged)onFaviconChanged
+
+Fired when a favicon changes.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+Bookmark id
+
+favicon\_url
+
+```
+string
+```
+
+The favicon's url
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarksPrivate.html#onMetaInfoChanged)onMetaInfoChanged
+
+Fired when meta info changes.
+
+Parameters:
+
+id
+
+```
+string
+```
+
+Bookmark id
+
+changeInfo
+
+```
+object
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+Object Properties:
+
+nickname
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+description
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+thumbnail
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+speeddial
+
+(optional)
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+bookmarkbar
+
+(optional)
+
+```
+boolean
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+themeColor
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+displayUrl
+
+(optional)
+
+```
+string
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarksPrivate.html#updateSpeedDialsForWindowsJumplist)updateSpeedDialsForWindowsJumplist
+
+Update the speed dial list in Windows 7+ jumplist.
+
+Parameters:
+
+speedDials
+
+⚠ NO DESCRIPTION PROVIDED
+
+`Array` of:
+
+-   SpeedDialInfo
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarksPrivate.html#emptyTrash)emptyTrash
+
+Empty the bookmarks trash folder.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarksPrivate.html#updatePartners)updatePartners
+
+Update default bookmarks
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarksPrivate.html#isCustomThumbnail)isCustomThumbnail
+
+Check if the bookmark has a custom thumbnail from a local file or resource.
+
+Parameters:
+
+bookmarkId
+
+```
+string
+```
+
+the id of the bookmark
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarksPrivate.html#getFolderIds)getFolderIds
+
+Returns ids of top level folders.
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/bookmarksPrivate.html#export)export
+
+Exports bookmarks to a Chrome html bookmark file
+
+Parameters:
+
+windowId
+
+```
+integer
+```
+
+The file selector will be modal to this window.

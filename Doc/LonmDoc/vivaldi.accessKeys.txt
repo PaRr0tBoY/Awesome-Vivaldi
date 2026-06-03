@@ -1,0 +1,120 @@
+[Go back to top](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/accessKeys.html#top)
+
+## vivaldi.accessKeys Modders API Reference
+
+Use the `vivaldi.accessKeys` API to get information about access keys on a page.
+
+## Navigation
+
+### Types
+
+-   [AccessKeyDefinition](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/accessKeys.html#AccessKeyDefinition)
+
+### Listeners
+
+### Methods
+
+-   [getAccessKeysForPage](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/accessKeys.html#getAccessKeysForPage)
+-   [action](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/accessKeys.html#action)
+
+## Types
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/accessKeys.html#AccessKeyDefinition)AccessKeyDefinition
+
+Contains the access key character and all relevant attributes from the element it belongs to
+
+Properties:
+
+access\_key
+
+```
+string
+```
+
+The access key itself, without modifiers
+
+tagname
+
+```
+string
+```
+
+The tagname of the access key element
+
+title
+
+```
+string
+```
+
+The title attribute of the access key element
+
+href
+
+```
+string
+```
+
+The href attribute of the access key element
+
+value
+
+```
+string
+```
+
+The value attribute of the access key element
+
+textContent
+
+```
+string
+```
+
+The textContent of the access key element
+
+id
+
+```
+string
+```
+
+The id attribute of the access key element
+
+## Methods
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/accessKeys.html#getAccessKeysForPage)getAccessKeysForPage
+
+Get a list of all access keys defined on this page
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+### [#](https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/accessKeys.html#action)action
+
+Find the element corresponding to an access key and fire the access key action
+
+Parameters:
+
+tabId
+
+```
+integer
+```
+
+⚠ NO DESCRIPTION PROVIDED
+
+id
+
+```
+string
+```
+
+Element ID to be used for lookup

@@ -1,0 +1,63 @@
+/* ==UserStyle==
+ * @name         Extension Menu
+ * @description  CSS modification for a vertical extension dropdown menu, similar to Chrome.
+ * @version      2026.4.19
+ * @author       @quodroc, PaRr0tBoY
+ * @website      https://forum.vivaldi.net/post/742203
+ * ==/UserStyle==
+ */
+
+/* ========================================
+   EXTENSIONS MENU STYLING
+   ======================================== */
+
+.toolbar-extensions {
+  display: flex;
+  flex-wrap: wrap;
+  overflow-x: visible;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  gap: var(--densityGap);
+  max-width: 100%;
+}
+
+.toolbar-extensions::-webkit-scrollbar {
+  display: none;
+}
+
+.toolbar-extensions .button-toolbar {
+  flex-shrink: 0;
+}
+/*============================================================================*/
+
+.extensionIconPopupMenu {
+  --popupWidth: 280px !important;
+  align-items: flex-start !important;
+}
+
+.extensionIconPopupMenu > .toolbar {
+  max-height: 50vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
+  align-self: flex-start;
+}
+
+.extensionIconPopupMenu .ExtensionDropdownIcon > button {
+  justify-content: flex-start;
+  padding: 10px;
+}
+
+.extensionIconPopupMenu .ExtensionDropdownIcon > button::after {
+  content: attr(title);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.button-toolbar > button > .button-badge {
+  top: auto;
+  right: 10px;
+}
