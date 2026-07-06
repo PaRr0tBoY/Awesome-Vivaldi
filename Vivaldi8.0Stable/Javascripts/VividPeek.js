@@ -3681,6 +3681,17 @@
           label: "Copy Link",
           keepControlsOpen: true,
         },
+        {
+          content: this.iconUtils.translate,
+          action: (event) => {
+            const button = event?.currentTarget;
+            if (button) button.classList.add("translate-active");
+            this.translatePeek(webviewId);
+          },
+          cls: "peek-sidebar-button translate-button",
+          label: "Translate",
+          keepControlsOpen: true,
+        },
       ];
 
       const fragment = document.createDocumentFragment();
@@ -4033,6 +4044,15 @@
       const url = this.getPeekUrl(webviewId);
       if (!url) return Promise.resolve(false);
       return this.copyTextToClipboard(url);
+    }
+
+    translatePeek(webviewId) {
+      const url = this.getPeekUrl(webviewId);
+      if (!url) return;
+      const userLang = navigator.language || "en";
+      const langCode = userLang.split("-")[0];
+      const translateUrl = `https://translate.google.com/translate?sl=auto&tl=${langCode}&u=${encodeURIComponent(url)}`;
+      this.navigatePeekToUrl(webviewId, translateUrl, { recordHistory: true });
     }
 
     async animatePeekExpandToViewport(webviewId) {
@@ -5508,6 +5528,7 @@
       backgroundTab: '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M320-80q-33 0-56.5-23.5T240-160v-80h-80q-33 0-56.5-23.5T80-320v-80h80v80h80v-320q0-33 23.5-56.5T320-720h320v-80h-80v-80h80q33 0 56.5 23.5T720-800v80h80q33 0 56.5 23.5T880-640v480q0 33-23.5 56.5T800-80H320Zm0-80h480v-480H320v480ZM80-480v-160h80v160H80Zm0-240v-80q0-33 23.5-56.5T160-880h80v80h-80v80H80Zm240-80v-80h160v80H320Zm0 640v-480 480Z"/></svg>',
       copyLink: '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link2-icon lucide-link-2"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></svg>',
       check: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon"><path d="M20 6 9 17l-5-5"/></svg>',
+      translate: '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe-icon"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>',
     };
 
     static VIVALDI_BUTTONS = [
@@ -5561,6 +5582,7 @@
     get backgroundTab() { return this.getIcon("backgroundTab"); }
     get copyLink() { return this.getIcon("copyLink"); }
     get check() { return this.getIcon("check"); }
+    get translate() { return this.getIcon("translate"); }
   }
 
   function bootstrapPeekMod() {
