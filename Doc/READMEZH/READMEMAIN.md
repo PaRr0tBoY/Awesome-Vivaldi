@@ -47,10 +47,8 @@
 
 ## 简介
 
-本修改包支持两个版本的 Vivaldi。
-
-- [Vivaldi 7.9 最新版](./Vivaldi7.9Stable) 开发中
-- [Vivaldi 7.6.\*](./Vivaldi7.6Stable) 已废弃
+本整合包始终支持最新版本的 Vivaldi。
+目前 [Vivaldi 8 最新版](./Vivaldi8.0Stable) 是最新版本
 
 请选择与你 Vivaldi 版本匹配的修改包。如何查看 Vivaldi 版本：在地址栏输入 `vivaldi:about`。
 
@@ -68,10 +66,7 @@
 
 ```
 .
-├── Vivaldi7.6Stable
-│   ├── CSS
-│   └── Javascripts
-└── Vivaldi7.9Stable
+└── Vivaldi8.0Stable
     ├── CSS
     └── Javascripts
 ```
@@ -80,8 +75,7 @@
 
 各版本的安装指南位于对应的修改包目录下。
 
-- [Vivaldi 7.9 最新版安装指南](../../Vivaldi7.9Stable/README.md)
-- [Vivaldi 7.6.\* 安装指南](../../Vivaldi7.6Stable/README.md)
+- [Vivaldi 8 最新版安装指南](../../Vivaldi8.0Stable/README.md)
 
 </details>
 
