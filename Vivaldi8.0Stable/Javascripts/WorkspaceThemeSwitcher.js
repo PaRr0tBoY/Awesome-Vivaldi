@@ -168,7 +168,10 @@
         getPref("vivaldi.themes.system"),
         getPref("vivaldi.themes.user"),
       ]);
-      themeCache = [...(systemThemes || []), ...(userThemes || [])];
+      themeCache = [
+        ...(Array.isArray(systemThemes) ? systemThemes : []),
+        ...(Array.isArray(userThemes) ? userThemes : []),
+      ];
     }
 
     const theme = themeCache.find((item) => item.id === themeRef || item.name === themeRef);
@@ -208,7 +211,10 @@
       getPref("vivaldi.themes.system"),
       getPref("vivaldi.themes.user"),
     ]);
-    const allThemes = [...(systemThemes || []), ...(userThemes || [])];
+    const allThemes = [
+      ...(Array.isArray(systemThemes) ? systemThemes : []),
+      ...(Array.isArray(userThemes) ? userThemes : []),
+    ];
     const theme = allThemes.find((t) => t.id === themeId);
     const settings = theme?.settings;
     if (!Array.isArray(settings)) return null;
