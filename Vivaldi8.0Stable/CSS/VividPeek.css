@@ -455,8 +455,8 @@ body.peek-open #browser #webpage-stack {
 }
 
 .peek-container .peek-sidebar-button.translate-button.translate-active {
-  background: var(--colorAccentBg);
-  color: var(--colorAccentFg, #fff);
+  background: var(--colorHighlightBg);
+  color: var(--colorHighlightFg, #fff);
 }
 
 .peek-container .peek-sidebar-button.arcpeek-feedback-reload svg {
