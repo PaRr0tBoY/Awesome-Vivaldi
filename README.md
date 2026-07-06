@@ -49,12 +49,9 @@
 
 ## Introduction
 
-This modpack support 2 version of Vivaldi.
+This modpack is always updated with Vivaldi, [Vivaldi 8 latest](./Vivaldi8.0Stable) is currently supported.
 
-- [Vivaldi 7.9 latest](./Vivaldi7.9Stable) Currently Under Development
-- [Vivaldi 7.6.\*](./Vivaldi7.6Stable) Deprecated
-
-Please choose the modpack that matches your Vivaldi Version. Which version of Vivaldi browser are you using? If you're not sure, check it out at `vivaldi:about`.
+> Which version of Vivaldi browser are you using? If you're not sure, check it out at `vivaldi:about`.
 
 ## Feature Showcase
 
@@ -98,10 +95,7 @@ Guide me through the installation of https://github.com/PaRr0tBoY/Awesome-Vivald
 
 If not:
 
-Installation guide is under corresponding modpack.
-
-- [Installation Guide for Vivaldi 7.9 latest](./Vivaldi7.9Stable/README.md)
-- [Installation Guide for Vivaldi 7.6.\*](./Vivaldi7.6Stable/README.md)
+- [Click me](./Vivaldi8.0Stable/README.md) to navigate to the Installation Guide for Vivaldi 7.9 latest
 
 </details>
 
