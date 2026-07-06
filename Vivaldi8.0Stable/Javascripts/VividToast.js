@@ -9,7 +9,7 @@
   "use strict";
 
   const CONTAINER_ID = "vmod-toast-container";
-  const DEBUG = true;
+  const DEBUG = false;
   const LOG_PREFIX = "[VModToast]";
   const FEATURE_CONFIG = {
     backgroundTabToast: true,
