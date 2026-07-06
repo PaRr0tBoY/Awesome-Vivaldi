@@ -33,8 +33,8 @@
     },
     autoHidePulse: {
       enabled: true,           // 自动隐藏标签栏脉冲提示
-      showDurationMs: 1000,
-      cooldownMs: 1500,
+      showDurationMs: 600,
+      cooldownMs: 800,
     },
   };
 

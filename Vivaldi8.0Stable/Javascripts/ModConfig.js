@@ -748,7 +748,10 @@
       ].map((promise) => promise.then(unwrapPrefValue)));
 
       const wsList = Array.isArray(workspaces) ? workspaces : [];
-      const themes = [...(systemThemes || []), ...(userThemes || [])];
+      const themes = [
+        ...(Array.isArray(systemThemes) ? systemThemes : []),
+        ...(Array.isArray(userThemes) ? userThemes : []),
+      ];
       const settings = normalizeModBlock("workspaceThemeSwitcher", config.mods?.workspaceThemeSwitcher);
       const currentMap = settings.workspaceThemeMap || {};
 
@@ -802,6 +805,9 @@
       container.innerHTML = html;
     } catch (error) {
       container.innerHTML = `<div class="mod-config-wt-loading">Failed to load: ${escapeHtml(error.message)}</div>`;
+      if (defaultContainer) {
+        defaultContainer.innerHTML = `<select class="mod-config-select" data-mod-setting="defaultThemeId"><option value="">Failed to load themes</option></select>`;
+      }
     }
   }
 

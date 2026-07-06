@@ -340,6 +340,7 @@
           class: "dialog-content",
           style: {
             maxHeight: "65vh",
+            overflow: "auto",
           },
         },
         dialog,
@@ -529,15 +530,18 @@
 
         fileInput = event.target;
 
-        if (
-          event.isTrusted &&
-          fileInput.checkVisibility({
-            opacityProperty: true,
-            visibilityProperty: true,
-            contentVisibilityAuto: true,
-          })
-        ) {
-          elementClickedRect = getRect(fileInput);
+        if (event.isTrusted) {
+          const rect = getRect(fileInput);
+          const isOnScreen =
+            rect.width > 0 &&
+            rect.height > 0 &&
+            rect.left < window.innerWidth &&
+            rect.right > 0 &&
+            rect.top < window.innerHeight &&
+            rect.bottom > 0;
+          if (isOnScreen) {
+            elementClickedRect = rect;
+          }
         }
 
         const attributes = {};
@@ -566,7 +570,8 @@
     }
 
     function handleMouseDown(event) {
-      elementClickedRect = getRect(event.target);
+      const target = event.target.closest("label, button, [role=button]") || event.target;
+      elementClickedRect = getRect(target);
 
       pointerPosition.x = event.clientX;
       pointerPosition.y = event.clientY;

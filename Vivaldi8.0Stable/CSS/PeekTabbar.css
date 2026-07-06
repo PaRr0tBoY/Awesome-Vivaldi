@@ -165,6 +165,6 @@ body:is(
     :has(#tabs-tabbar-container.right)
   ):has(#vivaldi-tooltip:hover)
   .auto-hide-wrapper.has-tabbar {
-  transition: transform 300ms cubic-bezier(0.25, 0.8, 0.25, 1.08) !important;
+  transition: transform 200ms cubic-bezier(0.25, 0.8, 0.25, 1.08) !important;
   transform: translateX(0) !important;
 }
