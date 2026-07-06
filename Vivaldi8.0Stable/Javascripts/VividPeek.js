@@ -3685,8 +3685,14 @@
           content: this.iconUtils.translate,
           action: (event) => {
             const button = event?.currentTarget;
-            if (button) button.classList.add("translate-active");
-            this.translatePeek(webviewId);
+            const isActive = button?.classList.contains("translate-active");
+            if (isActive) {
+              button.classList.remove("translate-active");
+              this.goPeekBack(webviewId);
+            } else {
+              button.classList.add("translate-active");
+              this.translatePeek(webviewId);
+            }
           },
           cls: "peek-sidebar-button translate-button",
           label: "Translate",
