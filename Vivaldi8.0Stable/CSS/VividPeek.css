@@ -441,6 +441,24 @@ body.peek-open #browser #webpage-stack {
   box-sizing: border-box;
 }
 
+.peek-container .peek-sidebar-button.translate-button svg,
+.peek-container .peek-sidebar-button.translate-button svg * {
+  fill: none;
+  stroke: currentColor;
+}
+
+.peek-container .peek-sidebar-button.translate-button svg {
+  width: 26px;
+  height: 26px;
+  padding: 2px;
+  box-sizing: border-box;
+}
+
+.peek-container .peek-sidebar-button.translate-button.translate-active {
+  background: var(--colorHighlightBg);
+  color: var(--colorHighlightFg, #fff);
+}
+
 .peek-container .peek-sidebar-button.arcpeek-feedback-reload svg {
   animation: arcpeek-reload-spin 0.72s cubic-bezier(0.33, 0.02, 0.24, 1) both;
   transform-origin: center;

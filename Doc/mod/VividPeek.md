@@ -47,12 +47,13 @@ VividPeek (internal name ArcPeek) implements a "Peek" preview feature similar to
 2. **Preview screenshot cache** -- `previewCache` generates a cache key from URL + text + geometry info, caching `captureUI` screenshots. On cache hit, it opens instantly in "preview mode" to avoid white screens. Cache limit is 48 entries, TTL 10 minutes
 3. **Nebula loading animation** -- On open, the content area applies `blur + saturate + brightness` CSS filters, gradually reducing as the page loads (blur 2.2->0, saturate 18%->100%, brightness 90%->100%), combined with a progress bar to create an "emerging from fog" effect
 4. **Source rect animation** -- `animatePeekMotion()` calculates geometric parameters (translate + scale + borderRadius) based on the source link's position on the page, creating a transition animation that "grows" from the link position to the panel's final position
-5. **Sidebar control buttons** -- Floating on the right side of the panel, including: close (red on hover), new tab, split view, Reader View, copy link, and navigation (back/forward/refresh)
-6. **Multi-Peek management** -- Supports opening multiple Peek panels simultaneously, `reconcilePeeks()` ensures consistency, `closeLastPeek()` closes the most recent one
-7. **Related Tab Adoption** -- Optional feature; the webview inside a Peek is associated with a "runtime tab". When closing the Peek, the tab can be "lifted" to the tab bar, preserving browsing history and state
-8. **Background Page Scaling** -- Optional feature; when Peek opens, a `peek-open` class is added to `body`, applying scale + filter effects to the background page
-9. **Close Guard** -- `registerPeekCloseGuard()` detects accidental Cmd/Ctrl+W tab closures. If the closed tab within 1.5 seconds is the Peek's runtime tab, it automatically restores it (`chrome.sessions.restore`)
-10. **Keyboard shortcuts** -- When Peek is open, intercepts Escape (close), Cmd+W (close), Cmd+R (refresh), Cmd+F (find), while preventing these shortcuts from bubbling to the host page
+5. **Sidebar control buttons** -- Floating on the right side of the panel, including: close (red on hover), new tab, split view, Reader View, copy link, translate (Google Translate with toggle), and navigation (back/forward/refresh)
+6. **Translate button** -- A globe icon button in the sidebar that opens the current Peek page via `https://translate.google.com/translate?sl=auto&tl={browserLang}&u={url}`. Acts as a toggle: clicking again navigates back to the original page. Uses `navigator.language` to detect the user's browser language. Active state is indicated by `--colorHighlightBg` fill on the button
+7. **Multi-Peek management** -- Supports opening multiple Peek panels simultaneously, `reconcilePeeks()` ensures consistency, `closeLastPeek()` closes the most recent one
+8. **Related Tab Adoption** -- Optional feature; the webview inside a Peek is associated with a "runtime tab". When closing the Peek, the tab can be "lifted" to the tab bar, preserving browsing history and state
+9. **Background Page Scaling** -- Optional feature; when Peek opens, a `peek-open` class is added to `body`, applying scale + filter effects to the background page
+10. **Close Guard** -- `registerPeekCloseGuard()` detects accidental Cmd/Ctrl+W tab closures. If the closed tab within 1.5 seconds is the Peek's runtime tab, it automatically restores it (`chrome.sessions.restore`)
+11. **Keyboard shortcuts** -- When Peek is open, intercepts Escape (close), Cmd+W (close), Cmd+R (refresh), Cmd+F (find), while preventing these shortcuts from bubbling to the host page
 
 ### Behavioral Expectations
 
@@ -81,6 +82,7 @@ VividPeek (internal name ArcPeek) implements a "Peek" preview feature similar to
 - **Split view**: Click the split button; the current tab and Peek content are displayed side by side
 - **Reader View**: Click the Reader button; renders through web-highlights.com's reader mode
 - **Copy link**: Click the copy button; writes the current Peek URL to the clipboard
+- **Translate**: Click the globe button; opens the current page via Google Translate in the user's browser language. Click again to return to the original page. The button highlights with the theme's accent color (`--colorHighlightBg`) while translation is active
 
 ### Configuration Options
 
