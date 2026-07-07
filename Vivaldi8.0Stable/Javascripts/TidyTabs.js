@@ -460,6 +460,7 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
 
   const parseAIResponse = (content) => {
     let s = content.trim();
+    if (!s) return null;
     const m = s.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
     if (m) s = m[1].trim();
     const first = s.indexOf("{"),
@@ -468,7 +469,7 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
     try {
       return JSON.parse(s);
     } catch (e) {
-      console.error("[TidyTabs] JSON parse error:", e);
+      console.error("[TidyTabs] JSON parse error:", e.message, "Content:", s.substring(0, 200));
       return null;
     }
   };
@@ -548,24 +549,36 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
           ? setTimeout(() => controller.abort(), AI_CONFIG.timeout)
           : null;
 
+      const isGLM = AI_CONFIG.apiEndpoint?.includes("bigmodel.cn");
+      const isOpenRouter = AI_CONFIG.apiEndpoint?.includes("openrouter.ai");
+      const payload = {
+        model: AI_CONFIG.model,
+        messages: [
+          {
+            role: "user",
+            content: buildAIPrompt(tabs, existingStacks, languageName),
+          },
+        ],
+        temperature: AI_CONFIG.temperature,
+        max_tokens: AI_CONFIG.maxTokens,
+        stream: false,
+        response_format: { type: "json_object" },
+      };
+      if (isGLM) {
+        payload.thinking = { type: "disabled" };
+      } else if (isOpenRouter) {
+        payload.include_reasoning = false;
+      }
+
       const response = await fetch(AI_CONFIG.apiEndpoint, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${AI_CONFIG.apiKey}`,
           "Content-Type": "application/json",
+          "HTTP-Referer": "https://github.com/Gershom-Chen/VivaldiModpack",
+          "X-Title": "Vivaldi TidyTabs",
         },
-        body: JSON.stringify({
-          model: AI_CONFIG.model,
-          messages: [
-            {
-              role: "user",
-              content: buildAIPrompt(tabs, existingStacks, languageName),
-            },
-          ],
-          temperature: AI_CONFIG.temperature,
-          max_tokens: AI_CONFIG.maxTokens,
-          response_format: { type: "text" },
-        }),
+        body: JSON.stringify(payload),
         signal: controller?.signal,
       });
 
@@ -574,7 +587,11 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
       if (!response.ok) throw new Error(`API error: ${response.status}`);
 
       const data = await response.json();
-      const result = parseAIResponse(data.choices[0].message.content);
+      if (data?.error) throw new Error(`API error: ${data.error.message || JSON.stringify(data.error)}`);
+
+      const raw = data.choices?.[0]?.message?.content || "";
+      const cleaned = raw.replace(/<(thought|reasoning)>[\s\S]*?<\/\1>/gi, "").trim();
+      const result = parseAIResponse(cleaned);
       if (!result || !validateAIGroups(result)) return null;
 
       const groups = mapAIResultsToGroups(result, tabs, existingStacks);
