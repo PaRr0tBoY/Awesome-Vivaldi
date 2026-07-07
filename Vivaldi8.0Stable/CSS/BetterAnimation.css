@@ -7,6 +7,28 @@
  * ==/UserStyle==
  */
 
+/* ================================================ */
+/* Retract (hide) — direct ease-in, no CSS delay     */
+/* ================================================ */
+.auto-hide-wrapper.has-tabbar.left:not(.show) {
+  transition: transform 250ms ease-in 0s !important;
+}
+
+.auto-hide-wrapper.has-tabbar.right:not(.show) {
+  transition: transform 250ms ease-in 0s !important;
+}
+
+.auto-hide-wrapper.has-tabbar.top:not(.show) {
+  transition: transform 250ms ease-in 0s !important;
+}
+
+.auto-hide-wrapper.has-tabbar.bottom:not(.show) {
+  transition: transform 250ms ease-in 0s !important;
+}
+
+/* ================================================ */
+/* Expand (show) — elastic ease-out                  */
+/* ================================================ */
 .auto-hide-wrapper.left.show {
   transition: transform 200ms cubic-bezier(0.25, 0.8, 0.25, 1.08) !important;
 }
