@@ -339,7 +339,7 @@
         {
           class: "dialog-content",
           style: {
-            maxHeight: "65vh",
+            "max-height": "65vh",
             overflow: "auto",
           },
         },
