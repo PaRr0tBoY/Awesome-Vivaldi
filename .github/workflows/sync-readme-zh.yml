@@ -1,0 +1,138 @@
+name: Sync Chinese README
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "README.md"
+      - "Vivaldi7.9Stable/README.md"
+
+permissions:
+  contents: write
+
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect changed READMEs
+        id: detect
+        run: |
+          CHANGED=""
+          if git diff --name-only HEAD~1 HEAD | grep -qx "README.md"; then
+            CHANGED="${CHANGED}main"
+          fi
+          if git diff --name-only HEAD~1 HEAD | grep -qx "Vivaldi7.9Stable/README.md"; then
+            CHANGED="${CHANGED} 79"
+          fi
+          echo "changed=${CHANGED}" >> "$GITHUB_OUTPUT"
+
+      - name: Translate main README (incremental)
+        if: contains(steps.detect.outputs.changed, 'main')
+        env:
+          OPENROUTER_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          DIFF=$(git diff HEAD~1 HEAD -- README.md)
+          ZH_CURRENT=$(cat Doc/READMEZH/READMEMAIN.md)
+
+          PROMPT="You are a README translator for a Vivaldi browser mod project.
+
+TASK: Apply the English diff to the existing Chinese translation. Only translate and update the changed parts. Keep everything else identical.
+
+RULES:
+1. Preserve ALL markdown structure, HTML tags, badges, links, images exactly
+2. Translate only human-readable text changed in the diff
+3. Keep code blocks, commands, file paths, variable names unchanged
+4. Keep relative paths as-is
+5. The header navigation must stay: [English](../../README.md) | **简体中文**
+6. Output the COMPLETE updated Chinese README (not just the diff)
+7. No commentary, no code fences, just raw markdown
+
+ENGLISH DIFF (what changed):
+${DIFF}
+
+CURRENT CHINESE README:
+${ZH_CURRENT}"
+
+          RESPONSE=$(curl -s https://openrouter.ai/api/v1/chat/completions \
+            -H "Authorization: Bearer ${OPENROUTER_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n --arg prompt "$PROMPT" '{
+              model: "openrouter/free",
+              messages: [{role: "user", content: $prompt}]
+            }')")
+
+          TRANSLATED=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
+
+          if [ -z "$TRANSLATED" ] || [ "$TRANSLATED" = "null" ]; then
+            echo "::error::Translation API failed for main README"
+            echo "$RESPONSE" | jq .
+            exit 1
+          fi
+
+          echo "$TRANSLATED" > Doc/READMEZH/READMEMAIN.md
+          echo "Updated Doc/READMEZH/READMEMAIN.md"
+
+      - name: Translate Vivaldi 7.9 README (incremental)
+        if: contains(steps.detect.outputs.changed, '79')
+        env:
+          OPENROUTER_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          DIFF=$(git diff HEAD~1 HEAD -- Vivaldi7.9Stable/README.md)
+          ZH_CURRENT=$(cat Doc/READMEZH/README79.md)
+
+          PROMPT="You are a README translator for a Vivaldi browser mod project.
+
+TASK: Apply the English diff to the existing Chinese translation. Only translate and update the changed parts. Keep everything else identical.
+
+RULES:
+1. Preserve ALL markdown structure, HTML tags, badges, links, images exactly
+2. Translate only human-readable text changed in the diff
+3. Keep code blocks, commands, file paths, variable names unchanged
+4. Image paths use ../../Others/assets/... prefix
+5. The header navigation must stay: [English](../../Vivaldi7.9Stable/README.md) | **简体中文**
+6. Output the COMPLETE updated Chinese README (not just the diff)
+7. No commentary, no code fences, just raw markdown
+
+ENGLISH DIFF (what changed):
+${DIFF}
+
+CURRENT CHINESE README:
+${ZH_CURRENT}"
+
+          RESPONSE=$(curl -s https://openrouter.ai/api/v1/chat/completions \
+            -H "Authorization: Bearer ${OPENROUTER_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n --arg prompt "$PROMPT" '{
+              model: "openrouter/free",
+              messages: [{role: "user", content: $prompt}]
+            }')")
+
+          TRANSLATED=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
+
+          if [ -z "$TRANSLATED" ] || [ "$TRANSLATED" = "null" ]; then
+            echo "::error::Translation API failed for 7.9 README"
+            echo "$RESPONSE" | jq .
+            exit 1
+          fi
+
+          echo "$TRANSLATED" > Doc/READMEZH/README79.md
+          echo "Updated Doc/READMEZH/README79.md"
+
+      - name: Commit changes
+        if: contains(steps.detect.outputs.changed, 'main') || contains(steps.detect.outputs.changed, '79')
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add Doc/READMEZH/READMEMAIN.md Doc/READMEZH/README79.md
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "docs: auto-sync Chinese README translations"
+            git push
+          fi
