@@ -1,9 +1,10 @@
-﻿<# ==UserScript==
+<# ==UserScript==
  * @name         Awesome Vivaldi Installer (Windows)
  * @description  Zero-dependency TUI installer for Awesome Vivaldi modpack.
- * @version      2026.7.13
+ * @version      2026.7.14
  * @author       Ryan (Acid)
  * @website      https://github.com/PaRr0tBoY/Awesome-Vivaldi
+ * @usage        irm https://raw.githubusercontent.com/PaRr0tBoY/Awesome-Vivaldi/main/install.ps1 | iex
  * ==/UserScript==
 #>
 
@@ -25,6 +26,7 @@ $Script:SourceDir = $null
 $Script:TempDir = $null
 $Script:LastRenderLines = 0
 $Script:BannerHeight = 0
+$Script:CachedModSource = $null
 
 # ============================================================
 #  1.  i18n  —  English primary, Chinese secondary
@@ -403,6 +405,50 @@ $Script:DefaultOff = @{
 	"TabManager.js"         = $true
 }
 
+# ── Mod file manifest (keep in sync with Vivaldi8.0Stable/) ────────────
+# When adding/removing mods, update these arrays to match.
+$Script:ModCssFiles = @(
+	"AdaptiveBF.css",
+	"BetterAnimation.css",
+	"BtnHoverAnime.css",
+	"DownloadPanel.css",
+	"Extensions.css",
+	"FavouriteTabs.css",
+	"FindInPage.css",
+	"InteractionFeedback.css",
+	"LineBreak.css",
+	"PeekTabbar.css",
+	"PinnedTabRestore.css",
+	"Quietify.css",
+	"RemoveClutter.css",
+	"TabsTrail.css",
+	"TidyTabs.css",
+	"VivalArc.css",
+	"VividPeek.css",
+	"VividPlayer.css",
+	"VividQC.css",
+	"VividToast.css"
+)
+$Script:ModJsFiles = @(
+	"AskOnPage.js",
+	"AutoHidePanel.js",
+	"EasyFiles.js",
+	"InteractionFeedback.js",
+	"ModConfig.js",
+	"MonochromeIcons.js",
+	"PinnedTabRestore.js",
+	"QuickCapture.js",
+	"TabManager.js",
+	"TidyAddress.js",
+	"TidyDownloads.js",
+	"TidyTabs.js",
+	"TidyTitles.js",
+	"VividPeek.js",
+	"VividPlayer.js",
+	"VividToast.js",
+	"WorkspaceThemeSwitcher.js"
+)
+
 # ============================================================
 #  2.  ASCII Banner
 # ============================================================
@@ -468,7 +514,7 @@ function Exit-Installer {
 	$e = [char]27
 	[Console]::Write("$e[2J$e[H")
 	[Console]::CursorVisible = $true
-	exit 0
+	throw "###USER_EXIT###"
 }
 
 function Flush-InputBuffer {
@@ -557,28 +603,72 @@ function Find-ModSource {
 	Write-Host (tr source_downloading)
 	$Script:TempDir = Join-Path $env:TEMP "awesome-vivaldi-installer"
 	$null = New-Item -ItemType Directory -Force -Path $Script:TempDir
-	$zipPath = Join-Path $Script:TempDir "repo.zip"
 
+	$repoRaw  = "https://raw.githubusercontent.com/PaRr0tBoY/Awesome-Vivaldi/main"
+	$cssDir   = Join-Path $Script:TempDir "CSS"
+	$jsDir    = Join-Path $Script:TempDir "Javascripts"
+	$null = New-Item -ItemType Directory -Force -Path $cssDir
+	$null = New-Item -ItemType Directory -Force -Path $jsDir
+
+	# Check cache — skip download if all files present AND fresh (1h TTL)
+	$cached = $true
+	foreach ($f in $Script:ModCssFiles) {
+		if (-not (Test-Path (Join-Path $cssDir $f))) { $cached = $false; break }
+	}
+	if ($cached) {
+		foreach ($f in $Script:ModJsFiles) {
+			if (-not (Test-Path (Join-Path $jsDir $f))) { $cached = $false; break }
+		}
+	}
+	if ($cached -and -not (Test-Path (Join-Path $Script:TempDir "injectMods.js"))) {
+		$cached = $false
+	}
+	if ($cached -and -not (Test-Path (Join-Path $Script:TempDir "Import.css"))) {
+		$cached = $false
+	}
+	# Invalidate cache if older than 1 hour (ensures update checks see fresh data)
+	$cacheMaxAge = (Get-Date).AddHours(-1)
+	if ($cached) {
+		$marker = Get-Item (Join-Path $Script:TempDir "injectMods.js")
+		if ($marker.LastWriteTime -lt $cacheMaxAge) { $cached = $false }
+	}
+
+	if ($cached) {
+		Write-Host "Using cached mod files (from previous download)..."
+		$Script:SourceDir = $Script:TempDir
+		return $Script:SourceDir
+	}
+
+	# Download from hardcoded manifests — no GitHub API, no rate limits
 	try {
-		Invoke-WebRequest -Uri "https://github.com/PaRr0tBoY/Awesome-Vivaldi/archive/refs/heads/main.zip" -OutFile $zipPath -ErrorAction Stop
+		foreach ($f in $Script:ModCssFiles) {
+			Invoke-WebRequest -Uri "$repoRaw/Vivaldi8.0Stable/CSS/$f" -OutFile (Join-Path $cssDir $f) -ErrorAction Stop
+		}
+		foreach ($f in $Script:ModJsFiles) {
+			Invoke-WebRequest -Uri "$repoRaw/Vivaldi8.0Stable/Javascripts/$f" -OutFile (Join-Path $jsDir $f) -ErrorAction Stop
+		}
+		Invoke-WebRequest -Uri "$repoRaw/injectMods.js" -OutFile (Join-Path $Script:TempDir "injectMods.js") -ErrorAction Stop
+		# Import.css lives at repo root, not in CSS/ subdir
+		Invoke-WebRequest -Uri "$repoRaw/Vivaldi8.0Stable/Import.css" -OutFile (Join-Path $Script:TempDir "Import.css") -ErrorAction Stop
 	} catch {
 		Write-Host (tr error_download)
 		Write-Host $_.Exception.Message
-		exit 1
+		return $null
 	}
 
-	Write-Host (tr source_extracting)
-	Expand-Archive -Path $zipPath -DestinationPath $Script:TempDir -Force
-
-	$extracted = Get-ChildItem -Directory -Path $Script:TempDir -Filter "Awesome-Vivaldi-*" | Select-Object -First 1
-	if (-not $extracted) {
-		Write-Host (tr error_extract)
-		exit 1
-	}
-
-	$Script:SourceDir = Join-Path $extracted.FullName "Vivaldi8.0Stable"
+	$Script:SourceDir = $Script:TempDir
 	Write-Host (tr source_done)
 	return $Script:SourceDir
+}
+
+# Lazy-load mod source — downloads only on first call, caches for subsequent use
+function Ensure-ModSource {
+	if ($Script:CachedModSource) { return $Script:CachedModSource }
+	$sourceDir = Find-ModSource
+	if (-not $sourceDir) { return $null }
+	$mods = Scan-Mods -SourceDir $sourceDir
+	$Script:CachedModSource = @{ SourceDir = $sourceDir; Mods = $mods }
+	return $Script:CachedModSource
 }
 
 # ============================================================
@@ -839,7 +929,7 @@ function Show-SelectSingle {
 
 	if ($Items.Count -eq 0) {
 		Write-Host (tr target_none_found)
-		exit 1
+		return
 	}
 
 	if ($Items.Count -eq 1) { return 0 }
@@ -1263,7 +1353,7 @@ function Invoke-HtmlInjection {
 	} catch {
 		Write-Host (tr error_permission)
 		Write-Host "  $_"
-		exit 1
+		return
 	}
 }
 
@@ -1288,17 +1378,15 @@ function Deploy-ModFiles {
 	} catch {
 		Write-Host (tr error_permission)
 		Write-Host "  $_"
-		exit 1
+		return
 	}
 
 	$sourceCssDir = Join-Path $SourceDir "CSS"
 	$sourceJsDir  = Join-Path $SourceDir "Javascripts"
 
-	# Deploy injector
-	$injectorSource = Join-Path $Script:RepoRoot "injectMods.js"
-	if (-not (Test-Path $injectorSource)) {
-		$injectorSource = Join-Path (Split-Path -Parent $SourceDir) "injectMods.js"
-	}
+	# Deploy injector (from repo root — works for both local & remote)
+	$injectorSource = Join-Path $SourceDir "injectMods.js"
+	if (-not (Test-Path $injectorSource)) { $injectorSource = Join-Path (Split-Path -Parent $SourceDir) "injectMods.js" }
 	if (Test-Path $injectorSource) {
 		Copy-Item -Path $injectorSource -Destination (Join-Path $VivaldiDir "injectMods.js") -Force
 	}
@@ -1338,9 +1426,10 @@ function Deploy-ModFiles {
 	Write-Host (trf deploy_js_done $jsCount)
 
 	# Get git commit hash for version tracking
+	$repoRoot = Split-Path -Parent $SourceDir
 	$gitCommit = ""
 	try {
-		$gitCommit = (git -C $Script:RepoRoot rev-parse --short HEAD 2>$null) -replace "`n|`r", ""
+		$gitCommit = (git -C $repoRoot rev-parse --short HEAD 2>$null) -replace "`n|`r", ""
 	} catch {}
 
 	$state = @{
@@ -1438,8 +1527,8 @@ function Get-CommitMessages {
 	param([string[]]$FileNames, [string]$SourceDir, [string]$SubDir)
 
 	$messages = @{}
-	$repoRoot = $Script:RepoRoot
-	if (-not $repoRoot) { return $messages }
+	$repoRoot = if ($Script:RepoRoot) { $Script:RepoRoot } else { Split-Path -Parent $SourceDir }
+	if (-not (Test-Path (Join-Path $repoRoot ".git"))) { return $messages }
 
 	foreach ($f in $FileNames) {
 		$gitPath = "Vivaldi8.0Stable/$SubDir/$f"
@@ -1690,14 +1779,14 @@ function Invoke-Update {
 		Set-Content -Path $importCssDest -Value $importContent -NoNewline
 	}
 
-	$injectorSource = Join-Path $Script:RepoRoot "injectMods.js"
+	$injectorSource = Join-Path $SourceDir "injectMods.js"
 	if (-not (Test-Path $injectorSource)) { $injectorSource = Join-Path (Split-Path -Parent $SourceDir) "injectMods.js" }
 	if (Test-Path $injectorSource) {
 		Copy-Item -Path $injectorSource -Destination (Join-Path $Target.VivaldiDir "injectMods.js") -Force
 	}
 
 	$gitCommit = ""
-	try { $gitCommit = (git -C $Script:RepoRoot rev-parse --short HEAD 2>$null) -replace "`n|`r", "" } catch {}
+	try { $repoRoot = Split-Path -Parent $SourceDir; $gitCommit = (git -C $repoRoot rev-parse --short HEAD 2>$null) -replace "`n|`r", "" } catch {}
 
 	$newState = @{
 		version      = $State.Version
@@ -2015,7 +2104,7 @@ function Invoke-Uninstall {
 			Write-Host "`n$e[1;32m$(tr uninstall_complete)$e[0m"
 		} else {
 			$gitCommit = ""
-			try { $gitCommit = (git -C $Script:RepoRoot rev-parse --short HEAD 2>$null) -replace "`n|`r", "" } catch {}
+			try { $repoRoot = Split-Path -Parent $SourceDir; $gitCommit = (git -C $repoRoot rev-parse --short HEAD 2>$null) -replace "`n|`r", "" } catch {}
 			$newState = @{
 				version      = $State.Version
 				installed_at = (Get-Date -Format "o")
@@ -2569,7 +2658,8 @@ function Main {
 	$installations = Find-VivaldiInstallations
 	if ($installations.Count -eq 0) {
 		Write-Host "`n$(tr target_none_found)"
-		exit 1
+		[Console]::CursorVisible = $true
+		return
 	}
 
 	$targetItems = @()
@@ -2591,15 +2681,7 @@ function Main {
 
 	$target = $targetItems[$selectedIdx].Install
 
-	# ── Acquire mod source ──
-	$sourceDir = Find-ModSource
-	if (-not $sourceDir) {
-		Write-Host (tr error_no_source)
-		exit 1
-	}
-
-	$mods = Scan-Mods -SourceDir $sourceDir
-
+	# ── Check installation state ──
 	$isInstalled = Test-IsInstalled -VivaldiDir $target.VivaldiDir
 	$state = Get-InstallState -VivaldiDir $target.VivaldiDir
 
@@ -2634,9 +2716,13 @@ function Main {
 			$result = $null
 			switch ($action) {
 				"manage" {
+					$ms = Ensure-ModSource; if (-not $ms) { return }
+					$sourceDir = $ms.SourceDir; $mods = $ms.Mods
 					$result = Invoke-ManageFlow -SourceDir $sourceDir -Target $target -Mods $mods -State $state
 				}
 				"update" {
+					$ms = Ensure-ModSource; if (-not $ms) { return }
+					$sourceDir = $ms.SourceDir
 					Invoke-Update -SourceDir $sourceDir -Target $target -State $state
 					$result = $true
 				}
@@ -2691,10 +2777,11 @@ function Main {
 		}
 
 		if ($restoreItems[$rc].Action -eq "restore") {
+			$ms = Ensure-ModSource; if (-not $ms) { return }
 			Backup-WindowHtml -VivaldiDir $target.VivaldiDir -PersistentDir $target.PersistentDir
 			Restore-FromPersistence -VivaldiDir $target.VivaldiDir -PersistentState $persistentState
-			$injectorSource = Join-Path $Script:RepoRoot "injectMods.js"
-			if (-not (Test-Path $injectorSource)) { $injectorSource = Join-Path (Split-Path -Parent $sourceDir) "injectMods.js" }
+			$injectorSource = Join-Path $SourceDir "injectMods.js"
+	if (-not (Test-Path $injectorSource)) { $injectorSource = Join-Path (Split-Path -Parent $SourceDir) "injectMods.js" }
 			if (Test-Path $injectorSource) { Copy-Item -Path $injectorSource -Destination (Join-Path $target.VivaldiDir "injectMods.js") -Force }
 			Invoke-HtmlInjection -VivaldiDir $target.VivaldiDir
 			Write-Host ""
@@ -2713,6 +2800,8 @@ function Main {
 					continue
 				}
 				if ($action -eq "install") {
+					$ms = Ensure-ModSource; if (-not $ms) { return }
+					$sourceDir = $ms.SourceDir; $mods = $ms.Mods
 					$result = Invoke-InstallFlow -SourceDir $sourceDir -Target $target -Mods $mods
 					if ($result) { Invoke-PostInstall -Target $target -Success $true }
 				} elseif ($action -eq "exit") {
@@ -2731,6 +2820,8 @@ function Main {
 				continue
 			}
 			if ($action -eq "install") {
+				$ms = Ensure-ModSource; if (-not $ms) { return }
+				$sourceDir = $ms.SourceDir; $mods = $ms.Mods
 				$result = Invoke-InstallFlow -SourceDir $sourceDir -Target $target -Mods $mods
 				if ($result) { Invoke-PostInstall -Target $target -Success $true }
 			} elseif ($action -eq "exit") {
@@ -2744,4 +2835,12 @@ function Main {
 }
 
 # Run
-Main
+try {
+	Main
+} catch {
+	if ($_.Exception.Message -ne "###USER_EXIT###") {
+		Write-Host "`nUnexpected error: $($_.Exception.Message)" -ForegroundColor Red
+	}
+} finally {
+	[Console]::CursorVisible = $true
+}

@@ -32,11 +32,6 @@
 
 ## Table of Contents
 
-- [Latest Updates](#latest-updates)
-- [Feature Showcase](#feature-showcase)
-- [Mod List](#mod-list)
-  - [CSS](#css)
-  - [Javascripts](#javascripts)
 - [How to install](#how-to-install)
   - [Vivaldi Settings](#vivaldi-settings) 
   - [CSS Mods](#to-install-css-mods)
@@ -45,75 +40,6 @@
 - [Development](#development)
 - [Frequently Asked Questions](#faq)
 
-## Latest Updates
-
-| Showcase                                                | Mods                                                              |
-| --------------------------------------------------- | ----------------------------------------------------------------- |
-| ![VividToast](../Others/assets/toast.gif) | `VividToast.css` + `VividToast.js`                                                |
-| ![Mod Config Pane](../Others/assets/modconfig.png) | `ModConfig.js`                                                |
-| ![Restore Pinned Tab](../Others/assets/restorepinnedtab.gif) | `restorepinnedtab.js`                                                |
-
-
-## Feature Showcase
-
-| Showcase                                             | Mods                                                              |
-| :--------------------------------------------------- | :---------------------------------------------------------------- |
-| ![VividPeek](../Others/assets/ArcPeek.gif)             | `VividPeek.css` + `VividPeek.js`                                      |
-| ![VividPlayer](../Others/assets/VividPlayer.gif)             | `VidvidPlayer.css` + `VividPlayer.js`                                      |
-| ![FavouriteTabs](../Others/assets/FavouriteTabs.gif) | `FavouriteTabs.css`                                               |
-| ![PeekTabbar](../Others/assets/PeekTabbar.gif)       | `PeekTabbar.css`                                                  |
-| ![Quietify](../Others/assets/Quietify.gif)           | `Quietify.css`                                                    |
-
-
-## Vivaldi Max(AI Features)
-
-| Showcase                                             | Mods                                                              |
-| :--------------------------------------------------- | :---------------------------------------------------------------- |
-| ![TidyTabs](../Others/assets/VivaldiMax.gif)       | `TidyTabs.css` + `TidyTabs.js` + `TidyTitles.js`                 |
-| ![TidyDownloads](../Others/assets/TidyDownloads.gif) | `TidyDownloads.js`                                                |
-| ![TidyAddress](../Others/assets/tidyaddress.gif) | `TidyAddress.js`                                                |
-| ![AskOnPage](../Others/assets/AskInPage.png) | `AskOnPage.js`                                                |
-
-## Mod List
-
-### CSS
-
-| File                  | Description                                                 |
-| --------------------- | ----------------------------------------------------------- |
-| `AdaptiveBF.css`      | Hide back/forward buttons when unnecessary                  |
-| `VividPeek.css`       | Arc peek experience (pair with `VividPeek.js`)              |
-| `BetterAnimation.css` | Smoother overscroll animation                               |
-| `BtnHoverAnime.css`   | Button hover animation _(disabled by default)_              |
-| `DownloadPanel.css`   | Download panel theming                                      |
-| `Extensions.css`      | Extensions dropdown as list, overflow handling              |
-| `FavouriteTabs.css`   | Arc-like favorite tabs grid (first 9 pinned tabs)           |
-| `FindInPage.css`      | Floating find bar                                           |
-| `VividQC.css`         | Arc-like quick command styling                              |
-| `LineBreak.css`       | Utility / omit it                                           |
-| `PeekTabbar.css`      | Peek tabbar on hover with 2-level stacking                  |
-| `Quietify.css`        | Sleeker audio indicator                                     |
-| `RemoveClutter.css`   | Hide scrollbars & visual clutter                            |
-| `TabsTrail.css`       | Green trail on active/hovered tabs                          |
-| `TidyTabs.css`        | AI tab grouping _(requires `TidyTabs.js`)_                    |
-| `VivalArc.css`        | Arc theme port _(incompatible with this modpack)_           |
-
-### Javascripts
-
-| File                     | Description                                                     |
-| ------------------------ | --------------------------------------------------------------- |
-| `VividPeek.js`           | [Arc peek dialog support](../Doc/mod/VividPeek.md) _(pairs with `VividPeek.css`)_ |
-| `AskOnPage.js`           | [AI side panel for page questions, summaries, and rewrites](../Doc/mod/AskOnPage.md) |
-| `AutoHidePanel.js`       | [Auto-hide side panel](../Doc/mod/AutoHidePanel.md)            |
-| `EasyFiles.js`           | [Opera-inspired file attachment via clipboard & downloads](../Doc/mod/EasyFiles.md) |
-| `ModConfig.js`           | [Shared settings panel for AI keys and supported mods](../Doc/mod/ModConfig.md) |
-| `MonochromeIcons.js`     | [Monochrome web panel icons to reduce visual noise](../Doc/mod/MonochromeIcons.md) |
-| `QuickCapture.js`        | [Auto-select capture area with clipboard/file/default modes](../Doc/mod/QuickCapture.md) |
-| `TidyDownloads.js`       | [AI download filename cleanup](../Doc/mod/TidyDownloads.md)    |
-| `TidyTabs.js`            | [AI tab grouping](../Doc/mod/TidyTabs.md) _(pairs with `TidyTabs.css`)_ |
-| `TidyTitles.js`          | [AI tab title cleanup](../Doc/mod/TidyTitles.md)               |
-| `TabManager.js`          | [Workspace Board panel for viewing and managing workspace tabs](../Doc/mod/TabManager.md) |
-| `TidyAddress.js`         | [Rewrites the visible URL suffix into an AI-generated slug](../Doc/mod/TidyAddress.md) |
-| `VividToast.js`          | [Toast notification logic](../Doc/mod/VividToast.md) _(pairs with `VividToast.css`)_ |
 
 ## How to install
 

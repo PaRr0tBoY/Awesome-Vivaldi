@@ -1,164 +1,172 @@
 #!/usr/bin/env bash
 # ==UserScript==
-# @name         Awesome Vivaldi Installer (macOS)
-# @description  TUI installer for Awesome Vivaldi modpack on macOS.
-# @version      2026.7.7
+# @name         Awesome Vivaldi Installer (macOS / Linux)
+# @description  Zero-dependency TUI installer for Awesome Vivaldi modpack.
+# @version      2026.7.14
 # @author       Ryan (Acid)
 # @website      https://github.com/PaRr0tBoY/Awesome-Vivaldi
+# @usage        curl -fsSL https://raw.githubusercontent.com/PaRr0tBoY/Awesome-Vivaldi/main/install.sh | bash
 # ==/UserScript==
 #
-# install.sh — macOS TUI installer for Awesome Vivaldi
-#
-# Usage:
-#   curl -fsSL https://raw.githubusercontent.com/PaRr0tBoY/Awesome-Vivaldi/main/install.sh | bash
-#
-# Or run locally from the repo root:
-#   bash install.sh
-#
-# Requirements: bash 3.2+, curl, unzip, tput
-
+# Requirements: bash 3.2+, curl, tput, grep, sed
 set -euo pipefail
 
 # ============================================================
 #  0.  Bootstrap
 # ============================================================
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-REPO_ROOT="$SCRIPT_DIR"
-SOURCE_DIR=""
-TEMP_DIR=""
-
-# State tracking (initialized empty for set -u safety)
-STATE_CSS_MODS=()
-STATE_JS_MODS=()
-STATE_VERSION=""
-
-# Detect if running inside the repo
-is_local_mode() {
-    [ -d "$REPO_ROOT/Vivaldi8.0Stable" ]
-}
+if [ "$0" = "bash" ] || [ "$0" = "-bash" ] || [ ! -f "$0" ]; then
+    SCRIPT_DIR=""; REPO_ROOT=""
+else
+    SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+    REPO_ROOT="$SCRIPT_DIR"
+fi
+SOURCE_DIR=""; TEMP_DIR=""; BANNER_LINES=7; LAST_FRAME_LINES=0
 
 cleanup() {
     stty echo icanon 2>/dev/null || true
     tput cnorm 2>/dev/null || true
-    if [ -n "$TEMP_DIR" ] && [ -d "$TEMP_DIR" ]; then
-        rm -rf "$TEMP_DIR"
-    fi
+    printf "\033[%d;0H\033[0J\033[H" "$((BANNER_LINES + 1))"
+    [ -n "$TEMP_DIR" ] && [ -d "$TEMP_DIR" ] && rm -rf "$TEMP_DIR"
 }
 trap cleanup EXIT
 
-# ============================================================
-#  1.  Language Detection
-# ============================================================
-
-LANG_CODE="${LANG:-en_US.UTF-8}"
-LANG_CODE="${LANG_CODE%%.*}"
-LANG_PREFIX="${LANG_CODE%%_*}"
-
-if [ "$LANG_PREFIX" = "zh" ]; then
-    UI_LANG="zh"
-else
-    UI_LANG="en"
-fi
+is_local_mode() { [ -n "$REPO_ROOT" ] && [ -d "$REPO_ROOT/Vivaldi8.0Stable" ]; }
 
 # ============================================================
-#  2.  i18n (bash 3.2 compatible — case/esac functions)
+#  1.  i18n — English primary, Chinese on L toggle
 # ============================================================
+
+UI_LANG="en"
+
+toggle_lang() { if [ "$UI_LANG" = "zh" ]; then UI_LANG="en"; else UI_LANG="zh"; fi; }
 
 tr() {
     if [ "$UI_LANG" = "zh" ]; then
         case "$1" in
-            installer_title)          echo "Awesome Vivaldi · 社区模组包安装器" ;;
-            keybind_nav_confirm)      echo "↑↓ 导航 | ENTER 确认 | ESC 取消" ;;
-            keybind_multiselect)      echo "↑↓ 导航 | SPACE 勾选 | A 全选 | D 全不选 | ENTER 确认" ;;
-            keybind_radio)            echo "↑↓ 导航 | ENTER 确认 | ESC 取消" ;;
-            toggle_all)               echo "(全选/全不选)" ;;
-            reentry_title)            echo "检测到已安装 Awesome Vivaldi" ;;
-            reentry_installed_count)  echo "当前已安装: {0} 个 CSS 模组, {1} 个 JS 模组" ;;
-            reentry_prompt)           echo "请选择操作:" ;;
-            reentry_path)             echo "安装路径" ;;
-            reentry_update)           echo "更新" ;;
-            reentry_update_desc)      echo "检查模组是否有新版本，自动拉取替换所有已安装模组" ;;
-            reentry_manage)           echo "管理" ;;
-            reentry_manage_desc)      echo "重新进入安装界面，自由增删模组" ;;
-            reentry_uninstall)        echo "卸载" ;;
-            reentry_uninstall_desc)   echo "完全移除所有模组，恢复 Vivaldi 初始状态" ;;
-            target_title)             echo "发现以下 Vivaldi 安装，请选择要安装到哪个:" ;;
+            installer_title)          echo "Awesome Vivaldi : 社区模组包安装器" ;;
+            entry_installed_title)    echo "Awesome Vivaldi 已安装" ;;
+            entry_not_installed_title) echo "Awesome Vivaldi 尚未安装" ;;
+            entry_choose_action)      echo "请选择操作:" ;;
+            entry_install)            echo "安装" ;;
+            entry_install_desc)       echo "选择并安装模组" ;;
+            entry_manage)             echo "管理" ;;
+            entry_manage_desc)        echo "增删模组" ;;
+            entry_update)             echo "更新" ;;
+            entry_update_desc)        echo "检查并应用模组更新" ;;
+            entry_uninstall)          echo "卸载" ;;
+            entry_uninstall_desc)     echo "移除部分或全部模组" ;;
+            entry_exit)               echo "退出" ;;
+            entry_exit_desc)          echo "退出安装器" ;;
+            entry_installed_count)    echo "当前已安装: {0} 个 CSS 模组, {1} 个 JS 模组" ;;
+            target_title)             echo "选择 Vivaldi 安装目标:" ;;
             target_path)              echo "路径" ;;
             target_type)              echo "类型" ;;
             target_type_system)       echo "系统级安装" ;;
             target_type_user)         echo "用户级安装" ;;
             target_none_found)        echo "未发现 Vivaldi 安装. 请先安装 Vivaldi 浏览器." ;;
-            css_title)                echo "选择要安装的 CSS 模组（默认全选）" ;;
-            css_locked_section)       echo "以下模组与 JS 模组联动，请前往下一步选择" ;;
+            css_title)                echo "选择 CSS 模组" ;;
+            css_locked_section)       echo "与 JS 模组联动 — 请在下一步选择" ;;
             css_locked_tag)           echo "(联动)" ;;
-            js_title)                 echo "选择要安装的 JavaScript 模组（默认全选）" ;;
-            js_bundled_section)       echo "以下模组附带 CSS 模组:" ;;
+            js_title)                 echo "选择 JavaScript 模组" ;;
+            js_bundled_section)       echo "-- 以下模组附带 CSS 模组: --" ;;
             js_bundled_arrow)         echo "CSS" ;;
             summary_title)            echo "安装确认" ;;
             summary_target)           echo "目标" ;;
             summary_css_mods)         echo "CSS 模组" ;;
             summary_js_mods)          echo "JS 模组" ;;
-            summary_bundled_tag)      echo "(联动)" ;;
-            backup_start)             echo "正在备份 window.html..." ;;
-            backup_done)              echo "已备份到" ;;
-            inject_start)             echo "正在注入模组加载器..." ;;
-            inject_done)              echo "已注入 injectMods.js" ;;
-            inject_skip)              echo "injectMods.js 已存在，跳过注入" ;;
-            deploy_start)             echo "正在部署模组文件..." ;;
-            install_complete)         echo "安装完成! 请重启 Vivaldi 以生效." ;;
-            restart_prompt)           echo "是否现在重启 Vivaldi? [Y] 是  [N] 否" ;;
-            update_title)             echo "正在更新 Awesome Vivaldi..." ;;
-            update_fetching)          echo "正在拉取最新模组..." ;;
-            update_comparing)         echo "正在对比已安装模组..." ;;
-            update_updated)           echo "已更新" ;;
-            update_unchanged)         echo "未变化" ;;
-            manage_title)             echo "管理已安装模组" ;;
-            uninstall_title)          echo "卸载 Awesome Vivaldi" ;;
-            uninstall_confirm)        echo "确定要卸载所有 Awesome Vivaldi 模组吗? [Y/N]" ;;
+            confirm_deploy_hint)      echo "ENTER 部署 | LEFT/RIGHT 切换页面 | L 语言 | ESC/Q 退出" ;;
+            manage_confirm_title)     echo "变更确认" ;;
+            manage_new_mods)          echo "新增安装" ;;
+            manage_removed_mods)      echo "将要卸载" ;;
+            manage_unchanged_mods)    echo "保持不变" ;;
+            manage_no_changes)        echo "没有变更. 无需操作." ;;
+            update_title)             echo "更新模组" ;;
+            update_checking)          echo "正在检查更新..." ;;
+            update_available_title)   echo "有可用更新的模组" ;;
+            update_no_updates)        echo "所有模组均为最新版本." ;;
+            update_select)            echo "选择要更新的模组:" ;;
+            update_confirm_title)     echo "确认更新" ;;
+            update_updating)          echo "正在应用更新..." ;;
+            update_updated_mod)       echo "已更新" ;;
+            update_skipped)           echo "已跳过" ;;
+            update_complete)          echo "更新完成! {0} 个模组已更新." ;;
+            uninstall_title)          echo "卸载" ;;
+            uninstall_type_prompt)    echo "选择卸载方式:" ;;
+            uninstall_full)           echo "卸载整个整合包" ;;
+            uninstall_full_desc)      echo "移除所有模组, 恢复 Vivaldi 初始状态" ;;
+            uninstall_selective)      echo "卸载选定模组" ;;
+            uninstall_selective_desc) echo "自行勾选要卸载的模组" ;;
+            uninstall_full_confirm)   echo "这将移除所有模组并恢复 Vivaldi 初始状态. 确认继续?" ;;
+            uninstall_cancelled)      echo "已取消卸载." ;;
             uninstall_restoring)      echo "正在恢复原始 window.html..." ;;
             uninstall_removing)       echo "正在移除模组文件..." ;;
             uninstall_complete)       echo "卸载完成. Vivaldi 已恢复初始状态." ;;
-            uninstall_no_bak)         echo "未找到备份文件，无法恢复原始 window.html." ;;
-            uninstall_no_mods)        echo "未检测到 Awesome Vivaldi 安装. 无需卸载." ;;
+            uninstall_no_bak)         echo "未找到备份文件, 无法恢复原始 window.html." ;;
+            deploy_backup_start)      echo "正在备份 window.html..." ;;
+            deploy_backup_done)       echo "已备份到" ;;
+            deploy_inject_start)      echo "正在注入模组加载器..." ;;
+            deploy_inject_done)       echo "已注入 injectMods.js" ;;
+            deploy_inject_skip)       echo "injectMods.js 已存在, 跳过注入" ;;
+            deploy_start)             echo "正在部署模组文件..." ;;
+            deploy_css_done)          echo "{0} 个 CSS 模组已部署到 user_mods/css/" ;;
+            deploy_js_done)           echo "{0} 个 JS 模组已部署到 user_mods/js/" ;;
+            deploy_success)           echo "安装完成! 请重启 Vivaldi 以生效." ;;
+            post_vivaldi_running)     echo "Vivaldi 正在运行." ;;
+            post_restart_prompt)      echo "是否现在重启 Vivaldi? [Y] 是  [N] 否" ;;
+            post_launch_prompt)       echo "是否现在启动 Vivaldi? [Y] 是  [N] 否" ;;
+            post_restarting)          echo "正在重启 Vivaldi..." ;;
+            restore_detected)         echo "Vivaldi 已更新! 发现旧版本模组配置." ;;
+            restore_prompt)           echo "从版本 {0} 恢复模组?" ;;
+            restore_option)           echo "是 — 恢复我的模组" ;;
+            restore_fresh)            echo "否 — 全新安装" ;;
+            restore_copying)          echo "正在从持久化存储恢复模组..." ;;
+            restore_done)             echo "已从旧版本恢复 {0} CSS + {1} JS 模组." ;;
             error_admin_required)     echo "需要管理员权限." ;;
-            error_permission)         echo "权限不足，请以 sudo 运行." ;;
+            error_download)           echo "错误: 无法下载模组包. 请检查网络连接." ;;
+            error_extract)            echo "错误: 无法解压模组包." ;;
+            error_no_source)          echo "错误: 找不到模组源文件." ;;
+            error_permission)         echo "错误: 权限不足." ;;
+            error_persist_write)      echo "警告: 持久化存储写入失败." ;;
             source_downloading)       echo "正在下载 Awesome Vivaldi 模组包..." ;;
             source_extracting)        echo "正在解压模组文件..." ;;
             source_done)              echo "模组文件准备就绪." ;;
-            separator_line)           echo "________________________________________" ;;
+            key_nav_confirm)          echo "UP/DOWN 导航 | ENTER 确认 | ESC/Q 退出" ;;
+            key_multiselect)          echo "UP/DOWN 导航 | SPACE 勾选 | A 全选 | D 全不选" ;;
+            toggle_all)               echo "(全选/全不选)" ;;
             orphan_label)             echo "[孤儿模组]" ;;
-
-            # Mod descriptions (CSS)
-            mod_desc_AdaptiveBF)             echo "无用的前进/后退按钮自动隐藏" ;;
-            mod_desc_BetterAnimation)        echo "页面滚动橡皮筋回弹更平滑" ;;
-            mod_desc_BtnHoverAnime)          echo "工具栏按钮悬停有微动效" ;;
-            mod_desc_DownloadPanel)          echo "下载面板适配暗色主题" ;;
-            mod_desc_Extensions)             echo "扩展菜单改为紧凑列表布局" ;;
-            mod_desc_FavouriteTabs)          echo "前9个固定标签以网格展示 (Arc 风格)" ;;
-            mod_desc_FindInPage)             echo "页内搜索栏改为浮动悬浮式" ;;
-            mod_desc_LineBreak)              echo "长文本自动换行 (小屏幕实用)" ;;
-            mod_desc_PeekTabbar)             echo "标签栏隐藏时鼠标触边滑出" ;;
-            mod_desc_Quietify)               echo "静音图标淡化，减少视觉干扰" ;;
-            mod_desc_RemoveClutter)          echo "隐藏滚动条、分割线等视觉噪音" ;;
-            mod_desc_TabsTrail)              echo "当前标签显示绿色指示条" ;;
-            mod_desc_VivalArc)               echo "Arc 浏览器风格移植 (实验性)" ;;
-            mod_desc_VividQC)                echo "快速命令面板样式美化" ;;
+            step_target)              echo "目标" ;;
+            step_css)                 echo "CSS" ;;
+            step_js)                  echo "JS" ;;
+            step_confirm)             echo "确认" ;;
+            # --- Mod descriptions ---
+            mod_desc_AdaptiveBF)      echo "无用的前进/后退按钮自动隐藏" ;;
+            mod_desc_BetterAnimation) echo "更平滑的页面橡皮筋回弹 + 标签栏收起动画" ;;
+            mod_desc_BtnHoverAnime)   echo "工具栏按钮悬停微动效" ;;
+            mod_desc_DownloadPanel)   echo "下载面板适配暗色主题" ;;
+            mod_desc_Extensions)      echo "扩展菜单改为紧凑列表布局" ;;
+            mod_desc_FavouriteTabs)   echo "前9个固定标签以网格展示 (Arc 风格)" ;;
+            mod_desc_FindInPage)      echo "页内搜索栏改为浮动悬浮式" ;;
+            mod_desc_LineBreak)       echo "长文本自动换行 (小屏幕实用)" ;;
+            mod_desc_PeekTabbar)      echo "标签栏隐藏时鼠标触边滑出" ;;
+            mod_desc_Quietify)        echo "静音图标淡化, 减少视觉干扰" ;;
+            mod_desc_RemoveClutter)   echo "隐藏滚动条、分割线等视觉噪音" ;;
+            mod_desc_TabsTrail)       echo "当前标签显示绿色指示条" ;;
+            mod_desc_VivalArc)        echo "Arc 浏览器风格移植 (实验性)" ;;
+            mod_desc_VividQC)         echo "快速命令面板样式美化" ;;
             mod_desc_TidyTabs_CSS)           echo "AI 分组标签的样式支持" ;;
             mod_desc_VividPlayer_CSS)        echo "Vivaldi 内置播放器美化" ;;
             mod_desc_VividToast_CSS)         echo "Toast 通知弹窗的样式" ;;
             mod_desc_PinnedTabRestore_CSS)   echo "固定标签恢复按钮样式" ;;
             mod_desc_InteractionFeedback_CSS) echo "按钮点击等交互反馈动效" ;;
             mod_desc_VividPeek_CSS)          echo "Arc Peek 弹出窗口样式" ;;
-
-            # Mod descriptions (JS)
             mod_desc_ModConfig)              echo "*核心* 共享设置面板 (AI Key / 模组参数)" ;;
             mod_desc_AskOnPage)              echo "AI 侧边栏: 网页问答、摘要、改写" ;;
             mod_desc_AutoHidePanel)          echo "侧边栏鼠标离开后自动收起" ;;
             mod_desc_EasyFiles)              echo "附件拖拽时自动列出剪贴板+下载文件" ;;
             mod_desc_MonochromeIcons)        echo "Web 面板图标统一为单色风格" ;;
             mod_desc_QuickCapture)           echo "截图时自动识别并选中网页区域" ;;
-            mod_desc_TabManager)             echo "工作区标签管理面板，批量操作标签" ;;
+            mod_desc_TabManager)             echo "工作区标签管理面板, 批量操作标签" ;;
             mod_desc_TidyAddress)            echo "AI 将地址栏 URL 改写为短标题" ;;
             mod_desc_TidyDownloads)          echo "AI 自动清理下载文件名中的乱码" ;;
             mod_desc_TidyTitles)             echo "AI 将标签标题精简为有意义的短语" ;;
@@ -169,95 +177,126 @@ tr() {
             mod_desc_VividToast)             echo "Toast 风格通知弹窗" ;;
             mod_desc_PinnedTabRestore)       echo "右键恢复最近关闭的固定标签" ;;
             mod_desc_InteractionFeedback)    echo "按钮点击微动效反馈" ;;
-
-            *) echo "" ;;
+            *) echo "$1" ;;
         esac
     else
         case "$1" in
-            installer_title)          echo "Awesome Vivaldi · Community Modpack Installer" ;;
-            keybind_nav_confirm)      echo "↑↓ navigate | ENTER confirm | ESC cancel" ;;
-            keybind_multiselect)      echo "↑↓ navigate | SPACE toggle | A select-all | D deselect-all | ENTER confirm" ;;
-            keybind_radio)            echo "↑↓ navigate | ENTER confirm | ESC cancel" ;;
-            toggle_all)               echo "(Select All / Deselect All)" ;;
-            reentry_title)            echo "Detected existing Awesome Vivaldi installation" ;;
-            reentry_installed_count)  echo "Currently installed: {0} CSS mods, {1} JS mods" ;;
-            reentry_prompt)           echo "Choose an action:" ;;
-            reentry_path)             echo "Install path" ;;
-            reentry_update)           echo "Update" ;;
-            reentry_update_desc)      echo "Fetch latest mods and replace installed ones" ;;
-            reentry_manage)           echo "Manage" ;;
-            reentry_manage_desc)      echo "Reopen selection to add or remove mods" ;;
-            reentry_uninstall)        echo "Uninstall" ;;
-            reentry_uninstall_desc)   echo "Remove all mods, restore original Vivaldi" ;;
-            target_title)             echo "Found the following Vivaldi installations. Choose target:" ;;
+            installer_title)          echo "Awesome Vivaldi : Community Modpack Installer" ;;
+            entry_installed_title)    echo "Awesome Vivaldi is already installed" ;;
+            entry_not_installed_title) echo "Awesome Vivaldi is not yet installed" ;;
+            entry_choose_action)      echo "Choose an action:" ;;
+            entry_install)            echo "Install" ;;
+            entry_install_desc)       echo "Select and install mods" ;;
+            entry_manage)             echo "Manage" ;;
+            entry_manage_desc)        echo "Add or remove mods" ;;
+            entry_update)             echo "Update" ;;
+            entry_update_desc)        echo "Check for and apply mod updates" ;;
+            entry_uninstall)          echo "Uninstall" ;;
+            entry_uninstall_desc)     echo "Remove some or all mods" ;;
+            entry_exit)               echo "Exit" ;;
+            entry_exit_desc)          echo "Quit installer" ;;
+            entry_installed_count)    echo "Currently installed: {0} CSS mods, {1} JS mods" ;;
+            target_title)             echo "Select Vivaldi installation target:" ;;
             target_path)              echo "Path" ;;
             target_type)              echo "Type" ;;
             target_type_system)       echo "System-wide" ;;
             target_type_user)         echo "User install" ;;
             target_none_found)        echo "No Vivaldi installation found. Please install Vivaldi first." ;;
-            css_title)                echo "Select CSS mods to install (all selected by default)" ;;
-            css_locked_section)       echo "These mods are bundled with JS mods. Select in the next step." ;;
+            css_title)                echo "Select CSS mods" ;;
+            css_locked_section)       echo "Bundled with JS mods — select in next step" ;;
             css_locked_tag)           echo "(bundled)" ;;
-            js_title)                 echo "Select JavaScript mods to install (all selected by default)" ;;
-            js_bundled_section)       echo "These mods include CSS mods:" ;;
+            js_title)                 echo "Select JavaScript mods" ;;
+            js_bundled_section)       echo "-- The following mods include CSS mods: --" ;;
             js_bundled_arrow)         echo "CSS" ;;
             summary_title)            echo "Installation Summary" ;;
             summary_target)           echo "Target" ;;
             summary_css_mods)         echo "CSS mods" ;;
             summary_js_mods)          echo "JS mods" ;;
-            summary_bundled_tag)      echo "(bundled)" ;;
-            backup_start)             echo "Backing up window.html..." ;;
-            backup_done)              echo "Backed up to" ;;
-            inject_start)             echo "Injecting mod loader..." ;;
-            inject_done)              echo "injectMods.js injected" ;;
-            inject_skip)              echo "injectMods.js already present, skipping injection" ;;
-            deploy_start)             echo "Deploying mod files..." ;;
-            install_complete)         echo "Installation complete! Restart Vivaldi to take effect." ;;
-            restart_prompt)           echo "Restart Vivaldi now? [Y] Yes  [N] No" ;;
-            update_title)             echo "Updating Awesome Vivaldi..." ;;
-            update_fetching)          echo "Fetching latest mods..." ;;
-            update_comparing)         echo "Comparing with installed mods..." ;;
-            update_updated)           echo "updated" ;;
-            update_unchanged)         echo "unchanged" ;;
-            manage_title)             echo "Manage installed mods" ;;
-            uninstall_title)          echo "Uninstall Awesome Vivaldi" ;;
-            uninstall_confirm)        echo "Are you sure you want to uninstall all Awesome Vivaldi mods? [Y/N]" ;;
+            confirm_deploy_hint)      echo "ENTER to deploy | LEFT/RIGHT switch page | L lang | ESC/Q quit" ;;
+            manage_confirm_title)     echo "Confirm Changes" ;;
+            manage_new_mods)          echo "New mods to install" ;;
+            manage_removed_mods)      echo "Mods to remove" ;;
+            manage_unchanged_mods)    echo "Unchanged mods" ;;
+            manage_no_changes)        echo "No changes detected. Nothing to do." ;;
+            update_title)             echo "Update Mods" ;;
+            update_checking)          echo "Checking for updates..." ;;
+            update_available_title)   echo "Mods with updates available" ;;
+            update_no_updates)        echo "All mods are up to date." ;;
+            update_select)            echo "Select mods to update:" ;;
+            update_confirm_title)     echo "Confirm Update" ;;
+            update_updating)          echo "Applying updates..." ;;
+            update_updated_mod)       echo "updated" ;;
+            update_skipped)           echo "skipped" ;;
+            update_complete)          echo "Update complete! {0} mods updated." ;;
+            uninstall_title)          echo "Uninstall" ;;
+            uninstall_type_prompt)    echo "Choose uninstall type:" ;;
+            uninstall_full)           echo "Uninstall entire modpack" ;;
+            uninstall_full_desc)      echo "Remove all mods, restore Vivaldi to original state" ;;
+            uninstall_selective)      echo "Uninstall specific mods" ;;
+            uninstall_selective_desc) echo "Choose which mods to remove" ;;
+            uninstall_full_confirm)   echo "This will remove ALL mods and restore Vivaldi. Continue?" ;;
+            uninstall_cancelled)      echo "Uninstall cancelled." ;;
             uninstall_restoring)      echo "Restoring original window.html..." ;;
             uninstall_removing)       echo "Removing mod files..." ;;
             uninstall_complete)       echo "Uninstall complete. Vivaldi is back to its original state." ;;
             uninstall_no_bak)         echo "Backup file not found. Cannot restore original window.html." ;;
-            uninstall_no_mods)        echo "No Awesome Vivaldi installation detected. Nothing to uninstall." ;;
+            deploy_backup_start)      echo "Backing up window.html..." ;;
+            deploy_backup_done)       echo "Backed up to" ;;
+            deploy_inject_start)      echo "Injecting mod loader..." ;;
+            deploy_inject_done)       echo "injectMods.js injected" ;;
+            deploy_inject_skip)       echo "injectMods.js already present, skipping injection" ;;
+            deploy_start)             echo "Deploying mod files..." ;;
+            deploy_css_done)          echo "{0} CSS mods deployed to user_mods/css/" ;;
+            deploy_js_done)           echo "{0} JS mods deployed to user_mods/js/" ;;
+            deploy_success)           echo "Installation complete! Restart Vivaldi to take effect." ;;
+            post_vivaldi_running)     echo "Vivaldi is currently running." ;;
+            post_restart_prompt)      echo "Restart Vivaldi now? [Y] Yes  [N] No" ;;
+            post_launch_prompt)       echo "Launch Vivaldi now? [Y] Yes  [N] No" ;;
+            post_restarting)          echo "Restarting Vivaldi..." ;;
+            restore_detected)         echo "Vivaldi has been updated! Previous mod configuration found." ;;
+            restore_prompt)           echo "Restore mods from version {0}?" ;;
+            restore_option)           echo "Yes — restore my mods" ;;
+            restore_fresh)            echo "No — start fresh" ;;
+            restore_copying)          echo "Restoring mods from persistent storage..." ;;
+            restore_done)             echo "Restored {0} CSS + {1} JS mods from previous version." ;;
             error_admin_required)     echo "Administrator privileges required." ;;
-            error_permission)         echo "Permission denied. Try running with sudo." ;;
+            error_download)           echo "ERROR: Failed to download modpack. Check your internet connection." ;;
+            error_extract)            echo "ERROR: Failed to extract modpack archive." ;;
+            error_no_source)          echo "ERROR: Could not locate mod source files." ;;
+            error_permission)         echo "ERROR: Permission denied." ;;
+            error_persist_write)      echo "Warning: Persistent storage write failed. Mods will not survive Vivaldi updates." ;;
             source_downloading)       echo "Downloading Awesome Vivaldi modpack..." ;;
             source_extracting)        echo "Extracting mod files..." ;;
             source_done)              echo "Mod files ready." ;;
-            separator_line)           echo "________________________________________" ;;
+            key_nav_confirm)          echo "UP/DOWN navigate | ENTER confirm | ESC/Q quit" ;;
+            key_multiselect)          echo "UP/DOWN navigate | SPACE toggle | A all | D none" ;;
+            toggle_all)               echo "(Select All / Deselect All)" ;;
             orphan_label)             echo "[orphan]" ;;
-
-            # Mod descriptions (CSS)
-            mod_desc_AdaptiveBF)             echo "Auto-hide back/forward buttons when unnecessary" ;;
-            mod_desc_BetterAnimation)        echo "Smoother overscroll bounce animation" ;;
-            mod_desc_BtnHoverAnime)          echo "Toolbar button hover micro-animation" ;;
-            mod_desc_DownloadPanel)          echo "Download panel dark theme adaptation" ;;
-            mod_desc_Extensions)             echo "Compact list layout for extensions menu" ;;
-            mod_desc_FavouriteTabs)          echo "First 9 pinned tabs displayed as grid (Arc-style)" ;;
-            mod_desc_FindInPage)             echo "Floating find-in-page bar" ;;
-            mod_desc_LineBreak)              echo "Long text auto-wrap (useful for small screens)" ;;
-            mod_desc_PeekTabbar)             echo "Slide-out tab bar on hover when hidden" ;;
-            mod_desc_Quietify)               echo "Subtle audio indicator, less visual noise" ;;
-            mod_desc_RemoveClutter)          echo "Hide scrollbars, dividers and visual clutter" ;;
-            mod_desc_TabsTrail)              echo "Green accent trail on active/hovered tabs" ;;
-            mod_desc_VivalArc)               echo "Arc browser style port (experimental)" ;;
-            mod_desc_VividQC)                echo "Quick command panel styling" ;;
+            step_target)              echo "Target" ;;
+            step_css)                 echo "CSS" ;;
+            step_js)                  echo "JS" ;;
+            step_confirm)             echo "Confirm" ;;
+            # --- Mod descriptions ---
+            mod_desc_AdaptiveBF)      echo "Auto-hide back/forward buttons when unnecessary" ;;
+            mod_desc_BetterAnimation) echo "Smoother overscroll bounce + tabbar retract animation" ;;
+            mod_desc_BtnHoverAnime)   echo "Toolbar button hover micro-animation" ;;
+            mod_desc_DownloadPanel)   echo "Download panel dark theme adaptation" ;;
+            mod_desc_Extensions)      echo "Compact list layout for extensions menu" ;;
+            mod_desc_FavouriteTabs)   echo "First 9 pinned tabs displayed as grid (Arc-style)" ;;
+            mod_desc_FindInPage)      echo "Floating find-in-page bar" ;;
+            mod_desc_LineBreak)       echo "Long text auto-wrap (useful for small screens)" ;;
+            mod_desc_PeekTabbar)      echo "Slide-out tab bar on hover when hidden" ;;
+            mod_desc_Quietify)        echo "Subtle audio indicator, less visual noise" ;;
+            mod_desc_RemoveClutter)   echo "Hide scrollbars, dividers and visual clutter" ;;
+            mod_desc_TabsTrail)       echo "Green accent trail on active/hovered tabs" ;;
+            mod_desc_VivalArc)        echo "Arc browser style port (experimental)" ;;
+            mod_desc_VividQC)         echo "Quick command panel styling" ;;
             mod_desc_TidyTabs_CSS)           echo "AI tab grouping style support" ;;
             mod_desc_VividPlayer_CSS)        echo "Vivaldi built-in player beautification" ;;
             mod_desc_VividToast_CSS)         echo "Toast notification popup styling" ;;
             mod_desc_PinnedTabRestore_CSS)   echo "Pinned tab restore button styling" ;;
             mod_desc_InteractionFeedback_CSS) echo "Button click micro-feedback animation" ;;
             mod_desc_VividPeek_CSS)          echo "Arc Peek popup window styling" ;;
-
-            # Mod descriptions (JS)
             mod_desc_ModConfig)              echo "*Core* Shared settings panel (AI keys / mod params)" ;;
             mod_desc_AskOnPage)              echo "AI sidebar: page Q&A, summary, rewrite" ;;
             mod_desc_AutoHidePanel)          echo "Auto-collapse side panel on mouse leave" ;;
@@ -275,27 +314,27 @@ tr() {
             mod_desc_VividToast)             echo "Toast-style notification popups" ;;
             mod_desc_PinnedTabRestore)       echo "Right-click to restore recently closed pinned tabs" ;;
             mod_desc_InteractionFeedback)    echo "Button click micro-feedback animation" ;;
-
-            *) echo "" ;;
+            *) echo "$1" ;;
         esac
     fi
 }
 
-# Format string with one arg
-trf() {
-    local key="$1"
-    local arg="$2"
-    local msg
-    msg="$(tr "$key")"
-    # Replace {0} with arg using awk (no bash 4 sed needed)
-    echo "$msg" | awk -v replacement="$arg" '{gsub(/\{0\}/, replacement); print}'
+trf() { local msg="$(tr "$1")"; echo "$msg" | sed "s/{0}/$2/g; s/{1}/$3/g; s/{2}/$4/g"; }
+
+# ── Default-off mods ──────────────────────────────────────────
+is_default_off() {
+    case "$1" in
+        FavouriteTabs.css|FavouriteTabs.js|InteractionFeedback.js|InteractionFeedback.css|TidyAddress.js|TabManager.js) return 0 ;;
+        *) return 1 ;;
+    esac
 }
 
 # ============================================================
-#  3.  ASCII Banner
+#  2.  ASCII Banner
 # ============================================================
 
 show_banner() {
+    clear
     echo ""
     echo "▄████▄ ▄▄   ▄▄ ▄▄▄▄▄  ▄▄▄▄  ▄▄▄  ▄▄   ▄▄ ▄▄▄▄▄   ██  ██ ▄▄ ▄▄ ▄▄  ▄▄▄  ▄▄    ▄▄▄▄  ▄▄"
     echo "██▄▄██ ██ ▄ ██ ██▄▄  ███▄▄ ██▀██ ██▀▄▀██ ██▄▄    ██▄▄██ ██ ██▄██ ██▀██ ██    ██▀██ ██"
@@ -306,320 +345,112 @@ show_banner() {
 }
 
 # ============================================================
-#  4.  Source Acquisition
+#  3.  Rendering — flicker-free ANSI atomic writes
 # ============================================================
 
-find_mod_source() {
-    if is_local_mode; then
-        SOURCE_DIR="$REPO_ROOT/Vivaldi8.0Stable"
-        return
-    fi
-
-    echo "$(tr source_downloading)"
-    TEMP_DIR="$(mktemp -d)"
-    local zip_url="https://github.com/PaRr0tBoY/Awesome-Vivaldi/archive/refs/heads/main.zip"
-    local zip_path="$TEMP_DIR/repo.zip"
-
-    if ! curl -fsSL -o "$zip_path" "$zip_url"; then
-        echo "ERROR: Failed to download modpack. Check your internet connection."
-        exit 1
-    fi
-
-    echo "$(tr source_extracting)"
-    unzip -qo "$zip_path" -d "$TEMP_DIR"
-
-    # Find extracted directory
-    local extracted
-    extracted="$(find "$TEMP_DIR" -maxdepth 1 -type d -name "Awesome-Vivaldi-*" | head -1)"
-    if [ -z "$extracted" ]; then
-        echo "ERROR: Failed to extract modpack archive."
-        exit 1
-    fi
-
-    SOURCE_DIR="$extracted/Vivaldi8.0Stable"
-    echo "$(tr source_done)"
-}
-
-# ============================================================
-#  5.  Vivaldi Installation Discovery
-# ============================================================
-
-find_vivaldi_installations() {
-    local found=()
-    local seen=()
-
-    # Method 1: find Framework directories
-    while IFS= read -r -d '' framework; do
-        # Navigate up from "Vivaldi Framework.framework/Versions/A/" to Resources/vivaldi/
-        local resources_dir="${framework}/Resources/vivaldi"
-        if [ -f "$resources_dir/window.html" ]; then
-            # Determine .app path
-            local app_path
-            app_path="$(echo "$framework" | sed 's|/Contents/Frameworks/Vivaldi Framework.framework/Versions/[^/]*||')"
-            local app_name
-            app_name="$(basename "$app_path" .app)"
-
-            local display_name="Vivaldi"
-            case "$app_name" in
-                *Snapshot*) display_name="Vivaldi Snapshot" ;;
-                *snapshot*) display_name="Vivaldi Snapshot" ;;
-                *)          display_name="Vivaldi Stable" ;;
-            esac
-
-            local version=""
-            if [ -f "$app_path/Contents/Info.plist" ]; then
-                version="$(plutil -extract CFBundleShortVersionString raw "$app_path/Contents/Info.plist" 2>/dev/null || echo "unknown")"
-            fi
-
-            local key="${resources_dir}"
-            if [[ ! " ${seen[*]} " =~ " ${key} " ]]; then
-                seen+=("$key")
-                found+=("${app_path}|${resources_dir}|${display_name}|${version}")
-            fi
-        fi
-    done < <(find /Applications "$HOME/Applications" -type d -name "Vivaldi Framework.framework" -print0 2>/dev/null)
-
-    # Method 2: mdfind (fallback)
-    if [ ${#found[@]} -eq 0 ]; then
-        while IFS= read -r html_path; do
-            if [[ "$html_path" == *"Vivaldi"* ]] && [[ "$html_path" == *"Resources/vivaldi/window.html" ]]; then
-                local resources_dir
-                resources_dir="$(dirname "$html_path")"
-                local framework
-                framework="$(dirname "$(dirname "$resources_dir")")"
-                local app_path
-                app_path="$(echo "$framework" | sed 's|/Contents/Frameworks/Vivaldi Framework.framework/Versions/[^/]*||')"
-                local app_name
-                app_name="$(basename "$app_path" .app)"
-                local display_name="Vivaldi"
-                case "$app_name" in
-                    *Snapshot*) display_name="Vivaldi Snapshot" ;;
-                    *)          display_name="Vivaldi Stable" ;;
-                esac
-                local version=""
-                if [ -f "$app_path/Contents/Info.plist" ]; then
-                    version="$(plutil -extract CFBundleShortVersionString raw "$app_path/Contents/Info.plist" 2>/dev/null || echo "unknown")"
-                fi
-                local key="${resources_dir}"
-                if [[ ! " ${seen[*]} " =~ " ${key} " ]]; then
-                    seen+=("$key")
-                    found+=("${app_path}|${resources_dir}|${display_name}|${version}")
-                fi
-            fi
-        done < <(mdfind "kMDItemFSName == 'window.html'" 2>/dev/null || true)
-    fi
-
-    printf '%s\n' "${found[@]}"
-}
-
-# ============================================================
-#  6.  Mod Scanning
-# ============================================================
-
-# Returns mod lists as global arrays because bash 3.2 can't return complex data
-scan_mods() {
-    local source_dir="$1"
-
-    local css_dir="$source_dir/CSS"
-    local js_dir="$source_dir/Javascripts"
-
-    # Collect CSS files
-    STANDALONE_CSS_FILES=()
-    BUNDLED_CSS_FILES=()
-    STANDALONE_CSS_BASES=()
-    BUNDLED_CSS_BASES=()
-
-    # Collect JS files
-    STANDALONE_JS_FILES=()
-    BUNDLED_JS_FILES=()
-    STANDALONE_JS_BASES=()
-    BUNDLED_JS_BASES=()
-
-    # Build base name maps
-    local css_bases=()
-    local js_bases=()
-
-    if [ -d "$css_dir" ]; then
-        for f in "$css_dir"/*.css; do
-            [ -f "$f" ] || continue
-            local name
-            name="$(basename "$f")"
-            local base="${name%.css}"
-            css_bases+=("$base")
-        done
-    fi
-
-    if [ -d "$js_dir" ]; then
-        for f in "$js_dir"/*.js; do
-            [ -f "$f" ] || continue
-            local name
-            name="$(basename "$f")"
-            local base="${name%.js}"
-
-            # Skip ModConfig.js — always auto-installed
-            [ "$name" = "ModConfig.js" ] && continue
-
-            js_bases+=("$base")
-        done
-    fi
-
-    # Detect bundles
-    BUNDLE_KEYS=()
-    for cb in "${css_bases[@]}"; do
-        for jb in "${js_bases[@]}"; do
-            if [ "$cb" = "$jb" ]; then
-                BUNDLE_KEYS+=("$cb")
-                break
-            fi
-        done
-    done
-
-    # Helper: is key in BUNDLE_KEYS?
-    _is_bundled() {
-        local key="$1"
-        for bk in "${BUNDLE_KEYS[@]}"; do
-            [ "$bk" = "$key" ] && return 0
-        done
-        return 1
-    }
-
-    # Categorize CSS
-    for f in "$css_dir"/*.css; do
-        [ -f "$f" ] || continue
-        local name
-        name="$(basename "$f")"
-        local base="${name%.css}"
-
-        if _is_bundled "$base"; then
-            BUNDLED_CSS_FILES+=("$name")
-            BUNDLED_CSS_BASES+=("$base")
+write_frame() {
+    local content="$1"
+    local e="\033"
+    local w; w="$(tput cols 2>/dev/null || echo 80)"
+    local row=$((BANNER_LINES + 1))
+    local line_count=0
+    local buf=""
+    while IFS= read -r line || [ -n "$line" ]; do
+        buf="${buf}${e}[${row};0H${e}[K"
+        if [ ${#line} -ge "$w" ]; then
+            buf="${buf}${line:0:$((w - 1))}"
         else
-            STANDALONE_CSS_FILES+=("$name")
-            STANDALONE_CSS_BASES+=("$base")
+            buf="${buf}${line}"
         fi
+        row=$((row + 1))
+        line_count=$((line_count + 1))
+    done <<< "$content"
+    while [ "$line_count" -lt "$LAST_FRAME_LINES" ]; do
+        buf="${buf}${e}[${row};0H${e}[K"
+        row=$((row + 1))
+        line_count=$((line_count + 1))
     done
+    printf "%s" "$buf"
+    LAST_FRAME_LINES="$line_count"
+}
 
-    # Categorize JS
-    for f in "$js_dir"/*.js; do
-        [ -f "$f" ] || continue
-        local name
-        name="$(basename "$f")"
-        local base="${name%.js}"
+clear_content() {
+    local e="\033"
+    local row=$((BANNER_LINES + 1))
+    local buf=""
+    local i=0
+    while [ "$i" -lt "$LAST_FRAME_LINES" ]; do
+        buf="${buf}${e}[${row};0H${e}[K"
+        row=$((row + 1))
+        i=$((i + 1))
+    done
+    buf="${buf}${e}[$((BANNER_LINES + 1));0H"
+    printf "%s" "$buf"
+    LAST_FRAME_LINES=0
+}
 
-        [ "$name" = "ModConfig.js" ] && continue
+exit_installer() {
+    clear_content
+    printf "\033[2J\033[H"
+    tput cnorm 2>/dev/null || true
+    exit 0
+}
 
-        if _is_bundled "$base"; then
-            BUNDLED_JS_FILES+=("$name")
-            BUNDLED_JS_BASES+=("$base")
+flush_input() { while read -rsn1 -t 0.01 _ 2>/dev/null; do :; done; }
+
+# ── Step indicator ────────────────────────────────────────────
+
+STEP_IDX=0; STEP_TOTAL=0; STEP_LABELS=()
+PAGES_CONFIRMED=()
+
+set_step_info() {
+    STEP_IDX="$1"; STEP_TOTAL="$2"
+    IFS='|' read -ra STEP_LABELS <<< "$3"
+    if [ "${#PAGES_CONFIRMED[@]}" -ne "$STEP_TOTAL" ]; then
+        PAGES_CONFIRMED=()
+        for ((i=0; i<STEP_TOTAL; i++)); do PAGES_CONFIRMED+=(0); done
+    fi
+}
+
+format_step_bar() {
+    local e="\033"
+    local out="  "
+    if [ "$UI_LANG" = "zh" ]; then
+        out="${out}步骤 $((STEP_IDX + 1))/$STEP_TOTAL: "
+    else
+        out="${out}Step $((STEP_IDX + 1))/$STEP_TOTAL: "
+    fi
+    for ((i=0; i<STEP_TOTAL; i++)); do
+        [ "$i" -gt 0 ] && out="${out}  ${e}[90m>${e}[0m  "
+        if [ "$i" -eq "$STEP_IDX" ]; then
+            out="${out}${e}[1;33m[${STEP_LABELS[$i]}]${e}[0m"
+        elif [ "${PAGES_CONFIRMED[$i]}" = "1" ]; then
+            out="${out}${e}[32m✓${STEP_LABELS[$i]}${e}[0m"
         else
-            STANDALONE_JS_FILES+=("$name")
-            STANDALONE_JS_BASES+=("$base")
+            out="${out}${e}[90m${STEP_LABELS[$i]}${e}[0m"
         fi
     done
-
-    # Sort arrays (simplified sort)
-    IFS=$'\n' STANDALONE_CSS_FILES=($(sort <<<"${STANDALONE_CSS_FILES[*]}"))
-    IFS=$'\n' BUNDLED_CSS_FILES=($(sort <<<"${BUNDLED_CSS_FILES[*]}"))
-    IFS=$'\n' STANDALONE_JS_FILES=($(sort <<<"${STANDALONE_JS_FILES[*]}"))
-    IFS=$'\n' BUNDLED_JS_FILES=($(sort <<<"${BUNDLED_JS_FILES[*]}"))
-}
-
-# Get description for a mod by base name and type
-mod_desc() {
-    local base="$1"
-    local is_bundled="$2"  # "css_bundled" | "js_bundled" | "standalone"
-    local key
-
-    if [ "$is_bundled" = "css_bundled" ]; then
-        key="mod_desc_${base}_CSS"
-    else
-        key="mod_desc_${base}"
-    fi
-
-    local desc
-    desc="$(tr "$key")"
-    echo "$desc"
+    echo "$out"
 }
 
 # ============================================================
-#  7.  Installation State
+#  4.  Key Reading
 # ============================================================
 
-get_install_state() {
-    local vivaldi_dir="$1"
-    local state_file="$vivaldi_dir/user_mods/.awesome-vivaldi.json"
-
-    [ -f "$state_file" ] || return 1
-
-    # Parse with awk (no jq dependency)
-    STATE_CSS_MODS=()
-    STATE_JS_MODS=()
-    STATE_VERSION=""
-
-    # Use python if available, otherwise awk
-    if command -v python3 &>/dev/null; then
-        local css_json js_json
-        css_json="$(python3 -c "
-import json, sys
-with open('$state_file') as f:
-    d = json.load(f)
-print(' '.join(d.get('css_mods', [])))
-" 2>/dev/null)"
-        js_json="$(python3 -c "
-import json, sys
-with open('$state_file') as f:
-    d = json.load(f)
-print(' '.join(d.get('js_mods', [])))
-" 2>/dev/null)"
-        STATE_CSS_MODS=($css_json)
-        STATE_JS_MODS=($js_json)
-    else
-        # Fallback: crude grep-based extraction
-        local css_line js_line
-        css_line="$(grep -o '"css_mods"[[:space:]]*:[[:space:]]*\[[^]]*\]' "$state_file" 2>/dev/null || true)"
-        js_line="$(grep -o '"js_mods"[[:space:]]*:[[:space:]]*\[[^]]*\]' "$state_file" 2>/dev/null || true)"
-        # Extract quoted strings
-        while IFS='"' read -r _ val _; do
-            [ -n "$val" ] && STATE_CSS_MODS+=("$val")
-        done < <(echo "$css_line" | grep -o '"[^"]*"')
-        while IFS='"' read -r _ val _; do
-            [ -n "$val" ] && STATE_JS_MODS+=("$val")
-        done < <(echo "$js_line" | grep -o '"[^"]*"')
-    fi
-
-    return 0
-}
-
-is_installed() {
-    local vivaldi_dir="$1"
-    [ -d "$vivaldi_dir/user_mods" ]
-}
-
-# ============================================================
-#  8.  TUI Framework
-# ============================================================
-
-# Read a single keypress, handling arrow keys
 read_key() {
     stty -echo -icanon 2>/dev/null || true
     local key
     IFS= read -rsn1 key 2>/dev/null || true
-
     if [ "$key" = $'\x1b' ]; then
-        # Could be ESC or arrow key sequence
-        local esc_rest
-        read -rsn2 -t 0.01 esc_rest 2>/dev/null || true
-        if [ "$esc_rest" = '[A' ]; then
-            echo "UP"
-        elif [ "$esc_rest" = '[B' ]; then
-            echo "DOWN"
-        elif [ "$esc_rest" = '[C' ]; then
-            echo "RIGHT"
-        elif [ "$esc_rest" = '[D' ]; then
-            echo "LEFT"
-        else
-            echo "ESC"
-        fi
+        local rest
+        read -rsn2 -t 0.01 rest 2>/dev/null || true
+        case "$rest" in
+            '[A') echo "UP";;
+            '[B') echo "DOWN";;
+            '[C') echo "RIGHT";;
+            '[D') echo "LEFT";;
+            *)    echo "ESC";;
+        esac
     elif [ "$key" = '' ]; then
         echo "ENTER"
     elif [ "$key" = ' ' ]; then
@@ -628,6 +459,10 @@ read_key() {
         echo "A"
     elif [ "$key" = 'd' ] || [ "$key" = 'D' ]; then
         echo "D"
+    elif [ "$key" = 'l' ] || [ "$key" = 'L' ]; then
+        echo "L"
+    elif [ "$key" = 'q' ] || [ "$key" = 'Q' ]; then
+        echo "Q"
     elif [ "$key" = 'y' ] || [ "$key" = 'Y' ]; then
         echo "Y"
     elif [ "$key" = 'n' ] || [ "$key" = 'N' ]; then
@@ -638,861 +473,1012 @@ read_key() {
     stty echo icanon 2>/dev/null || true
 }
 
-# Single-select (radio) TUI
-select_single() {
-    local title="$1"
-    shift
-    local keybind_hint="$1"
-    shift
-    # Remaining args are "Label|Detail" pairs
-    local items=("$@")
-    local n=${#items[@]}
+# Helper for key hints
+build_hint() {
+    local parts=""
+    local e="\033[90m"
+    for part in "$@"; do
+        parts="${parts}${e}${part}\033[0m  |  "
+    done
+    echo "${parts%  |  }"
+}
 
-    if [ "$n" -eq 0 ]; then
-        echo "$(tr target_none_found)"
-        exit 1
-    fi
+# ============================================================
+#  5.  Source Acquisition
+# ============================================================
 
-    if [ "$n" -eq 1 ]; then
-        echo "0"
+find_mod_source() {
+    if is_local_mode; then
+        SOURCE_DIR="$REPO_ROOT/Vivaldi8.0Stable"
         return
     fi
+    echo "$(tr source_downloading)"
+    TEMP_DIR="$(mktemp -d)"
+    local repo_raw="https://raw.githubusercontent.com/PaRr0tBoY/Awesome-Vivaldi/main"
+    local repo_api="https://api.github.com/repos/PaRr0tBoY/Awesome-Vivaldi/contents"
+    local css_dir="$TEMP_DIR/CSS"; local js_dir="$TEMP_DIR/Javascripts"
+    mkdir -p "$css_dir" "$js_dir"
 
-    local cursor=0
-    local done=0
+    local api_json
+    api_json="$(curl -fsSL "$repo_api/Vivaldi8.0Stable/CSS" 2>/dev/null)"
+    if [ -n "$api_json" ]; then
+        echo "$api_json" | grep -o '"name":"[^"]*\.css"' | sed 's/"name":"//;s/"//' | while read -r fname; do
+            [ -z "$fname" ] && continue
+            curl -fsSL -o "$css_dir/$fname" "$repo_raw/Vivaldi8.0Stable/CSS/$fname" &
+        done; wait
+    fi
+    api_json="$(curl -fsSL "$repo_api/Vivaldi8.0Stable/Javascripts" 2>/dev/null)"
+    if [ -n "$api_json" ]; then
+        echo "$api_json" | grep -o '"name":"[^"]*\.js"' | sed 's/"name":"//;s/"//' | while read -r fname; do
+            [ -z "$fname" ] && continue
+            curl -fsSL -o "$js_dir/$fname" "$repo_raw/Vivaldi8.0Stable/Javascripts/$fname" &
+        done; wait
+    fi
+    curl -fsSL -o "$TEMP_DIR/injectMods.js" "$repo_raw/injectMods.js" 2>/dev/null || true
 
+    if [ -z "$(ls -A "$css_dir" 2>/dev/null)" ] || [ -z "$(ls -A "$js_dir" 2>/dev/null)" ]; then
+        echo "Falling back to full zip download..."
+        local zip_path="$TEMP_DIR/repo.zip"
+        curl -fsSL -o "$zip_path" "https://github.com/PaRr0tBoY/Awesome-Vivaldi/archive/refs/heads/main.zip" || { echo "$(tr error_download)"; exit 1; }
+        echo "$(tr source_extracting)"
+        unzip -qo "$zip_path" -d "$TEMP_DIR"
+        local extracted; extracted="$(find "$TEMP_DIR" -maxdepth 1 -type d -name 'Awesome-Vivaldi-*' | head -1)"
+        [ -z "$extracted" ] && { echo "$(tr error_extract)"; exit 1; }
+        SOURCE_DIR="$extracted/Vivaldi8.0Stable"
+    else
+        SOURCE_DIR="$TEMP_DIR"
+    fi
+    echo "$(tr source_done)"
+}
+
+# ============================================================
+#  6.  Vivaldi Installation Discovery (macOS)
+# ============================================================
+
+find_vivaldi_installations() {
+    local found=(); local seen=()
+    while IFS= read -r -d '' framework; do
+        local resources_dir="${framework}/Resources/vivaldi"
+        [ -f "$resources_dir/window.html" ] || continue
+        local app_path; app_path="$(echo "$framework" | sed 's|/Contents/Frameworks/Vivaldi Framework.framework/Versions/[^/]*||')"
+        local app_name; app_name="$(basename "$app_path" .app)"
+        local display_name="Vivaldi"
+        case "$app_name" in *Snapshot*|*snapshot*) display_name="Vivaldi Snapshot" ;; esac
+        local version=""
+        [ -f "$app_path/Contents/Info.plist" ] && version="$(plutil -extract CFBundleShortVersionString raw "$app_path/Contents/Info.plist" 2>/dev/null || echo "unknown")"
+        local key="${resources_dir}"
+        if [[ ! " ${seen[*]} " =~ " ${key} " ]]; then
+            seen+=("$key")
+            found+=("${app_path}|${resources_dir}|${display_name}|${version}")
+        fi
+    done < <(find /Applications "$HOME/Applications" -type d -name "Vivaldi Framework.framework" -print0 2>/dev/null)
+    if [ ${#found[@]} -eq 0 ]; then
+        while IFS= read -r html_path; do
+            [[ "$html_path" == *"Vivaldi"* ]] && [[ "$html_path" == *"Resources/vivaldi/window.html" ]] || continue
+            local resources_dir; resources_dir="$(dirname "$html_path")"
+            local framework; framework="$(dirname "$(dirname "$resources_dir")")"
+            local app_path; app_path="$(echo "$framework" | sed 's|/Contents/Frameworks/Vivaldi Framework.framework/Versions/[^/]*||')"
+            local app_name; app_name="$(basename "$app_path" .app)"
+            local display_name="Vivaldi"; case "$app_name" in *Snapshot*) display_name="Vivaldi Snapshot" ;; esac
+            local version=""
+            [ -f "$app_path/Contents/Info.plist" ] && version="$(plutil -extract CFBundleShortVersionString raw "$app_path/Contents/Info.plist" 2>/dev/null || echo "unknown")"
+            local key="${resources_dir}"
+            if [[ ! " ${seen[*]} " =~ " ${key} " ]]; then
+                seen+=("$key")
+                found+=("${app_path}|${resources_dir}|${display_name}|${version}")
+            fi
+        done < <(mdfind "kMDItemFSName == 'window.html'" 2>/dev/null || true)
+    fi
+    printf '%s\n' "${found[@]}"
+}
+
+# ============================================================
+#  7.  Mod Scanning
+# ============================================================
+
+scan_mods() {
+    local source_dir="$1"
+    local css_dir="$source_dir/CSS"; local js_dir="$source_dir/Javascripts"
+    STANDALONE_CSS=(); BUNDLED_CSS=(); STANDALONE_JS=(); BUNDLED_JS=()
+    local css_names=(); local js_names=()
+    if [ -d "$css_dir" ]; then for f in "$css_dir"/*.css; do [ -f "$f" ] && css_names+=("$(basename "$f" .css)"); done; fi
+    if [ -d "$js_dir" ]; then for f in "$js_dir"/*.js; do [ -f "$f" ] || continue; local n="$(basename "$f")"; [ "$n" = "ModConfig.js" ] && continue; js_names+=("$(basename "$f" .js)"); done; fi
+    local bundled_keys=()
+    for cb in "${css_names[@]}"; do for jb in "${js_names[@]}"; do [ "$cb" = "$jb" ] && bundled_keys+=("$cb"); done; done
+    _in_array() { local k="$1"; shift; for v in "$@"; do [ "$v" = "$k" ] && return 0; done; return 1; }
+    # CSS
+    for f in "$css_dir"/*.css; do [ -f "$f" ] || continue; local name="$(basename "$f")"; local base="${name%.css}"
+        if _in_array "$base" "${bundled_keys[@]}"; then BUNDLED_CSS+=("$name|$base")
+        else STANDALONE_CSS+=("$name|$base"); fi; done
+    IFS=$'\n'; STANDALONE_CSS=($(sort <<<"${STANDALONE_CSS[*]}")); unset IFS
+    IFS=$'\n'; BUNDLED_CSS=($(sort <<<"${BUNDLED_CSS[*]}")); unset IFS
+    # JS
+    for f in "$js_dir"/*.js; do [ -f "$f" ] || continue; local name="$(basename "$f")"; local base="${name%.js}"; [ "$name" = "ModConfig.js" ] && continue
+        if _in_array "$base" "${bundled_keys[@]}"; then BUNDLED_JS+=("$name|$base|${name%.js}.css")
+        else STANDALONE_JS+=("$name|$base|"); fi; done
+    IFS=$'\n'; STANDALONE_JS=($(sort <<<"${STANDALONE_JS[*]}")); unset IFS
+    IFS=$'\n'; BUNDLED_JS=($(sort <<<"${BUNDLED_JS[*]}")); unset IFS
+}
+
+# ============================================================
+#  8.  Installation State
+# ============================================================
+
+get_install_state() {
+    local vivaldi_dir="$1"
+    local state_file="$vivaldi_dir/user_mods/.awesome-vivaldi.json"
+    [ -f "$state_file" ] || return 1
+    STATE_CSS_MODS=(); STATE_JS_MODS=(); STATE_VERSION=""; STATE_GIT_COMMIT=""
+    if command -v python3 &>/dev/null; then
+        local css; css="$(python3 -c "import json; d=json.load(open('$state_file')); print(' '.join(d.get('css_mods',[])))" 2>/dev/null)"
+        local js; js="$(python3 -c "import json; d=json.load(open('$state_file')); print(' '.join(d.get('js_mods',[])))" 2>/dev/null)"
+        STATE_CSS_MODS=($css); STATE_JS_MODS=($js)
+    else
+        local line; line="$(grep -o '"css_mods"[[:space:]]*:[[:space:]]*\[[^]]*\]' "$state_file" 2>/dev/null || true)"
+        echo "$line" | grep -o '"[^"]*"' | sed 's/"//g' | while read -r m; do STATE_CSS_MODS+=("$m"); done 2>/dev/null
+        line="$(grep -o '"js_mods"[[:space:]]*:[[:space:]]*\[[^]]*\]' "$state_file" 2>/dev/null || true)"
+        echo "$line" | grep -o '"[^"]*"' | sed 's/"//g' | while read -r m; do STATE_JS_MODS+=("$m"); done 2>/dev/null
+    fi
+    return 0
+}
+
+is_installed() { [ -d "$1/user_mods" ]; }
+
+# ============================================================
+#  9.  TUI Selection Functions
+# ============================================================
+
+select_single() {
+    local title_key="$1"; local allow_left="$2"; shift 2
+    local items=("$@"); local n=${#items[@]}
+    [ "$n" -eq 0 ] && { echo "$(tr target_none_found)"; exit 1; }
+    [ "$n" -eq 1 ] && { echo "0"; return; }
+    local cursor=0; local done=0; local e="\033"
     while [ "$done" -eq 0 ]; do
-        tput cup 0 0 2>/dev/null
-        tput ed 2>/dev/null
-
-        echo ""
-        echo "  $title"
-        echo ""
-
+        local sb=""
+        sb+="$(format_step_bar)"$'\n'
+        sb+=""$'\n'
+        sb+="  $(tr "$title_key")"$'\n'
+        sb+=""$'\n'
         local i=0
         for item in "${items[@]}"; do
-            local label="${item%%|*}"
-            local detail="${item#*|}"
-
-            if [ "$i" -eq "$cursor" ]; then
-                echo "  > [O] $label"
-            else
-                echo "    [ ] $label"
-            fi
-            if [ -n "$detail" ] && [ "$detail" != "$item" ]; then
-                echo "          $detail"
-            fi
+            local label="${item%%|*}"; local rest="${item#*|}"; local detail="${rest#*|}"
+            local prefix="   "; local marker=" "
+            [ "$i" = "$cursor" ] && { prefix="  >"; marker="O"; }
+            sb+="$prefix [$marker] $label"$'\n'
+            [ -n "$detail" ] && [ "$detail" != "$rest" ] && sb+="          $detail"$'\n'
             ((i++))
         done
-
-        echo ""
-        echo "  $(tr separator_line)"
-        echo "    $keybind_hint"
-
-        local key
-        key="$(read_key)"
+        sb+=""$'\n'
+        sb+="  ${e}[90m──────────────────────────────────────────────────${e}[0m"$'\n'
+        local hint_parts=("$(tr key_nav_confirm)" "$(tr key_confirm_back)" "L lang")
+        [ "$allow_left" = "1" ] && hint_parts+=("LEFT back")
+        hint_parts+=("ESC/Q quit")
+        sb+="    $(build_hint "${hint_parts[@]}")"$'\n'
+        write_frame "$sb"
+        local key; key="$(read_key)"
         case "$key" in
             UP)    cursor=$(( cursor > 0 ? cursor - 1 : 0 )) ;;
             DOWN)  cursor=$(( cursor < n - 1 ? cursor + 1 : n - 1 )) ;;
             ENTER) done=1 ;;
-            ESC)   echo ""; echo "Cancelled."; cleanup; exit 0 ;;
+            LEFT)  [ "$allow_left" = "1" ] && { echo "__BACK__"; return; } ;;
+            L)     toggle_lang ;;
+            Q|ESC) exit_installer ;;
         esac
     done
-
     echo "$cursor"
 }
 
-# Multi-select (checkbox) TUI — returns space-separated list of selected indices
 select_multi() {
-    local title="$1"
-    local keybind_hint="$2"
-    local preselect_mode="$3"  # "all", "none", or "list:file1 file2..."
-    shift 3
-    # Remaining args: "FileName|DisplayLabel|Description|IsLocked" (IsLocked: 0 or 1)
-    local items=("$@")
-    local n=${#items[@]}
-
-    [ "$n" -eq 0 ] && return
-
-    local selected=()
-    local locked=()
-    local filenames=()
-    local labels=()
-    local descs=()
-
+    local title_key="$1"; local preselect_str="$2"; local default_all="$3"; local allow_left="$4"; local allow_right="$5"; shift 5
+    local items=("$@"); local n=${#items[@]}; [ "$n" -eq 0 ] && { echo ""; return; }
+    local selected=(); local filenames=(); local locked=(); local labels=()
     local i=0
     for item in "${items[@]}"; do
         IFS='|' read -r fname label desc locked_flag <<< "$item"
-        filenames+=("$fname")
-        labels+=("$label")
-        descs+=("$desc")
-        locked+=("$locked_flag")
-
-        if [ "$preselect_mode" = "all" ]; then
-            selected+=(1)
-        elif [ "$preselect_mode" = "none" ]; then
-            selected+=(0)
-        else
-            # Check if this file is in the preselect list
-            local ps_files="${preselect_mode#list:}"
-            if [[ " $ps_files " =~ " $fname " ]]; then
-                selected+=(1)
-            else
-                selected+=(0)
-            fi
+        filenames+=("$fname"); labels+=("$label"); locked+=("${locked_flag:-0}")
+        local sel=0
+        if [ -n "$preselect_str" ]; then
+            if [[ " $preselect_str " =~ " $fname " ]]; then sel=1; fi
+        elif [ "$default_all" = "1" ]; then
+            if [ "${locked_flag:-0}" = "0" ] && ! is_default_off "$fname"; then sel=1; fi
         fi
-        ((i++))
+        selected+=("$sel"); ((i++))
     done
-
-    local cursor=0
-    local done=0
-
+    local cursor=0; local done=0; local e="\033"
+    local max_label=0
+    for l in "${labels[@]}"; do [ "${#l}" -gt "$max_label" ] && max_label="${#l}"; done
     while [ "$done" -eq 0 ]; do
-        tput cup 0 0 2>/dev/null
-        tput ed 2>/dev/null
-
-        echo ""
-        echo "  $title"
-        echo ""
-
-        # Select-all toggle line
-        local selectable_count=0
-        local all_selected=1
-        for i in $(seq 0 $((n - 1))); do
-            [ "${locked[$i]}" = "1" ] && continue
-            ((selectable_count++))
-            [ "${selected[$i]}" = "0" ] && all_selected=0
+        local all_sel=1
+        for ((j=0; j<n; j++)); do [ "${locked[$j]}" = "0" ] && [ "${selected[$j]}" = "0" ] && { all_sel=0; break; }; done
+        local sb=""
+        sb+="$(format_step_bar)"$'\n'
+        sb+=""$'\n'
+        sb+="  $(tr "$title_key")"$'\n'
+        sb+=""$'\n'
+        local toggle_mark="[x]"; [ "$all_sel" = "0" ] && toggle_mark="[ ]"
+        local toggle_prefix="   "; [ "$cursor" = "-1" ] && toggle_prefix="  >"
+        sb+="$toggle_prefix ${e}[90m$toggle_mark${e}[0m ${e}[90m$(tr toggle_all)${e}[0m"$'\n'
+        sb+="  ${e}[90m──────────────────────────────────────────────────${e}[0m"$'\n'
+        for ((j=0; j<n; j++)); do
+            local check="[ ]"; [ "${selected[$j]}" = "1" ] && check="[x]"
+            local prefix="   "; [ "$j" = "$cursor" ] && prefix="  ${e}[1;36m>${e}[0m"
+            local lock_tag=""; [ "${locked[$j]}" = "1" ] && lock_tag=" ${e}[90m$(tr css_locked_tag)${e}[0m"
+            local label_padded; printf -v label_padded "%-$((max_label + 2))s" "${labels[$j]}"
+            local desc_key="mod_desc_${filenames[$j]%.*}"
+            local desc; desc="$(tr "$desc_key" 2>/dev/null)"
+            [ "$desc" = "$desc_key" ] && desc=""
+            local desc_part=""; [ -n "$desc" ] && desc_part=" —  $desc"
+            sb+="$prefix $check $label_padded$desc_part$lock_tag"$'\n'
         done
-
-        if [ "$selectable_count" -gt 0 ]; then
-            local toggle_mark="[ ]"
-            [ "$all_selected" = "1" ] && toggle_mark="[x]"
-            local toggle_prefix="   "
-            [ "$cursor" = "-1" ] && toggle_prefix="  >"
-            echo "$toggle_prefix $toggle_mark $(tr toggle_all)"
-            echo "  $(tr separator_line)"
-        fi
-
-        for i in $(seq 0 $((n - 1))); do
-            local check="[ ]"
-            [ "${selected[$i]}" = "1" ] && check="[x]"
-
-            local prefix="   "
-            [ "$i" = "$cursor" ] && prefix="  >"
-
-            local lock_tag=""
-            [ "${locked[$i]}" = "1" ] && lock_tag=" $(tr css_locked_tag)"
-
-            local desc_str=""
-            [ -n "${descs[$i]}" ] && desc_str="  —  ${descs[$i]}"
-
-            echo "$prefix $check ${labels[$i]}$lock_tag$desc_str"
-        done
-
-        echo ""
-        echo "  $(tr separator_line)"
-        echo "    $keybind_hint"
-
-        local key
-        key="$(read_key)"
+        sb+=""$'\n'
+        sb+="  ${e}[90m──────────────────────────────────────────────────${e}[0m"$'\n'
+        local hint_parts=("$(tr key_multiselect)" "$(tr key_confirm_back)" "L lang")
+        [ "$allow_left"  = "1" ] && hint_parts+=("LEFT back")
+        [ "$allow_right" = "1" ] && hint_parts+=("RIGHT next")
+        hint_parts+=("ESC/Q quit")
+        sb+="    $(build_hint "${hint_parts[@]}")"$'\n'
+        write_frame "$sb"
+        local key; key="$(read_key)"
         case "$key" in
-            UP)
-                if [ "$cursor" = "-1" ]; then cursor=$((n - 1))
-                else cursor=$(( cursor > 0 ? cursor - 1 : 0 )); fi
-                ;;
-            DOWN)
-                if [ "$cursor" = "-1" ]; then cursor=0
-                else cursor=$(( cursor < n - 1 ? cursor + 1 : n - 1 )); fi
-                ;;
+            UP)    [ "$cursor" = "-1" ] && cursor=$((n - 1)) || cursor=$(( cursor > 0 ? cursor - 1 : 0 )) ;;
+            DOWN)  [ "$cursor" = "-1" ] && cursor=0 || cursor=$(( cursor < n - 1 ? cursor + 1 : n - 1 )) ;;
             SPACE)
                 if [ "$cursor" = "-1" ]; then
-                    local new_state=0
-                    [ "$all_selected" = "0" ] && new_state=1
-                    for i in $(seq 0 $((n - 1))); do
-                        [ "${locked[$i]}" = "1" ] && continue
-                        selected[$i]=$new_state
-                    done
-                elif [ "${locked[$cursor]}" != "1" ]; then
+                    local ns=0; [ "$all_sel" = "0" ] && ns=1
+                    for ((j=0; j<n; j++)); do [ "${locked[$j]}" = "0" ] && selected[$j]="$ns"; done
+                elif [ "${locked[$cursor]}" = "0" ]; then
                     [ "${selected[$cursor]}" = "1" ] && selected[$cursor]=0 || selected[$cursor]=1
-                fi
-                ;;
-            A)  for i in $(seq 0 $((n - 1))); do
-                    [ "${locked[$i]}" != "1" ] && selected[$i]=1
-                done ;;
-            D)  for i in $(seq 0 $((n - 1))); do
-                    [ "${locked[$i]}" != "1" ] && selected[$i]=0
-                done ;;
+                fi ;;
+            A) for ((j=0; j<n; j++)); do [ "${locked[$j]}" = "0" ] && selected[$j]=1; done ;;
+            D) for ((j=0; j<n; j++)); do [ "${locked[$j]}" = "0" ] && selected[$j]=0; done ;;
             ENTER) done=1 ;;
-            ESC)   echo ""; echo "Cancelled."; cleanup; exit 0 ;;
+            LEFT)  echo "__BACK__"; return ;;
+            RIGHT) [ "$allow_right" = "1" ] && { echo "__RIGHT__"; return; } ;;
+            L)     toggle_lang ;;
+            Q|ESC) exit_installer ;;
         esac
     done
-
-    # Return selected file names
-    for i in $(seq 0 $((n - 1))); do
-        [ "${selected[$i]}" = "1" ] && echo "${filenames[$i]}"
-    done
+    for ((j=0; j<n; j++)); do [ "${selected[$j]}" = "1" ] && echo "${filenames[$j]}"; done
 }
 
-# JS multi-select with bundled CSS management
 select_multi_js() {
-    local title="$1"
-    local keybind_hint="$2"
-    local preselect_mode="$3"
-    shift 3
-    # Items: "FileName|DisplayLabel|Description|BundlePair"
-    # BundlePair is empty for standalone, or the CSS filename for bundled
-    local items=("$@")
-    local n=${#items[@]}
-
-    [ "$n" -eq 0 ] && return
-
-    local selected=()
-    local filenames=()
-    local labels=()
-    local descs=()
-    local bundle_pairs=()
-
+    local title_key="$1"; local preselect_str="$2"; local default_all="$3"; local allow_left="$4"; local allow_right="$5"; shift 5
+    local items=("$@"); local n=${#items[@]}; [ "$n" -eq 0 ] && { echo ""; return; }
+    local selected=(); local filenames=(); local bundle_pairs=(); local labels=(); local is_section=()
     local i=0
+    # Build flat item list: standalone JS first, then section + bundled
     for item in "${items[@]}"; do
         IFS='|' read -r fname label desc bundle <<< "$item"
-        filenames+=("$fname")
-        labels+=("$label")
-        descs+=("$desc")
-        bundle_pairs+=("$bundle")
-
-        if [ "$preselect_mode" = "all" ]; then
-            selected+=(1)
-        elif [ "$preselect_mode" = "none" ]; then
-            selected+=(0)
-        else
-            local ps_files="${preselect_mode#list:}"
-            if [[ " $ps_files " =~ " $fname " ]]; then
-                selected+=(1)
-            else
-                selected+=(0)
-            fi
+        filenames+=("$fname"); labels+=("$fname"); bundle_pairs+=("${bundle:-}"); is_section+=(0)
+        local sel=0
+        if [ -n "$preselect_str" ]; then
+            [[ " $preselect_str " =~ " $fname " ]] && sel=1
+        elif [ "$default_all" = "1" ]; then
+            ! is_default_off "$fname" && sel=1
         fi
-        ((i++))
+        selected+=("$sel")
     done
-
-    local cursor=0
-    local done=0
-
+    # Add section header
+    if [ "${#items[@]}" -gt 0 ]; then
+        filenames+=("__section__"); labels+=(""); bundle_pairs+=(""); is_section+=(1); selected+=(0)
+    fi
+    # Bundled JS items (from $items — but items already include all)
+    # Actually the items passed are the bundled JS items
+    n=${#filenames[@]}
+    local cursor=0; local done=0; local e="\033"
+    local max_label=0
+    for l in "${labels[@]}"; do local len=${#l}; [ "$len" -gt "$max_label" ] && max_label="$len"; done
     while [ "$done" -eq 0 ]; do
-        tput cup 0 0 2>/dev/null
-        tput ed 2>/dev/null
-
-        echo ""
-        echo "  $title"
-        echo ""
-
-        # Select-all toggle
-        local all_selected=1
-        for i in $(seq 0 $((n - 1))); do
-            [ "${selected[$i]}" = "0" ] && all_selected=0
+        local all_sel=1
+        for ((j=0; j<n; j++)); do [ "${is_section[$j]}" = "0" ] && [ "${selected[$j]}" = "0" ] && { all_sel=0; break; }; done
+        local sb=""
+        sb+="$(format_step_bar)"$'\n'
+        sb+=""$'\n'
+        sb+="  $(tr "$title_key")"$'\n'
+        sb+=""$'\n'
+        local toggle_mark="[x]"; [ "$all_sel" = "0" ] && toggle_mark="[ ]"
+        local toggle_prefix="   "; [ "$cursor" = "-1" ] && toggle_prefix="  >"
+        sb+="$toggle_prefix ${e}[90m$toggle_mark${e}[0m ${e}[90m$(tr toggle_all)${e}[0m"$'\n'
+        sb+="  ${e}[90m──────────────────────────────────────────────────${e}[0m"$'\n'
+        for ((j=0; j<n; j++)); do
+            local check="[ ]"; [ "${selected[$j]}" = "1" ] && check="[x]"
+            local prefix="   "; [ "$j" = "$cursor" ] && prefix="  ${e}[1;36m>${e}[0m"
+            if [ "${is_section[$j]}" = "1" ]; then
+                sb+="  ${e}[90m  $(tr js_bundled_section)${e}[0m"$'\n'
+            else
+                local label_text="${filenames[$j]}"
+                [ -n "${bundle_pairs[$j]}" ] && label_text="${filenames[$j]}  →  $(tr js_bundled_arrow): ${bundle_pairs[$j]}"
+                local label_padded; printf -v label_padded "%-$((max_label + 10))s" "$label_text"
+                local desc_key="mod_desc_${filenames[$j]%.*}"
+                local desc; desc="$(tr "$desc_key" 2>/dev/null)"
+                [ "$desc" = "$desc_key" ] && desc=""
+                local desc_part=""; [ -n "$desc" ] && desc_part=" —  $desc"
+                sb+="$prefix $check $label_padded$desc_part"$'\n'
+            fi
         done
-        local toggle_mark="[ ]"
-        [ "$all_selected" = "1" ] && toggle_mark="[x]"
-        local toggle_prefix="   "
-        [ "$cursor" = "-1" ] && toggle_prefix="  >"
-        echo "$toggle_prefix $toggle_mark $(tr toggle_all)"
-        echo "  $(tr separator_line)"
-
-        for i in $(seq 0 $((n - 1))); do
-            local check="[ ]"
-            [ "${selected[$i]}" = "1" ] && check="[x]"
-            local prefix="   "
-            [ "$i" = "$cursor" ] && prefix="  >"
-
-            local bundle_tag=""
-            [ -n "${bundle_pairs[$i]}" ] && bundle_tag="  -> $(tr js_bundled_arrow): ${bundle_pairs[$i]}"
-
-            local desc_str=""
-            [ -n "${descs[$i]}" ] && desc_str="  —  ${descs[$i]}"
-
-            echo "$prefix $check ${labels[$i]}$bundle_tag$desc_str"
-        done
-
-        echo ""
-        echo "  $(tr separator_line)"
-        echo "    $keybind_hint"
-
-        local key
-        key="$(read_key)"
+        sb+=""$'\n'
+        sb+="  ${e}[90m──────────────────────────────────────────────────${e}[0m"$'\n'
+        local hint_parts=("$(tr key_multiselect)" "$(tr key_confirm_back)" "L lang")
+        [ "$allow_left"  = "1" ] && hint_parts+=("LEFT back")
+        [ "$allow_right" = "1" ] && hint_parts+=("RIGHT next")
+        hint_parts+=("ESC/Q quit")
+        sb+="    $(build_hint "${hint_parts[@]}")"$'\n'
+        write_frame "$sb"
+        local key; key="$(read_key)"
         case "$key" in
-            UP)
-                [ "$cursor" = "-1" ] && cursor=$((n - 1)) || cursor=$(( cursor > 0 ? cursor - 1 : 0 ))
-                ;;
-            DOWN)
-                [ "$cursor" = "-1" ] && cursor=0 || cursor=$(( cursor < n - 1 ? cursor + 1 : n - 1 ))
-                ;;
+            UP)    [ "$cursor" = "-1" ] && cursor=$((n - 1)) || cursor=$(( cursor > 0 ? cursor - 1 : 0 )) ;;
+            DOWN)  [ "$cursor" = "-1" ] && cursor=0 || cursor=$(( cursor < n - 1 ? cursor + 1 : n - 1 )) ;;
             SPACE)
                 if [ "$cursor" = "-1" ]; then
-                    local ns=0; [ "$all_selected" = "0" ] && ns=1
-                    for i in $(seq 0 $((n - 1))); do selected[$i]=$ns; done
-                else
+                    local ns=0; [ "$all_sel" = "0" ] && ns=1
+                    for ((j=0; j<n; j++)); do [ "${is_section[$j]}" = "0" ] && selected[$j]="$ns"; done
+                elif [ "${is_section[$cursor]}" = "0" ]; then
                     [ "${selected[$cursor]}" = "1" ] && selected[$cursor]=0 || selected[$cursor]=1
-                fi
-                ;;
-            A) for i in $(seq 0 $((n - 1))); do selected[$i]=1; done ;;
-            D) for i in $(seq 0 $((n - 1))); do selected[$i]=0; done ;;
+                fi ;;
+            A) for ((j=0; j<n; j++)); do [ "${is_section[$j]}" = "0" ] && selected[$j]=1; done ;;
+            D) for ((j=0; j<n; j++)); do [ "${is_section[$j]}" = "0" ] && selected[$j]=0; done ;;
             ENTER) done=1 ;;
-            ESC)   echo ""; echo "Cancelled."; cleanup; exit 0 ;;
+            LEFT)  echo "__BACK__"; return ;;
+            RIGHT) [ "$allow_right" = "1" ] && { echo "__RIGHT__"; return; } ;;
+            L)     toggle_lang ;;
+            Q|ESC) exit_installer ;;
         esac
     done
-
-    # Return selected JS filenames and their bundled CSS filenames
-    for i in $(seq 0 $((n - 1))); do
-        if [ "${selected[$i]}" = "1" ]; then
-            echo "JS:${filenames[$i]}"
-            [ -n "${bundle_pairs[$i]}" ] && echo "CSS:${bundle_pairs[$i]}"
-        fi
+    for ((j=0; j<n; j++)); do
+        [ "${selected[$j]}" = "1" ] && [ "${is_section[$j]}" = "0" ] && echo "JS:${filenames[$j]}"
+        [ "${selected[$j]}" = "1" ] && [ -n "${bundle_pairs[$j]}" ] && echo "CSS:${bundle_pairs[$j]}"
     done
 }
 
 # ============================================================
-#  9.  Deploy Functions
+#  10.  Deploy Functions
 # ============================================================
 
-detect_sed() {
-    # Detect GNU vs BSD sed
-    if sed --version 2>/dev/null | grep -q GNU; then
-        SED_INPLACE=(-i)
-    else
-        SED_INPLACE=(-i '')
-    fi
-}
-
 backup_window_html() {
-    local vivaldi_dir="$1"
-    local html_path="$vivaldi_dir/window.html"
-    local bak_path="${html_path}.bak"
-
-    echo "$(tr backup_start)"
-    if [ ! -f "$bak_path" ]; then
-        cp "$html_path" "$bak_path"
-    fi
-    echo "$(tr backup_done) $bak_path"
+    local vivaldi_dir="$1"; local html_path="$vivaldi_dir/window.html"; local bak_path="${html_path}.bak"
+    echo "$(tr deploy_backup_start)"
+    [ ! -f "$bak_path" ] && cp "$html_path" "$bak_path"
+    echo "$(tr deploy_backup_done) $bak_path"
+    local persistent_dir="${2:-}"
+    [ -n "$persistent_dir" ] && mkdir -p "$persistent_dir" && cp "$html_path" "$persistent_dir/window.html.orig" 2>/dev/null || true
 }
 
 inject_mod_loader() {
-    local vivaldi_dir="$1"
-    local html_path="$vivaldi_dir/window.html"
-
-    echo "$(tr inject_start)"
-
-    # Check if already injected
-    if grep -q 'injectMods\.js' "$html_path" 2>/dev/null; then
-        echo "$(tr inject_skip)"
-        return
-    fi
-
-    detect_sed
-
-    # Insert after <body> line
-    sed "${SED_INPLACE[@]}" '/<body[^>]*>/a\
-  <script src="injectMods.js"></script>' "$html_path"
-
-    echo "$(tr inject_done)"
+    local vivaldi_dir="$1"; local html_path="$vivaldi_dir/window.html"
+    echo "$(tr deploy_inject_start)"
+    if grep -q 'injectMods\.js' "$html_path" 2>/dev/null; then echo "$(tr deploy_inject_skip)"; return; fi
+    sed -i '' '/<body[^>]*>/a\
+  <script src="injectMods.js"></script>' "$html_path" 2>/dev/null || sed -i '/<body[^>]*>/a\  <script src="injectMods.js"></script>' "$html_path"
+    echo "$(tr deploy_inject_done)"
 }
 
 deploy_mod_files() {
-    local source_dir="$1"
-    local vivaldi_dir="$2"
-    local css_mods_str="$3"  # space-separated
-    local js_mods_str="$4"   # space-separated
-
+    local source_dir="$1"; local vivaldi_dir="$2"; local persistent_dir="$3"
+    local css_mods_str="$4"; local js_mods_str="$5"
     echo "$(tr deploy_start)"
-
-    local user_mods_dir="$vivaldi_dir/user_mods"
-    local user_css_dir="$user_mods_dir/css"
-    local user_js_dir="$user_mods_dir/js"
-
+    local user_mods_dir="$vivaldi_dir/user_mods"; local user_css_dir="$user_mods_dir/css"; local user_js_dir="$user_mods_dir/js"
     mkdir -p "$user_css_dir" "$user_js_dir"
+    local source_css_dir="$source_dir/CSS"; local source_js_dir="$source_dir/Javascripts"
 
-    local source_css_dir="$source_dir/CSS"
-    local source_js_dir="$source_dir/Javascripts"
+    # injectMods.js
+    local inj_src="$source_dir/injectMods.js"
+    [ ! -f "$inj_src" ] && inj_src="$(dirname "$source_dir")/injectMods.js"
+    [ ! -f "$inj_src" ] && [ -n "$REPO_ROOT" ] && inj_src="$REPO_ROOT/injectMods.js"
+    [ -f "$inj_src" ] && cp "$inj_src" "$vivaldi_dir/injectMods.js"
 
-    # Deploy injectMods.js
-    local injector_src="$REPO_ROOT/injectMods.js"
-    [ ! -f "$injector_src" ] && injector_src="$(dirname "$source_dir")/injectMods.js"
-    [ -f "$injector_src" ] && cp "$injector_src" "$vivaldi_dir/injectMods.js"
-
-    # Copy Import.css
-    local import_src="$source_dir/Import.css"
-    [ ! -f "$import_src" ] && import_src="$source_css_dir/Import.css"
+    # Import.css
+    local import_src="$source_dir/Import.css"; [ ! -f "$import_src" ] && import_src="$source_css_dir/Import.css"
     if [ -f "$import_src" ]; then
         cp "$import_src" "$user_css_dir/Import.css"
-        # Rewrite @import paths: "CSS/Foo.css" → "Foo.css" (files are flat in user_mods/css/)
-        detect_sed
-        sed "${SED_INPLACE[@]}" 's|@import "CSS/|@import "|g' "$user_css_dir/Import.css"
+        sed -i '' 's|@import "CSS/|@import "|g' "$user_css_dir/Import.css" 2>/dev/null || sed -i 's|@import "CSS/|@import "|g' "$user_css_dir/Import.css"
     fi
 
-    # Deploy CSS
     local css_count=0
-    read -ra css_arr <<< "$css_mods_str"
-    for mod in "${css_arr[@]}"; do
-        [ -z "$mod" ] && continue
-        local src="$source_css_dir/$mod"
-        if [ -f "$src" ]; then
-            cp "$src" "$user_css_dir/$mod"
-            ((css_count++))
-        fi
-    done
-
-    # Deploy JS
+    for mod in $css_mods_str; do [ -z "$mod" ] && continue; local src="$source_css_dir/$mod"
+        [ -f "$src" ] && { cp "$src" "$user_css_dir/$mod"; css_count=$((css_count + 1)); }; done
     local js_count=0
-    read -ra js_arr <<< "$js_mods_str"
-    for mod in "${js_arr[@]}"; do
-        [ -z "$mod" ] && continue
-        local src="$source_js_dir/$mod"
-        if [ -f "$src" ]; then
-            cp "$src" "$user_js_dir/$mod"
-            ((js_count++))
-        fi
-    done
+    for mod in $js_mods_str; do [ -z "$mod" ] && continue; local src="$source_js_dir/$mod"
+        [ -f "$src" ] && { cp "$src" "$user_js_dir/$mod"; js_count=$((js_count + 1)); }; done
 
-    echo "  $css_count CSS mod(s) deployed to user_mods/css/"
-    echo "  $js_count JS mod(s) deployed to user_mods/js/"
+    echo "$(trf deploy_css_done "$css_count")"
+    echo "$(trf deploy_js_done "$js_count")"
 
-    # Write state file
-    local state_path="$user_mods_dir/.awesome-vivaldi.json"
-    local installed_at
-    installed_at="$(date -u +"%Y-%m-%dT%H:%M:%S")"
-
-    # Build JSON manually (no jq dependency)
-    cat > "$state_path" << STATEEOF
+    # State file
+    local installed_at; installed_at="$(date -u +"%Y-%m-%dT%H:%M:%S")"
+    cat > "$user_mods_dir/.awesome-vivaldi.json" << STATEEOF
 {
   "version": "8.0",
   "installed_at": "$installed_at",
-  "css_mods": [$(for m in "${css_arr[@]}"; do [ -n "$m" ] && echo "\"$m\","; done | sed '$ s/,$//')],
-  "js_mods": [$(for m in "${js_arr[@]}"; do [ -n "$m" ] && echo "\"$m\","; done | sed '$ s/,$//')]
+  "css_mods": [$(for m in $css_mods_str; do [ -n "$m" ] && echo "\"$m\","; done | sed '$ s/,$//')],
+  "js_mods": [$(for m in $js_mods_str; do [ -n "$m" ] && echo "\"$m\","; done | sed '$ s/,$//')]
 }
 STATEEOF
+
+    # Persistent storage
+    [ -n "$persistent_dir" ] && {
+        local pv_dir="$persistent_dir/8.0"; local pc_dir="$pv_dir/css"; local pj_dir="$pv_dir/js"
+        mkdir -p "$pc_dir" "$pj_dir" 2>/dev/null || true
+        for mod in $css_mods_str; do [ -z "$mod" ] && continue; [ -f "$source_css_dir/$mod" ] && cp "$source_css_dir/$mod" "$pc_dir/$mod" 2>/dev/null; done
+        for mod in $js_mods_str; do [ -z "$mod" ] && continue; [ -f "$source_js_dir/$mod" ] && cp "$source_js_dir/$mod" "$pj_dir/$mod" 2>/dev/null; done
+        [ -f "$user_css_dir/Import.css" ] && cp "$user_css_dir/Import.css" "$pc_dir/Import.css" 2>/dev/null
+        cp "$user_mods_dir/.awesome-vivaldi.json" "$pv_dir/.awesome-vivaldi.json" 2>/dev/null || true
+    }
 }
 
 # ============================================================
-#  10.  Update / Manage / Uninstall
+#  11.  Post-Install: Restart / Launch
+# ============================================================
+
+post_install() {
+    local app_path="$1"; local e="\033"
+    tput cnorm 2>/dev/null || true
+    flush_input
+    sleep 0.1
+    local vivaldi_running=0
+    pgrep -q Vivaldi 2>/dev/null && vivaldi_running=1
+    if [ "$vivaldi_running" = "1" ]; then
+        echo ""; echo "$(tr post_vivaldi_running)"; echo ""
+        printf "%s " "$(tr post_restart_prompt)"
+        local key; key="$(read_key)"
+        if [ "$key" = "Y" ]; then
+            echo "Y"; echo ""; echo "  $(tr post_restarting)"
+            pkill Vivaldi 2>/dev/null || true; sleep 1
+            open "$app_path" --args --debug-packed-apps --silent-debugger-extension-api 2>/dev/null || open -a Vivaldi
+            echo "  Vivaldi restarted."
+        else echo "N"; fi
+    else
+        echo ""; printf "%s " "$(tr post_launch_prompt)"
+        local key; key="$(read_key)"
+        if [ "$key" = "Y" ]; then
+            echo "Y"
+            open "$app_path" --args --debug-packed-apps --silent-debugger-extension-api 2>/dev/null || open -a Vivaldi
+            echo "  Vivaldi launched."
+        else echo "N"; fi
+    fi
+}
+
+# ============================================================
+#  12.  Persistent Storage (cross-version)
+# ============================================================
+
+find_persistent_mods() {
+    local persistent_dir="$1"; [ -d "$persistent_dir" ] || return 1
+    local best_dir=""
+    for d in "$persistent_dir"/*/; do
+        local dn; dn="$(basename "$d")"
+        [[ "$dn" =~ ^[0-9]+\.[0-9]+ ]] || continue
+        [ -f "$d/.awesome-vivaldi.json" ] || continue
+        [ -z "$best_dir" ] && best_dir="$d" || {
+            [ "$dn" \> "$(basename "$best_dir")" ] && best_dir="$d"
+        }
+    done
+    [ -n "$best_dir" ] || return 1
+    PERSIST_CSS_MODS=(); PERSIST_JS_MODS=(); PERSIST_VERSION="$(basename "$best_dir")"
+    PERSIST_CSS_DIR="$best_dir/css"; PERSIST_JS_DIR="$best_dir/js"
+    if command -v python3 &>/dev/null; then
+        local css; css="$(python3 -c "import json; d=json.load(open('${best_dir}/.awesome-vivaldi.json')); print(' '.join(d.get('css_mods',[])))" 2>/dev/null)"
+        local js; js="$(python3 -c "import json; d=json.load(open('${best_dir}/.awesome-vivaldi.json')); print(' '.join(d.get('js_mods',[])))" 2>/dev/null)"
+        PERSIST_CSS_MODS=($css); PERSIST_JS_MODS=($js)
+    fi
+    return 0
+}
+
+restore_from_persistence() {
+    local vivaldi_dir="$1"; echo "$(tr restore_copying)"
+    local user_css_dir="$vivaldi_dir/user_mods/css"; local user_js_dir="$vivaldi_dir/user_mods/js"
+    mkdir -p "$user_css_dir" "$user_js_dir"
+    local css_count=0; local js_count=0
+    for mod in "${PERSIST_CSS_MODS[@]}"; do
+        [ -f "$PERSIST_CSS_DIR/$mod" ] && { cp "$PERSIST_CSS_DIR/$mod" "$user_css_dir/$mod"; css_count=$((css_count + 1)); }; done
+    for mod in "${PERSIST_JS_MODS[@]}"; do
+        [ -f "$PERSIST_JS_DIR/$mod" ] && { cp "$PERSIST_JS_DIR/$mod" "$user_js_dir/$mod"; js_count=$((js_count + 1)); }; done
+    [ -f "$PERSIST_CSS_DIR/Import.css" ] && cp "$PERSIST_CSS_DIR/Import.css" "$user_css_dir/Import.css"
+    local installed_at; installed_at="$(date -u +"%Y-%m-%dT%H:%M:%S")"
+    cat > "$vivaldi_dir/user_mods/.awesome-vivaldi.json" << STATEEOF
+{ "version": "$PERSIST_VERSION", "installed_at": "$installed_at",
+  "css_mods": [$(for m in "${PERSIST_CSS_MODS[@]}"; do echo "\"$m\","; done | sed '$ s/,$//')],
+  "js_mods": [$(for m in "${PERSIST_JS_MODS[@]}"; do echo "\"$m\","; done | sed '$ s/,$//')] }
+STATEEOF
+    echo "$(trf restore_done "$css_count" "$js_count")"
+}
+
+# ============================================================
+#  13.  Entry Menu
+# ============================================================
+
+entry_menu() {
+    local is_installed="$1"; clear_content; local e="\033"
+    local items=()
+    if [ "$is_installed" = "1" ]; then
+        items=("manage|$(tr entry_manage)|$(tr entry_manage_desc)" "update|$(tr entry_update)|$(tr entry_update_desc)" "uninstall|$(tr entry_uninstall)|$(tr entry_uninstall_desc)" "exit|$(tr entry_exit)|$(tr entry_exit_desc)")
+    else
+        items=("install|$(tr entry_install)|$(tr entry_install_desc)" "exit|$(tr entry_exit)|$(tr entry_exit_desc)")
+    fi
+    local n=${#items[@]}; local cursor=0; local done=0
+    while [ "$done" -eq 0 ]; do
+        local sb=""
+        sb+=""$'\n'
+        if [ "$is_installed" = "1" ]; then sb+="  ${e}[1;32m$(tr entry_installed_title)${e}[0m"$'\n'
+        else sb+="  ${e}[1m$(tr entry_not_installed_title)${e}[0m"$'\n'; fi
+        sb+=""$'\n'
+        sb+="  $(tr entry_choose_action)"$'\n'
+        sb+=""$'\n'
+        local i=0
+        for item in "${items[@]}"; do
+            IFS='|' read -r action label desc <<< "$item"
+            local prefix="   "; local marker=" "
+            [ "$i" = "$cursor" ] && { prefix="  ${e}[1;36m>${e}[0m"; marker="O"; }
+            sb+="$prefix [$marker] ${e}[1m$label${e}[0m"$'\n'
+            sb+="          ${e}[90m$desc${e}[0m"$'\n'
+            ((i++))
+        done
+        sb+=""$'\n'
+        sb+="  ${e}[90m──────────────────────────────────────────────────${e}[0m"$'\n'
+        sb+="    $(build_hint "$(tr key_nav_confirm)" "LEFT back" "L lang" "ESC/Q quit")"$'\n'
+        write_frame "$sb"
+        local key; key="$(read_key)"
+        case "$key" in
+            UP)    cursor=$(( cursor > 0 ? cursor - 1 : 0 )) ;;
+            DOWN)  cursor=$(( cursor < n - 1 ? cursor + 1 : n - 1 )) ;;
+            ENTER) done=1 ;;
+            LEFT)  echo "back"; return ;;
+            L)     toggle_lang ;;
+            Q|ESC) exit_installer ;;
+        esac
+    done
+    echo "${items[$cursor]%%|*}"
+}
+
+# ============================================================
+#  14.  Install / Manage / Update / Uninstall Flows
+# ============================================================
+
+install_flow() {
+    local source_dir="$1"; local vivaldi_dir="$2"; local app_path="$3"
+    local preselected_css="$4"; local preselected_js="$5"
+    local e="\033"
+    local step_labels="$(tr step_css)|$(tr step_js)|$(tr step_confirm)"
+    local total_pages=3; local current_page=0
+    local pages_confirmed=(0 0 0)
+    local selected_css=""; local selected_js_result=""; local final_css=""; local final_js=""
+    local default_all=0; [ -z "$preselected_css" ] && [ -z "$preselected_js" ] && default_all=1
+
+    # Build CSS items
+    local css_items=()
+    for item in "${STANDALONE_CSS[@]}"; do
+        local name="${item%%|*}"; css_items+=("${name}|${name}|$(tr "mod_desc_${name%.*}")|0")
+    done
+
+    # Build JS items (standalone + bundled)
+    local js_standalone=(); local js_bundled=()
+    for item in "${STANDALONE_JS[@]}"; do IFS='|' read -r name base bundle <<< "$item"; js_standalone+=("${name}|${base}|$(tr "mod_desc_$base")|"); done
+    for item in "${BUNDLED_JS[@]}"; do IFS='|' read -r name base bundle <<< "$item"; js_bundled+=("${name}|${base}|$(tr "mod_desc_$base")|${bundle:-}"); done
+
+    while true; do
+        case "$current_page" in
+            0)
+                set_step_info 0 "$total_pages" "$step_labels"
+                PAGES_CONFIRMED=("${pages_confirmed[@]}")
+                local result; result="$(select_multi "css_title" "$preselected_css" "$default_all" 0 1 "${css_items[@]}")"
+                [ "$result" = "__BACK__" ] && { echo "__BACK_TO_MENU__"; return; }
+                [ "$result" = "__RIGHT__" ] && { [ "${pages_confirmed[0]}" = "1" ] && current_page=1; continue; }
+                selected_css="$result"; pages_confirmed[0]=1; current_page=1 ;;
+
+            1)
+                set_step_info 1 "$total_pages" "$step_labels"
+                PAGES_CONFIRMED=("${pages_confirmed[@]}")
+                local all_js_items=("${js_standalone[@]}" "${js_bundled[@]}")
+                local result; result="$(select_multi_js "js_title" "$preselected_js" "$default_all" 1 1 "${all_js_items[@]}")"
+                [ "$result" = "__BACK__" ] && { pages_confirmed[1]=0; current_page=0; continue; }
+                [ "$result" = "__RIGHT__" ] && { [ "${pages_confirmed[1]}" = "1" ] && current_page=2; continue; }
+                selected_js_result="$result"; pages_confirmed[1]=1; current_page=2 ;;
+
+            2)
+                # Parse JS result
+                local jcss=""; local jjs=""
+                while IFS= read -r line; do
+                    [ -z "$line" ] && continue
+                    case "$line" in JS:*) jjs="$jjs ${line#JS:}" ;; CSS:*) jcss="$jcss ${line#CSS:}" ;; esac
+                done <<< "$selected_js_result"
+                final_css="$(echo "$selected_css $jcss" | tr ' ' '\n' | sort -u | tr '\n' ' ' | sed 's/^ *//;s/ *$//')"
+                final_js="ModConfig.js $(echo "$jjs" | tr ' ' '\n' | sort -u | tr '\n' ' ' | sed 's/^ *//;s/ *$//')"
+
+                set_step_info 2 "$total_pages" "$step_labels"
+                PAGES_CONFIRMED=("${pages_confirmed[@]}")
+
+                local confirm_done=0; local confirm_back=0
+                while [ "$confirm_done" -eq 0 ]; do
+                    local sb=""
+                    sb+="$(format_step_bar)"$'\n'; sb+=""$'\n'
+                    sb+="  ${e}[1m$(tr summary_title)${e}[0m"$'\n'; sb+=""$'\n'
+                    sb+="  $(tr summary_target): $app_path"$'\n'
+                    local css_count; css_count="$(echo "$final_css" | wc -w | tr -d ' ')"
+                    local js_count; js_count="$(echo "$final_js" | wc -w | tr -d ' ')"
+                    js_count=$((js_count - 1))  # exclude ModConfig.js
+                    sb+="  ${e}[32m$(tr summary_css_mods) ($css_count)${e}[0m: $(echo "$final_css" | sed 's/\.css//g')"$'\n'
+                    sb+="  ${e}[32m$(tr summary_js_mods) ($js_count)${e}[0m: $(echo "$final_js" | sed 's/\.js//g')"$'\n'
+                    sb+=""$'\n'
+                    sb+="  ${e}[90m──────────────────────────────────────────────────${e}[0m"$'\n'
+                    sb+="    ${e}[90m$(tr confirm_deploy_hint)${e}[0m"$'\n'
+                    write_frame "$sb"
+                    local key; key="$(read_key)"
+                    case "$key" in
+                        ENTER) confirm_done=1 ;;
+                        LEFT)  current_page=1; confirm_done=1; confirm_back=1 ;;
+                        L)     toggle_lang ;;
+                        Q|ESC) exit_installer ;;
+                    esac
+                done
+                if [ "$confirm_back" = "1" ]; then pages_confirmed[2]=0; continue; fi
+                if [ "${pages_confirmed[2]}" = "1" ]; then break; fi
+                pages_confirmed[2]=1; continue ;;
+        esac
+    done
+
+    clear_content
+    backup_window_html "$vivaldi_dir"
+    deploy_mod_files "$source_dir" "$vivaldi_dir" "" "$final_css" "$final_js"
+    inject_mod_loader "$vivaldi_dir"
+    echo ""; echo "${e}[1;32m====================================================${e}[0m"
+    echo "  ${e}[1;32m$(tr deploy_success)${e}[0m"
+    echo "${e}[1;32m====================================================${e}[0m"
+    echo "$final_css|$final_js"
+}
+
+# ============================================================
+#  15.  Manage Flow
+# ============================================================
+
+manage_flow() {
+    local source_dir="$1"; local vivaldi_dir="$2"; local app_path="$3"
+    local e="\033"
+    local step_labels="$(tr step_css)|$(tr step_js)|$(tr step_confirm)"
+    local total_pages=3; local current_page=0
+    local pages_confirmed=(0 0 0)
+    local preselected_css="${STATE_CSS_MODS[*]}"
+    local preselected_js="${STATE_JS_MODS[*]}"
+    local selected_css=""; local selected_js_result=""
+
+    local css_items=()
+    for item in "${STANDALONE_CSS[@]}"; do local name="${item%%|*}"; css_items+=("${name}|${name}|$(tr "mod_desc_${name%.*}")|0"); done
+
+    local js_standalone=(); local js_bundled=()
+    for item in "${STANDALONE_JS[@]}"; do IFS='|' read -r name base bundle <<< "$item"; js_standalone+=("${name}|${base}|$(tr "mod_desc_$base")|"); done
+    for item in "${BUNDLED_JS[@]}"; do IFS='|' read -r name base bundle <<< "$item"; js_bundled+=("${name}|${base}|$(tr "mod_desc_$base")|${bundle:-}"); done
+
+    while true; do
+        case "$current_page" in
+            0) set_step_info 0 "$total_pages" "$step_labels"; PAGES_CONFIRMED=("${pages_confirmed[@]}")
+                local result; result="$(select_multi "css_title" "$preselected_css" 0 0 1 "${css_items[@]}")"
+                [ "$result" = "__BACK__" ] && { echo "__BACK_TO_MENU__"; return; }
+                [ "$result" = "__RIGHT__" ] && { [ "${pages_confirmed[0]}" = "1" ] && current_page=1; continue; }
+                selected_css="$result"; pages_confirmed[0]=1; current_page=1 ;;
+            1) set_step_info 1 "$total_pages" "$step_labels"; PAGES_CONFIRMED=("${pages_confirmed[@]}")
+                local all_js_items=("${js_standalone[@]}" "${js_bundled[@]}")
+                local result; result="$(select_multi_js "js_title" "$preselected_js" 0 1 1 "${all_js_items[@]}")"
+                [ "$result" = "__BACK__" ] && { pages_confirmed[1]=0; current_page=0; continue; }
+                [ "$result" = "__RIGHT__" ] && { [ "${pages_confirmed[1]}" = "1" ] && current_page=2; continue; }
+                selected_js_result="$result"; pages_confirmed[1]=1; current_page=2 ;;
+            2)
+                local jcss=""; local jjs=""
+                while IFS= read -r line; do
+                    case "$line" in JS:*) jjs="$jjs ${line#JS:}" ;; CSS:*) jcss="$jcss ${line#CSS:}" ;; esac
+                done <<< "$selected_js_result"
+                local final_css; final_css="$(echo "$selected_css $jcss" | tr ' ' '\n' | sort -u | tr '\n' ' ' | sed 's/^ *//;s/ *$//')"
+                local final_js="ModConfig.js $(echo "$jjs" | tr ' ' '\n' | sort -u | tr '\n' ' ' | sed 's/^ *//;s/ *$//')"
+
+                local new_css=""; local removed_css=""; local unchanged_css=""
+                for m in $final_css; do [[ " ${STATE_CSS_MODS[*]} " =~ " $m " ]] && unchanged_css+="$m " || new_css+="$m "; done
+                for m in "${STATE_CSS_MODS[@]}"; do [[ " $final_css " =~ " $m " ]] || removed_css+="$m "; done
+                local new_js=""; local removed_js=""; local unchanged_js=""
+                for m in $jjs; do [[ " ${STATE_JS_MODS[*]} " =~ " $m " ]] && unchanged_js+="$m " || new_js+="$m "; done
+                for m in "${STATE_JS_MODS[@]}"; do [ "$m" = "ModConfig.js" ] && continue; [[ " $jjs " =~ " $m " ]] || removed_js+="$m "; done
+
+                set_step_info 2 "$total_pages" "$step_labels"; PAGES_CONFIRMED=("${pages_confirmed[@]}")
+
+                local confirm_done=0; local confirm_back=0
+                while [ "$confirm_done" -eq 0 ]; do
+                    local has_changes=0
+                    local sb=""; sb+="$(format_step_bar)"$'\n'; sb+=""$'\n'
+                    sb+="  ${e}[1m$(tr manage_confirm_title)${e}[0m"$'\n'; sb+=""$'\n'
+                    [ -n "$(echo "$new_css" | tr -d ' ')" ] && { has_changes=1; sb+="  ${e}[32m$(tr manage_new_mods):${e}[0m"$'\n'; for m in $new_css; do sb+="    ${e}[32m+ $m${e}[0m"$'\n'; done; }
+                    [ -n "$(echo "$new_js" | tr -d ' ')" ] && { has_changes=1; sb+="  ${e}[32m$(tr manage_new_mods):${e}[0m"$'\n'; for m in $new_js; do sb+="    ${e}[32m+ $m${e}[0m"$'\n'; done; }
+                    [ -n "$(echo "$removed_css" | tr -d ' ')" ] && { has_changes=1; sb+="  ${e}[31m$(tr manage_removed_mods):${e}[0m"$'\n'; for m in $removed_css; do sb+="    ${e}[31m- $m${e}[0m"$'\n'; done; }
+                    [ -n "$(echo "$removed_js" | tr -d ' ')" ] && { has_changes=1; sb+="  ${e}[31m$(tr manage_removed_mods):${e}[0m"$'\n'; for m in $removed_js; do sb+="    ${e}[31m- $m${e}[0m"$'\n'; done; }
+                    [ -n "$(echo "$unchanged_css" | tr -d ' ')" ] && sb+="  ${e}[90m$(tr manage_unchanged_mods): $(echo "$unchanged_css" | sed 's/\.css//g')${e}[0m"$'\n'
+                    [ -n "$(echo "$unchanged_js" | tr -d ' ')" ] && sb+="  ${e}[90m$(tr manage_unchanged_mods): $(echo "$unchanged_js" | sed 's/\.js//g')${e}[0m"$'\n'
+                    [ "$has_changes" = "0" ] && sb+="  ${e}[90m$(tr manage_no_changes)${e}[0m"$'\n'
+                    sb+=""$'\n'
+                    sb+="  ${e}[90m──────────────────────────────────────────────────${e}[0m"$'\n'
+                    sb+="    ${e}[90m$(tr confirm_deploy_hint)${e}[0m"$'\n'
+                    write_frame "$sb"
+                    local key; key="$(read_key)"
+                    case "$key" in
+                        ENTER) [ "$has_changes" = "0" ] || confirm_done=1 ;;
+                        LEFT)  current_page=1; confirm_done=1; confirm_back=1 ;;
+                        L)     toggle_lang ;;
+                        Q|ESC) exit_installer ;;
+                    esac
+                done
+                if [ "$confirm_back" = "1" ]; then pages_confirmed[2]=0; continue; fi
+                if [ "${pages_confirmed[2]}" = "1" ]; then break; fi
+                pages_confirmed[2]=1; continue ;;
+        esac
+    done
+
+    clear_content
+    local user_css_dir="$vivaldi_dir/user_mods/css"; local user_js_dir="$vivaldi_dir/user_mods/js"
+    for m in $removed_css; do [ -z "$m" ] && continue; rm -f "$user_css_dir/$m"; echo "  ${e}[31m- $m${e}[0m"; done
+    for m in $removed_js; do [ -z "$m" ] && continue; rm -f "$user_js_dir/$m"; echo "  ${e}[31m- $m${e}[0m"; done
+    deploy_mod_files "$source_dir" "$vivaldi_dir" "" "$final_css" "$final_js"
+    inject_mod_loader "$vivaldi_dir"
+    echo ""; echo "${e}[1;32m====================================================${e}[0m"
+    echo "  ${e}[1;32m$(tr deploy_success)${e}[0m"
+    echo "${e}[1;32m====================================================${e}[0m"
+}
+
+# ============================================================
+#  16.  Update / Uninstall Flows
 # ============================================================
 
 do_update() {
-    local source_dir="$1"
-    local vivaldi_dir="$2"
+    local source_dir="$1"; local vivaldi_dir="$2"
+    clear_content; local e="\033"; echo ""; echo "$(tr update_checking)"
+    local source_css_dir="$source_dir/CSS"; local source_js_dir="$source_dir/Javascripts"
+    local user_css_dir="$vivaldi_dir/user_mods/css"; local user_js_dir="$vivaldi_dir/user_mods/js"
+    local upd_css=(); local upd_js=()
+    for mod in "${STATE_CSS_MODS[@]}"; do [ -f "$source_css_dir/$mod" ] && [ -f "$user_css_dir/$mod" ] && ! cmp -s "$source_css_dir/$mod" "$user_css_dir/$mod" 2>/dev/null && upd_css+=("$mod"); done
+    for mod in "${STATE_JS_MODS[@]}"; do [ -f "$source_js_dir/$mod" ] && [ -f "$user_js_dir/$mod" ] && ! cmp -s "$source_js_dir/$mod" "$user_js_dir/$mod" 2>/dev/null && upd_js+=("$mod"); done
+    [ ${#upd_css[@]} -eq 0 ] && [ ${#upd_js[@]} -eq 0 ] && { echo ""; echo "$(tr update_no_updates)"; sleep 2; return; }
 
-    echo ""
-    echo "$(tr update_title)"
-    echo ""
-    echo "$(tr update_fetching)"
-    echo "$(tr update_comparing)"
-
-    local user_css_dir="$vivaldi_dir/user_mods/css"
-    local user_js_dir="$vivaldi_dir/user_mods/js"
-    local source_css_dir="$source_dir/CSS"
-    local source_js_dir="$source_dir/Javascripts"
-
-    local updated=0
-    local unchanged=0
-
-    # Update CSS
-    for mod in "${STATE_CSS_MODS[@]}"; do
-        local src="$source_css_dir/$mod"
-        local dst="$user_css_dir/$mod"
-        if [ -f "$src" ]; then
-            if ! cmp -s "$src" "$dst" 2>/dev/null; then
-                cp "$src" "$dst"
-                echo "  [$(tr update_updated)] $mod"
-                ((updated++))
-            else
-                echo "  [$(tr update_unchanged)] $mod"
-                ((unchanged++))
-            fi
-        else
-            echo "  $(tr orphan_label) $mod"
-        fi
-    done
-
-    # Update JS
-    for mod in "${STATE_JS_MODS[@]}"; do
-        local src="$source_js_dir/$mod"
-        local dst="$user_js_dir/$mod"
-        if [ -f "$src" ]; then
-            if ! cmp -s "$src" "$dst" 2>/dev/null; then
-                cp "$src" "$dst"
-                echo "  [$(tr update_updated)] $mod"
-                ((updated++))
-            else
-                echo "  [$(tr update_unchanged)] $mod"
-                ((unchanged++))
-            fi
-        else
-            echo "  $(tr orphan_label) $mod"
-        fi
-    done
-
-    # Re-deploy injectMods.js
-    local injector_src="$REPO_ROOT/injectMods.js"
-    [ ! -f "$injector_src" ] && injector_src="$(dirname "$source_dir")/injectMods.js"
-    [ -f "$injector_src" ] && cp "$injector_src" "$vivaldi_dir/injectMods.js"
-
-    # Re-inject window.html
-    inject_mod_loader "$vivaldi_dir"
-
-    echo ""
-    echo "$(trf update_complete "$updated")"
-}
-
-do_manage() {
-    local source_dir="$1"
-    local vivaldi_dir="$2"
-
-    echo ""
-    echo "$(tr manage_title)"
-    echo ""
-
-    scan_mods "$source_dir"
-
-    # Build CSS selection items
-    local css_items=()
-    for name in "${STANDALONE_CSS_FILES[@]}"; do
-        local base="${name%.css}"
-        css_items+=("${name}|${name}|$(mod_desc "$base" standalone)|0")
-    done
-    for name in "${BUNDLED_CSS_FILES[@]}"; do
-        local base="${name%.css}"
-        css_items+=("${name}|${name} $(tr css_locked_tag)|$(mod_desc "$base" css_bundled)|1")
-    done
-
-    # Build preselect list from state
-    local ps_css=""
-    for m in "${STATE_CSS_MODS[@]}"; do
-        ps_css="$ps_css $m"
-    done
-
-    local selected_css
-    selected_css="$(select_multi "$(tr css_title)" "$(tr keybind_multiselect)" "list:$ps_css" "${css_items[@]}")"
-
-    # Build JS selection items
-    local js_items=()
-    for name in "${STANDALONE_JS_FILES[@]}"; do
-        local base="${name%.js}"
-        js_items+=("${name}|${name}|$(mod_desc "$base" standalone)|")
-    done
-    for name in "${BUNDLED_JS_FILES[@]}"; do
-        local base="${name%.js}"
-        local css_name="${name%.js}.css"
-        js_items+=("${name}|${name}|$(mod_desc "$base" js_bundled)|${css_name}")
-    done
-
-    local ps_js=""
-    for m in "${STATE_JS_MODS[@]}"; do
-        ps_js="$ps_js $m"
-    done
-
-    local js_result
-    js_result="$(select_multi_js "$(tr js_title)" "$(tr keybind_multiselect)" "list:$ps_js" "${js_items[@]}")"
-
-    # Parse JS selection result
-    local final_css="$selected_css"
-    local final_js=""
-    while IFS= read -r line; do
-        [ -z "$line" ] && continue
-        case "$line" in
-            JS:*)  final_js="$final_js ${line#JS:}" ;;
-            CSS:*) final_css="$final_css ${line#CSS:}" ;;
+    # Build selection items
+    local up_items=(); local up_selected=()
+    local step_labels="$(tr update_title)|$(tr step_confirm)"
+    for mod in "${upd_css[@]}"; do up_items+=("$mod|[CSS] $mod|"); up_selected+=(1); done
+    for mod in "${upd_js[@]}"; do up_items+=("$mod|[JS] $mod|"); up_selected+=(1); done
+    local n=${#up_items[@]}; local cursor=0; local done=0
+    set_step_info 0 2 "$step_labels"
+    while [ "$done" -eq 0 ]; do
+        local all_sel=1; for ((j=0; j<n; j++)); do [ "${up_selected[$j]}" = "0" ] && { all_sel=0; break; }; done
+        local sb=""; sb+="$(format_step_bar)"$'\n'; sb+=""$'\n'
+        sb+="  ${e}[1m$(tr update_available_title)${e}[0m"$'\n'
+        sb+="  $(tr update_select)"$'\n'; sb+=""$'\n'
+        local tm="[x]"; [ "$all_sel" = "0" ] && tm="[ ]"
+        local tp="   "; [ "$cursor" = "-1" ] && tp="  >"
+        sb+="$tp ${e}[90m$tm${e}[0m ${e}[90m$(tr toggle_all)${e}[0m"$'\n'
+        sb+="  ${e}[90m──────────────────────────────────────────────────${e}[0m"$'\n'
+        for ((j=0; j<n; j++)); do
+            IFS='|' read -r fname label desc <<< "${up_items[$j]}"
+            local check="[ ]"; [ "${up_selected[$j]}" = "1" ] && check="[x]"
+            local prefix="   "; [ "$j" = "$cursor" ] && prefix="  ${e}[1;36m>${e}[0m"
+            sb+="$prefix $check $label${e}[0m"$'\n'
+        done
+        sb+=""$'\n'; sb+="  ${e}[90m──────────────────────────────────────────────────${e}[0m"$'\n'
+        sb+="    $(build_hint "$(tr key_multiselect)" "ENTER confirm" "LEFT back" "L lang" "ESC/Q quit")"$'\n'
+        write_frame "$sb"
+        local key; key="$(read_key)"
+        case "$key" in
+            UP)    [ "$cursor" = "-1" ] && cursor=$((n - 1)) || cursor=$(( cursor > 0 ? cursor - 1 : 0 )) ;;
+            DOWN)  [ "$cursor" = "-1" ] && cursor=0 || cursor=$(( cursor < n - 1 ? cursor + 1 : n - 1 )) ;;
+            SPACE) [ "$cursor" = "-1" ] && { local ns=0; [ "$all_sel" = "0" ] && ns=1; for ((j=0; j<n; j++)); do up_selected[$j]="$ns"; done; } || { [ "${up_selected[$cursor]}" = "1" ] && up_selected[$cursor]=0 || up_selected[$cursor]=1; } ;;
+            A) for ((j=0; j<n; j++)); do up_selected[$j]=1; done ;;
+            D) for ((j=0; j<n; j++)); do up_selected[$j]=0; done ;;
+            ENTER) done=1 ;;
+            LEFT)  return ;;
+            L)     toggle_lang ;;
+            Q|ESC) exit_installer ;;
         esac
-    done <<< "$js_result"
-
-    # Always include ModConfig.js
-    final_js="ModConfig.js $final_js"
-
-    # Compute removals
-    local css_to_remove=""
-    local js_to_remove=""
-    for m in "${STATE_CSS_MODS[@]}"; do
-        if [[ ! " $final_css " =~ " $m " ]]; then
-            css_to_remove="$css_to_remove $m"
-        fi
-    done
-    for m in "${STATE_JS_MODS[@]}"; do
-        if [[ ! " $final_js " =~ " $m " ]]; then
-            js_to_remove="$js_to_remove $m"
-        fi
     done
 
-    local user_css_dir="$vivaldi_dir/user_mods/css"
-    local user_js_dir="$vivaldi_dir/user_mods/js"
+    # Confirm page
+    local chosen_css=""; local chosen_js=""; local skip_css=""; local skip_js=""
+    local ci=0
+    for mod in "${upd_css[@]}"; do
+        if [ "${up_selected[$ci]}" = "1" ]; then chosen_css+="$mod "; else skip_css+="$mod "; fi; ((ci++)); done
+    for mod in "${upd_js[@]}"; do
+        if [ "${up_selected[$ci]}" = "1" ]; then chosen_js+="$mod "; else skip_js+="$mod "; fi; ((ci++)); done
 
-    # Remove deselected mods
-    for m in $css_to_remove; do
-        [ -z "$m" ] && continue
-        rm -f "$user_css_dir/$m"
-        echo "  - $m (removed)"
-    done
-    for m in $js_to_remove; do
-        [ -z "$m" ] && continue
-        rm -f "$user_js_dir/$m"
-        echo "  - $m (removed)"
+    set_step_info 1 2 "$step_labels"
+    local confirm_done=0
+    while [ "$confirm_done" -eq 0 ]; do
+        local sb=""; sb+="$(format_step_bar)"$'\n'; sb+=""$'\n'
+        sb+="  ${e}[1m$(tr update_confirm_title)${e}[0m"$'\n'; sb+=""$'\n'
+        [ -n "$(echo "$chosen_css" | tr -d ' ')" ] && { sb+="  ${e}[32m$(tr update_updated_mod):${e}[0m"$'\n'; for m in $chosen_css; do sb+="    ${e}[32m+ $m${e}[0m"$'\n'; done; }
+        [ -n "$(echo "$chosen_js" | tr -d ' ')" ] && { sb+="  ${e}[32m$(tr update_updated_mod):${e}[0m"$'\n'; for m in $chosen_js; do sb+="    ${e}[32m+ $m${e}[0m"$'\n'; done; }
+        [ -n "$(echo "$skip_css" | tr -d ' ')" ] && sb+="  ${e}[90m$(tr update_skipped): $skip_css${e}[0m"$'\n'
+        [ -n "$(echo "$skip_js" | tr -d ' ')" ] && sb+="  ${e}[90m$(tr update_skipped): $skip_js${e}[0m"$'\n'
+        sb+=""$'\n'; sb+="  ${e}[90m──────────────────────────────────────────────────${e}[0m"$'\n'
+        sb+="    $(build_hint "ENTER to update" "LEFT back" "L lang" "ESC/Q quit")"$'\n'
+        write_frame "$sb"
+        local key; key="$(read_key)"
+        case "$key" in ENTER) confirm_done=1 ;; LEFT) return ;; L) toggle_lang ;; Q|ESC) exit_installer ;; esac
     done
 
-    # Deploy new/updated selection
-    deploy_mod_files "$source_dir" "$vivaldi_dir" "$final_css" "$final_js"
+    clear_content; echo ""; echo "$(tr update_updating)"; echo ""
+    local updated=0
+    for mod in $chosen_css; do [ -z "$mod" ] && continue; [ -f "$source_css_dir/$mod" ] && { cp "$source_css_dir/$mod" "$user_css_dir/$mod"; echo "  ${e}[32m[$(tr update_updated_mod)]${e}[0m $mod"; updated=$((updated + 1)); }; done
+    for mod in $chosen_js; do [ -z "$mod" ] && continue; [ -f "$source_js_dir/$mod" ] && { cp "$source_js_dir/$mod" "$user_js_dir/$mod"; echo "  ${e}[32m[$(tr update_updated_mod)]${e}[0m $mod"; updated=$((updated + 1)); }; done
+    inject_mod_loader "$vivaldi_dir"
+    echo ""; echo "${e}[1;32m$(trf update_complete "$updated")${e}[0m"
 }
 
 do_uninstall() {
-    local vivaldi_dir="$1"
-
-    echo ""
-    echo "$(tr uninstall_title)"
-    echo ""
-
-    echo -n "$(tr uninstall_confirm) "
-    local key
-    key="$(read_key)"
-    echo ""
-    if [ "$key" != "Y" ]; then
-        echo "Cancelled."
-        return
-    fi
-
-    local html_path="$vivaldi_dir/window.html"
-    local bak_path="${html_path}.bak"
-    local user_mods_dir="$vivaldi_dir/user_mods"
-    local injector_path="$vivaldi_dir/injectMods.js"
-
-    echo "$(tr uninstall_restoring)"
-    if [ -f "$bak_path" ]; then
-        cp "$bak_path" "$html_path"
-        echo "  Restored from $bak_path"
-    else
-        echo "  $(tr uninstall_no_bak)"
-    fi
-
-    [ -f "$injector_path" ] && rm -f "$injector_path"
-
-    echo "$(tr uninstall_removing)"
-    [ -d "$user_mods_dir" ] && rm -rf "$user_mods_dir"
-
-    echo ""
-    echo "$(tr uninstall_complete)"
-}
-
-# ============================================================
-#  11.  Main Menu (Re-entry)
-# ============================================================
-
-show_main_menu() {
-    local vivaldi_dir="$1"
-
-    local items=(
-        "$(tr reentry_update)|$(tr reentry_update_desc)|update"
-        "$(tr reentry_manage)|$(tr reentry_manage_desc)|manage"
-        "$(tr reentry_uninstall)|$(tr reentry_uninstall_desc)|uninstall"
-    )
-
-    local cursor=0
-    local done=0
-
+    local vivaldi_dir="$1"; local app_path="$2"
+    clear_content; local e="\033"
+    local items=("full|$(tr uninstall_full)|$(tr uninstall_full_desc)" "selective|$(tr uninstall_selective)|$(tr uninstall_selective_desc)")
+    local cursor=0; local done=0
+    set_step_info 0 0 ""
     while [ "$done" -eq 0 ]; do
-        tput cup 0 0 2>/dev/null
-        tput ed 2>/dev/null
-
-        echo ""
-        echo "  $(tr reentry_title)"
-        echo ""
-        echo "  $(tr reentry_installed_count)" | sed "s/{0}/${#STATE_CSS_MODS[@]}/;s/{1}/${#STATE_JS_MODS[@]}/"
-        echo "  $(tr reentry_path): $vivaldi_dir"
-        echo ""
-        echo "  $(tr reentry_prompt)"
-        echo ""
-
+        local sb=""; sb+=""$'\n'
+        sb+="  ${e}[1m$(tr uninstall_title)${e}[0m"$'\n'; sb+=""$'\n'
+        sb+="  $(tr uninstall_type_prompt)"$'\n'; sb+=""$'\n'
         local i=0
         for item in "${items[@]}"; do
-            local label="${item%%|*}"
-            local rest="${item#*|}"
-            local desc="${rest%|*}"
-            local prefix="   "
-            [ "$i" = "$cursor" ] && prefix="  >"
-            echo "$prefix $label  —  $desc"
+            IFS='|' read -r action label desc <<< "$item"
+            local prefix="   "; local marker=" "
+            [ "$i" = "$cursor" ] && { prefix="  >"; marker="O"; }
+            sb+="$prefix [$marker] ${e}[1m$label${e}[0m"$'\n'
+            sb+="          $desc"$'\n'
             ((i++))
         done
-
-        echo ""
-        echo "  $(tr separator_line)"
-        echo "    $(tr keybind_radio)"
-
-        local key
-        key="$(read_key)"
+        sb+=""$'\n'; sb+="  ${e}[90m──────────────────────────────────────────────────${e}[0m"$'\n'
+        sb+="    $(build_hint "$(tr key_nav_confirm)" "LEFT back" "L lang" "ESC/Q quit")"$'\n'
+        write_frame "$sb"
+        local key; key="$(read_key)"
         case "$key" in
-            UP)    cursor=$(( cursor > 0 ? cursor - 1 : 0 )) ;;
-            DOWN)  cursor=$(( cursor < 2 ? cursor + 1 : 2 )) ;;
+            UP) cursor=$(( cursor > 0 ? cursor - 1 : 0 )) ;;
+            DOWN) cursor=$(( cursor < 1 ? cursor + 1 : 1 )) ;;
             ENTER) done=1 ;;
-            ESC)   echo ""; echo "Goodbye."; cleanup; exit 0 ;;
+            LEFT) return ;;
+            L) toggle_lang ;;
+            Q|ESC) exit_installer ;;
         esac
     done
 
-    # Return action
-    local action="${items[$cursor]##*|}"
-    echo "$action"
+    local action="${items[$cursor]%%|*}"
+    if [ "$action" = "full" ]; then
+        clear_content; echo ""; echo "${e}[1;31m$(tr uninstall_full_confirm)${e}[0m [Y/N]"
+        local key; key="$(read_key)"
+        [ "$key" != "Y" ] && { echo ""; echo "$(tr uninstall_cancelled)"; return; }
+        local html_path="$vivaldi_dir/window.html"; local bak_path="${html_path}.bak"
+        local user_mods_dir="$vivaldi_dir/user_mods"; local injector_path="$vivaldi_dir/injectMods.js"
+        echo ""; echo "$(tr uninstall_restoring)"
+        if [ -f "$bak_path" ]; then cp "$bak_path" "$html_path"; echo "  Restored from $bak_path"
+        else echo "  $(tr uninstall_no_bak)"; fi
+        [ -f "$injector_path" ] && rm -f "$injector_path"
+        echo "$(tr uninstall_removing)"; [ -d "$user_mods_dir" ] && rm -rf "$user_mods_dir"
+        echo ""; echo "${e}[1;32m$(tr uninstall_complete)${e}[0m"
+    else
+        manage_flow "$SOURCE_DIR" "$vivaldi_dir" "$app_path"
+    fi
 }
 
 # ============================================================
-#  12.  Main Entry Point
+#  17.  Main Entry Point
 # ============================================================
 
 main() {
-    show_banner
+    show_banner; tput civis 2>/dev/null || true
 
     find_mod_source
-    if [ ! -d "$SOURCE_DIR" ]; then
-        echo "ERROR: Could not locate mod source files."
-        exit 1
-    fi
-
+    [ ! -d "$SOURCE_DIR" ] && { echo "$(tr error_no_source)"; exit 1; }
     scan_mods "$SOURCE_DIR"
 
     # Discover Vivaldi installations
-    local all_installs
-    all_installs="$(find_vivaldi_installations)"
+    local all_installs; all_installs="$(find_vivaldi_installations)"
+    [ -z "$all_installs" ] && { echo ""; echo "$(tr target_none_found)"; exit 1; }
 
-    if [ -z "$all_installs" ]; then
-        echo ""
-        echo "$(tr target_none_found)"
-        exit 1
-    fi
-
-    # Build target selection items
+    # Build target items
     local target_items=()
     while IFS='|' read -r app_path resources_dir display_name version; do
         [ -z "$resources_dir" ] && continue
-        local type_label
-        if [[ "$resources_dir" == /Applications/* ]]; then
-            type_label="$(tr target_type_system)"
-        else
-            type_label="$(tr target_type_user)"
-        fi
-        target_items+=("$display_name $version|$(tr target_path): $resources_dir  |  $(tr target_type): $type_label")
+        local is_system=0; [[ "$resources_dir" == /Applications/* ]] && is_system=1
+        target_items+=("$display_name $version|$resources_dir|$is_system")
     done <<< "$all_installs"
 
-    local selected_idx
-    selected_idx="$(select_single "$(tr target_title)" "$(tr keybind_radio)" "${target_items[@]}")"
+    set_step_info 0 1 "$(tr step_target)"
+    local selected_idx; selected_idx="$(select_single "target_title" 0 "${target_items[@]}")"
+    [ "$selected_idx" = "0" ] && [ "$selected_idx" != "0" ] && exit_installer  # __BACK__ guard
+    [ -z "$selected_idx" ] && exit_installer
 
-    # Extract selected installation
-    local idx=0
-    local selected_app=""
-    local selected_resources=""
-    local selected_display=""
-    local selected_version=""
+    # Extract selected install
+    local idx=0; local selected_app=""; local selected_vivaldi_dir=""; local selected_display=""
     while IFS='|' read -r app_path resources_dir display_name version; do
         [ -z "$resources_dir" ] && continue
         if [ "$idx" = "$selected_idx" ]; then
-            selected_app="$app_path"
-            selected_resources="$resources_dir"
-            selected_display="$display_name"
-            selected_version="$version"
+            selected_app="$app_path"; selected_vivaldi_dir="$resources_dir"; selected_display="$display_name"
             break
-        fi
-        ((idx++))
+        fi; ((idx++))
     done <<< "$all_installs"
 
-    local vivaldi_dir="$selected_resources"
+    local vivaldi_dir="$selected_vivaldi_dir"; local app_path="$selected_app"
+    local is_installed=0; is_installed "$vivaldi_dir" && is_installed=1
+    local has_state=0; get_install_state "$vivaldi_dir" 2>/dev/null && has_state=1
 
-    # Check if already installed
-    if is_installed "$vivaldi_dir" && get_install_state "$vivaldi_dir"; then
-        # Re-entry menu
-        local action
-        action="$(show_main_menu "$vivaldi_dir")"
+    # Cross-version restore check
+    local persistent_dir="$vivaldi_dir/../../.vivaldimods"
+    [ ! -d "$persistent_dir" ] && persistent_dir="$(dirname "$(dirname "$vivaldi_dir")")/.vivaldimods"
+    local has_persist=0
+    [ "$is_installed" = "0" ] && find_persistent_mods "$persistent_dir" 2>/dev/null && has_persist=1
 
-        case "$action" in
-            update)
-                do_update "$SOURCE_DIR" "$vivaldi_dir"
-                ;;
-            manage)
-                do_manage "$SOURCE_DIR" "$vivaldi_dir"
-                ;;
-            uninstall)
-                do_uninstall "$vivaldi_dir"
-                exit 0
-                ;;
-        esac
-    else
-        # ── Fresh install ──
-
-        # CSS selection
-        local css_items=()
-        for name in "${STANDALONE_CSS_FILES[@]}"; do
-            local base="${name%.css}"
-            css_items+=("${name}|${name}|$(mod_desc "$base" standalone)|0")
-        done
-        for name in "${BUNDLED_CSS_FILES[@]}"; do
-            local base="${name%.css}"
-            css_items+=("${name}|${name}|$(mod_desc "$base" css_bundled)|1")
-        done
-
-        local selected_css
-        selected_css="$(select_multi "$(tr css_title)" "$(tr keybind_multiselect)" "all" "${css_items[@]}")"
-
-        # JS selection
-        local js_items=()
-        for name in "${STANDALONE_JS_FILES[@]}"; do
-            local base="${name%.js}"
-            js_items+=("${name}|${name}|$(mod_desc "$base" standalone)|")
-        done
-        for name in "${BUNDLED_JS_FILES[@]}"; do
-            local base="${name%.js}"
-            local css_name="${name%.js}.css"
-            js_items+=("${name}|${name}|$(mod_desc "$base" js_bundled)|${css_name}")
-        done
-
-        local js_result
-        js_result="$(select_multi_js "$(tr js_title)" "$(tr keybind_multiselect)" "all" "${js_items[@]}")"
-
-        # Combine results
-        local final_css="$selected_css"
-        local final_js=""
-        while IFS= read -r line; do
-            [ -z "$line" ] && continue
-            case "$line" in
-                JS:*)  final_js="$final_js ${line#JS:}" ;;
-                CSS:*) final_css="$final_css ${line#CSS:}" ;;
+    if [ "$is_installed" = "1" ] && [ "$has_state" = "1" ]; then
+        # --- Already installed ---
+        while true; do
+            local action; action="$(entry_menu 1)"
+            local result=""
+            case "$action" in
+                manage) manage_flow "$SOURCE_DIR" "$vivaldi_dir" "$app_path"; result="done" ;;
+                update) do_update "$SOURCE_DIR" "$vivaldi_dir"; result="done" ;;
+                uninstall) do_uninstall "$vivaldi_dir" "$app_path" ;;
+                exit) exit_installer ;;
+                back)
+                    selected_idx="$(select_single "target_title" 0 "${target_items[@]}")"
+                    idx=0
+                    while IFS='|' read -r ap rd dn ver; do
+                        [ -z "$rd" ] && continue
+                        [ "$idx" = "$selected_idx" ] && { selected_app="$ap"; selected_vivaldi_dir="$rd"; selected_display="$dn"; break; }; ((idx++))
+                    done <<< "$all_installs"
+                    vivaldi_dir="$selected_vivaldi_dir"; app_path="$selected_app"
+                    is_installed=0; is_installed "$vivaldi_dir" && is_installed=1
+                    has_state=0; get_install_state "$vivaldi_dir" 2>/dev/null && has_state=1
+                    ;;
             esac
-        done <<< "$js_result"
+            [ -n "$result" ] && break
+        done
+        post_install "$app_path"
 
-        # Always include ModConfig.js
-        final_js="ModConfig.js $final_js"
-
-        # Summary
-        echo ""
-        echo "  $(tr summary_title)"
-        echo ""
-        echo "  $(tr summary_target): $selected_display $selected_version"
-        echo "  $(tr summary_target) $(tr target_path): $vivaldi_dir"
-        echo ""
-        echo "  $(tr summary_css_mods): $(echo "$final_css" | wc -w | tr -d ' ')"
-        echo "  $(tr summary_js_mods): $(echo "$final_js" | wc -w | tr -d ' ')"
-        echo ""
-
-        # Deploy
-        backup_window_html "$vivaldi_dir"
-        deploy_mod_files "$SOURCE_DIR" "$vivaldi_dir" "$final_css" "$final_js"
-        inject_mod_loader "$vivaldi_dir"
-
-        echo ""
-        echo "===================================================="
-        echo "  $(tr install_complete)"
-        echo "===================================================="
-
-        # Restart prompt
-        echo ""
-        echo -n "$(tr restart_prompt) "
-        local restart_key
-        restart_key="$(read_key)"
-        echo ""
-        if [ "$restart_key" = "Y" ]; then
-            echo "  Restarting Vivaldi..."
-            open "$selected_app" --args --debug-packed-apps --silent-debugger-extension-api
+    elif [ "$has_persist" = "1" ]; then
+        # --- Cross-version restore ---
+        clear_content; local e="\033"
+        echo ""; echo "${e}[1;33m$(tr restore_detected)${e}[0m"; echo ""
+        echo "  $(trf restore_prompt "$PERSIST_VERSION")"; echo ""
+        echo "  $(trf entry_installed_count "${#PERSIST_CSS_MODS[@]}" "${#PERSIST_JS_MODS[@]}")"
+        local restore_items=("restore|$(tr restore_option)" "fresh|$(tr restore_fresh)")
+        local rc=0; local rdone=0
+        while [ "$rdone" -eq 0 ]; do
+            local sb=""; sb+=""$'\n'; sb+="  $(tr entry_choose_action)"$'\n'; sb+=""$'\n'
+            local ri=0
+            for ritem in "${restore_items[@]}"; do
+                local rlabel="${ritem#*|}"; local prefix="   "
+                [ "$ri" = "$rc" ] && prefix="  >"
+                sb+="$prefix $rlabel"$'\n'
+                ((ri++))
+            done
+            sb+=""$'\n'; sb+="  ${e}[90m──────────────────────────────────────────────────${e}[0m"$'\n'
+            sb+="    ENTER confirm | Q/ESC quit"$'\n'
+            write_frame "$sb"
+            local key; key="$(read_key)"
+            case "$key" in
+                UP) rc=0 ;;
+                DOWN) rc=1 ;;
+                ENTER) rdone=1 ;;
+                Q|ESC) exit_installer ;;
+            esac
+        done
+        if [ "${restore_items[$rc]%%|*}" = "restore" ]; then
+            backup_window_html "$vivaldi_dir"
+            restore_from_persistence "$vivaldi_dir"
+            inject_mod_loader "$vivaldi_dir"
+            echo ""; echo "${e}[1;32m====================================================${e}[0m"
+            echo "  ${e}[1;32m$(tr deploy_success)${e}[0m"
+            echo "${e}[1;32m====================================================${e}[0m"
+            post_install "$app_path"
+        else
+            local action; action="$(entry_menu 0)"
+            if [ "$action" = "install" ]; then
+                install_flow "$SOURCE_DIR" "$vivaldi_dir" "$app_path" "" ""
+                post_install "$app_path"
+            else exit_installer; fi
         fi
+    else
+        # --- Fresh install ---
+        local action; action="$(entry_menu 0)"
+        if [ "$action" = "install" ]; then
+            install_flow "$SOURCE_DIR" "$vivaldi_dir" "$app_path" "" ""
+            post_install "$app_path"
+        else exit_installer; fi
     fi
-
     echo ""
 }
 

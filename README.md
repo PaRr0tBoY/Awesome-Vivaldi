@@ -1,20 +1,23 @@
-<div align="center">
-    <img width="200" height="200" src="./Others/assets/IMG5682.png">
-</div>
+<img src="./Others/assets/IMG5682.png" alt="" width="200" />
 
-<div align="center">
-    <h1>Awesome Vivaldi</h1>
-<div align="center">
+# Awesome Vivaldi
 
-<br/>
+![Ask DeepWiki](https://deepwiki.com/badge.svg)
+![Vivaldi Forum](https://img.shields.io/badge/Vivaldi-Forum-red)
+![GitHub Repo stars](https://img.shields.io/github/stars/PaRr0tBoY/Awesome-Vivaldi)
+
+&nbsp;
 
 ## Table of Contents
 
+- [Latest Updates](#latest-updates)
 - [Introduction](#introduction)
 - [Feature Showcase](#feature-showcase)
-- [Main File Structure](#main-file-structure)
+- [Vivaldi Max (AI Features)](#vivaldi-maxai-features)
+- [Mod List](#mod-list)
 - [Installation](#installation)
 - [Community Mods](#community-mods)
+- [Development Reference](#development-reference)
 
 ## Latest Updates
 
@@ -33,7 +36,7 @@ This modpack is always updated with Vivaldi, [Vivaldi 8 latest](./Vivaldi8.0Stab
 ## Feature Showcase
 
 | Showcase                                            | Mods                                     |
-| :-------------------------------------------------- | :--------------------------------------- |
+| --------------------------------------------------- | ---------------------------------------- |
 | ![VividPeek](./Others/assets/ArcPeek.gif)           | `VividPeek.css` + `VividPeek.js`     |
 | ![VividPlayer](./Others/assets/VividPlayer.gif)     | `VividPlayer.css` + `VividPlayer.js` |
 | ![FavouriteTabs](./Others/assets/FavouriteTabs.gif) | `FavouriteTabs.css`                    |
@@ -43,23 +46,56 @@ This modpack is always updated with Vivaldi, [Vivaldi 8 latest](./Vivaldi8.0Stab
 ## Vivaldi Max(AI Features)
 
 | Showcase                                            | Mods                                                   |
-| :-------------------------------------------------- | :----------------------------------------------------- |
+| --------------------------------------------------- | ------------------------------------------------------ |
 | ![TidyTabs](./Others/assets/VivaldiMax.gif)         | `TidyTabs.css` + `TidyTabs.js` + `TidyTitles.js` |
 | ![TidyDownloads](./Others/assets/TidyDownloads.gif) | `TidyDownloads.js`                                   |
 | ![TidyAddress](./Others/assets/tidyaddress.gif)     | `TidyAddress.js`                                     |
 | ![AskOnPage](./Others/assets/AskInPage.png)         | `AskOnPage.js`                                       |
 
-## Main File Structure
+## Mod List
 
-```
-.
-├── Vivaldi7.6Stable
-│   ├── CSS
-│   └── Javascripts
-└── Vivaldi7.9Stable
-    ├── CSS
-    └── Javascripts
-```
+&nbsp;
+
+### CSS
+
+| File                  | Description                                                 |
+| --------------------- | ----------------------------------------------------------- |
+| `AdaptiveBF.css`      | Hide back/forward buttons when unnecessary                  |
+| `VividPeek.css`       | Arc peek experience (pair with `VividPeek.js`)              |
+| `BetterAnimation.css` | Smoother overscroll animation                               |
+| `BtnHoverAnime.css`   | Button hover animation *(disabled by default)*              |
+| `DownloadPanel.css`   | Download panel theming                                      |
+| `Extensions.css`      | Extensions dropdown as list, overflow handling              |
+| `FavouriteTabs.css`   | Arc-like favorite tabs grid (first 9 pinned tabs)           |
+| `FindInPage.css`      | Floating find bar                                           |
+| `VividQC.css`         | Arc-like quick command styling                              |
+| `LineBreak.css`       | Utility / omit it                                           |
+| `PeekTabbar.css`      | Peek tabbar on hover with 2-level stacking                  |
+| `Quietify.css`        | Sleeker audio indicator                                     |
+| `RemoveClutter.css`   | Hide scrollbars & visual clutter                            |
+| `TabsTrail.css`       | Green trail on active/hovered tabs                          |
+| `TidyTabs.css`        | AI tab grouping *(requires* `TidyTabs.js`*)*                    |
+| `VivalArc.css`        | Arc theme port *(incompatible with this modpack)*           |
+
+### Javascripts
+
+| File                     | Description                                                     |
+| ------------------------ | --------------------------------------------------------------- |
+| `VividPeek.js`           | [Arc peek dialog support](./Doc/mod/VividPeek.md) *(pairs with* `VividPeek.css`*)* |
+| `AskOnPage.js`           | [AI side panel for page questions, summaries, and rewrites](./Doc/mod/AskOnPage.md) |
+| `AutoHidePanel.js`       | [Auto-hide side panel](./Doc/mod/AutoHidePanel.md) |
+| `EasyFiles.js`           | [Opera-inspired file attachment via clipboard &amp; downloads](./Doc/mod/EasyFiles.md) |
+| `ModConfig.js`           | [Shared settings panel for AI keys and supported mods](./Doc/mod/ModConfig.md) |
+| `MonochromeIcons.js`     | [Monochrome web panel icons to reduce visual noise](./Doc/mod/MonochromeIcons.md) |
+| `QuickCapture.js`        | [Auto-select capture area with clipboard/file/default modes](./Doc/mod/QuickCapture.md) |
+| `TidyDownloads.js`       | [AI download filename cleanup](./Doc/mod/TidyDownloads.md) |
+| `TidyTabs.js`            | [AI tab grouping](./Doc/mod/TidyTabs.md) *(pairs with* `TidyTabs.css`*)* |
+| `TidyTitles.js`          | [AI tab title cleanup](./Doc/mod/TidyTitles.md) |
+| `TabManager.js`          | [Workspace Board panel for viewing and managing workspace tabs](./Doc/mod/TabManager.md) |
+| `TidyAddress.js`         | [Rewrites the visible URL suffix into an AI-generated slug](./Doc/mod/TidyAddress.md) |
+| `VividToast.js`          | [Toast notification logic](./Doc/mod/VividToast.md) *(pairs with* `VividToast.css`*)* |
+
+&nbsp;
 
 ## Installation
 
@@ -73,10 +109,9 @@ If not:
 
 - [Click me](./Vivaldi8.0Stable/README.md) to navigate to the Installation Guide for Vivaldi 7.9 latest
 
-</details>
+&nbsp;
 
-<details>
-<summary><h2>Community Mods</h2></summary>
+## Community Mods
 
 ### Community JS Mods And CSS Included In This Modpack
 
@@ -157,7 +192,7 @@ If not:
 
 > Part of codes in this repo is used.
 
-</details>
+&nbsp;
 
 ## Development Reference
 
@@ -178,5 +213,5 @@ Vivaldi exposes theme-aware CSS custom properties on `#browser`. These follow th
 
 ---
 
-[![](https://api.star-history.com/svg?repos=PaRr0tBoY/Awesome-Vivaldi&type=Timeline&theme=dark)](https://github.com/PaRr0tBoY/Awesome-Vivaldi)
+![](https://api.star-history.com/svg?repos=PaRr0tBoY/Awesome-Vivaldi&type=Timeline&theme=dark)
 ![Alt](https://repobeats.axiom.co/api/embed/4a30f8a4b398404c3c773f672d36c2b52f7865c3.svg "Repobeats analytics image")
