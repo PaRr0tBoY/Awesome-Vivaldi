@@ -6,7 +6,7 @@
 // ==/UserScript==
 
 (() => {
-  'use strict';
+  
 
   // ==================== AI Configuration ====================
   // 1. Fill in apiKey.
@@ -662,7 +662,7 @@
   let reactPropsKey = null;
   let panelRoot = null;
   let panelState = null;
-  let panelResizeObserver = null;
+  const panelResizeObserver = null;
   let standaloneRoot = null;
   let standaloneState = null;
   let currentAppState = null;
@@ -3366,7 +3366,7 @@
               .filter((value, index, arr) => arr.indexOf(value) === index)
               .slice(0, lightweightConfig?.maxImportantLinkCount || 12);
             const jsonLd = Array.from(document.querySelectorAll('script[type="application/ld+json"]'))
-              .map((node) => {
+              .flatMap((node) => {
                 try {
                   const parsed = JSON.parse(node.textContent || '');
                   const items = Array.isArray(parsed) ? parsed : [parsed];
@@ -3389,7 +3389,6 @@
                   return [];
                 }
               })
-              .flat()
               .filter((value, index, arr) => arr.indexOf(value) === index)
               .slice(0, lightweightConfig?.maxJsonLdCount || 8);
 
@@ -5573,7 +5572,7 @@
         cancelAnimationFrame(state.scrollAnimationFrame);
       }
       const startedAt = performance.now();
-      const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+      const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
       const step = (now) => {
         const progress = Math.min(1, (now - startedAt) / duration);
         state.messages.scrollTop = startTop + (endTop - startTop) * easeInOut(progress);
@@ -6376,8 +6375,8 @@
       if (!range.collapsed || !state.inputField.contains(range.startContainer)) {
         return null;
       }
-      let container = range.startContainer;
-      let offset = range.startOffset;
+      const container = range.startContainer;
+      const offset = range.startOffset;
       let candidate = null;
 
       if (container === state.inputField) {
@@ -7431,7 +7430,7 @@
       userMsg.classList.add('is-send-arriving');
       document.body.appendChild(ghost);
       const duration = 230;
-      const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+      const easeOut = (t) => 1 - (1 - t) ** 3;
       const startState = {
         left: startLeft,
         top: startTop,
