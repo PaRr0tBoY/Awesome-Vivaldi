@@ -2,7 +2,7 @@
  * @name         Peek
  * @description  Preview link content before opening.
  * @requirement  ArcPeek.js
- * @version      2026.5.7
+ * @version      2026.7.13
  * @author       biruktes, tam710562, oudstand, PaRr0tBoY
  * @website      https://forum.vivaldi.net/post/897615
  * ==/UserStyle==
@@ -272,56 +272,6 @@ body.peek-open #browser #webpage-stack {
     overflow: hidden;
     border-radius: var(--radius);
   }
-}
-
-/* Nebula Mode 5 — progressive filter on peek-content
-   opacity is NOT set here — showNebulaOnLoad sets it on real loadstart */
-.peek-container .peek-panel.peek-nebula-loading .peek-content {
-  visibility: visible !important;
-  pointer-events: none;
-  filter: saturate(18%) brightness(90%) blur(2.2px);
-}
-
-/* Hide webview background during loading — panel color shows through */
-.peek-container .peek-panel.peek-nebula-loading .peek-content webview {
-  background: transparent !important;
-}
-
-/* Nebula: progress bar (inside panel, above content's filter stacking context) */
-.nebula-progress-bar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--colorHighlightBg, #729b79), transparent);
-  box-shadow: 0 0 8px var(--colorHighlightBg, #729b79), 0 0 2px var(--colorHighlightBg, #729b79);
-  border-radius: 1px;
-  transition: width 0.4s ease-out;
-  z-index: 50;
-  pointer-events: none;
-}
-
-.nebula-progress-bar.nebula-progress-done {
-  opacity: 0;
-  transition:
-    width 0.18s ease-out,
-    opacity 0.24s ease-out;
-}
-
-.nebula-dispersal-layer {
-  position: absolute;
-  inset: 0;
-  z-index: 42;
-  pointer-events: none;
-  border-radius: inherit;
-  background:
-    radial-gradient(circle at 50% 46%, color-mix(in srgb, var(--colorBg) 8%, transparent) 0 36%, transparent 70%),
-    color-mix(in srgb, var(--colorBg) 5%, transparent);
-  backdrop-filter: blur(7px) saturate(0.76) brightness(1.01);
-  -webkit-backdrop-filter: blur(7px) saturate(0.76) brightness(1.01);
-  will-change: opacity, transform, filter, clip-path;
-  transform: translateZ(0);
 }
 
 .peek-container .peek-source-preview {
