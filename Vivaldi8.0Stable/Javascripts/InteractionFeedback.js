@@ -571,10 +571,14 @@
 
   const AutoHidePulseFeature = (() => {
     let lastPulseTime = 0;
+    let _arcPeekOpening = false;
+    window.addEventListener("arcpeek-state-changed", (e) => {
+      _arcPeekOpening = e.detail?.opening === true;
+    });
 
     function triggerPulse() {
       if (!CONFIG.autoHidePulse.enabled) return;
-      if (window.__arcPeekOpening) return;
+      if (_arcPeekOpening) return;
       const now = Date.now();
       if (now - lastPulseTime < CONFIG.autoHidePulse.cooldownMs) return;
       const wrapper = document.querySelector(".auto-hide-wrapper.has-tabbar");

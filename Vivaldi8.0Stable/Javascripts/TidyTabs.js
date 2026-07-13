@@ -344,8 +344,8 @@
         let viv = {};
         try {
           viv = typeof tab.vivExtData === "string" ? JSON.parse(tab.vivExtData) : (tab.vivExtData || {});
-        } catch {}
-        
+        } catch (e) { console.warn("[TidyTabs] Failed to parse vivExtData:", e); }
+
         Object.assign(viv, fields);
         
         chrome.tabs.update(tabId, { vivExtData: JSON.stringify(viv) }, () => {
@@ -713,7 +713,7 @@ Return JSON strictly in this format, with no markdown backticks: {"name":"the gr
           stacksMap[viv.group].tabs.push(tab);
           if (viv.fixedGroupTitle) stacksMap[viv.group].hasName = true;
         }
-      } catch {}
+      } catch (e) { console.warn("[TidyTabs] Failed to parse vivExtData:", e); }
     }
 
     // Rename stacks that have no fixedGroupTitle
@@ -762,7 +762,7 @@ Return JSON strictly in this format, with no markdown backticks: {"name":"the gr
           stacksMap[viv.group].tabs.push(tab);
           if (viv.groupColor) stacksMap[viv.group].hasColor = true;
         }
-      } catch {}
+      } catch (e) { console.warn("[TidyTabs] Failed to parse vivExtData:", e); }
     }
 
     for (const [stackId, { tabs, hasColor }] of Object.entries(stacksMap)) {
@@ -987,7 +987,7 @@ Return JSON strictly in this format, with no markdown backticks: {"name":"the gr
         vivExtData = tab.vivExtData
           ? JSON.parse(tab.vivExtData)
           : {};
-      } catch {}
+      } catch (e) { console.warn("[TidyTabs] Failed to parse vivExtData:", e); }
       return { ...tab, vivExtData };
     });
 
