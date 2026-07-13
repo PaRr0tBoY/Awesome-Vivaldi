@@ -2,7 +2,7 @@
 // @name         Arc Peek
 // @description  Opens links in a peek panel by holding the middle/right mouse button or modifier-clicking links.
 // @requirement  ArcPeek.css
-// @version      2026.5.8
+// @version      2026.7.13
 // @author       biruktes, tam710562, oudstand, PaRr0tBoY
 // @website      https://forum.vivaldi.net/post/897615
 // ==/UserScript==
@@ -614,7 +614,7 @@
      * Unified destruction entry point for all peeks.
      */
     async disposePeek(webviewId, options = {}) {
-      const { animated = true, closeRuntimeTab = true, force = false } = options;
+      const { animated = true, closeRuntimeTab = true, closeParallelTab = false, force = false } = options;
       const data = this.webviews.get(webviewId);
       
       if (!data) return;
@@ -670,6 +670,9 @@
 
         if (closeRuntimeTab) {
           await this.closePeekRuntimeTab(webviewId);
+        }
+        if (closeParallelTab) {
+          await this.closeParallelTab(webviewId);
         }
         if (panel) this.removePreviewLayer(panel);
         
@@ -1012,7 +1015,6 @@
           current.realNavigationStarted = true;
           current.pageStable = true;
           if (current.openingState === "finished") {
-            current.finishNebula?.();
             this.maybeRevealPeekWebview(webviewId);
           }
           chrome.tabs.onUpdated.removeListener(handleUpdated);
@@ -1062,7 +1064,7 @@
         )?.[0];
         
         if (webviewId) {
-          this.disposePeek(webviewId, { animated: true, closeRuntimeTab: true });
+          this.disposePeek(webviewId, { animated: true, closeRuntimeTab: true, closeParallelTab: true });
         }
       }
     }
@@ -1122,7 +1124,7 @@
     }
 
     dismissPeekInstant(webviewId) {
-      this.disposePeek(webviewId, { animated: false, closeRuntimeTab: true });
+      this.disposePeek(webviewId, { animated: false, closeRuntimeTab: true, closeParallelTab: true });
     }
 
     waitForTabComplete(tabId, timeoutMs = 12000) {
@@ -1298,6 +1300,7 @@
           await this.disposePeek(existingId, {
             animated: false,
             closeRuntimeTab: true,
+            closeParallelTab: true,
           });
         }
       }
@@ -1333,6 +1336,7 @@
         webviewRevealed: false,
         relatedTabId: null,
         relatedPanelId: null,
+        parallelTabId: null,
         handoffInProgress: false,
         closingMode: null,
         disableSourceCloseAnimation: false,
@@ -1478,6 +1482,10 @@
         if (runtime.tab.status === "complete") {
           runtimeData.pageStable = true;
         }
+        // Pre-load a parallel background tab so action buttons can reuse it instantly.
+        if (this.isUsablePeekUrl(pendingUrl)) {
+          this.createParallelTab(webviewId, pendingUrl).catch(() => {});
+        }
       } else {
         webview.tab_id = `${webviewId}tabId`;
         webview.setAttribute("src", "about:blank");
@@ -1544,7 +1552,7 @@
         if (!backdropClosePending) return;
         backdropClosePending = false;
         swallowBackdropEvent(event);
-        this.disposePeek(webviewId, { animated: true, closeRuntimeTab: true });
+        this.disposePeek(webviewId, { animated: true, closeRuntimeTab: true, closeParallelTab: true });
       };
 
       const armBackdropClose = (event) => {
@@ -1600,169 +1608,8 @@
         effectiveLinkRect,
         webviewId
       );
-      peekPanel.classList.add("peek-nebula-loading");
       this.preparePeekContentForPreview(peekPanel);
       this.setPeekWebviewVisibility(peekPanel, false);
-      {
-        const wv = peekPanel.querySelector(".peek-content webview");
-        const peekContent = peekPanel.querySelector(".peek-content");
-        if (peekContent && wv) {
-          const progressBar = document.createElement("div");
-          progressBar.className = "nebula-progress-bar";
-          peekPanel.appendChild(progressBar);
-
-          // navigationStarted means the opening animation has handed off to Nebula.
-          let navigationStarted = false;
-          let nebulaCleanupScheduled = false;
-          let latestProgressValue = 0;
-          let latestProgress = "0%";
-          let latestFilter = { blur: 2.2, sat: 18, bright: 90, dur: "0.48s" };
-          let latestFilterStage = 0;
-          let navigationCommitted = false;
-          let contentLoaded = false;
-          let loadStopped = false;
-
-          const canApplyNebula = () => {
-            const d = this.webviews.get(webviewId);
-            return !!d && !d.nebulaFinished && d.openingState === "finished" && navigationStarted;
-          };
-          const setProgress = (pct, options = {}) => {
-            const nextValue = Math.max(0, Math.min(100, Number.parseFloat(pct) || 0));
-            latestProgressValue = options.force
-              ? nextValue
-              : Math.max(latestProgressValue, nextValue);
-            latestProgress = `${latestProgressValue}%`;
-            if (!options.force && !canApplyNebula()) return;
-            progressBar.style.width = latestProgress;
-          };
-          const setFilter = (blur, sat, bright, dur = "0.4s", stage = 0) => {
-            if (stage < latestFilterStage) return;
-            latestFilterStage = stage;
-            latestFilter = { blur, sat, bright, dur };
-            if (!canApplyNebula()) return;
-            peekContent.style.transition = `filter ${dur} cubic-bezier(0.16, 0.88, 0.22, 1)`;
-            peekContent.style.filter = `saturate(${sat}%) brightness(${bright}%) blur(${blur}px)`;
-          };
-          const applyLatestNebulaState = () => {
-            if (!canApplyNebula()) return;
-            setProgress(latestProgress);
-            setFilter(
-              latestFilter.blur,
-              latestFilter.sat,
-              latestFilter.bright,
-              latestFilter.dur,
-              latestFilterStage
-            );
-          };
-
-          wv.addEventListener("loadstart", () => {
-            const d = this.webviews.get(webviewId);
-            if (d) d.realNavigationStarted = true;
-            setProgress("15%");
-            setFilter(2.2, 18, 90, "0.48s", 1);
-          });
-          wv.addEventListener("loadcommit", () => {
-            navigationCommitted = true;
-            const d = this.webviews.get(webviewId);
-            if (d) d.realNavigationStarted = true;
-            if (canApplyNebula()) {
-              this.setPeekWebviewVisibility(peekPanel, true);
-            }
-            setProgress("40%");
-            setFilter(1.05, 48, 96, "0.52s", 2);
-          });
-          wv.addEventListener("contentload", () => {
-            contentLoaded = true;
-            const d = this.webviews.get(webviewId);
-            if (d) d.realNavigationStarted = true;
-            if (canApplyNebula()) {
-              this.setPeekWebviewVisibility(peekPanel, true);
-            }
-            setProgress("80%");
-            setFilter(0.25, 88, 99, "0.72s", 3);
-          });
-          wv.addEventListener("loadstop", () => {
-            loadStopped = true;
-            const d = this.webviews.get(webviewId);
-            if (d) {
-              d.realNavigationStarted = true;
-              d.pageStable = true;
-            }
-            setProgress("100%");
-            setFilter(0, 100, 100, "0.72s", 4);
-            if (canApplyNebula() && !nebulaCleanupScheduled) {
-              nebulaCleanupScheduled = true;
-              setTimeout(() => finishNebula(), 900);
-            }
-          });
-
-          const revealNebulaContent = () => {
-            navigationStarted = true;
-            const data = this.webviews.get(webviewId);
-            if (!data || data.isDisposing || data.closingMode || data.webviewRevealed) return;
-            data.webviewRevealed = true;
-            if (latestProgressValue === 0) {
-              latestProgressValue = data.realNavigationStarted ? 20 : 8;
-              latestProgress = `${latestProgressValue}%`;
-            }
-            applyLatestNebulaState();
-            peekContent.style.opacity = "1";
-            peekContent.style.pointerEvents = "";
-            if (navigationCommitted || contentLoaded || data.pageStable) {
-              this.setPeekWebviewVisibility(peekPanel, true);
-              this.fadeForegroundLayerOut(peekPanel, 180);
-            } else if (data.realNavigationStarted) {
-              window.setTimeout(() => {
-                const current = this.webviews.get(webviewId);
-                if (
-                  current &&
-                  !current.isDisposing &&
-                  !current.closingMode &&
-                  !current.nebulaFinished &&
-                  navigationStarted
-                ) {
-                  this.setPeekWebviewVisibility(peekPanel, true);
-                  this.fadeForegroundLayerOut(peekPanel, 180);
-                }
-              }, 220);
-            }
-            if (loadStopped || data.pageStable) {
-              finishNebula();
-            }
-          };
-
-          const finishNebula = () => {
-            const data = this.webviews.get(webviewId);
-            if (!data || data.isDisposing || data.closingMode || data.nebulaFinished) return;
-            if (data.openingState !== "finished") return;
-            setProgress("100%", { force: true });
-            data.nebulaFinished = true;
-            data.webviewRevealed = true;
-            peekContent.style.opacity = "1";
-            peekContent.style.pointerEvents = "";
-            this.setPeekWebviewVisibility(peekPanel, true);
-            this.fadeForegroundLayerOut(peekPanel, 180);
-            this.disperseNebulaLayer(peekPanel, peekContent).finally(() => {
-              if (!peekPanel.isConnected) return;
-              peekContent.style.filter = "saturate(100%) brightness(100%) blur(0px)";
-              peekContent.style.transition = "none";
-              peekPanel.classList.remove("peek-nebula-loading");
-              requestAnimationFrame(() => {
-                if (!peekPanel.isConnected) return;
-                peekContent.style.filter = "";
-                peekContent.style.transition = "";
-              });
-              progressBar.classList.add("nebula-progress-done");
-              window.setTimeout(() => progressBar.remove(), 260);
-            });
-          };
-
-          const wvData = this.webviews.get(webviewId);
-          wvData.revealNebulaContent = revealNebulaContent;
-          wvData.finishNebula = finishNebula;
-
-        }
-      }
       if (previewAsset?.dataUrl) {
         this.setPreviewAnimationState(peekPanel, true);
       }
@@ -2348,6 +2195,142 @@
       };
     }
 
+    // ---- Parallel tab helpers ----
+
+    async createParallelTab(webviewId, url) {
+      const windowId = this.getVivaldiWindowId();
+      const createProperties = {
+        url,
+        active: false,
+      };
+      if (windowId !== null) {
+        createProperties.windowId = windowId;
+      }
+
+      this.logOpenAction("parallel-tab:create:start", { webviewId, url });
+      window.__vmodSuppressTabToast = true;
+      let tab;
+      try {
+        tab = await this.createTab(createProperties);
+      } finally {
+        window.__vmodSuppressTabToast = false;
+      }
+
+      const data = this.webviews.get(webviewId);
+      if (data && tab?.id) {
+        data.parallelTabId = tab.id;
+        this.logOpenAction("parallel-tab:create:done", {
+          webviewId,
+          tabId: tab.id,
+          status: tab?.status || null,
+          error: chrome.runtime.lastError?.message || "",
+        });
+      }
+      return tab;
+    }
+
+    async isParallelTabValid(webviewId) {
+      const data = this.webviews.get(webviewId);
+      const parallelTabId = data?.parallelTabId;
+      if (!parallelTabId) return false;
+      try {
+        const tab = await this.getTab(parallelTabId);
+        if (chrome.runtime.lastError || !tab?.id) return false;
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    async syncParallelTabUrl(webviewId) {
+      const data = this.webviews.get(webviewId);
+      const parallelTabId = data?.parallelTabId;
+      if (!parallelTabId) return null;
+
+      const currentUrl = this.getPeekUrl(webviewId);
+      if (!currentUrl) return null;
+
+      try {
+        const tab = await this.getTab(parallelTabId);
+        if (chrome.runtime.lastError || !tab?.id) return null;
+
+        const tabUrl = String(tab.url || tab.pendingUrl || "").trim();
+        if (tabUrl === currentUrl) {
+          return tab;
+        }
+
+        // Navigate parallel tab to current peek URL
+        await this.updateTab(parallelTabId, { url: currentUrl });
+        return tab;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    async closeParallelTab(webviewId) {
+      const data = this.webviews.get(webviewId);
+      const parallelTabId = data?.parallelTabId;
+      if (!parallelTabId) return;
+      try {
+        await this.removeTab(parallelTabId);
+      } catch (_) {}
+      if (data) {
+        data.parallelTabId = null;
+      }
+    }
+
+    async ensureParallelTab(webviewId, { active = true } = {}) {
+      const data = this.webviews.get(webviewId);
+      const currentUrl = this.getPeekUrl(webviewId);
+      if (!currentUrl) return null;
+
+      // Best case: parallel tab exists and is valid
+      if (data?.parallelTabId) {
+        const valid = await this.isParallelTabValid(webviewId);
+        if (valid) {
+          const tab = await this.syncParallelTabUrl(webviewId);
+          if (tab?.id) {
+            if (active) {
+              await this.updateTab(tab.id, { active: true });
+            }
+            this.logOpenAction("parallel-tab:reused", {
+              webviewId,
+              tabId: tab.id,
+              active,
+            });
+            return { tab, usedParallel: true };
+          }
+        }
+      }
+
+      // Fallback 1: try detaching the runtime tab into the tab strip
+      if (PEEK_RELATED_TAB_ADOPTION_CONFIG.enabled) {
+        const adopted = await this.detachPeekRuntimeTab(webviewId, {
+          active,
+          reason: "open-action",
+        });
+        if (adopted?.adopted && adopted?.tab?.id) {
+          return { tab: adopted.tab, usedAdoption: true };
+        }
+      }
+
+      // Fallback 2: create a brand-new tab
+      window.__vmodSuppressTabToast = true;
+      let tab;
+      try {
+        tab = await this.createTab({ url: currentUrl, active });
+      } finally {
+        window.__vmodSuppressTabToast = false;
+      }
+      this.logOpenAction("parallel-tab:fallback-create", {
+        webviewId,
+        tabId: tab?.id || null,
+        active,
+        error: chrome.runtime.lastError?.message || "",
+      });
+      return { tab, usedFallback: true };
+    }
+
     buildUICaptureRect(linkRect) {
       const sourceRect = this.resolveSourceRect(linkRect, {
         tabId: Number(linkRect?.sourceTabId) || null,
@@ -2804,18 +2787,19 @@
         peekPanel.querySelector(".peek-sidebar-controls")
       );
 
-      // Start nebula (sets navigationStarted flag, reveals content div with filter)
-      if (data.revealNebulaContent) data.revealNebulaContent();
+      // Reveal content immediately — no nebula blur mask.
+      // Users can interact as soon as basic DOM loads, just like a normal tab.
+      data.webviewRevealed = true;
+      this.showPeekContent(peekPanel);
+      this.setPeekWebviewVisibility(peekPanel, true);
+      this.fadeForegroundLayerOut(peekPanel, 180);
 
       const webview = data.webview;
       if (webview) {
-        this.armPeekWebviewReveal(peekPanel, webviewId);
         if (webview.dataset.pendingSrc) {
           this.startPeekNavigation(webview, webviewId);
         }
       }
-
-      this.maybeRevealPeekWebview(webviewId);
       this.focusPeekWebview(webviewId);
     }
 
@@ -2849,23 +2833,6 @@
       webview.style.visibility = visible ? "" : "hidden";
       webview.style.pointerEvents = visible ? "" : "none";
     }
-
-    armPeekWebviewReveal(peekPanel, webviewId) {
-      const data = this.webviews.get(webviewId);
-      const webview = data?.webview;
-      if (!peekPanel || !webview || !data) return;
-
-      webview.addEventListener("loadstop", () => {
-        const current = this.webviews.get(webviewId);
-        if (!current || current.isDisposing) return;
-        // Only mark pageStable after opening animation finishes
-        if (current.openingState === "finished") {
-          current.pageStable = true;
-        }
-        this.maybeRevealPeekWebview(webviewId);
-      }, { once: true });
-    }
-
 
     maybeRevealPeekWebview(webviewId) {
       const data = this.webviews.get(webviewId);
@@ -2910,31 +2877,8 @@
           ) {
             return;
           }
-          const isNebula = currentPanel.classList.contains("peek-nebula-loading");
-          currentPanel.classList.remove("peek-nebula-loading");
-          if (isNebula) {
-            const peekContent = currentPanel.querySelector(".peek-content");
-            if (peekContent && typeof peekContent.animate === "function") {
-              // Capture current filter from progressive stages, then clear it
-              const current = getComputedStyle(peekContent).filter || "none";
-              peekContent.style.filter = "";
-              peekContent.style.transition = "";
-              peekContent.animate(
-                [
-                  { filter: current },
-                  { filter: "saturate(100%) brightness(100%) blur(0px)" },
-                ],
-                { duration: 300, easing: "cubic-bezier(0.2, 0.8, 0.4, 1)", fill: "forwards" }
-              );
-            }
-            setTimeout(() => {
-              this.showPeekContent(currentPanel);
-              this.setPeekWebviewVisibility(currentPanel, true);
-            }, 60);
-          } else {
-            this.showPeekContent(currentPanel);
-            this.setPeekWebviewVisibility(currentPanel, true);
-          }
+          this.showPeekContent(currentPanel);
+          this.setPeekWebviewVisibility(currentPanel, true);
           const previewLayer = currentPanel.querySelector(":scope > .peek-source-preview");
           if (previewLayer && typeof previewLayer.animate === "function") {
             const anim = previewLayer.animate(
@@ -3226,62 +3170,6 @@
         previewLayer.style.opacity = "0";
         this.removePreviewLayer(peekPanel);
       }).catch(() => {});
-    }
-
-    disperseNebulaLayer(peekPanel, peekContent) {
-      if (!peekPanel?.isConnected || !peekContent) return Promise.resolve();
-
-      const currentFilter = getComputedStyle(peekContent).filter || "none";
-      peekContent.style.transition = "";
-      peekContent.style.filter = currentFilter;
-
-      const hazeLayer = document.createElement("div");
-      hazeLayer.className = "nebula-dispersal-layer";
-      peekPanel.appendChild(hazeLayer);
-
-      const contentAnimation =
-        typeof peekContent.animate === "function"
-          ? peekContent.animate(
-              [
-                { filter: currentFilter },
-                { filter: "saturate(100%) brightness(100%) blur(0px)" },
-              ],
-              {
-                duration: 520,
-                easing: "cubic-bezier(0.16, 0.88, 0.22, 1)",
-                fill: "forwards",
-              }
-            ).finished
-          : Promise.resolve();
-
-      const hazeAnimation =
-        typeof hazeLayer.animate === "function"
-          ? hazeLayer.animate(
-              [
-                {
-                  opacity: 0.22,
-                  transform: "scale(0.992)",
-                  filter: "blur(2px)",
-                  clipPath: "circle(76% at 50% 50%)",
-                },
-                {
-                  opacity: 0,
-                  transform: "scale(1.035)",
-                  filter: "blur(14px)",
-                  clipPath: "circle(118% at 50% 50%)",
-                },
-              ],
-              {
-                duration: 760,
-                easing: "cubic-bezier(0.16, 0.88, 0.22, 1)",
-                fill: "forwards",
-              }
-            ).finished
-          : Promise.resolve();
-
-      return Promise.allSettled([contentAnimation, hazeAnimation]).then(() => {
-        hazeLayer.remove();
-      });
     }
 
     preparePreviewLayerForClosing(peekPanel) {
@@ -3704,11 +3592,11 @@
       buttons.forEach((button) => {
         const element = this.createOptionsButton(
           button.content,
-          () => {
+          (event) => {
             if (!button.keepControlsOpen) {
               this.hideSidebarControls(thisElement);
             }
-            button.action();
+            button.action(event);
           },
           button.cls
         );
@@ -4445,74 +4333,70 @@
         webviewId,
         active,
         url,
+        parallelTabId: this.webviews.get(webviewId)?.parallelTabId || null,
         relatedTabId: this.webviews.get(webviewId)?.relatedTabId || null,
       });
+      const data = this.webviews.get(webviewId);
 
       if (!active) {
-        const adopted = PEEK_RELATED_TAB_ADOPTION_CONFIG.enabled
-          ? await this.detachPeekRuntimeTab(webviewId, {
-              active: false,
-              reason: "background-tab",
-            })
-          : null;
-        if (adopted?.adopted && adopted?.tab?.id) {
-          await this.disposePeek(webviewId, { animated: false, closeRuntimeTab: false });
+        // Background tab: the parallel tab is already a background tab.
+        if (data?.parallelTabId && await this.isParallelTabValid(webviewId)) {
+          await this.syncParallelTabUrl(webviewId);
+          const panelRect = data.divContainer
+            ?.querySelector(".peek-panel")
+            ?.getBoundingClientRect?.();
+          const targetRect = panelRect ? this.getBackgroundTabHandoffRect(panelRect) : null;
+          await this.animatePeekPanelToRect(webviewId, targetRect, {
+            durationMs: 440,
+            fadeOut: true,
+            borderRadius: "12px",
+            stage: "background-tab",
+          });
+          await this.disposePeek(webviewId, { animated: false, closeRuntimeTab: true, closeParallelTab: false });
           return;
         }
-        window.__vmodSuppressTabToast = true;
-        let tab;
-        try {
-          tab = await this.createTab({ url: url, active: false });
-        } finally {
-          window.__vmodSuppressTabToast = false;
+        // Fallback: parallel tab was closed or never created
+        const result = await this.ensureParallelTab(webviewId, { active: false });
+        const tabId = result?.tab?.id || null;
+        if (tabId && !result?.usedFallback) {
+          const panelRect = data?.divContainer
+            ?.querySelector(".peek-panel")
+            ?.getBoundingClientRect?.();
+          const targetRect = panelRect ? this.getBackgroundTabHandoffRect(panelRect) : null;
+          await this.animatePeekPanelToRect(webviewId, targetRect, {
+            durationMs: 440,
+            fadeOut: true,
+            borderRadius: "12px",
+            stage: "background-tab",
+          });
+          await this.disposePeek(webviewId, { animated: false, closeRuntimeTab: true, closeParallelTab: false });
+          return;
         }
-        this.logOpenAction("open-action:new-tab:fallback-create", {
-          webviewId,
-          active,
-          tabId: tab?.id || null,
-          error: chrome.runtime.lastError?.message || "",
-        });
-        const panelRect = this.webviews.get(webviewId)?.divContainer
-          ?.querySelector(".peek-panel")
-          ?.getBoundingClientRect?.();
-        const targetRect = panelRect ? this.getBackgroundTabHandoffRect(panelRect) : null;
-        await this.animatePeekPanelToRect(webviewId, targetRect, {
-          durationMs: 440,
-          fadeOut: true,
-          borderRadius: "12px",
-          stage: "background-tab",
-        });
         await this.disposePeek(webviewId, { animated: false, closeRuntimeTab: true });
         return;
       }
 
-      const data = this.webviews.get(webviewId);
+      // Foreground tab: expand animation → snapshot → switch to pre-loaded tab
       if (!data) return;
 
       const targetRect = await this.animatePeekExpandToViewport(webviewId);
       const overlay = await this.createHandoffSnapshotOverlay(targetRect, {
         label: "new-tab",
       });
-      const adopted = PEEK_RELATED_TAB_ADOPTION_CONFIG.enabled
-        ? await this.detachPeekRuntimeTab(webviewId, {
-            active: true,
-            reason: "foreground-tab",
-          })
-          : null;
-      if (adopted?.adopted && adopted?.tab?.id) {
-        await this.disposePeek(webviewId, { animated: false, closeRuntimeTab: false });
-        void this.holdSnapshotUntilTabReady(overlay, adopted.tab.id);
-        return;
-      }
-      const tab = await this.createTab({ url: url, active: true });
-      this.logOpenAction("open-action:new-tab:fallback-create", {
-        webviewId,
-        active,
-        tabId: tab?.id || null,
-        error: chrome.runtime.lastError?.message || "",
+
+      const result = await this.ensureParallelTab(webviewId, { active: true });
+      const tabId = result?.tab?.id || null;
+
+      await this.disposePeek(webviewId, {
+        animated: false,
+        closeRuntimeTab: !result?.usedParallel,
+        closeParallelTab: false,
       });
-      await this.disposePeek(webviewId, { animated: false, closeRuntimeTab: true });
-      void this.holdSnapshotUntilTabReady(overlay, tab?.id || null);
+      if (tabId) {
+        void this.holdSnapshotUntilTabReady(overlay, tabId);
+      } else if (overlay) {
+        this.releaseHandoffSnapshotOverlay(overlay);
+      }
     }
 
     async openInSourceTab(webviewId) {
@@ -4528,6 +4412,7 @@
       this.logOpenAction("open-action:source-tab:start", {
         webviewId,
         sourceTabId,
+        parallelTabId: data.parallelTabId || null,
         relatedTabId: data.relatedTabId || null,
         url,
       });
@@ -4537,17 +4422,32 @@
         label: "source-tab",
         tabId: sourceTabId,
       });
-      await this.updateTab(sourceTabId, { url, active: true });
-      this.logOpenAction("open-action:source-tab:update-source", {
+
+      // Close the source tab and switch to the pre-loaded parallel tab.
+      const result = await this.ensureParallelTab(webviewId, { active: true });
+      const usedTabId = result?.tab?.id || null;
+
+      if (usedTabId) {
+        try { await this.removeTab(sourceTabId); } catch (_) {}
+      } else {
+        // Fallback: no parallel tab available, just update the source tab's URL
+        await this.updateTab(sourceTabId, { url, active: true });
+      }
+
+      this.logOpenAction("open-action:source-tab:done", {
         webviewId,
         sourceTabId,
+        usedTabId,
+        usedParallel: !!result?.usedParallel,
         error: chrome.runtime.lastError?.message || "",
       });
+
       await this.disposePeek(webviewId, {
         animated: false,
         closeRuntimeTab: true,
+        closeParallelTab: false,
       });
-      void this.holdSnapshotUntilTabReady(overlay, sourceTabId);
+      void this.holdSnapshotUntilTabReady(overlay, usedTabId || sourceTabId);
     }
 
     isArcPeekSplitTab(tab, ownerTabId = null) {
@@ -4598,13 +4498,8 @@
           borderRadius: "0",
           stage: "split",
         });
-        const adopted = PEEK_RELATED_TAB_ADOPTION_CONFIG.enabled
-          ? await this.detachPeekRuntimeTab(webviewId, {
-              active: true,
-              reason: "split-tab",
-            })
-          : null;
-        let newTab = adopted?.adopted ? adopted.tab : null;
+        const result = await this.ensureParallelTab(webviewId, { active: true });
+        let newTab = result?.tab || null;
         if (!newTab?.id) {
           newTab = await this.createTab({
             url,
@@ -4647,14 +4542,15 @@
         });
         await this.disposePeek(webviewId, {
           animated: false,
-          closeRuntimeTab: !adopted?.adopted,
+          closeRuntimeTab: !result?.usedParallel,
+          closeParallelTab: false,
         });
         void this.holdSnapshotUntilTabReady(overlay, newTab.id);
         this.logOpenAction("open-action:split:done", {
           webviewId,
           sourceTabId: currentFresh.id,
           splitTabId: newTab.id,
-          adopted: !!adopted?.adopted,
+          usedParallel: !!result?.usedParallel,
         });
       } catch (error) {
         this.logOpenAction("open-action:split:error", {
