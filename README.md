@@ -6,18 +6,48 @@
 ![Vivaldi Forum](https://img.shields.io/badge/Vivaldi-Forum-red)
 ![GitHub Repo stars](https://img.shields.io/github/stars/PaRr0tBoY/Awesome-Vivaldi)
 
-&nbsp;
-
 ## Table of Contents
 
-- [Latest Updates](#latest-updates)
 - [Introduction](#introduction)
+- [***Installation](#installation)
+- [Latest Updates](#latest-updates)
 - [Feature Showcase](#feature-showcase)
 - [Vivaldi Max (AI Features)](#vivaldi-maxai-features)
 - [Mod List](#mod-list)
-- [Installation](#installation)
 - [Community Mods](#community-mods)
-- [Development Reference](#development-reference)
+
+## Introduction
+
+This modpack is always updated with Vivaldi, [Vivaldi 8 latest](./Vivaldi8.0Stable) is currently supported.
+
+> Which version of Vivaldi browser are you using? If you're not sure, check it out at `vivaldi:about`.
+
+## Installation
+
+1. One command installation scripts (***experimental***)
+
+Windows (PowerShell)
+```powershell
+
+irm https://raw.githubusercontent.com/PaRr0tBoY/Awesome-Vivaldi/main/install.ps1 | iex
+```
+
+macOS (bash)
+```bash
+curl -fsSL https://raw.githubusercontent.com/PaRr0tBoY/Awesome-Vivaldi/main/install.sh | bash
+```
+
+To Uninstall, run the scripts again.
+
+<img width="919" height="469" alt="image" src="https://github.com/user-attachments/assets/2084ca97-4712-4c12-b3f8-ad79ba124cfb" />
+
+2. Or If you have agents like claude code on your pc, ask it to:
+
+```
+Install https://github.com/PaRr0tBoY/Awesome-Vivaldi for me.
+```
+
+3. Or [Click me](./Vivaldi8.0Stable/README.md) to navigate to the Manual Installation Guide.
 
 ## Latest Updates
 
@@ -26,12 +56,6 @@
 | ![VividToast](./Others/assets/toast.gif)                    | `VividToast.css` + `VividToast.js` |
 | ![VividPeek](./Others/assets/VividPeekUpdate.gif)           | `VividPeek.js`                       |
 | ![Restore Pinned Tab](./Others/assets/restorepinnedtab.gif) | `restorepinnedtab.js`                |
-
-## Introduction
-
-This modpack is always updated with Vivaldi, [Vivaldi 8 latest](./Vivaldi8.0Stable) is currently supported.
-
-> Which version of Vivaldi browser are you using? If you're not sure, check it out at `vivaldi:about`.
 
 ## Feature Showcase
 
@@ -95,21 +119,6 @@ This modpack is always updated with Vivaldi, [Vivaldi 8 latest](./Vivaldi8.0Stab
 | `TidyAddress.js`         | [Rewrites the visible URL suffix into an AI-generated slug](./Doc/mod/TidyAddress.md) |
 | `VividToast.js`          | [Toast notification logic](./Doc/mod/VividToast.md) *(pairs with* `VividToast.css`*)* |
 
-&nbsp;
-
-## Installation
-
-If you have installed Claude Code or other agents, ask it to:
-
-```
-Guide me through the installation of https://github.com/PaRr0tBoY/Awesome-Vivaldi
-```
-
-If not:
-
-- [Click me](./Vivaldi8.0Stable/README.md) to navigate to the Installation Guide for Vivaldi 7.9 latest
-
-&nbsp;
 
 ## Community Mods
 
@@ -192,26 +201,7 @@ If not:
 
 > Part of codes in this repo is used.
 
-&nbsp;
-
-## Development Reference
-
-### Vivaldi CSS Variables
-
-Vivaldi exposes theme-aware CSS custom properties on `#browser`. These follow the user's active theme — values change with theme, so reference by `var()` name only.
-
-| Category                             | Key variables                                                                                                                                                                                           |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Background**                 | `--colorBg`, `--colorBgAlpha`, `--colorBgDark`/`--colorBgDarker`, `--colorBgLight`/`--colorBgLighter`, `--colorBgIntense`/`--colorBgIntenser`, `--colorBgInverse`, `--colorBgFaded` |
-| **Foreground**                 | `--colorFg`, `--colorFgIntense`, `--colorFgFaded`/`--colorFgFadedMore`/`--colorFgFadedMost`                                                                                                   |
-| **Highlight** (primary accent) | `--colorHighlightBg`, `--colorHighlightFg`, `--colorHighlightBgDark`, `--colorHighlightBgAlpha`                                                                                                 |
-| **Accent** (secondary)         | `--colorAccentBg`, `--colorAccentFg`, `--colorAccentBorder`, `--colorAccentBgDark`/`--colorAccentBgDarker`                                                                                    |
-| **Border**                     | `--colorBorder`, `--colorBorderSubtle`, `--colorBorderIntense`, `--colorBorderDisabled`                                                                                                         |
-| **Semantic**                   | `--colorSuccessBg`/`Fg`, `--colorWarningBg`/`Fg`, `--colorErrorBg`/`Fg`                                                                                                                     |
-| **Radius**                     | `--radius`, `--radiusHalf`, `--radiusCap`, `--radiusRound`, `--radiusRounded`                                                                                                                 |
-| **Other**                      | `--colorTabBar`, `--densityGap`, `--scrollbarWidth`, `--monospaceFont`, `--sansSerifFont`, `--uiZoomLevel`                                                                                  |
-
 ---
 
-![](https://api.star-history.com/svg?repos=PaRr0tBoY/Awesome-Vivaldi&type=Timeline&theme=dark)
+![Alt](https://api.star-history.com/svg?repos=PaRr0tBoY/Awesome-Vivaldi&type=Timeline&theme=dark)
 ![Alt](https://repobeats.axiom.co/api/embed/4a30f8a4b398404c3c773f672d36c2b52f7865c3.svg "Repobeats analytics image")
