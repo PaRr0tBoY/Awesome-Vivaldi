@@ -1047,7 +1047,7 @@ post_install() {
         echo ""; echo "$(tr post_vivaldi_running)"; echo ""
         printf "%s " "$(tr post_restart_prompt)"
         local key; key="$(read_key)"
-        if [ "$key" = "Y" ]; then
+        if [ "$key" = "Y" ] || [ "$key" = "ENTER" ]; then
             echo "Y"; echo ""; echo "  $(tr post_restarting)"
             pkill Vivaldi 2>/dev/null || true; sleep 1
             open "$app_path" --args --debug-packed-apps --silent-debugger-extension-api 2>/dev/null || open -a Vivaldi
@@ -1056,7 +1056,7 @@ post_install() {
     else
         echo ""; printf "%s " "$(tr post_launch_prompt)"
         local key; key="$(read_key)"
-        if [ "$key" = "Y" ]; then
+        if [ "$key" = "Y" ] || [ "$key" = "ENTER" ]; then
             echo "Y"
             open "$app_path" --args --debug-packed-apps --silent-debugger-extension-api 2>/dev/null || open -a Vivaldi
             echo "  Vivaldi launched."
@@ -1506,7 +1506,7 @@ do_uninstall() {
     if [ "$action" = "full" ]; then
         clear_content; echo ""; echo "${e}[1;31m$(tr uninstall_full_confirm)${e}[0m [Y/N]"
         local key; key="$(read_key)"
-        [ "$key" != "Y" ] && { echo ""; echo "$(tr uninstall_cancelled)"; return; }
+        if [ "$key" != "Y" ] && [ "$key" != "ENTER" ]; then echo ""; echo "$(tr uninstall_cancelled)"; return; fi
         local html_path="$vivaldi_dir/window.html"; local bak_path="${html_path}.bak"
         local user_mods_dir="$vivaldi_dir/user_mods"; local injector_path="$vivaldi_dir/injectMods.js"
         echo ""; echo "$(tr uninstall_restoring)"
@@ -1568,6 +1568,7 @@ main() {
     local has_persist=0
     [ "$is_installed" = "0" ] && find_persistent_mods "$persistent_dir" 2>/dev/null && has_persist=1
 
+    while true; do  # Top-level loop: re-evaluate state after uninstall
     if [ "$is_installed" = "1" ] && [ "$has_state" = "1" ]; then
         # --- Already installed ---
         while true; do
@@ -1578,7 +1579,14 @@ main() {
                 manage) ensure_mod_source || break; manage_flow "$SOURCE_DIR" "$vivaldi_dir" "$app_path"
                         [ "$FLOW_RESULT" = "back_to_menu" ] && { FLOW_RESULT=""; continue; }; result="done" ;;
                 update) ensure_mod_source || break; do_update "$SOURCE_DIR" "$vivaldi_dir"; result="done" ;;
-                uninstall) do_uninstall "$vivaldi_dir" "$app_path" ;;
+                uninstall) do_uninstall "$vivaldi_dir" "$app_path"
+                    # Re-check state after uninstall — may have removed everything
+                    is_installed=0; is_installed "$vivaldi_dir" && is_installed=1
+                    has_state=0; get_install_state "$vivaldi_dir" 2>/dev/null && has_state=1
+                    if [ "$is_installed" = "0" ]; then
+                        # Full uninstall done — drop to fresh install menu
+                        result="uninstalled"
+                    fi ;;
                 exit) exit_installer ;;
                 back)
                     selected_idx="$(select_single "target_title" 0 "${target_items[@]}")"
@@ -1597,7 +1605,15 @@ main() {
             [ -n "$result" ] && break
             [ "$EXIT_REQUESTED" = 1 ] && break
         done
+        if [ "$result" = "uninstalled" ]; then
+            # Full uninstall just completed — restart Vivaldi to pick up restored window.html,
+            # then loop back to show the fresh install menu (Install/Exit only)
+            post_install "$app_path"
+            result=""
+            continue
+        fi
         post_install "$app_path"
+        break
 
     elif [ "$has_persist" = "1" ]; then
         # --- Cross-version restore ---
@@ -1658,6 +1674,8 @@ main() {
             break
         done
     fi
+        break  # Exit top-level loop (fresh install complete or exit)
+    done  # End top-level while loop
     echo ""
 }
 
