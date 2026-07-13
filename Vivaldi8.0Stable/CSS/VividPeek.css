@@ -574,3 +574,211 @@ body.peek-open #browser #webpage-stack {
 .peek-container .peek-panel .peek-sidebar-controls .peek-sidebar-button {
   pointer-events: auto;
 }
+
+/* ===== Dynamic Island ===== */
+
+.peek-dynamic-island {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  z-index: 250;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 42px;
+  min-width: 180px;
+  max-width: 340px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--colorBg) 86%, black 14%);
+  box-shadow:
+    0 6px 24px rgba(0, 0, 0, 0.38),
+    inset 0 0 0 1px color-mix(in srgb, var(--colorFg) 10%, transparent);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  color: var(--colorFg);
+  font-family: var(--sansSerifFont, system-ui, sans-serif);
+  font-size: 0.85rem;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  opacity: 0;
+  transform: translate(-50%, -60px) scale(0.82);
+  transform-origin: center top;
+  transition:
+    opacity 0.28s cubic-bezier(0.16, 0.88, 0.22, 1),
+    transform 0.28s cubic-bezier(0.16, 0.88, 0.22, 1),
+    max-width 0.32s cubic-bezier(0.16, 0.88, 0.22, 1),
+    box-shadow 0.24s ease,
+    background 0.24s ease;
+  will-change: transform, opacity, max-width;
+}
+
+.peek-dynamic-island.visible {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+}
+
+.peek-dynamic-island:hover {
+  max-width: 520px;
+  background: color-mix(in srgb, var(--colorBg) 78%, black 22%);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.48),
+    inset 0 0 0 1px color-mix(in srgb, var(--colorFg) 16%, transparent),
+    0 0 0 2px color-mix(in srgb, var(--colorHighlightBg) 28%, transparent);
+}
+
+.peek-dynamic-island:active {
+  transform: translate(-50%, 0) scale(0.97);
+  transition: transform 0.12s ease;
+}
+
+/* Island favicon */
+.island-favicon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  object-fit: contain;
+  opacity: 0.88;
+}
+
+/* Island title */
+.island-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--colorFg);
+  opacity: 0.82;
+  transition:
+    opacity 0.18s ease,
+    color 0.18s ease;
+}
+
+.peek-dynamic-island:hover .island-title {
+  overflow: visible;
+  white-space: normal;
+  text-overflow: clip;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  opacity: 1;
+}
+
+/* Island loading spinner */
+@keyframes island-spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Spinner + close button shared container — collapses when not needed */
+.island-spinner-wrap {
+  flex-shrink: 0;
+  position: relative;
+  width: 0;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    width 0.24s cubic-bezier(0.16, 0.88, 0.22, 1),
+    opacity 0.18s ease,
+    margin-right 0.24s cubic-bezier(0.16, 0.88, 0.22, 1);
+}
+
+/* Expand on hover or while loading */
+.peek-dynamic-island:hover .island-spinner-wrap,
+.island-spinner-wrap.has-spinner {
+  width: 20px;
+  opacity: 1;
+  margin-right: -4px;
+}
+
+.island-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid color-mix(in srgb, var(--colorFg) 18%, transparent);
+  border-top-color: var(--colorHighlightBg);
+  border-radius: 50%;
+  animation: island-spin 0.8s linear infinite;
+  opacity: 0.72;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.island-spinner.hidden {
+  opacity: 0;
+  animation: none;
+}
+
+/* Close button — hidden by default, shown on hover */
+.island-close {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--colorFg);
+  opacity: 0;
+  transform: scale(0.6);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease,
+    background 0.14s ease;
+  cursor: pointer;
+  padding: 0;
+  line-height: 0;
+}
+
+.island-close::before,
+.island-close::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 1.5px;
+  background: currentColor;
+  border-radius: 1px;
+}
+
+.island-close::before { transform: rotate(45deg); }
+.island-close::after  { transform: rotate(-45deg); }
+
+/* On island hover: hide spinner, show close button */
+.peek-dynamic-island:hover .island-spinner {
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+.peek-dynamic-island:hover .island-close {
+  opacity: 0.72;
+  transform: scale(1);
+}
+
+.peek-dynamic-island .island-close:hover {
+  opacity: 1;
+  background: color-mix(in srgb, var(--colorFg) 14%, transparent);
+}
+
+/* Peek panel → Island morphing (JS-driven via Web Animation API, CSS here as fallback) */
+.peek-container.island-minimized .peek-panel {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.16s ease;
+}
+
+.peek-container.island-minimized::before {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+
+.peek-container.island-minimized {
+  pointer-events: none;
+}

@@ -338,6 +338,7 @@
       if (!this.isPeekVisibleForCurrentTab(data)) return false;
       if (data?.isDisposing) return false;
       if (data?.closingMode) return false;
+      if (data?.isMinimized) return false;
       return true;
     }
 
@@ -644,11 +645,6 @@
           document.querySelector("#panels-container")
         )?.removeEventListener("pointerdown", data.panelPointerBlocker, true);
       }
-      // backdropCleanup already called above; this is now a no-op but kept for safety.
-      if (data.backdropCleanup) {
-        data.backdropCleanup();
-      }
-
       const container = data.divContainer;
       const panel = container?.querySelector(".peek-panel");
       const sourceRect = animated
@@ -673,6 +669,15 @@
         }
         if (closeParallelTab) {
           await this.closeParallelTab(webviewId);
+        }
+        // Clean up dynamic island
+        if (data._islandUpdateTimer) {
+          clearInterval(data._islandUpdateTimer);
+          data._islandUpdateTimer = null;
+        }
+        if (data.islandElement?.isConnected) {
+          data.islandElement.remove();
+          data.islandElement = null;
         }
         if (panel) this.removePreviewLayer(panel);
         
@@ -901,6 +906,11 @@
       peekPanel.style.margin = "";
       peekPanel.style.transform = "";
       peekPanel.style.transition = "";
+      peekPanel.style.borderRadius = "";
+      peekPanel.style.boxShadow = "";
+      peekPanel.style.opacity = "";
+      peekPanel.style.pointerEvents = "";
+      peekPanel.style.display = "";
     }
 
     async armCloseShortcutGuard() {
@@ -1305,6 +1315,17 @@
         }
       }
 
+      // Close any minimized (island) peeks so the new one replaces them.
+      for (const [existingId, existingData] of this.webviews.entries()) {
+        if (existingData.isMinimized && existingId !== webviewId) {
+          await this.disposePeek(existingId, {
+            animated: false,
+            closeRuntimeTab: true,
+            closeParallelTab: true,
+          });
+        }
+      }
+
       this.webviews.set(webviewId, {
         divContainer: peekContainer,
         webview: webview,
@@ -1337,6 +1358,8 @@
         relatedTabId: null,
         relatedPanelId: null,
         parallelTabId: null,
+        isMinimized: false,
+        islandElement: null,
         handoffInProgress: false,
         closingMode: null,
         disableSourceCloseAnimation: false,
@@ -1395,7 +1418,6 @@
       optionsContainer.setAttribute("class", "options-container");
       optionsContainer.hidden = true;
       sidebarControls.setAttribute("class", "peek-sidebar-controls");
-      this.hideSidebarControls(sidebarControls);
 
       webview.id = webviewId;
       webview.style.opacity = "0";
@@ -1574,6 +1596,15 @@
 
       peekContainer.addEventListener("pointerdown", armBackdropClose, true);
       peekContainer.addEventListener("mousedown", armBackdropClose, true);
+
+      // Wheel on backdrop → minimize to Dynamic Island
+      peekContainer.addEventListener("wheel", (event) => {
+        const data = this.webviews.get(webviewId);
+        if (!data || data.isDisposing || data.closingMode || data.isMinimized) return;
+        // Only trigger on the backdrop itself, not on the panel
+        if (event.target !== peekContainer) return;
+        this.minimizePeekToIsland(webviewId);
+      }, { passive: true });
 
       peekPanel.appendChild(optionsContainer);
       peekContent.appendChild(webview);
@@ -2229,20 +2260,7 @@
       return tab;
     }
 
-    async isParallelTabValid(webviewId) {
-      const data = this.webviews.get(webviewId);
-      const parallelTabId = data?.parallelTabId;
-      if (!parallelTabId) return false;
-      try {
-        const tab = await this.getTab(parallelTabId);
-        if (chrome.runtime.lastError || !tab?.id) return false;
-        return true;
-      } catch (_) {
-        return false;
-      }
-    }
-
-    async syncParallelTabUrl(webviewId) {
+    async resolveParallelTab(webviewId) {
       const data = this.webviews.get(webviewId);
       const parallelTabId = data?.parallelTabId;
       if (!parallelTabId) return null;
@@ -2255,12 +2273,9 @@
         if (chrome.runtime.lastError || !tab?.id) return null;
 
         const tabUrl = String(tab.url || tab.pendingUrl || "").trim();
-        if (tabUrl === currentUrl) {
-          return tab;
+        if (tabUrl !== currentUrl) {
+          await this.updateTab(parallelTabId, { url: currentUrl });
         }
-
-        // Navigate parallel tab to current peek URL
-        await this.updateTab(parallelTabId, { url: currentUrl });
         return tab;
       } catch (_) {
         return null;
@@ -2286,21 +2301,20 @@
 
       // Best case: parallel tab exists and is valid
       if (data?.parallelTabId) {
-        const valid = await this.isParallelTabValid(webviewId);
-        if (valid) {
-          const tab = await this.syncParallelTabUrl(webviewId);
-          if (tab?.id) {
-            if (active) {
-              await this.updateTab(tab.id, { active: true });
-            }
-            this.logOpenAction("parallel-tab:reused", {
-              webviewId,
-              tabId: tab.id,
-              active,
-            });
-            return { tab, usedParallel: true };
+        const tab = await this.resolveParallelTab(webviewId);
+        if (tab?.id) {
+          if (active) {
+            await this.updateTab(tab.id, { active: true });
           }
+          this.logOpenAction("parallel-tab:reused", {
+            webviewId,
+            tabId: tab.id,
+            active,
+          });
+          return { tab, usedParallel: true };
         }
+        // Invalid — null it so cascading fallbacks don't re-check
+        data.parallelTabId = null;
       }
 
       // Fallback 1: try detaching the runtime tab into the tab strip
@@ -2329,6 +2343,403 @@
         error: chrome.runtime.lastError?.message || "",
       });
       return { tab, usedFallback: true };
+    }
+
+    // ---- Dynamic Island helpers ----
+
+    createIslandElement(webviewId) {
+      const island = document.createElement("div");
+      island.className = "peek-dynamic-island";
+      island.setAttribute("data-arcpeek-island", webviewId);
+
+      const favicon = document.createElement("img");
+      favicon.className = "island-favicon";
+      favicon.alt = "";
+      favicon.draggable = false;
+      favicon.addEventListener("error", () => {
+        favicon.style.display = "none";
+      });
+
+      const title = document.createElement("span");
+      title.className = "island-title";
+
+      // Spinner + close button wrapped together
+      const spinnerWrap = document.createElement("div");
+      spinnerWrap.className = "island-spinner-wrap";
+
+      const spinner = document.createElement("div");
+      spinner.className = "island-spinner";
+
+      const closeBtn = document.createElement("button");
+      closeBtn.className = "island-close";
+      closeBtn.setAttribute("aria-label", "Close Peek");
+      closeBtn.type = "button";
+
+      spinnerWrap.appendChild(spinner);
+      spinnerWrap.appendChild(closeBtn);
+
+      island.appendChild(favicon);
+      island.appendChild(title);
+      island.appendChild(spinnerWrap);
+
+      // Click: restore peek from island (unless close button is clicked)
+      island.addEventListener("click", (event) => {
+        if (event.target === closeBtn || closeBtn.contains(event.target)) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.disposePeek(webviewId, { animated: false, closeRuntimeTab: true, closeParallelTab: true });
+          return;
+        }
+        event.preventDefault();
+        event.stopPropagation();
+        this.restorePeekFromIsland(webviewId);
+      });
+
+      document.getElementById("browser")?.appendChild(island);
+      return island;
+    }
+
+    async updateIslandContent(webviewId) {
+      const data = this.webviews.get(webviewId);
+      const island = data?.islandElement;
+      if (!island?.isConnected) return;
+
+      // Favicon
+      const faviconUrl = this.getPeekFaviconUrl(data);
+      const favicon = island.querySelector(".island-favicon");
+      if (favicon && faviconUrl && favicon.getAttribute("src") !== faviconUrl) {
+        favicon.style.display = "";
+        favicon.src = faviconUrl;
+      }
+
+      // Title (async — fetches document.title via executeScript)
+      const title = island.querySelector(".island-title");
+      if (title) {
+        const peekTitle = await this.getPeekTitle(webviewId);
+        title.textContent = peekTitle || data.currentUrl || data.initialUrl || "Peek";
+      }
+
+      // Spinner: show while loading; collapse wrap when idle
+      const spinnerWrap = island.querySelector(".island-spinner-wrap");
+      const spinner = island.querySelector(".island-spinner");
+      const isLoading = !data?.pageStable;
+      if (spinner) {
+        spinner.classList.toggle("hidden", !isLoading);
+      }
+      if (spinnerWrap) {
+        spinnerWrap.classList.toggle("has-spinner", isLoading);
+      }
+    }
+
+    async getPeekTitle(webviewId) {
+      const data = this.webviews.get(webviewId);
+      const webview = data?.webview;
+      if (!webview?.isConnected) return "";
+
+      // Try executeScript to get document.title
+      if (data.pageStable) {
+        try {
+          const result = await new Promise((resolve) => {
+            webview.executeScript(
+              { code: "document.title || ''", runAt: "document_idle" },
+              (results) => {
+                if (chrome.runtime.lastError) { resolve(""); return; }
+                resolve(String(Array.isArray(results) ? results[0] : results || "").trim());
+              }
+            );
+          });
+          if (result) return result;
+        } catch (_) {}
+      }
+
+      // Fallback: derive from URL
+      const url = this.getPeekUrl(webviewId);
+      if (url) {
+        try {
+          const u = new URL(url);
+          return u.hostname + u.pathname.replace(/\/$/, "") || url;
+        } catch (_) {}
+      }
+      return url || "";
+    }
+
+    getIslandTargetRect() {
+      const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 1200;
+      const width = Math.min(340, viewportWidth * 0.42);
+      const height = 42;
+      const top = 12;
+      const left = Math.round((viewportWidth - width) / 2);
+      return { left, top, width, height };
+    }
+
+    async minimizePeekToIsland(webviewId) {
+      const data = this.webviews.get(webviewId);
+      const peekContainer = data?.divContainer;
+      const peekPanel = peekContainer?.querySelector?.(".peek-panel");
+
+      if (!data || data.isMinimized || data.isDisposing || data.closingMode) return;
+      if (!peekContainer?.isConnected || !peekPanel?.isConnected) return;
+
+      data.isMinimized = true;
+
+      // Create island if needed, populate initial content
+      if (!data.islandElement?.isConnected) {
+        data.islandElement = this.createIslandElement(webviewId);
+      }
+      // Set a synchronous initial title so the island has its natural width
+      // before we read its bounding rect for the morph target.
+      const islandTitle = data.islandElement?.querySelector(".island-title");
+      if (islandTitle && !islandTitle.textContent) {
+        const url = this.getPeekUrl(webviewId);
+        if (url) {
+          try { islandTitle.textContent = new URL(url).hostname; } catch (_) {}
+        }
+      }
+      void this.updateIslandContent(webviewId);
+
+      // Hide sidebar controls
+      this.hideSidebarControls(peekPanel.querySelector(".peek-sidebar-controls"));
+
+      // Remove body peek-open to allow scrolling the background page
+      if (this.shouldScaleBackgroundPage()) {
+        document.body.classList.remove("peek-open");
+      }
+      this.updatePeekTabVisibility();
+
+      // Fade out backdrop
+      peekContainer.classList.remove("open");
+      peekContainer.classList.add("island-minimized");
+
+      // === Direct morph animation (clean, no animatePeekPanelToRect side effects) ===
+
+      const currentRect = peekPanel.getBoundingClientRect();
+      // Target the island's final settled position (its CSS layout, ignoring the
+      // default translate(-50%,-60px) transform which would give a wrong offset).
+      // Use offsetWidth for the real content-driven width (varies with title length).
+      const islandEl = data.islandElement;
+      const islandW = islandEl?.offsetWidth || 180;
+      const islandH = islandEl?.offsetHeight || 42;
+      const vw = window.innerWidth || document.documentElement.clientWidth || 1200;
+      const targetRect = {
+        left: Math.round((vw - islandW) / 2),
+        top: 12,
+        width: islandW,
+        height: islandH,
+      };
+      const currentRadius = getComputedStyle(peekPanel).borderRadius || "0px";
+
+      // Lock panel to fixed coords so the animation has a stable origin
+      peekPanel.removeAttribute("data-has-finished-animation");
+      peekPanel.style.position = "fixed";
+      peekPanel.style.left = `${currentRect.left}px`;
+      peekPanel.style.top = `${currentRect.top}px`;
+      peekPanel.style.width = `${currentRect.width}px`;
+      peekPanel.style.height = `${currentRect.height}px`;
+      peekPanel.style.right = "auto";
+      peekPanel.style.bottom = "auto";
+      peekPanel.style.margin = "0";
+      peekPanel.style.transform = "none";
+      peekPanel.style.transition = "none";
+
+      // Hide webview content BEFORE morph — prevents expensive re-paints during resize
+      const peekContent = peekPanel.querySelector(".peek-content");
+      if (peekContent) {
+        peekContent.style.visibility = "hidden";
+      }
+      peekPanel.style.boxShadow = "none";
+      peekPanel.style.willChange = "left, top, width, height, border-radius";
+
+      if (typeof peekPanel.animate === "function") {
+        // Single unified animation — all properties share one keyframe timeline
+        // so left/width/top/height/border-radius advance in lockstep, preventing
+        // the width from lagging behind the height contraction.
+        const morphAnim = peekPanel.animate(
+          [
+            {
+              left: `${currentRect.left}px`,
+              top: `${currentRect.top}px`,
+              width: `${currentRect.width}px`,
+              height: `${currentRect.height}px`,
+              borderRadius: currentRadius,
+              opacity: 1,
+            },
+            {
+              left: `${targetRect.left}px`,
+              top: `${targetRect.top}px`,
+              width: `${targetRect.width}px`,
+              height: `${targetRect.height}px`,
+              borderRadius: "999px",
+              opacity: 1,
+            },
+          ],
+          { duration: 360, easing: "cubic-bezier(0.22, 0.61, 0.36, 1)", fill: "forwards" }
+        );
+        // Near end of morph: snap island on top (bypass CSS transition)
+        const islandEl = data.islandElement;
+        if (islandEl?.isConnected) {
+          setTimeout(() => {
+            islandEl.style.transition = "none";
+            islandEl.classList.add("visible");
+            void islandEl.offsetHeight;
+            islandEl.style.transition = "";
+          }, 270);
+        }
+        await morphAnim.finished.catch(() => {});
+        morphAnim.cancel();
+      }
+
+      // After animation: hide panel, clean up
+      peekPanel.style.willChange = "";
+      peekPanel.style.position = "";
+      peekPanel.style.left = "";
+      peekPanel.style.top = "";
+      peekPanel.style.width = "";
+      peekPanel.style.height = "";
+      peekPanel.style.borderRadius = "";
+      peekPanel.style.boxShadow = "";
+      peekPanel.style.opacity = "0";
+      peekPanel.style.pointerEvents = "none";
+      peekPanel.style.display = "none";
+
+      // Ensure island visible
+      const island = data.islandElement;
+      if (island?.isConnected && !island.classList.contains("visible")) {
+        island.style.transition = "none";
+        island.classList.add("visible");
+        void island.offsetHeight;
+        island.style.transition = "";
+      }
+
+      this.logOpenAction("island:minimize:done", { webviewId });
+
+      // Periodic content update (title/favicon may change as page loads)
+      if (!data._islandUpdateTimer) {
+        data._islandUpdateTimer = setInterval(() => {
+          const current = this.webviews.get(webviewId);
+          if (!current || !current.isMinimized || current.isDisposing) {
+            clearInterval(data._islandUpdateTimer);
+            data._islandUpdateTimer = null;
+            return;
+          }
+          this.updateIslandContent(webviewId);
+        }, 800);
+      }
+    }
+
+    async restorePeekFromIsland(webviewId) {
+      const data = this.webviews.get(webviewId);
+      const peekContainer = data?.divContainer;
+      const peekPanel = peekContainer?.querySelector?.(".peek-panel");
+      const island = data?.islandElement;
+
+      if (!data || !data.isMinimized || data.isDisposing) return;
+      if (!peekContainer?.isConnected || !peekPanel?.isConnected) return;
+
+      data.isMinimized = false;
+
+      // Stop periodic updates
+      if (data._islandUpdateTimer) {
+        clearInterval(data._islandUpdateTimer);
+        data._islandUpdateTimer = null;
+      }
+
+      // Hide island instantly (bypass CSS transition for seamless morph)
+      if (island?.isConnected) {
+        island.style.transition = "none";
+        island.classList.remove("visible");
+        void island.offsetHeight;
+        island.style.transition = "";
+      }
+
+      // Calculate rects BEFORE touching panel styles
+      const activeWebview = this.getActivePageWebview();
+      const viewportRect = this.getPeekViewportRect(activeWebview);
+      const actualIsland = data.islandElement?.getBoundingClientRect?.();
+      const islandRect = (actualIsland?.width > 0) ? actualIsland : this.getIslandTargetRect();
+      const containerRect = peekContainer.getBoundingClientRect();
+      const containerLeft = containerRect.left || viewportRect?.left || 0;
+      const containerTop = containerRect.top || viewportRect?.top || 0;
+
+      const targetWidth = viewportRect?.width ? viewportRect.width * 0.8 : 960;
+      const targetHeight = viewportRect?.height || 800;
+      const targetLeft = (viewportRect?.width || 1200) * 0.1;
+      const targetTop = 0;
+
+      // Un-hide panel and position it at island location for morph animation
+      peekPanel.style.display = "";
+      peekPanel.style.position = "absolute";
+      peekPanel.style.left = `${islandRect.left - containerLeft}px`;
+      peekPanel.style.top = `${islandRect.top - containerTop}px`;
+      peekPanel.style.width = `${islandRect.width}px`;
+      peekPanel.style.height = `${islandRect.height}px`;
+      peekPanel.style.right = "auto";
+      peekPanel.style.bottom = "auto";
+      peekPanel.style.margin = "0";
+      peekPanel.style.transform = "none";
+      peekPanel.style.transition = "none";
+      peekPanel.style.borderRadius = "999px";
+      peekPanel.style.boxShadow = "none";
+      peekPanel.style.opacity = "1";
+      peekPanel.style.pointerEvents = "auto";
+      peekPanel.removeAttribute("data-has-finished-animation");
+
+      // Keep webview hidden during morph to avoid re-paint jank
+      peekPanel.style.willChange = "left, top, width, height, border-radius";
+
+      peekContainer.classList.remove("island-minimized");
+      peekContainer.classList.add("open");
+
+      if (this.shouldScaleBackgroundPage()) {
+        document.body.classList.add("peek-open");
+      }
+      this.updatePeekTabVisibility();
+
+      // Morph animation: island → peek panel (dual animations for smooth proportions)
+      if (typeof peekPanel.animate === "function") {
+        const animW = peekPanel.animate(
+          [
+            { left: `${islandRect.left - containerLeft}px`, width: `${islandRect.width}px` },
+            { left: `${targetLeft}px`, width: `${targetWidth}px` },
+          ],
+          { duration: 380, easing: "cubic-bezier(0.22, 0.61, 0.36, 1)", fill: "forwards" }
+        );
+        const animH = peekPanel.animate(
+          [
+            {
+              top: `${islandRect.top - containerTop}px`,
+              height: `${islandRect.height}px`,
+              borderRadius: "999px",
+              opacity: 1,
+            },
+            {
+              top: `${targetTop}px`,
+              height: `${targetHeight}px`,
+              borderRadius: "calc(var(--radius) * 1.05)",
+              opacity: 1,
+            },
+          ],
+          { duration: 380, easing: "cubic-bezier(0.22, 0.61, 0.36, 1)", fill: "forwards" }
+        );
+        await Promise.allSettled([
+          animW.finished.catch(() => {}),
+          animH.finished.catch(() => {}),
+        ]);
+        animW.cancel();
+        animH.cancel();
+      }
+
+      peekPanel.style.willChange = "";
+
+      // Release all inline styles — CSS takes over
+      this.releasePeekPanelLayout(peekPanel);
+      peekPanel.setAttribute("data-has-finished-animation", "true");
+      // Restore webview visibility after morph completes
+      this.showPeekContent(peekPanel);
+      this.setPeekWebviewVisibility(peekPanel, true);
+      this.showSidebarControls(webviewId, peekPanel.querySelector(".peek-sidebar-controls"));
+      this.queuePeekLayoutSync();
+      this.focusPeekWebview(webviewId);
+      this.logOpenAction("island:restore:done", { webviewId });
     }
 
     buildUICaptureRect(linkRect) {
@@ -3541,9 +3952,10 @@
     }
 
     showSidebarControls(webviewId, thisElement) {
-      if (!thisElement || thisElement.childElementCount > 0) return;
+      if (!thisElement) return;
       thisElement.style.opacity = "1";
       thisElement.style.pointerEvents = "auto";
+      if (thisElement.childElementCount > 0) return;
       setTimeout(() => {
         thisElement.classList.add("peek-initial-expand");
         setTimeout(() => thisElement.classList.remove("peek-initial-expand"), 1200);
@@ -3573,11 +3985,18 @@
           content: this.iconUtils.translate,
           action: (event) => {
             const button = event?.currentTarget;
-            const isActive = button?.classList.contains("translate-active");
+            if (!button) return;
+            const isActive = button.classList.contains("translate-active");
             if (isActive) {
               button.classList.remove("translate-active");
-              this.goPeekBack(webviewId);
+              const originalUrl = button.dataset.originalUrl;
+              if (originalUrl) {
+                delete button.dataset.originalUrl;
+                this.navigatePeekToUrl(webviewId, originalUrl, { recordHistory: true });
+              }
             } else {
+              const url = this.getPeekUrl(webviewId);
+              if (url) button.dataset.originalUrl = url;
               button.classList.add("translate-active");
               this.translatePeek(webviewId);
             }
@@ -4340,22 +4759,25 @@
 
       if (!active) {
         // Background tab: the parallel tab is already a background tab.
-        if (data?.parallelTabId && await this.isParallelTabValid(webviewId)) {
-          await this.syncParallelTabUrl(webviewId);
-          const panelRect = data.divContainer
-            ?.querySelector(".peek-panel")
-            ?.getBoundingClientRect?.();
-          const targetRect = panelRect ? this.getBackgroundTabHandoffRect(panelRect) : null;
-          await this.animatePeekPanelToRect(webviewId, targetRect, {
-            durationMs: 440,
-            fadeOut: true,
-            borderRadius: "12px",
-            stage: "background-tab",
-          });
-          await this.disposePeek(webviewId, { animated: false, closeRuntimeTab: true, closeParallelTab: false });
-          return;
+        if (data?.parallelTabId) {
+          const tab = await this.resolveParallelTab(webviewId);
+          if (tab?.id) {
+            const panelRect = data.divContainer
+              ?.querySelector(".peek-panel")
+              ?.getBoundingClientRect?.();
+            const targetRect = panelRect ? this.getBackgroundTabHandoffRect(panelRect) : null;
+            await this.animatePeekPanelToRect(webviewId, targetRect, {
+              durationMs: 440,
+              fadeOut: true,
+              borderRadius: "12px",
+              stage: "background-tab",
+            });
+            await this.disposePeek(webviewId, { animated: false, closeRuntimeTab: true, closeParallelTab: false });
+            return;
+          }
+          // Invalid — null it so ensureParallelTab doesn't re-check
+          data.parallelTabId = null;
         }
-        // Fallback: parallel tab was closed or never created
         const result = await this.ensureParallelTab(webviewId, { active: false });
         const tabId = result?.tab?.id || null;
         if (tabId && !result?.usedFallback) {

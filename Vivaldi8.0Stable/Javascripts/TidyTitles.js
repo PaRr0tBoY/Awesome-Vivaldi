@@ -724,12 +724,12 @@ Write responses (but not JSON keys) in ${languageName}.`;
   const stackIdsRenaming = new Set();
   const stackRenameTimers = new Map();
   const stackLastRenameAt = new Map();
+  const stackLastRenamedMembers = new Map(); // stackId → Set<tabId> snapshot at last rename
   const tabToStack = new Map(); // tabId → stackId
   const stackToTabs = new Map(); // stackId → Set<tabId>
   const stackColors = new Map(); // stackId → groupColor
   const TIDY_TABS_STACK_OWNER = "TidyTabs";
   const STACK_RENAME_COOLDOWN_MS = 60 * 1000;
-  let dynamicRenameGap = 5;
 
   function parseVivExtData(raw) {
     if (!raw) return {};
@@ -776,6 +776,7 @@ Write responses (but not JSON keys) in ${languageName}.`;
     if (members && members.size === 0) {
       stackToTabs.delete(stackId);
       stackColors.delete(stackId);
+      stackLastRenamedMembers.delete(stackId);
     }
     return stackId;
   }
@@ -805,30 +806,6 @@ Write responses (but not JSON keys) in ${languageName}.`;
   function stackHasTidyTabsOwner(tabs, stackId) {
     return tabs.some((tab) => isTidyTabsManagedStackViv(parseVivExtData(tab.vivExtData), stackId));
   }
-
-  function loadDynamicRenameGap() {
-    try {
-      navigator.storage.getDirectory().then(root => {
-        root.getDirectoryHandle(".askonpage", { create: false }).then(dir => {
-          dir.getFileHandle("config.json", { create: false }).then(fh => {
-            fh.getFile().then(file => {
-              file.text().then(text => {
-                const cfg = JSON.parse(text);
-                const val = cfg?.mods?.tidySeries?.dynamicRenameGap;
-                if (Number.isFinite(val) && val >= 1) dynamicRenameGap = val;
-              });
-            });
-          });
-        });
-      });
-    } catch {}
-  }
-
-  loadDynamicRenameGap();
-  window.addEventListener("vivaldi-mod-config-updated", (e) => {
-    const val = e.detail?.mods?.tidySeries?.dynamicRenameGap;
-    if (Number.isFinite(val) && val >= 1) dynamicRenameGap = val;
-  });
 
   function applyStackShimmer(stackId, on) {
     const el = document.querySelector(`.tab-wrapper[data-id="tab-${stackId}"]`);
@@ -1070,7 +1047,7 @@ Return JSON: {"name":"the group name"}`;
     }
   }
 
-  function scheduleStackRename(stackId, { withColor = false, requireGap = true, requireMissingTitle = false, delay = 500 } = {}) {
+  function scheduleStackRename(stackId, { withColor = false, requireMissingTitle = false, delay = 500 } = {}) {
     if (!stackId) return;
     if (stackRenameTimers.has(stackId)) clearTimeout(stackRenameTimers.get(stackId));
 
@@ -1081,7 +1058,6 @@ Return JSON: {"name":"the group name"}`;
       if (elapsed < STACK_RENAME_COOLDOWN_MS) {
         scheduleStackRename(stackId, {
           withColor,
-          requireGap,
           requireMissingTitle,
           delay: STACK_RENAME_COOLDOWN_MS - elapsed,
         });
@@ -1089,7 +1065,7 @@ Return JSON: {"name":"the group name"}`;
       }
 
       if (stackRenamesPending.has(stackId) || stackIdsRenaming.has(stackId)) {
-        scheduleStackRename(stackId, { withColor, requireGap, requireMissingTitle, delay: 800 });
+        scheduleStackRename(stackId, { withColor, requireMissingTitle, delay: 800 });
         return;
       }
 
@@ -1098,12 +1074,26 @@ Return JSON: {"name":"the group name"}`;
       if (count < 2) return;
       if (stackHasTidyTabsOwner(tabs, stackId)) return;
       if (requireMissingTitle && tabs.some(tabHasFixedGroupTitle)) return;
-      if (requireGap && count % dynamicRenameGap !== 0) return;
+
+      // 超过 50% 的标签是上次重命名后新出现的，才触发重命名
+      const lastMembers = stackLastRenamedMembers.get(stackId);
+      if (lastMembers) {
+        const newCount = tabs.filter(t => !lastMembers.has(t.id)).length;
+        const changeRatio = newCount / count;
+        if (changeRatio <= 0.5) {
+          console.log(`[TidyTitles] Stack "${stackId}" only ${Math.round(changeRatio * 100)}% new tabs (≤50%), skipping.`);
+          return;
+        }
+        console.log(`[TidyTitles] Stack "${stackId}" ${Math.round(changeRatio * 100)}% new tabs (>50%), renaming.`);
+      }
 
       stackRenamesPending.add(stackId);
       try {
         const renamed = await renameStack(stackId, withColor, tabs);
-        if (renamed) stackLastRenameAt.set(stackId, Date.now());
+        if (renamed) {
+          stackLastRenameAt.set(stackId, Date.now());
+          stackLastRenamedMembers.set(stackId, new Set(tabs.map(t => t.id)));
+        }
       } finally {
         stackRenamesPending.delete(stackId);
       }
@@ -1117,7 +1107,7 @@ Return JSON: {"name":"the group name"}`;
 
     if (oldStackId) {
       removeTabFromStackIndex(tabId);
-      scheduleStackRename(oldStackId, { requireGap: true, delay: 600 });
+      scheduleStackRename(oldStackId, { delay: 600 });
     }
 
     if (!newStackId) return;
@@ -1128,11 +1118,11 @@ Return JSON: {"name":"the group name"}`;
     // A stack created by Vivaldi has no fixedGroupTitle yet. TidyTitles owns
     // only that stack and can name/color it immediately once it has 2+ tabs.
     if (!viv.fixedGroupTitle) {
-      scheduleStackRename(newStackId, { withColor: true, requireGap: false, requireMissingTitle: true });
+      scheduleStackRename(newStackId, { withColor: true, requireMissingTitle: true });
       return;
     }
 
-    scheduleStackRename(newStackId, { requireGap: true });
+    scheduleStackRename(newStackId);
   }
 
   function observeStacks() {
@@ -1152,7 +1142,7 @@ Return JSON: {"name":"the group name"}`;
 
     chrome.tabs.onRemoved.addListener((removedTabId) => {
       const stackId = removeTabFromStackIndex(removedTabId);
-      if (stackId) scheduleStackRename(stackId, { requireGap: true, delay: 600 });
+      if (stackId) scheduleStackRename(stackId, { delay: 600 });
     });
   }
 

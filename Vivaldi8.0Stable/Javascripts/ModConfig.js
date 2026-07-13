@@ -77,7 +77,6 @@
       hint: "Settings for Tidy Tabs, Tidy Titles, and related Tidy mods.",
       fields: [
         { key: "enableStackColor", label: "Enable Stack Coloring", type: "boolean", defaultValue: false, help: "When enabled, newly created and existing tab stacks will be automatically assigned random colors. When disabled, stacks remain uncolored." },
-        { key: "dynamicRenameGap", label: "Dynamic Rename Gap", type: "number", min: 1, step: 1, defaultValue: 3, help: "Rename the stack every N tabs added. Stack is always named on creation; subsequent renames happen each time this many tabs accumulate." },
       ],
     },
     workspaceThemeSwitcher: {

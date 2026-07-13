@@ -48,7 +48,7 @@ When a tab stack's member count changes, AI automatically generates a stack name
 
 | Property | Description |
 |----------|-------------|
-| Trigger condition | Stack member count reaches a multiple of `dynamicRenameGap` (default: triggers every 5 tabs) |
+| Trigger condition | Stack member count ≥ 2, and more than 50% of tabs are new since the last rename |
 | Cooldown protection | `STACK_RENAME_COOLDOWN_MS = 60s`, prevents frequent renaming |
 | TidyTabs exclusion | Skips renaming if the stack is managed by TidyTabs (`tidyStackOwner === "TidyTabs"`) |
 | Color assignment | When `enableStackColor` is on, selects from `STACK_COLORS` using weighted random, avoiding consecutive same colors |
@@ -64,7 +64,6 @@ When a tab stack's member count changes, AI automatically generates a stack name
 | `ai.temperature` | `0.1` | Temperature parameter |
 | `ai.maxTokens` | `500` | Maximum token count |
 | `tidySeries.enableStackColor` | -- | Whether to assign colors to tab stacks |
-| `tidySeries.dynamicRenameGap` | `5` | Tab count interval for stack renaming |
 
 Configuration is persisted via OPFS `.askonpage/config.json`, supporting a layered override structure with `ai.default` + `ai.overrides.tidyTitles`.
 
