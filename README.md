@@ -6,28 +6,6 @@
     <h1>Awesome Vivaldi</h1>
 <div align="center">
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/PaRr0tBoY/Awesome-Vivaldi)
-[![Vivaldi Forum](https://img.shields.io/badge/Vivaldi-Forum-red)](https://forum.vivaldi.net/topic/112064/modpack-community-essentials-mods-collection?_=1761221602450)
-![GitHub Repo stars](https://img.shields.io/github/stars/PaRr0tBoY/Awesome-Vivaldi)
-
-</div>
-    <p>A Curated Community Mod Pack for Vivaldi Browser</p>
-
-<div align="center">
-
-**English** | [简体中文](./Doc/READMEZH/READMEMAIN.md)
-
-</div>
-
-<!-- <img src="" width="32%" alt="home" />
-<img src="" width="32%" alt="home" />
-<img src="" width="32%" alt="home" />
-<br/>
-<img src="" width="96%" alt="home" />
-<br/> -->
-
-</div>
-
 <br/>
 
 ## Table of Contents
@@ -40,12 +18,11 @@
 
 ## Latest Updates
 
-| Showcase                                                | Mods                                                              |
-| --------------------------------------------------- | ----------------------------------------------------------------- |
-| ![VividToast](./Others/assets/toast.gif) | `VividToast.css` + `VividToast.js`                                                |
-| ![Mod Config Pane](./Others/assets/modconfig.png) | `ModConfig.js`                                                |
-| ![Restore Pinned Tab](./Others/assets/restorepinnedtab.gif) | `restorepinnedtab.js`                                                |
-
+| Showcase                                                    | Mods                                   |
+| ----------------------------------------------------------- | -------------------------------------- |
+| ![VividToast](./Others/assets/toast.gif)                    | `VividToast.css` + `VividToast.js` |
+| ![VividPeek](./Others/assets/VividPeekUpdate.gif)           | `VividPeek.js`                       |
+| ![Restore Pinned Tab](./Others/assets/restorepinnedtab.gif) | `restorepinnedtab.js`                |
 
 ## Introduction
 
@@ -55,23 +32,22 @@ This modpack is always updated with Vivaldi, [Vivaldi 8 latest](./Vivaldi8.0Stab
 
 ## Feature Showcase
 
-| Showcase                                             | Mods                                                              |
-| :--------------------------------------------------- | :---------------------------------------------------------------- |
-| ![VividPeek](./Others/assets/ArcPeek.gif)             | `VividPeek.css` + `VividPeek.js`                                      |
-| ![VividPlayer](./Others/assets/VividPlayer.gif)             | `VividPlayer.css` + `VividPlayer.js`                                      |
-| ![FavouriteTabs](./Others/assets/FavouriteTabs.gif) | `FavouriteTabs.css`                                               |
-| ![PeekTabbar](./Others/assets/PeekTabbar.gif)       | `PeekTabbar.css`                                                  |
-| ![Quietify](./Others/assets/Quietify.gif)           | `Quietify.css`                                                    |
-
+| Showcase                                            | Mods                                     |
+| :-------------------------------------------------- | :--------------------------------------- |
+| ![VividPeek](./Others/assets/ArcPeek.gif)           | `VividPeek.css` + `VividPeek.js`     |
+| ![VividPlayer](./Others/assets/VividPlayer.gif)     | `VividPlayer.css` + `VividPlayer.js` |
+| ![FavouriteTabs](./Others/assets/FavouriteTabs.gif) | `FavouriteTabs.css`                    |
+| ![PeekTabbar](./Others/assets/PeekTabbar.gif)       | `PeekTabbar.css`                       |
+| ![Quietify](./Others/assets/Quietify.gif)           | `Quietify.css`                         |
 
 ## Vivaldi Max(AI Features)
 
-| Showcase                                             | Mods                                                              |
-| :--------------------------------------------------- | :---------------------------------------------------------------- |
-| ![TidyTabs](./Others/assets/VivaldiMax.gif)       | `TidyTabs.css` + `TidyTabs.js` + `TidyTitles.js`                 |
-| ![TidyDownloads](./Others/assets/TidyDownloads.gif) | `TidyDownloads.js`                                                |
-| ![TidyAddress](./Others/assets/tidyaddress.gif) | `TidyAddress.js`                                                |
-| ![AskOnPage](./Others/assets/AskInPage.png) | `AskOnPage.js`                                                |
+| Showcase                                            | Mods                                                   |
+| :-------------------------------------------------- | :----------------------------------------------------- |
+| ![TidyTabs](./Others/assets/VivaldiMax.gif)         | `TidyTabs.css` + `TidyTabs.js` + `TidyTitles.js` |
+| ![TidyDownloads](./Others/assets/TidyDownloads.gif) | `TidyDownloads.js`                                   |
+| ![TidyAddress](./Others/assets/tidyaddress.gif)     | `TidyAddress.js`                                     |
+| ![AskOnPage](./Others/assets/AskInPage.png)         | `AskOnPage.js`                                       |
 
 ## Main File Structure
 
@@ -189,16 +165,16 @@ If not:
 
 Vivaldi exposes theme-aware CSS custom properties on `#browser`. These follow the user's active theme — values change with theme, so reference by `var()` name only.
 
-| Category | Key variables |
-|---|---|
-| **Background** | `--colorBg`, `--colorBgAlpha`, `--colorBgDark`/`--colorBgDarker`, `--colorBgLight`/`--colorBgLighter`, `--colorBgIntense`/`--colorBgIntenser`, `--colorBgInverse`, `--colorBgFaded` |
-| **Foreground** | `--colorFg`, `--colorFgIntense`, `--colorFgFaded`/`--colorFgFadedMore`/`--colorFgFadedMost` |
-| **Highlight** (primary accent) | `--colorHighlightBg`, `--colorHighlightFg`, `--colorHighlightBgDark`, `--colorHighlightBgAlpha` |
-| **Accent** (secondary) | `--colorAccentBg`, `--colorAccentFg`, `--colorAccentBorder`, `--colorAccentBgDark`/`--colorAccentBgDarker` |
-| **Border** | `--colorBorder`, `--colorBorderSubtle`, `--colorBorderIntense`, `--colorBorderDisabled` |
-| **Semantic** | `--colorSuccessBg`/`Fg`, `--colorWarningBg`/`Fg`, `--colorErrorBg`/`Fg` |
-| **Radius** | `--radius`, `--radiusHalf`, `--radiusCap`, `--radiusRound`, `--radiusRounded` |
-| **Other** | `--colorTabBar`, `--densityGap`, `--scrollbarWidth`, `--monospaceFont`, `--sansSerifFont`, `--uiZoomLevel` |
+| Category                             | Key variables                                                                                                                                                                                           |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Background**                 | `--colorBg`, `--colorBgAlpha`, `--colorBgDark`/`--colorBgDarker`, `--colorBgLight`/`--colorBgLighter`, `--colorBgIntense`/`--colorBgIntenser`, `--colorBgInverse`, `--colorBgFaded` |
+| **Foreground**                 | `--colorFg`, `--colorFgIntense`, `--colorFgFaded`/`--colorFgFadedMore`/`--colorFgFadedMost`                                                                                                   |
+| **Highlight** (primary accent) | `--colorHighlightBg`, `--colorHighlightFg`, `--colorHighlightBgDark`, `--colorHighlightBgAlpha`                                                                                                 |
+| **Accent** (secondary)         | `--colorAccentBg`, `--colorAccentFg`, `--colorAccentBorder`, `--colorAccentBgDark`/`--colorAccentBgDarker`                                                                                    |
+| **Border**                     | `--colorBorder`, `--colorBorderSubtle`, `--colorBorderIntense`, `--colorBorderDisabled`                                                                                                         |
+| **Semantic**                   | `--colorSuccessBg`/`Fg`, `--colorWarningBg`/`Fg`, `--colorErrorBg`/`Fg`                                                                                                                     |
+| **Radius**                     | `--radius`, `--radiusHalf`, `--radiusCap`, `--radiusRound`, `--radiusRounded`                                                                                                                 |
+| **Other**                      | `--colorTabBar`, `--densityGap`, `--scrollbarWidth`, `--monospaceFont`, `--sansSerifFont`, `--uiZoomLevel`                                                                                  |
 
 ---
 
