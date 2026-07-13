@@ -126,7 +126,7 @@
     chrome.tabs.get(tabId, (tab) => {
       if (chrome.runtime.lastError) return;
       let viv = {};
-      try { viv = tab.vivExtData ? JSON.parse(tab.vivExtData) : {}; } catch {}
+      try { viv = tab.vivExtData ? JSON.parse(tab.vivExtData) : {}; } catch (e) { console.warn("[TidyTitles] Failed to parse vivExtData:", e); }
       // Overwrite fixedTitle with raw title (shows something while AI generates)
       viv.fixedTitle = tab.title || "";
       chrome.tabs.update(tabId, { vivExtData: JSON.stringify(viv) }, () => {
@@ -735,7 +735,8 @@ Write responses (but not JSON keys) in ${languageName}.`;
     if (!raw) return {};
     try {
       return typeof raw === "string" ? JSON.parse(raw) : raw;
-    } catch {
+    } catch (e) {
+      console.warn("[TidyTitles] Failed to parse vivExtData:", e);
       return {};
     }
   }
@@ -989,10 +990,10 @@ Return JSON: {"name":"the group name"}`;
             let viv = {};
             try {
               viv = typeof tab.vivExtData === "string" ? JSON.parse(tab.vivExtData) : (tab.vivExtData || {});
-            } catch {}
-            
+            } catch (e) { console.warn("[TidyTitles] Failed to parse vivExtData:", e); }
+
             Object.assign(viv, fields);
-            
+
             chrome.tabs.update(tabId, { vivExtData: JSON.stringify(viv) }, () => {
               if (chrome.runtime.lastError) {
                 console.error("[TidyTitles] [chrome.tabs.update] Error:", chrome.runtime.lastError.message);

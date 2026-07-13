@@ -55,6 +55,11 @@
   let domObserver = null;
   let resizeListening = false;
   let lastPositionLogKey = "";
+  let _vividToastUpdating = false;
+  let _suppressTabToast = false;
+  window.addEventListener("vmod-suppress-tab-toast", (e) => {
+    _suppressTabToast = e.detail?.suppress === true;
+  });
   const observedPositionTargets = new WeakSet();
   const timeouts = new Map();
 
@@ -192,6 +197,8 @@
   }
 
   function refreshPositionObservers() {
+    if (_vividToastUpdating) return;
+    _vividToastUpdating = true;
     const browser = document.getElementById("browser");
     const tabbar = document.getElementById("tabs-tabbar-container");
     observePositionTarget(browser);
@@ -199,6 +206,7 @@
     observePositionTarget(tabbar?.closest(".auto-hide-wrapper"));
     if (container) ensureContainer();
     updateToastPosition();
+    _vividToastUpdating = false;
   }
 
   function detectPosition() {
@@ -383,7 +391,7 @@
 
   function showBackgroundTabToast(tab) {
     if (!tab?.id || tab.active) return;
-    if (window.__vmodSuppressTabToast) return;
+    if (_suppressTabToast) return;
     createToast(t("backgroundTabOpened"), {
       id: FEATURE_CONFIG.backgroundTabToastId,
       module: "Tabs",

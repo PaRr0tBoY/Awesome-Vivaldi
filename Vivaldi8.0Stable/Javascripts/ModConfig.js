@@ -13,6 +13,7 @@
   const SECTION_ID = "mod-config-section";
   const STORAGE_DIR = ".askonpage";
   const CONFIG_FILE = "config.json";
+  const BACKUP_FILE = "config.json.bak";
   const COMMON_KEY = "default";
   const EXPORT_FORMAT = "vivaldi-mod-config";
   const EXPORT_FORMAT_VERSION = 1;
@@ -364,12 +365,33 @@
       const file = await fileHandle.getFile();
       return mergeConfig(JSON.parse(await file.text()));
     } catch (_error) {
-      return cloneDefaultConfig();
+      // Try recovery from backup
+      try {
+        const dir = await getConfigDir();
+        const backupHandle = await dir.getFileHandle(BACKUP_FILE, { create: false });
+        const backupFile = await backupHandle.getFile();
+        const recovered = mergeConfig(JSON.parse(await backupFile.text()));
+        console.warn("[ModConfig] Recovered config from backup file");
+        // Restore the main config from backup (fire-and-forget: return recovered regardless)
+        writeConfig(recovered).catch((err) => console.error("[ModConfig] Recovery write failed:", err));
+        return recovered;
+      } catch (_) {
+        return cloneDefaultConfig();
+      }
     }
   }
 
   async function writeConfig(config) {
     const dir = await getConfigDir();
+    // Backup before overwrite — prevents total loss on write failure
+    try {
+      const existingHandle = await dir.getFileHandle(CONFIG_FILE, { create: false });
+      const backupHandle = await dir.getFileHandle(BACKUP_FILE, { create: true });
+      const existingFile = await existingHandle.getFile();
+      const backupWritable = await backupHandle.createWritable();
+      await backupWritable.write(await existingFile.arrayBuffer());
+      await backupWritable.close();
+    } catch (_) { /* no existing config to backup */ }
     const fileHandle = await dir.getFileHandle(CONFIG_FILE, { create: true });
     const writable = await fileHandle.createWritable();
     await writable.write(JSON.stringify(config, null, 2));

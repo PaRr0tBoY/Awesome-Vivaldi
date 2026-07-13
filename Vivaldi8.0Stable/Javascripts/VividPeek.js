@@ -180,6 +180,10 @@
       );
     }
 
+    _dispatchFlag(eventName, key, value) {
+      window.dispatchEvent(new CustomEvent(eventName, { detail: { [key]: value } }));
+    }
+
     logOpenAction(stage, details = {}) {
       if (!PEEK_DEBUG_CONFIG.logOpenActions && window.ArcPeekDebug !== this) return;
       try {
@@ -708,7 +712,9 @@
       data.closingMode =
         data.previewAssetUrl && data.previewAssetTrusted ? "preview" : "live";
       if (data.closingMode !== "preview") {
-        this.showPeekContent(panel);
+        // Hide webview during close — showing a full webpage shrink to link size is jarring.
+        // Panel background or preview screenshot provides the closing surface instead.
+        this.suppressPeekContentForClosing(panel);
       }
       container.classList.remove("open");
       container.classList.add("closing");
@@ -977,7 +983,7 @@
         const finish = (result) => {
           if (settled) return;
           settled = true;
-          window.__arcPeekOpening = false;
+          this._dispatchFlag("arcpeek-state-changed", "opening", false);
           chrome.tabs.onRemoved.removeListener(handleRemoved);
           resolve(result);
         };
@@ -988,7 +994,7 @@
         };
 
         chrome.tabs.onRemoved.addListener(handleRemoved);
-        window.__arcPeekOpening = true;
+        this._dispatchFlag("arcpeek-state-changed", "opening", true);
         chrome.tabs.remove(runtimeTab.id, () => {
           if (chrome.runtime.lastError) {
             finish("error");
@@ -1425,7 +1431,7 @@
       webview.style.pointerEvents = "none";
       const currentData = this.webviews.get(webviewId);
       if (currentData) currentData.pendingUrl = pendingUrl;
-      window.__arcPeekOpening = true;
+      this._dispatchFlag("arcpeek-state-changed", "opening", true);
       const runtimePromise = this.createPeekRuntimeTab(webviewId, pendingUrl);
 
       const updateCurrentPeekUrl = (event, options = {}) => {
@@ -1613,7 +1619,7 @@
       peekContainer.appendChild(peekPanel);
 
       document.querySelector("#browser").appendChild(peekContainer);
-      window.__arcPeekOpening = false;
+      this._dispatchFlag("arcpeek-state-changed", "opening", false);
       peekContainer.tabIndex = -1;
       window.setTimeout(() => this.focusPeekWebview(webviewId), 0);
 
@@ -2087,12 +2093,12 @@
         windowId,
       });
 
-      window.__vmodSuppressTabToast = true;
+      this._dispatchFlag("vmod-suppress-tab-toast", "suppress", true);
       let tab;
       try {
         tab = await this.createTab(createProperties);
       } finally {
-        window.__vmodSuppressTabToast = false;
+        this._dispatchFlag("vmod-suppress-tab-toast", "suppress", false);
       }
       const error = chrome.runtime.lastError?.message || "";
       this.logOpenAction("runtime-tab:create:done", {
@@ -2239,12 +2245,12 @@
       }
 
       this.logOpenAction("parallel-tab:create:start", { webviewId, url });
-      window.__vmodSuppressTabToast = true;
+      this._dispatchFlag("vmod-suppress-tab-toast", "suppress", true);
       let tab;
       try {
         tab = await this.createTab(createProperties);
       } finally {
-        window.__vmodSuppressTabToast = false;
+        this._dispatchFlag("vmod-suppress-tab-toast", "suppress", false);
       }
 
       const data = this.webviews.get(webviewId);
@@ -2329,12 +2335,12 @@
       }
 
       // Fallback 2: create a brand-new tab
-      window.__vmodSuppressTabToast = true;
+      this._dispatchFlag("vmod-suppress-tab-toast", "suppress", true);
       let tab;
       try {
         tab = await this.createTab({ url: currentUrl, active });
       } finally {
-        window.__vmodSuppressTabToast = false;
+        this._dispatchFlag("vmod-suppress-tab-toast", "suppress", false);
       }
       this.logOpenAction("parallel-tab:fallback-create", {
         webviewId,

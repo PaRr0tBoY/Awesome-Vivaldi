@@ -146,8 +146,9 @@
     listJSFiles().then(function (files) {
       if (files.length > 0) {
         loadAllJS(files);
+      } else {
+        log("No JS mods found");
       }
-      log("Awesome Vivaldi mod loader ready");
     });
   }
 

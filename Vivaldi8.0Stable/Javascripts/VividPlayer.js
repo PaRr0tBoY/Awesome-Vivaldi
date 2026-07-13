@@ -1883,7 +1883,7 @@
     });
 
     window.addEventListener('message', (event) => {
-      if (event.source !== window || !event.data || event.data.type !== messageType) return;
+      if (event.source !== window || event.origin !== window.location.origin || !event.data || event.data.type !== messageType) return;
       chrome.runtime.sendMessage(event.data.data);
     });
   }
@@ -2778,6 +2778,7 @@
     window.addEventListener('message', (event) => {
       if (
         event.source !== window ||
+        event.origin !== window.location.origin ||
         !event.data ||
         event.data.type !== messageType + '-internal' ||
         !event.data.data?.action

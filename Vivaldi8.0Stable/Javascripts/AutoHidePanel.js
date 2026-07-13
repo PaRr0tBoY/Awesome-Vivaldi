@@ -56,7 +56,7 @@
       const fileHandle = await dir.getFileHandle(MOD_CONFIG_FILE, { create: false });
       const file = await fileHandle.getFile();
       applySharedModConfig(JSON.parse(await file.text()));
-    } catch (_error) {}
+    } catch (_error) { console.warn("[AutoHidePanel] Failed to load mod config:", _error); }
   }
 
   await loadSharedModConfig();

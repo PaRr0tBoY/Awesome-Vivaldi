@@ -60,7 +60,7 @@
       const file = await fileHandle.getFile();
       const raw = JSON.parse(await file.text());
       applySwitcherConfig(raw);
-    } catch (_error) {}
+    } catch (_error) { console.warn("[WorkspaceThemeSwitcher] Failed to load config:", _error); }
   }
 
   async function saveDefaultThemeId(themeId) {
@@ -70,7 +70,7 @@
       const existingHandle = await getConfigFileHandle(false);
       const file = await existingHandle.getFile();
       raw = JSON.parse(await file.text());
-    } catch (_error) {}
+    } catch (_error) { console.warn("[WorkspaceThemeSwitcher] Failed to read config:", _error); }
 
     raw.schemaVersion = Math.max(3, Number(raw.schemaVersion) || 3);
     raw.ai = raw.ai && typeof raw.ai === "object" ? raw.ai : { default: {}, overrides: {} };
@@ -321,7 +321,16 @@
       attributes: true,
     });
 
-    setInterval(applyThemeForCurrentWorkspace, 1200);
+    // React to workspace list changes (TabManager.js validates this API is reliable)
+    if (vivaldi?.prefs?.onChanged) {
+      vivaldi.prefs.onChanged.addListener((event) => {
+        if (event?.path === "vivaldi.workspaces.list") scheduleApply();
+      });
+    }
+
+    // Safety-net polling (30s) for cases Vivaldi events miss a workspace switch.
+    // Primary switching is event-driven via chrome.tabs and MutationObserver above.
+    setInterval(applyThemeForCurrentWorkspace, 30000);
     applyThemeForCurrentWorkspace();
   }
 

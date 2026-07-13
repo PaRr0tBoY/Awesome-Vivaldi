@@ -8770,7 +8770,7 @@
       if (turnData.activeCmd) {
         const cmdTag = document.createElement('div');
         cmdTag.className = 'ask-msg-cmd-tag';
-        cmdTag.innerHTML = '<span>◔</span><span>' + turnData.activeCmd + '</span>';
+        cmdTag.innerHTML = '<span>◔</span><span>' + escapeHtml(turnData.activeCmd) + '</span>';
         body.appendChild(cmdTag);
       }
       turnData.sequenceParts.forEach((part) => {
