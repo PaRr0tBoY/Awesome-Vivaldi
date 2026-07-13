@@ -30,6 +30,7 @@ cleanup() {
     [ -n "$TEMP_DIR" ] && [ -d "$TEMP_DIR" ] && rm -rf "$TEMP_DIR"
 }
 trap cleanup EXIT
+EXIT_REQUESTED=0
 
 is_local_mode() { [ -n "$REPO_ROOT" ] && [ -d "$REPO_ROOT/Vivaldi8.0Stable" ]; }
 
@@ -393,7 +394,7 @@ exit_installer() {
     clear_content
     printf "\033[2J\033[H"
     tput cnorm 2>/dev/null || true
-    exit 0
+    EXIT_REQUESTED=1
 }
 
 flush_input() { while read -rsn1 -t 0.01 _ 2>/dev/null; do :; done; }
@@ -490,45 +491,73 @@ build_hint() {
 find_mod_source() {
     if is_local_mode; then
         SOURCE_DIR="$REPO_ROOT/Vivaldi8.0Stable"
-        return
+        return 0
     fi
     echo "$(tr source_downloading)"
-    TEMP_DIR="$(mktemp -d)"
+    TEMP_DIR="${TMPDIR:-/tmp}/awesome-vivaldi-installer"
+    mkdir -p "$TEMP_DIR" 2>/dev/null || { TEMP_DIR="$(mktemp -d)"; }
     local repo_raw="https://raw.githubusercontent.com/PaRr0tBoY/Awesome-Vivaldi/main"
-    local repo_api="https://api.github.com/repos/PaRr0tBoY/Awesome-Vivaldi/contents"
     local css_dir="$TEMP_DIR/CSS"; local js_dir="$TEMP_DIR/Javascripts"
     mkdir -p "$css_dir" "$js_dir"
 
-    local api_json
-    api_json="$(curl -fsSL "$repo_api/Vivaldi8.0Stable/CSS" 2>/dev/null)"
-    if [ -n "$api_json" ]; then
-        echo "$api_json" | grep -o '"name":"[^"]*\.css"' | sed 's/"name":"//;s/"//' | while read -r fname; do
-            [ -z "$fname" ] && continue
-            curl -fsSL -o "$css_dir/$fname" "$repo_raw/Vivaldi8.0Stable/CSS/$fname" &
-        done; wait
-    fi
-    api_json="$(curl -fsSL "$repo_api/Vivaldi8.0Stable/Javascripts" 2>/dev/null)"
-    if [ -n "$api_json" ]; then
-        echo "$api_json" | grep -o '"name":"[^"]*\.js"' | sed 's/"name":"//;s/"//' | while read -r fname; do
-            [ -z "$fname" ] && continue
-            curl -fsSL -o "$js_dir/$fname" "$repo_raw/Vivaldi8.0Stable/Javascripts/$fname" &
-        done; wait
-    fi
-    curl -fsSL -o "$TEMP_DIR/injectMods.js" "$repo_raw/injectMods.js" 2>/dev/null || true
+    # File manifests (keep in sync with Vivaldi8.0Stable/)
+    local css_files=(
+        "AdaptiveBF.css" "BetterAnimation.css" "BtnHoverAnime.css" "DownloadPanel.css"
+        "Extensions.css" "FavouriteTabs.css" "FindInPage.css" "InteractionFeedback.css"
+        "LineBreak.css" "PeekTabbar.css" "PinnedTabRestore.css" "Quietify.css"
+        "RemoveClutter.css" "TabsTrail.css" "TidyTabs.css" "VivalArc.css"
+        "VividPeek.css" "VividPlayer.css" "VividQC.css" "VividToast.css"
+    )
+    local js_files=(
+        "AskOnPage.js" "AutoHidePanel.js" "EasyFiles.js" "InteractionFeedback.js"
+        "ModConfig.js" "MonochromeIcons.js" "PinnedTabRestore.js" "QuickCapture.js"
+        "TabManager.js" "TidyAddress.js" "TidyDownloads.js" "TidyTabs.js"
+        "TidyTitles.js" "VividPeek.js" "VividPlayer.js" "VividToast.js"
+        "WorkspaceThemeSwitcher.js"
+    )
 
-    if [ -z "$(ls -A "$css_dir" 2>/dev/null)" ] || [ -z "$(ls -A "$js_dir" 2>/dev/null)" ]; then
-        echo "Falling back to full zip download..."
-        local zip_path="$TEMP_DIR/repo.zip"
-        curl -fsSL -o "$zip_path" "https://github.com/PaRr0tBoY/Awesome-Vivaldi/archive/refs/heads/main.zip" || { echo "$(tr error_download)"; exit 1; }
-        echo "$(tr source_extracting)"
-        unzip -qo "$zip_path" -d "$TEMP_DIR"
-        local extracted; extracted="$(find "$TEMP_DIR" -maxdepth 1 -type d -name 'Awesome-Vivaldi-*' | head -1)"
-        [ -z "$extracted" ] && { echo "$(tr error_extract)"; exit 1; }
-        SOURCE_DIR="$extracted/Vivaldi8.0Stable"
-    else
-        SOURCE_DIR="$TEMP_DIR"
+    # Check cache — all files present AND fresh (< 1 hour)
+    local all_present=1; local f
+    for f in "${css_files[@]}"; do [ -f "$css_dir/$f" ] || { all_present=0; break; }; done
+    if [ "$all_present" = "1" ]; then
+        for f in "${js_files[@]}"; do [ -f "$js_dir/$f" ] || { all_present=0; break; }; done
     fi
+    [ "$all_present" = "1" ] && [ -f "$TEMP_DIR/injectMods.js" ] || all_present=0
+    [ "$all_present" = "1" ] && [ -f "$TEMP_DIR/Import.css" ] || all_present=0
+    if [ "$all_present" = "1" ]; then
+        if [ -z "$(find "$TEMP_DIR/injectMods.js" -mmin +60 2>/dev/null)" ]; then
+            echo "Using cached mod files (from previous download)..."
+            SOURCE_DIR="$TEMP_DIR"
+            return 0
+        fi
+    fi
+
+    # Download from hardcoded manifests (no GitHub API, no rate limits)
+    for f in "${css_files[@]}"; do
+        curl -fsSL -o "$css_dir/$f" "$repo_raw/Vivaldi8.0Stable/CSS/$f" || { echo "$(tr error_download)"; return 1; }
+    done
+    for f in "${js_files[@]}"; do
+        curl -fsSL -o "$js_dir/$f" "$repo_raw/Vivaldi8.0Stable/Javascripts/$f" || { echo "$(tr error_download)"; return 1; }
+    done
+    curl -fsSL -o "$TEMP_DIR/injectMods.js" "$repo_raw/injectMods.js" || { echo "$(tr error_download)"; return 1; }
+    # Import.css lives at repo root, not in CSS/ subdir
+    curl -fsSL -o "$TEMP_DIR/Import.css" "$repo_raw/Vivaldi8.0Stable/Import.css" || { echo "$(tr error_download)"; return 1; }
+
+    SOURCE_DIR="$TEMP_DIR"
     echo "$(tr source_done)"
+}
+
+# Lazy-load mod source — downloads only on first call, caches for subsequent use
+CACHED_SOURCE_DIR=""
+ensure_mod_source() {
+    if [ -n "$CACHED_SOURCE_DIR" ]; then
+        SOURCE_DIR="$CACHED_SOURCE_DIR"
+        return 0
+    fi
+    find_mod_source || return 1
+    CACHED_SOURCE_DIR="$SOURCE_DIR"
+    scan_mods "$SOURCE_DIR"
+    return 0
 }
 
 # ============================================================
@@ -631,7 +660,7 @@ is_installed() { [ -d "$1/user_mods" ]; }
 select_single() {
     local title_key="$1"; local allow_left="$2"; shift 2
     local items=("$@"); local n=${#items[@]}
-    [ "$n" -eq 0 ] && { echo "$(tr target_none_found)"; exit 1; }
+    [ "$n" -eq 0 ] && { echo "$(tr target_none_found)"; return 1; }
     [ "$n" -eq 1 ] && { echo "0"; return; }
     local cursor=0; local done=0; local e="\033"
     while [ "$done" -eq 0 ]; do
@@ -1361,13 +1390,9 @@ do_uninstall() {
 main() {
     show_banner; tput civis 2>/dev/null || true
 
-    find_mod_source
-    [ ! -d "$SOURCE_DIR" ] && { echo "$(tr error_no_source)"; exit 1; }
-    scan_mods "$SOURCE_DIR"
-
     # Discover Vivaldi installations
     local all_installs; all_installs="$(find_vivaldi_installations)"
-    [ -z "$all_installs" ] && { echo ""; echo "$(tr target_none_found)"; exit 1; }
+    [ -z "$all_installs" ] && { echo ""; echo "$(tr target_none_found)"; return 1; }
 
     # Build target items
     local target_items=()
@@ -1381,6 +1406,7 @@ main() {
     local selected_idx; selected_idx="$(select_single "target_title" 0 "${target_items[@]}")"
     [ "$selected_idx" = "0" ] && [ "$selected_idx" != "0" ] && exit_installer  # __BACK__ guard
     [ -z "$selected_idx" ] && exit_installer
+    [ "$EXIT_REQUESTED" = 1 ] && return
 
     # Extract selected install
     local idx=0; local selected_app=""; local selected_vivaldi_dir=""; local selected_display=""
@@ -1408,8 +1434,8 @@ main() {
             local action; action="$(entry_menu 1)"
             local result=""
             case "$action" in
-                manage) manage_flow "$SOURCE_DIR" "$vivaldi_dir" "$app_path"; result="done" ;;
-                update) do_update "$SOURCE_DIR" "$vivaldi_dir"; result="done" ;;
+                manage) ensure_mod_source || break; manage_flow "$SOURCE_DIR" "$vivaldi_dir" "$app_path"; result="done" ;;
+                update) ensure_mod_source || break; do_update "$SOURCE_DIR" "$vivaldi_dir"; result="done" ;;
                 uninstall) do_uninstall "$vivaldi_dir" "$app_path" ;;
                 exit) exit_installer ;;
                 back)
@@ -1425,6 +1451,7 @@ main() {
                     ;;
             esac
             [ -n "$result" ] && break
+            [ "$EXIT_REQUESTED" = 1 ] && break
         done
         post_install "$app_path"
 
@@ -1467,7 +1494,7 @@ main() {
         else
             local action; action="$(entry_menu 0)"
             if [ "$action" = "install" ]; then
-                install_flow "$SOURCE_DIR" "$vivaldi_dir" "$app_path" "" ""
+                ensure_mod_source || return 1; install_flow "$SOURCE_DIR" "$vivaldi_dir" "$app_path" "" ""
                 post_install "$app_path"
             else exit_installer; fi
         fi
@@ -1475,7 +1502,7 @@ main() {
         # --- Fresh install ---
         local action; action="$(entry_menu 0)"
         if [ "$action" = "install" ]; then
-            install_flow "$SOURCE_DIR" "$vivaldi_dir" "$app_path" "" ""
+            ensure_mod_source || return 1; install_flow "$SOURCE_DIR" "$vivaldi_dir" "$app_path" "" ""
             post_install "$app_path"
         else exit_installer; fi
     fi
