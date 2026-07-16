@@ -1,10 +1,32 @@
-<img src="./Others/assets/IMG5682.png" alt="" width="200" />
+<div align="center">
+    <img width="200" height="200" src="./Others/assets/IMG5682.png">
+</div>
 
-# Awesome Vivaldi
-
-![Ask DeepWiki](https://deepwiki.com/badge.svg)
-![Vivaldi Forum](https://img.shields.io/badge/Vivaldi-Forum-red)
+<div align="center">
+    <h1>Awesome Vivaldi</h1>
+<div align="center">
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/PaRr0tBoY/Awesome-Vivaldi)
+[![Vivaldi Forum](https://img.shields.io/badge/Vivaldi-Forum-red)](https://forum.vivaldi.net/topic/112064/modpack-community-essentials-mods-collection?_=1761221602450)
 ![GitHub Repo stars](https://img.shields.io/github/stars/PaRr0tBoY/Awesome-Vivaldi)
+
+</div>
+    <p>A Curated Community Mod Pack for Vivaldi Browser</p>
+
+<div align="center">
+**English** | [简体中文](./Doc/READMEZH/READMEMAIN.md)
+
+</div>
+
+<!-- <img src="" width="32%" alt="home" />
+<img src="" width="32%" alt="home" />
+<img src="" width="32%" alt="home" />
+<br/>
+<img src="" width="96%" alt="home" />
+<br/> -->
+
+</div>
+
+<br/>
 
 ## Table of Contents
 
@@ -120,7 +142,8 @@ Install https://github.com/PaRr0tBoY/Awesome-Vivaldi for me.
 | `VividToast.js`          | [Toast notification logic](./Doc/mod/VividToast.md) *(pairs with* `VividToast.css`*)* |
 
 
-## Community Mods
+<details>
+<summary><h2>Community Mods</h2></summary>
 
 ### Community JS Mods And CSS Included In This Modpack
 
@@ -201,7 +224,9 @@ Install https://github.com/PaRr0tBoY/Awesome-Vivaldi for me.
 
 > Part of codes in this repo is used.
 
+</details>
+
 ---
 
-![Alt](https://api.star-history.com/svg?repos=PaRr0tBoY/Awesome-Vivaldi&type=Timeline&theme=dark)
+[![](https://api.star-history.com/svg?repos=PaRr0tBoY/Awesome-Vivaldi&type=Timeline&theme=dark)](https://github.com/PaRr0tBoY/Awesome-Vivaldi)
 ![Alt](https://repobeats.axiom.co/api/embed/4a30f8a4b398404c3c773f672d36c2b52f7865c3.svg "Repobeats analytics image")

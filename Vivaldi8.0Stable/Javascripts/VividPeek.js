@@ -1364,6 +1364,7 @@
         relatedTabId: null,
         relatedPanelId: null,
         parallelTabId: null,
+        _hiddenWorkspaceId: null,
         isMinimized: false,
         islandElement: null,
         handoffInProgress: false,
@@ -2235,16 +2236,21 @@
     // ---- Parallel tab helpers ----
 
     async createParallelTab(webviewId, url) {
-      const windowId = this.getVivaldiWindowId();
-      const createProperties = {
-        url,
-        active: false,
-      };
-      if (windowId !== null) {
-        createProperties.windowId = windowId;
+      const mainWindowId = this.getVivaldiWindowId();
+      const data = this.webviews.get(webviewId);
+
+      // Attempt 1: Create in a hidden workspace so the tab never appears
+      // in the user's tab bar. When needed, reassign to the active workspace.
+      if (mainWindowId !== null) {
+        const hiddenTab = await this._tryCreateWorkspaceHiddenTab(webviewId, url, mainWindowId);
+        if (hiddenTab) return hiddenTab;
       }
 
-      this.logOpenAction("parallel-tab:create:start", { webviewId, url });
+      // Fallback: regular background tab in main window.
+      const createProperties = { url, active: false };
+      if (mainWindowId !== null) createProperties.windowId = mainWindowId;
+
+      this.logOpenAction("parallel-tab:create:start", { webviewId, url, via: "fallback" });
       this._dispatchFlag("vmod-suppress-tab-toast", "suppress", true);
       let tab;
       try {
@@ -2253,9 +2259,9 @@
         this._dispatchFlag("vmod-suppress-tab-toast", "suppress", false);
       }
 
-      const data = this.webviews.get(webviewId);
       if (data && tab?.id) {
         data.parallelTabId = tab.id;
+        data._hiddenWorkspaceId = null;
         this.logOpenAction("parallel-tab:create:done", {
           webviewId,
           tabId: tab.id,
@@ -2264,6 +2270,66 @@
         });
       }
       return tab;
+    }
+
+    async _tryCreateWorkspaceHiddenTab(webviewId, url, mainWindowId) {
+      const data = this.webviews.get(webviewId);
+      if (!data) return null;
+      if (typeof vivaldi?.prefs?.get !== "function") return null;
+
+      try {
+        // Read active workspace ID from the current tab.
+        let activeWorkspaceId = null;
+        try {
+          const [activeTab] = await this.queryTabs({ active: true, currentWindow: true });
+          if (activeTab?.id) {
+            const tab = await this.getTab(activeTab.id);
+            const viv = this.parseVivExtData(tab);
+            activeWorkspaceId = viv.workspaceId;
+          }
+        } catch (_) {}
+
+        // Pick a non-active existing workspace to stash the parallel tab in.
+        // No temporary workspace is created — we reuse one the user already
+        // has, so there's nothing to clean up afterward.
+        const wsData = await vivaldi.prefs.get("vivaldi.workspaces.list");
+        const workspaces = wsData?.value || [];
+        const stashWs = workspaces
+          .filter((w) => w.id !== activeWorkspaceId)
+          .pop(); // Last non-active workspace — least likely to be viewed
+
+        if (!stashWs?.id) return null; // Need at least one other workspace
+
+        this.logOpenAction("parallel-tab:hidden-ws:start", {
+          webviewId, url, stashWsId: stashWs.id, activeWorkspaceId,
+        });
+        this._dispatchFlag("vmod-suppress-tab-toast", "suppress", true);
+        let tab;
+        try {
+          tab = await this.createTab({
+            url,
+            active: false,
+            windowId: mainWindowId,
+            vivExtData: JSON.stringify({ workspaceId: stashWs.id }),
+          });
+        } finally {
+          this._dispatchFlag("vmod-suppress-tab-toast", "suppress", false);
+        }
+
+        if (tab?.id) {
+          data.parallelTabId = tab.id;
+          data._hiddenWorkspaceId = stashWs.id; // Still useful: we need to know this tab IS hidden
+          this.logOpenAction("parallel-tab:hidden-ws:done", {
+            webviewId, tabId: tab.id, stashWsId: stashWs.id, activeWorkspaceId,
+            error: chrome.runtime.lastError?.message || "",
+          });
+          return tab;
+        }
+      } catch (err) {
+        console.warn("[ArcPeek] workspace hidden tab failed:", err?.message || err);
+      }
+
+      return null;
     }
 
     async resolveParallelTab(webviewId) {
@@ -2291,12 +2357,76 @@
     async closeParallelTab(webviewId) {
       const data = this.webviews.get(webviewId);
       const parallelTabId = data?.parallelTabId;
-      if (!parallelTabId) return;
-      try {
-        await this.removeTab(parallelTabId);
-      } catch (_) {}
+      if (parallelTabId) {
+        try {
+          await this.removeTab(parallelTabId);
+        } catch (_) {}
+      }
       if (data) {
         data.parallelTabId = null;
+        data._hiddenWorkspaceId = null;
+      }
+    }
+
+    async _moveParallelTabToMainWindow(webviewId) {
+      const data = this.webviews.get(webviewId);
+      const tabId = data?.parallelTabId;
+      const hiddenWsId = data?._hiddenWorkspaceId;
+      if (!tabId || !hiddenWsId) {
+        console.warn("[ArcPeek:diag] _moveParallelTabToMainWindow SKIP", { tabId, hiddenWsId });
+        return;
+      }
+
+      try {
+        // Get the current active workspace ID from tab vivExtData.
+        let targetWorkspaceId = null;
+        try {
+          const [activeTab] = await this.queryTabs({ active: true, currentWindow: true });
+          if (activeTab?.id) {
+            const tab = await this.getTab(activeTab.id);
+            const viv = this.parseVivExtData(tab);
+            targetWorkspaceId = viv.workspaceId;
+          }
+        } catch (_) {}
+
+        // Read current vivExtData and reassign workspace.
+        const tab = await this.getTab(tabId);
+        if (chrome.runtime.lastError || !tab?.id) throw new Error("tab missing");
+
+        const viv = this.parseVivExtData(tab);
+        // Use ?? null to ensure JSON.stringify preserves the key.
+        // JSON.stringify omits undefined values, which Vivaldi treats as
+        // "don't change" rather than "clear this binding".
+        viv.workspaceId = targetWorkspaceId ?? null;
+        await this.updateTab(tabId, { vivExtData: JSON.stringify(viv) });
+        if (chrome.runtime.lastError) throw chrome.runtime.lastError;
+
+        // Position the tab right after the source tab so it feels like the
+        // peek "became" this tab — same behaviour as the old parallel tab.
+        const sourceTabId = data?.tabId;
+        if (sourceTabId != null) {
+          try {
+            const sourceTab = await this.getTab(sourceTabId);
+            if (sourceTab?.index != null) {
+              await new Promise((resolve) => {
+                chrome.tabs.move(tabId, { index: sourceTab.index + 1 }, resolve);
+              });
+            }
+          } catch (_) {}
+        }
+
+        // No workspace cleanup needed — the stash workspace was an existing
+        // user workspace, not something we created.
+
+        if (data) data._hiddenWorkspaceId = null;
+        this.logOpenAction("parallel-tab:moved-to-active-ws", {
+          webviewId, tabId, targetWorkspaceId: targetWorkspaceId || "(default)",
+        });
+      } catch (_) {
+        if (data) {
+          data.parallelTabId = null;
+          data._hiddenWorkspaceId = null;
+        }
       }
     }
 
@@ -2307,6 +2437,7 @@
 
       // Best case: parallel tab exists and is valid
       if (data?.parallelTabId) {
+        await this._moveParallelTabToMainWindow(webviewId);
         const tab = await this.resolveParallelTab(webviewId);
         if (tab?.id) {
           if (active) {
@@ -2321,6 +2452,7 @@
         }
         // Invalid — null it so cascading fallbacks don't re-check
         data.parallelTabId = null;
+        data._hiddenWorkspaceId = null;
       }
 
       // Fallback 1: try detaching the runtime tab into the tab strip
@@ -4764,8 +4896,9 @@
       const data = this.webviews.get(webviewId);
 
       if (!active) {
-        // Background tab: the parallel tab is already a background tab.
+        // Background tab: the parallel tab may be in a background window.
         if (data?.parallelTabId) {
+          await this._moveParallelTabToMainWindow(webviewId);
           const tab = await this.resolveParallelTab(webviewId);
           if (tab?.id) {
             const panelRect = data.divContainer
@@ -4783,6 +4916,7 @@
           }
           // Invalid — null it so ensureParallelTab doesn't re-check
           data.parallelTabId = null;
+          data._hiddenWorkspaceId = null;
         }
         const result = await this.ensureParallelTab(webviewId, { active: false });
         const tabId = result?.tab?.id || null;
