@@ -29,10 +29,8 @@ $Script:BannerHeight = 0
 $Script:CachedModSource = $null
 
 # ============================================================
-#  1.  i18n  —  English primary, Chinese secondary
+#  1.  i18n 
 # ============================================================
-
-$Script:Lang = 'en'
 
 $Script:Loc = @{
 	en = [ordered]@{
@@ -79,7 +77,7 @@ $Script:Loc = @{
 		summary_css_mods     = "CSS mods"
 		summary_js_mods      = "JS mods"
 		summary_bundled_tag  = "(bundled)"
-		confirm_deploy_hint  = "ENTER to deploy | LEFT/RIGHT switch page | L lang | ESC/Q quit"
+		confirm_deploy_hint  = "ENTER to deploy | LEFT/RIGHT switch page | ESC/Q quit"
 
 		# ── Manage summary ──
 		manage_confirm_title  = "Confirm Changes"
@@ -157,7 +155,6 @@ $Script:Loc = @{
 		key_nav_confirm     = "UP/DOWN navigate | ENTER confirm | ESC/Q quit"
 		key_multiselect     = "UP/DOWN navigate | SPACE toggle | A all | D none"
 		key_confirm_back    = "ENTER confirm | LEFT back"
-		key_lang            = "L lang"
 		key_exit            = "ESC/Q quit"
 		toggle_all          = "(Select All / Deselect All)"
 
@@ -215,174 +212,12 @@ $Script:Loc = @{
 		mod_desc_PinnedTabRestore       = "Right-click to restore recently closed pinned tabs"
 		mod_desc_InteractionFeedback    = "Button click micro-feedback animation"
 	}
-	zh = [ordered]@{
-		installer_title    = "Awesome Vivaldi : 社区模组包安装器"
-
-		entry_installed_title    = "Awesome Vivaldi 已安装"
-		entry_not_installed_title = "Awesome Vivaldi 尚未安装"
-		entry_choose_action      = "请选择操作:"
-		entry_install            = "安装"
-		entry_install_desc       = "选择并安装模组"
-		entry_manage             = "管理"
-		entry_manage_desc        = "增删模组"
-		entry_update             = "更新"
-		entry_update_desc        = "检查并应用模组更新"
-		entry_uninstall          = "卸载"
-		entry_uninstall_desc     = "移除部分或全部模组"
-		entry_exit               = "退出"
-		entry_exit_desc          = "退出安装器"
-		entry_installed_count    = "当前已安装: {0} 个 CSS 模组, {1} 个 JS 模组"
-
-		target_title          = "选择 Vivaldi 安装目标:"
-		target_path           = "路径"
-		target_type           = "类型"
-		target_type_system    = "系统级安装 (需管理员权限)"
-		target_type_user      = "用户级安装"
-		target_none_found     = "未发现 Vivaldi 安装. 请先安装 Vivaldi 浏览器."
-
-		css_title          = "选择 CSS 模组"
-		css_locked_section = "与 JS 模组联动 — 请在下一步选择"
-		css_locked_tag     = "(联动)"
-
-		js_title           = "选择 JavaScript 模组"
-		js_bundled_section = "-- 以下模组附带 CSS 模组: --"
-		js_bundled_arrow   = "CSS"
-
-		summary_title        = "安装确认"
-		summary_target       = "目标"
-		summary_css_mods     = "CSS 模组"
-		summary_js_mods      = "JS 模组"
-		summary_bundled_tag  = "(联动)"
-		confirm_deploy_hint  = "ENTER 部署 | LEFT/RIGHT 切换页面 | L 语言 | ESC/Q 退出"
-
-		manage_confirm_title  = "变更确认"
-		manage_new_mods       = "新增安装"
-		manage_removed_mods   = "将要卸载"
-		manage_unchanged_mods = "保持不变"
-		manage_no_changes     = "没有变更. 无需操作."
-
-		update_title           = "更新模组"
-		update_checking        = "正在检查更新..."
-		update_available_title = "有可用更新的模组"
-		update_no_updates      = "所有模组均为最新版本."
-		update_select          = "选择要更新的模组:"
-		update_confirm_title   = "确认更新"
-		update_updating        = "正在应用更新..."
-		update_updated_mod     = "已更新"
-		update_skipped         = "已跳过"
-		update_complete        = "更新完成! {0} 个模组已更新."
-
-		uninstall_title         = "卸载"
-		uninstall_type_prompt   = "选择卸载方式:"
-		uninstall_full          = "卸载整个整合包"
-		uninstall_full_desc     = "移除所有模组, 恢复 Vivaldi 初始状态"
-		uninstall_selective     = "卸载选定模组"
-		uninstall_selective_desc = "自行勾选要卸载的模组"
-		uninstall_full_confirm  = "这将移除所有模组并恢复 Vivaldi 初始状态. 确认继续?"
-		uninstall_cancelled     = "已取消卸载."
-		uninstall_restoring     = "正在恢复原始 window.html..."
-		uninstall_removing      = "正在移除模组文件..."
-		uninstall_complete      = "卸载完成. Vivaldi 已恢复初始状态."
-		uninstall_no_bak        = "未找到备份文件, 无法恢复原始 window.html."
-		uninstall_no_mods       = "未检测到 Awesome Vivaldi 安装. 无需卸载."
-
-		deploy_backup_start    = "正在备份 window.html..."
-		deploy_backup_done     = "已备份到"
-		deploy_inject_start    = "正在注入模组加载器..."
-		deploy_inject_done     = "已注入 injectMods.js"
-		deploy_inject_skip     = "injectMods.js 已存在, 跳过注入"
-		deploy_start           = "正在部署模组文件..."
-		deploy_css_done        = "{0} 个 CSS 模组已部署到 user_mods/css/"
-		deploy_js_done         = "{0} 个 JS 模组已部署到 user_mods/js/"
-		deploy_success         = "安装完成! 请重启 Vivaldi 以生效."
-
-		post_vivaldi_running   = "Vivaldi 正在运行."
-		post_restart_prompt    = "是否现在重启 Vivaldi? [Y] 是  [N] 否"
-		post_launch_prompt     = "是否现在启动 Vivaldi? [Y] 是  [N] 否"
-		post_restarting        = "正在重启 Vivaldi..."
-
-		restore_detected  = "Vivaldi 已更新! 发现旧版本模组配置."
-		restore_prompt    = "从版本 {0} 恢复模组?"
-		restore_option    = "是 — 恢复我的模组"
-		restore_fresh     = "否 — 全新安装"
-		restore_copying   = "正在从持久化存储恢复模组..."
-		restore_done      = "已从旧版本恢复 {0} CSS + {1} JS 模组."
-
-		error_admin_required  = "需要管理员权限. 正在请求提权..."
-		error_download        = "错误: 无法下载模组包. 请检查网络连接."
-		error_extract         = "错误: 无法解压模组包."
-		error_no_source       = "错误: 找不到模组源文件."
-		error_permission      = "错误: 权限不足. 对系统级 Vivaldi 安装请以管理员身份运行."
-		error_persist_write   = "警告: 持久化存储写入失败. 模组将无法跨版本保留."
-
-		source_downloading = "正在下载 Awesome Vivaldi 模组包..."
-		source_extracting  = "正在解压模组文件..."
-		source_done        = "模组文件准备就绪."
-
-		key_nav_confirm     = "UP/DOWN 导航 | ENTER 确认 | ESC/Q 退出"
-		key_multiselect     = "UP/DOWN 导航 | SPACE 勾选 | A 全选 | D 全不选"
-		key_confirm_back    = "ENTER 确认 | LEFT 返回"
-		key_lang            = "L 语言"
-		key_exit            = "ESC/Q 退出"
-		toggle_all          = "(全选/全不选)"
-
-		separator       = "________________________________________"
-		orphan_label    = "[孤儿模组]"
-		bundled_indent  = "  ├─ CSS: "
-
-		step_target     = "目标"
-		step_css        = "CSS"
-		step_js         = "JS"
-		step_confirm    = "确认"
-
-		mod_desc_AdaptiveBF      = "无用的前进/后退按钮自动隐藏"
-		mod_desc_BetterAnimation = "更平滑的页面橡皮筋回弹 + 标签栏收起动画"
-		mod_desc_BtnHoverAnime   = "工具栏按钮悬停微动效"
-		mod_desc_DownloadPanel   = "下载面板适配暗色主题"
-		mod_desc_Extensions      = "扩展菜单改为紧凑列表布局"
-		mod_desc_FavouriteTabs   = "前9个固定标签以网格展示 (Arc 风格)"
-		mod_desc_FindInPage      = "页内搜索栏改为浮动悬浮式"
-		mod_desc_LineBreak       = "长文本自动换行 (小屏幕实用)"
-		mod_desc_PeekTabbar      = "标签栏隐藏时鼠标触边滑出"
-		mod_desc_Quietify        = "静音图标淡化, 减少视觉干扰"
-		mod_desc_RemoveClutter   = "隐藏滚动条、分割线等视觉噪音"
-		mod_desc_TabsTrail       = "当前标签显示绿色指示条"
-		mod_desc_VivalArc        = "Arc 浏览器风格移植 (实验性)"
-		mod_desc_VividQC         = "快速命令面板样式美化"
-
-		mod_desc_TidyTabs_CSS           = "AI 分组标签的样式支持"
-		mod_desc_VividPlayer_CSS        = "Vivaldi 内置播放器美化"
-		mod_desc_VividToast_CSS         = "Toast 通知弹窗的样式"
-		mod_desc_PinnedTabRestore_CSS   = "固定标签恢复按钮样式"
-		mod_desc_InteractionFeedback_CSS = "按钮点击等交互反馈动效"
-		mod_desc_VividPeek_CSS          = "Arc Peek 弹出窗口样式"
-
-		mod_desc_ModConfig              = "*核心* 共享设置面板 (AI Key / 模组参数)"
-		mod_desc_AskOnPage              = "AI 侧边栏: 网页问答、摘要、改写"
-		mod_desc_AutoHidePanel          = "侧边栏鼠标离开后自动收起"
-		mod_desc_EasyFiles              = "附件拖拽时自动列出剪贴板+下载文件"
-		mod_desc_MonochromeIcons        = "Web 面板图标统一为单色风格"
-		mod_desc_QuickCapture           = "截图时自动识别并选中网页区域"
-		mod_desc_TabManager             = "工作区标签管理面板, 批量操作标签"
-		mod_desc_TidyAddress            = "AI 将地址栏 URL 改写为短标题"
-		mod_desc_TidyDownloads          = "AI 自动清理下载文件名中的乱码"
-		mod_desc_TidyTitles             = "AI 将标签标题精简为有意义的短语"
-		mod_desc_WorkspaceThemeSwitcher = "切换工作区时自动更换主题"
-		mod_desc_TidyTabs               = "AI 自动分组标签页"
-		mod_desc_VividPeek              = "Arc 风格弹出预览窗口"
-		mod_desc_VividPlayer            = "全局视频播放悬浮窗"
-		mod_desc_VividToast             = "Toast 风格通知弹窗"
-		mod_desc_PinnedTabRestore       = "右键恢复最近关闭的固定标签"
-		mod_desc_InteractionFeedback    = "按钮点击微动效反馈"
-	}
 }
 
 function tr($key) {
 	if (-not $key) { return "" }
-	$table = $Script:Loc[$Script:Lang]
+	$table = $Script:Loc['en']
 	if ($table -and $table.Contains($key)) { return $table[$key] }
-	$en = $Script:Loc['en']
-	if ($en -and $en.Contains($key)) { return $en[$key] }
 	return $key
 }
 
@@ -544,11 +379,7 @@ function Format-StepBar {
 	$e = [char]27
 	$sb = [Text.StringBuilder]::new()
 	[void]$sb.Append("  ")
-	if ($Script:Lang -eq 'zh') {
-		[void]$sb.Append("步骤 $($Script:StepIndex + 1)/$($Script:StepTotal): ")
-	} else {
-		[void]$sb.Append("Step $($Script:StepIndex + 1)/$($Script:StepTotal): ")
-	}
+	[void]$sb.Append("Step $($Script:StepIndex + 1)/$($Script:StepTotal): ")
 	for ($i = 0; $i -lt $Script:StepTotal; $i++) {
 		if ($i -gt 0) { [void]$sb.Append("  $e[90m>$e[0m  ") }
 		if ($i -eq $Script:StepIndex) {
@@ -577,14 +408,9 @@ function Read-TuiKey {
 		27 { return 'ESC' }
 		65 { return 'A' }
 		68 { return 'D' }
-		76 { return 'L' }
 		81 { return 'Q' }
 		default { return 'OTHER' }
 	}
-}
-
-function Toggle-Language {
-	$Script:Lang = if ($Script:Lang -eq 'zh') { 'en' } else { 'zh' }
 }
 
 # ============================================================
@@ -964,7 +790,7 @@ function Show-SelectSingle {
 
 		[void]$sb.AppendLine()
 		[void]$sb.AppendLine("  $e[90m" + ("─" * 50) + "$e[0m")
-		$hintParts = @((tr key_nav_confirm), (tr key_lang), "LEFT back", (tr key_exit))
+		$hintParts = @((tr key_nav_confirm), "LEFT back", (tr key_exit))
 		[void]$sb.AppendLine("    $(Build-KeyHint $hintParts)")
 
 		Write-FrameContent $sb.ToString()
@@ -976,7 +802,6 @@ function Show-SelectSingle {
 			'ENTER' { $done = $true }
 			'LEFT'  { return $null }
 			'RIGHT' { }
-			'L'     { Toggle-Language }
 			'Q'     { Exit-Installer }
 			'ESC'   { Exit-Installer }
 		}
@@ -1076,7 +901,7 @@ function Show-SelectMulti {
 		[void]$sb.AppendLine()
 		[void]$sb.AppendLine("  $e[90m" + ("─" * 50) + "$e[0m")
 
-		$hintParts = @((tr key_multiselect), (tr key_lang))
+		$hintParts = @((tr key_multiselect))
 		if ($AllowRight) { $hintParts += "RIGHT next" }
 		$hintParts += (tr key_exit)
 		[void]$sb.AppendLine("    $(Build-KeyHint $hintParts)")
@@ -1116,7 +941,6 @@ function Show-SelectMulti {
 			'ENTER' { $done = $true }
 			'LEFT'  { return $null }
 			'RIGHT' { if ($AllowRight) { return '__RIGHT__' } }
-			'L'     { Toggle-Language }
 			'Q'     { Exit-Installer }
 			'ESC'   { Exit-Installer }
 		}
@@ -1261,7 +1085,7 @@ function Show-SelectMultiJS {
 		[void]$sb.AppendLine()
 		[void]$sb.AppendLine("  $e[90m" + ("─" * 50) + "$e[0m")
 
-		$hintParts = @((tr key_multiselect), (tr key_lang), "LEFT back")
+		$hintParts = @((tr key_multiselect), "LEFT back")
 		if ($AllowRight) { $hintParts += "RIGHT next" }
 		$hintParts += (tr key_exit)
 		[void]$sb.AppendLine("    $(Build-KeyHint $hintParts)")
@@ -1291,7 +1115,6 @@ function Show-SelectMultiJS {
 			'ENTER' { $done = $true }
 			'LEFT'  { return $null }
 			'RIGHT' { if ($AllowRight) { return '__RIGHT__' } }
-			'L'     { Toggle-Language }
 			'Q'     { Exit-Installer }
 			'ESC'   { Exit-Installer }
 		}
@@ -1658,7 +1481,7 @@ function Invoke-Update {
 
 		[void]$sb.AppendLine()
 		[void]$sb.AppendLine("  $e[90m" + ("─" * 50) + "$e[0m")
-		[void]$sb.AppendLine("    $(Build-KeyHint @((tr key_multiselect), (tr key_lang), 'ENTER confirm', 'LEFT back', (tr key_exit)))")
+		[void]$sb.AppendLine("    $(Build-KeyHint @((tr key_multiselect), 'ENTER confirm', 'LEFT back', (tr key_exit)))")
 
 		Write-FrameContent $sb.ToString()
 
@@ -1684,7 +1507,6 @@ function Invoke-Update {
 			'D' { for ($i = 0; $i -lt $n; $i++) { $selected[$i] = $false } }
 			'ENTER' { $done = $true }
 			'LEFT'  { return }
-			'L'     { Toggle-Language }
 			'Q'     { Exit-Installer }
 			'ESC'   { Exit-Installer }
 		}
@@ -1731,14 +1553,13 @@ function Invoke-Update {
 		}
 		[void]$sb.AppendLine()
 		[void]$sb.AppendLine("  $e[90m" + ("─" * 50) + "$e[0m")
-		[void]$sb.AppendLine("    $(Build-KeyHint @('ENTER to update', (tr key_lang), 'LEFT back', (tr key_exit)))")
+		[void]$sb.AppendLine("    $(Build-KeyHint @('ENTER to update', 'LEFT back', (tr key_exit)))")
 		Write-FrameContent $sb.ToString()
 
 		$key = Read-TuiKey
 		switch ($key) {
 			'ENTER' { $confirmDone = $true }
 			'LEFT'  { return }
-			'L'     { Toggle-Language }
 			'Q'     { Exit-Installer }
 			'ESC'   { Exit-Installer }
 		}
@@ -1857,7 +1678,7 @@ function Invoke-Uninstall {
 		}
 		[void]$sb.AppendLine()
 		[void]$sb.AppendLine("  $e[90m" + ("─" * 50) + "$e[0m")
-		[void]$sb.AppendLine("    $(Build-KeyHint @((tr key_nav_confirm), (tr key_lang), 'LEFT back', (tr key_exit)))")
+		[void]$sb.AppendLine("    $(Build-KeyHint @((tr key_nav_confirm), 'LEFT back', (tr key_exit)))")
 		Write-FrameContent $sb.ToString()
 
 		$key = Read-TuiKey
@@ -1866,7 +1687,6 @@ function Invoke-Uninstall {
 			'DOWN'  { $cursor = [Math]::Min($items.Count - 1, $cursor + 1) }
 			'ENTER' { $done = $true }
 			'LEFT'  { return }
-			'L'     { Toggle-Language }
 			'Q'     { Exit-Installer }
 			'ESC'   { Exit-Installer }
 		}
@@ -2007,7 +1827,7 @@ function Invoke-Uninstall {
 			}
 			[void]$sb.AppendLine()
 			[void]$sb.AppendLine("  $e[90m" + ("─" * 50) + "$e[0m")
-			[void]$sb.AppendLine("    $(Build-KeyHint @('ENTER to uninstall', (tr key_lang), 'LEFT back', (tr key_exit)))")
+			[void]$sb.AppendLine("    $(Build-KeyHint @('ENTER to uninstall', 'LEFT back', (tr key_exit)))")
 			Write-FrameContent $sb.ToString()
 
 			$key = Read-TuiKey
@@ -2057,7 +1877,6 @@ function Invoke-Uninstall {
 					$jsToRemove  = $State.JsMods  | Where-Object { $_ -notin $allJS }
 					Set-StepInfo 2 3 $stepLabels
 				}
-				'L'   { Toggle-Language }
 				'Q'   { Exit-Installer }
 				'ESC' { Exit-Installer }
 			}
@@ -2169,7 +1988,7 @@ function Show-EntryMenu {
 
 		[void]$sb.AppendLine()
 		[void]$sb.AppendLine("  $e[90m" + ("─" * 50) + "$e[0m")
-		[void]$sb.AppendLine("    $(Build-KeyHint @((tr key_nav_confirm), (tr key_lang), 'LEFT back', (tr key_exit)))")
+		[void]$sb.AppendLine("    $(Build-KeyHint @((tr key_nav_confirm), 'LEFT back', (tr key_exit)))")
 
 		Write-FrameContent $sb.ToString()
 
@@ -2179,7 +1998,6 @@ function Show-EntryMenu {
 			'DOWN'  { $cursor = [Math]::Min($items.Count - 1, $cursor + 1) }
 			'ENTER' { $done = $true }
 			'LEFT'  { return "back" }
-			'L'     { Toggle-Language }
 			'Q'     { Exit-Installer }
 			'ESC'   { Exit-Installer }
 		}
@@ -2317,7 +2135,6 @@ function Invoke-InstallFlow {
 						'ENTER' { $confirmDone = $true }
 						'LEFT'  { $currentPage = 1; $confirmDone = $true; $confirmBack = $true }
 						'RIGHT' { }
-						'L'     { Toggle-Language }
 						'Q'     { Exit-Installer }
 						'ESC'   { Exit-Installer }
 					}
@@ -2510,7 +2327,6 @@ function Invoke-ManageFlow {
 						}
 						'LEFT'  { $currentPage = 1; $confirmDone = $true; $confirmBack = $true }
 						'RIGHT' { }
-						'L'     { Toggle-Language }
 						'Q'     { Exit-Installer }
 						'ESC'   { Exit-Installer }
 					}
@@ -2770,7 +2586,6 @@ function Main {
 				'UP'    { $rc = [Math]::Max(0, $rc - 1) }
 				'DOWN'  { $rc = [Math]::Min(1, $rc + 1) }
 				'ENTER' { $rdone = $true }
-				'L'     { Toggle-Language }
 				'Q'     { Exit-Installer }
 				'ESC'   { Exit-Installer }
 			}

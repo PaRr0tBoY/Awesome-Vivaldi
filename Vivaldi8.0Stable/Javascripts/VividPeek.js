@@ -91,6 +91,42 @@
     // tab strip tabs; keep this disabled until an internal dispatcher path is proven.
     enabled: false,
   };
+  // =========================
+  // AI Config (shared with Tidy Series via ModConfig)
+  // =========================
+  const PEEK_AI_CONFIG = {
+    apiEndpoint: "",
+    apiKey: "",
+    model: "glm-4-flash",
+    temperature: 0.3,
+    maxTokens: 4096,
+  };
+  const PEEK_AI_CONFIG_KEY = "arcPeek";
+
+  function applySharedAiConfig(raw) {
+    const aiRoot = raw?.ai ?? raw ?? {};
+    const base = aiRoot.default ?? aiRoot;
+    const override = aiRoot.overrides?.[PEEK_AI_CONFIG_KEY] ?? {};
+    const source = { ...base, ...override };
+    ["apiEndpoint", "apiKey", "model"].forEach((key) => {
+      if (typeof source[key] === "string" && source[key]) {
+        PEEK_AI_CONFIG[key] = source[key].trim();
+      }
+    });
+    if (typeof source.temperature === "number") PEEK_AI_CONFIG.temperature = source.temperature;
+    if (typeof source.maxTokens === "number") PEEK_AI_CONFIG.maxTokens = source.maxTokens;
+  }
+
+  async function loadSharedAiConfig() {
+    try {
+      const root = await navigator.storage.getDirectory();
+      const dir = await root.getDirectoryHandle(MOD_CONFIG_DIR, { create: true });
+      const fileHandle = await dir.getFileHandle(MOD_CONFIG_FILE, { create: false });
+      const file = await fileHandle.getFile();
+      applySharedAiConfig(JSON.parse(await file.text()));
+    } catch (_error) {}
+  }
+
   const MOD_CONFIG_KEY = "arcPeek";
   const MOD_CONFIG_FILE = "config.json";
   const MOD_CONFIG_DIR = ".askonpage";
@@ -134,14 +170,18 @@
   }
 
   await loadSharedModConfig();
+  await loadSharedAiConfig();
   window.addEventListener("vivaldi-mod-config-updated", (event) => {
     applySharedModConfig(event.detail || {});
+  });
+  window.addEventListener("vivaldi-mod-ai-config-updated", (event) => {
+    applySharedAiConfig(event.detail || {});
   });
 
   class PeekMod {
     ARC_CONFIG = Object.freeze({
-      glanceOpenAnimationDuration: 400,
-      glanceCloseAnimationDuration: 400,
+      glanceOpenAnimationDuration: 260,
+      glanceCloseAnimationDuration: 240,
       previewFadeInRatio: 0.18,
       previewFadeOutDelayRatio: 0.06,
       previewFadeOutRatio: 0.16,
@@ -172,6 +212,18 @@
       this.registerPeekCloseShortcuts();
       this.registerPeekCloseGuard();
       this.initializePeekLayoutTracking();
+      this.cleanupOrphanParallelTabs();
+
+      // Best-effort cleanup when the browser is closing while peek is open.
+      // Without this, parallel tabs would linger in the tab strip after
+      // the session ends (browser closed with peek visible).
+      window.addEventListener("beforeunload", () => {
+        for (const [, data] of this.webviews) {
+          if (data?.parallelTabId) {
+            try { chrome.tabs.remove(data.parallelTabId, () => {}); } catch (_) {}
+          }
+        }
+      });
 
       new WebsiteInjectionUtils(
         (navigationDetails) => this.getWebviewConfig(navigationDetails),
@@ -182,6 +234,43 @@
 
     _dispatchFlag(eventName, key, value) {
       window.dispatchEvent(new CustomEvent(eventName, { detail: { [key]: value } }));
+    }
+
+    #readParallelTabs() {
+      try {
+        const raw = localStorage.getItem("arcpeek_parallel_tabs");
+        if (!raw) return new Set();
+        const ids = JSON.parse(raw);
+        return Array.isArray(ids) ? new Set(ids) : new Set();
+      } catch (_) { return new Set(); }
+    }
+
+    #writeParallelTabs(set) {
+      try { localStorage.setItem("arcpeek_parallel_tabs", JSON.stringify([...set])); } catch (_) {}
+    }
+
+    cleanupOrphanParallelTabs() {
+      try {
+        const ids = this.#readParallelTabs();
+        localStorage.removeItem("arcpeek_parallel_tabs");
+        for (const tabId of ids) {
+          if (Number.isFinite(tabId)) {
+            chrome.tabs.remove(tabId, () => { void chrome.runtime.lastError; });
+          }
+        }
+      } catch (_) {}
+    }
+
+    #markParallelTabAlive(tabId) {
+      const ids = this.#readParallelTabs();
+      ids.add(tabId);
+      this.#writeParallelTabs(ids);
+    }
+
+    #unmarkParallelTab(tabId) {
+      const ids = this.#readParallelTabs();
+      ids.delete(tabId);
+      this.#writeParallelTabs(ids);
     }
 
     logOpenAction(stage, details = {}) {
@@ -619,7 +708,7 @@
      * Unified destruction entry point for all peeks.
      */
     async disposePeek(webviewId, options = {}) {
-      const { animated = true, closeRuntimeTab = true, closeParallelTab = false, force = false } = options;
+      const { animated = true, closeRuntimeTab = true, closeParallelTab = true, force = false } = options;
       const data = this.webviews.get(webviewId);
       
       if (!data) return;
@@ -635,6 +724,12 @@
       data.isDisposing = true;
 
       Object.values(data.timers || {}).forEach(clearTimeout);
+
+      if (data._summarizeAbort) {
+        data._summarizeAbort.abort();
+        data._summarizeAbort = null;
+      }
+      data._summarizeCache = null;
 
       if (data.tabCloseListener) {
         chrome.tabs.onRemoved.removeListener(data.tabCloseListener);
@@ -896,6 +991,8 @@
       peekPanel.style.bottom = "auto";
       peekPanel.style.margin = "0";
       peekPanel.style.transform = "none";
+      // P0: prevent subtree layout recalculation during closing animation
+      peekPanel.style.contain = "layout size";
       return { containerRect, panelRect };
     }
 
@@ -917,6 +1014,8 @@
       peekPanel.style.opacity = "";
       peekPanel.style.pointerEvents = "";
       peekPanel.style.display = "";
+      // P0: release compositor isolation now that animation is complete
+      peekPanel.style.contain = "";
     }
 
     async armCloseShortcutGuard() {
@@ -1461,6 +1560,26 @@
       ["did-navigate", "did-navigate-in-page"].forEach((eventName) => {
         webview.addEventListener(eventName, (event) => {
           updateCurrentPeekUrl(event);
+          // If the webview navigates away from the reader URL (e.g.
+          // user clicks a link inside reader mode), clear the flag
+          // so the button state stays in sync.
+          if (
+            event?.isTopLevel !== false &&
+            webview.dataset.arcpeekReader === "true" &&
+            !eventUrl.includes(this.READER_VIEW_URL)
+          ) {
+            delete webview.dataset.arcpeekReader;
+            delete webview.dataset.arcpeekReaderOriginalUrl;
+          }
+          // Close summarize panel + clear cache on top-level navigation
+          if (event?.isTopLevel !== false && eventName === "did-navigate") {
+            this.#hideSummarizePanel(webviewId);
+            const data = this.webviews.get(webviewId);
+            if (data) data._summarizeCache = null;
+            const container = data?.divContainer;
+            const btn = container?.querySelector(".summarize-button");
+            if (btn) btn.classList.remove("summarize-active");
+          }
           this.syncPeekNavigationControls(webviewId);
         });
       });
@@ -2262,6 +2381,7 @@
       if (data && tab?.id) {
         data.parallelTabId = tab.id;
         data._hiddenWorkspaceId = null;
+        this.#markParallelTabAlive(tab.id);
         this.logOpenAction("parallel-tab:create:done", {
           webviewId,
           tabId: tab.id,
@@ -2361,6 +2481,7 @@
         try {
           await this.removeTab(parallelTabId);
         } catch (_) {}
+        this.#unmarkParallelTab(parallelTabId);
       }
       if (data) {
         data.parallelTabId = null;
@@ -2451,6 +2572,7 @@
           return { tab, usedParallel: true };
         }
         // Invalid — null it so cascading fallbacks don't re-check
+        this.#unmarkParallelTab(data.parallelTabId);
         data.parallelTabId = null;
         data._hiddenWorkspaceId = null;
       }
@@ -3172,14 +3294,12 @@
 
       peekContainer.style.setProperty("--peek-panel-top", `${finalRect.top}px`);
       peekContainer.style.setProperty("--peek-panel-right", `${finalRect.right}px`);
-      peekPanel.style.transform = "translate(0, 0)";
-      peekPanel.style.setProperty("--peek-translate-x", `${translateX}px`);
-      peekPanel.style.setProperty("--peek-translate-y", `${translateY}px`);
-      peekPanel.style.setProperty("--peek-scale-x", scaleX.toFixed(4));
-      peekPanel.style.setProperty("--peek-scale-y", scaleY.toFixed(4));
-      peekPanel.style.setProperty("--peek-source-radius", `${sourceRadius.toFixed(2)}px`);
       peekContainer.style.setProperty("--peek-backdrop-origin-x", `${backdropOriginX}px`);
       peekContainer.style.setProperty("--peek-backdrop-origin-y", `${backdropOriginY}px`);
+
+      // No inline transform here — the JS animation path sets the initial
+      // keyframe transform before calling element.animate(), so the panel
+      // never flashes at its final position.
 
       return { sourceRect, finalRect, backdropOriginX, backdropOriginY };
     }
@@ -3898,11 +4018,107 @@
       const finalRadius =
         Number.parseFloat(getComputedStyle(peekPanel).borderRadius) ||
         Math.min(finalRect.height / 2, 18);
-      const sourceRadius = `${Math.min(Math.max(originRect.height / 2, 8), 18)}px`;
+      const sourceRadiusPx = Math.min(Math.max(originRect.height / 2, 8), 18);
+
+      // --- Arc calculation (parabolic trajectory, Zen-style) ---
+      const distanceX = -panelTranslateX;
+      const distanceY = -panelTranslateY;
+      const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+      const destCenterY = fittedAbsoluteRect.top + fittedAbsoluteRect.height / 2;
+      const availableTopSpace = Math.min(sourceCenterY, destCenterY);
+      const viewportHeight = window.innerHeight;
+      const availableBottomSpace =
+        viewportHeight - Math.max(sourceCenterY, destCenterY);
+      const shouldArcDownward = availableBottomSpace > availableTopSpace;
+      const availableSpace = shouldArcDownward
+        ? availableBottomSpace
+        : availableTopSpace;
+      const ARC_HEIGHT_RATIO = 0.12;
+      const MAX_ARC_HEIGHT = 12;
+      const arcHeight = Math.min(
+        distance * ARC_HEIGHT_RATIO,
+        MAX_ARC_HEIGHT,
+        availableSpace * 0.5
+      );
+      const arcDirection = shouldArcDownward ? 1 : -1;
+
+      // --- Generate 80-step keyframes with baked easing ---
+      // Opening: damped-spring response (under-damped, settles with
+      //   subtle bounce — silkier than a pure cubic-bezier).
+      // Closing: easeOutQuart (fast start, smooth deceleration).
+      // Easing is baked into spatial values at each linear-progress
+      // offset, so the compositor only does cheap linear interpolation.
+      const STEPS = 80;
+      const openingKeyframes = [];
+      const closingKeyframes = [];
+
+      // Spring parameters for opening — mass-spring-damper model.
+      // Damping ratio ζ ≈ 0.64 (under-damped: ~3.4% overshoot, 2 visible
+      // oscillations).  Settles to <0.01% error by t ≈ 0.55, leaving the
+      // last ~45% of the animation as a smooth deceleration tail.
+      const SPRING_STIFFNESS = 200;
+      const SPRING_DAMPING = 18;
+      const SPRING_MASS = 1;
+      const w0 = Math.sqrt(SPRING_STIFFNESS / SPRING_MASS);
+      const zeta = SPRING_DAMPING / (2 * Math.sqrt(SPRING_STIFFNESS * SPRING_MASS));
+      const wd = w0 * Math.sqrt(Math.max(0, 1 - zeta * zeta));
+      const TIME_SCALE = 0.55;
+
+      function springOpen(t) {
+        if (t >= 1) return 1;
+        const ts = t / TIME_SCALE;
+        const envelope = Math.exp(-zeta * w0 * ts);
+        return 1 - envelope * Math.cos(wd * ts);
+      }
+
+      function easeOutQuart(t) {
+        return 1 - (1 - t) ** 4;
+      }
+
+      const parabolicArc = (v) => 1 - (2 * v - 1) ** 2;
+
+      for (let i = 0; i <= STEPS; i++) {
+        const progress = i / STEPS;
+
+        // ---- Opening (under-damped spring) ----
+        const openEased = springOpen(progress);
+        const openScale = uniformScale + (1 - uniformScale) * openEased;
+        const openRadius =
+          sourceRadiusPx + (finalRadius - sourceRadiusPx) * openEased;
+        const openTranslateX = panelTranslateX * (1 - openEased);
+        const openTranslateY =
+          panelTranslateY * (1 - openEased) +
+          arcDirection * arcHeight * parabolicArc(openEased);
+        const openOpacity = 0.94 + 0.06 * Math.min(openEased, 1);
+
+        openingKeyframes.push({
+          transform: `translate(${openTranslateX}px, ${openTranslateY}px) scale(${openScale})`,
+          borderRadius: `${openRadius}px`,
+          opacity: openOpacity,
+          offset: progress,
+        });
+
+        // ---- Closing (easeOutQuart — fast start, smooth deceleration) ----
+        const closeEased = easeOutQuart(progress);
+        const closeScale = 1 + (uniformScale - 1) * closeEased;
+        const closeRadius =
+          finalRadius + (sourceRadiusPx - finalRadius) * closeEased;
+        const closeTranslateX = panelTranslateX * closeEased;
+        const closeTranslateY =
+          panelTranslateY * closeEased +
+          arcDirection * arcHeight * parabolicArc(closeEased);
+
+        closingKeyframes.push({
+          transform: `translate(${closeTranslateX}px, ${closeTranslateY}px) scale(${closeScale})`,
+          borderRadius: `${closeRadius}px`,
+          opacity: 1,
+          offset: progress,
+        });
+      }
 
       const geometry = {
         finalRadius: `${finalRadius}px`,
-        sourceRadius,
+        sourceRadius: `${sourceRadiusPx}px`,
         fittedRect,
         fittedAbsoluteRect,
         originRect,
@@ -3910,42 +4126,8 @@
         panelTranslateX,
         panelTranslateY,
         uniformScale,
-        openingKeyframes: [
-          {
-            transform: `translate(${panelTranslateX}px, ${panelTranslateY}px) scale(${uniformScale})`,
-            borderRadius: sourceRadius,
-            opacity: 0.94,
-          },
-          {
-            transform: "translate(0, 0) scale(1.008)",
-            borderRadius: `${finalRadius}px`,
-            opacity: 1,
-            offset: 0.92,
-          },
-          {
-            transform: "translate(0, 0) scale(1)",
-            borderRadius: `${finalRadius}px`,
-            opacity: 1,
-          },
-        ],
-        closingKeyframes: [
-          {
-            transform: "translate(0, 0) scale(1)",
-            borderRadius: `${finalRadius}px`,
-            opacity: 1,
-          },
-          {
-            transform: "translate(0, 0) scale(1.006)",
-            borderRadius: `${finalRadius}px`,
-            opacity: 1,
-            offset: 0.14,
-          },
-          {
-            transform: `translate(${panelTranslateX}px, ${panelTranslateY}px) scale(${uniformScale})`,
-            borderRadius: sourceRadius,
-            opacity: 1,
-          },
-        ],
+        openingKeyframes,
+        closingKeyframes,
       };
 
       if (PEEK_DEBUG_CONFIG.logCoordinateSystems) {
@@ -3961,6 +4143,9 @@
           panelTranslateX,
           panelTranslateY,
           uniformScale,
+          arcHeight,
+          arcDirection,
+          keyframeCount: STEPS + 1,
         });
         console.groupEnd();
       }
@@ -3994,23 +4179,42 @@
       peekPanel.getAnimations?.().forEach((animation) => animation.cancel());
       peekPanel.style.transformOrigin = "top left";
 
+      // P0: isolate subtree from layout during animation (compositor-only)
+      peekPanel.style.contain = "layout size";
+
+      // Snap to first keyframe to prevent a single-frame flash at the
+      // final position before the WAAPI animation takes effect.
+      peekPanel.style.transform = keyframes[0].transform;
+      peekPanel.style.borderRadius = keyframes[0].borderRadius;
+      peekPanel.style.opacity = String(keyframes[0].opacity ?? 1);
+
       if (typeof peekPanel.animate !== "function") {
         const lastFrame = keyframes[keyframes.length - 1];
         peekPanel.style.transform = lastFrame.transform;
         peekPanel.style.borderRadius = lastFrame.borderRadius;
         peekPanel.style.opacity = String(lastFrame.opacity ?? 1);
+        peekPanel.style.contain = "";
         return Promise.resolve();
       }
 
+      // Easing is baked into the 80-step keyframe offsets (spring /
+      // easeOutQuart), so we pass "linear" to avoid double-easing.
       const panelAnimation = peekPanel.animate(keyframes, {
         duration: this.getGlanceDuration(direction),
-        easing:
-          direction === "opening"
-            ? "cubic-bezier(0.16, 0.88, 0.22, 1)"
-            : "cubic-bezier(0.2, 0.82, 0.24, 1)",
+        easing: "linear",
         fill: "forwards",
       });
-      return panelAnimation.finished;
+
+      // P2: commit final animated values as inline styles, then cancel
+      // the WAAPI effect so the CSS cascade (e.g. data-has-finished-
+      // animation) can take over cleanly without a compositor conflict.
+      return panelAnimation.finished.then(() => {
+        if (typeof panelAnimation.commitStyles === "function") {
+          panelAnimation.commitStyles();
+        }
+        panelAnimation.cancel();
+        peekPanel.style.contain = "";
+      });
     }
 
     animatePanelRectMotion(peekPanel, direction, sourceRect) {
@@ -4033,6 +4237,7 @@
       peekPanel.getAnimations?.().forEach((animation) => animation.cancel());
       peekPanel.style.transform = "none";
       peekPanel.style.transformOrigin = "top left";
+      peekPanel.style.contain = "layout size";
 
       if (typeof peekPanel.animate !== "function") {
         const lastFrame = keyframes[keyframes.length - 1];
@@ -4041,15 +4246,24 @@
         peekPanel.style.width = lastFrame.width;
         peekPanel.style.height = lastFrame.height;
         peekPanel.style.borderRadius = lastFrame.borderRadius;
+        peekPanel.style.contain = "";
         return Promise.resolve();
       }
 
       const panelAnimation = peekPanel.animate(keyframes, {
         duration: this.getGlanceDuration(direction),
-        easing: "cubic-bezier(0.16, 0.88, 0.22, 1)",
+        easing: "linear",
         fill: "forwards",
       });
-      return panelAnimation.finished;
+
+      // P2: lock final state + cancel so CSS cascade takes over cleanly
+      return panelAnimation.finished.then(() => {
+        if (typeof panelAnimation.commitStyles === "function") {
+          panelAnimation.commitStyles();
+        }
+        panelAnimation.cancel();
+        peekPanel.style.contain = "";
+      });
     }
 
     animatePeekMotion(peekPanel, direction, sourceRect) {
@@ -4119,30 +4333,6 @@
           label: "Copy Link",
           keepControlsOpen: true,
         },
-        {
-          content: this.iconUtils.translate,
-          action: (event) => {
-            const button = event?.currentTarget;
-            if (!button) return;
-            const isActive = button.classList.contains("translate-active");
-            if (isActive) {
-              button.classList.remove("translate-active");
-              const originalUrl = button.dataset.originalUrl;
-              if (originalUrl) {
-                delete button.dataset.originalUrl;
-                this.navigatePeekToUrl(webviewId, originalUrl, { recordHistory: true });
-              }
-            } else {
-              const url = this.getPeekUrl(webviewId);
-              if (url) button.dataset.originalUrl = url;
-              button.classList.add("translate-active");
-              this.translatePeek(webviewId);
-            }
-          },
-          cls: "peek-sidebar-button translate-button",
-          label: "Translate",
-          keepControlsOpen: true,
-        },
       ];
 
       const fragment = document.createDocumentFragment();
@@ -4165,6 +4355,9 @@
         }
         if (button.cls.includes("split-button")) {
           fragment.appendChild(this.createNavigationActionsGroup(webviewId));
+        }
+        if (button.cls.includes("copy-link-button")) {
+          fragment.appendChild(this.createTranslateActionsGroup(webviewId, thisElement));
         }
       });
 
@@ -4300,6 +4493,612 @@
       }, duration);
     }
 
+    createTranslateActionsGroup(webviewId, controlsContainer) {
+      const group = document.createElement("div");
+      group.setAttribute("class", "peek-open-actions peek-translate-actions");
+      group.dataset.peekWebviewId = webviewId;
+
+      const createAction = (content, label, action, cls) => {
+        const element = this.createOptionsButton(
+          content,
+          (event) => {
+            action(event);
+          },
+          `peek-sidebar-button ${cls}`
+        );
+        element.setAttribute("aria-label", label);
+        element.setAttribute("title", label);
+        return element;
+      };
+
+      const translateButton = createAction(
+        this.iconUtils.translate,
+        "Translate",
+        (event) => {
+          const button = event?.currentTarget;
+          if (!button) return;
+          const isActive = button.classList.contains("translate-active");
+          if (isActive) {
+            button.classList.remove("translate-active");
+            const originalUrl = button.dataset.originalUrl;
+            if (originalUrl) {
+              delete button.dataset.originalUrl;
+              this.navigatePeekToUrl(webviewId, originalUrl, {
+                recordHistory: true,
+              });
+            }
+          } else {
+            const url = this.getPeekUrl(webviewId);
+            if (url) button.dataset.originalUrl = url;
+            button.classList.add("translate-active");
+            this.translatePeek(webviewId);
+          }
+        },
+        "translate-button"
+      );
+      translateButton.dataset.arcpeekFeedback = "translate";
+
+      const menu = document.createElement("div");
+      menu.setAttribute(
+        "class",
+        "peek-open-actions-menu peek-translate-actions-menu"
+      );
+
+      // Detect existing reader state from the webview flag (set by
+      // #applyReaderMode) or from the current URL.
+      const peekData = this.webviews.get(webviewId);
+      const peekUrl = this.getPeekUrl(webviewId);
+      const isReaderActive =
+        peekData?.webview?.dataset?.arcpeekReader === "true" ||
+        (peekUrl && peekUrl.includes(this.READER_VIEW_URL));
+
+      const readerButton = createAction(
+        this.iconUtils.readerView,
+        "Reader View",
+        (event) => {
+          const button = event?.currentTarget;
+          if (!button) return;
+          const active = button.classList.contains("reader-active");
+          if (!active) {
+            button.classList.add("reader-active");
+          } else {
+            button.classList.remove("reader-active");
+          }
+          this.toggleReaderView(webviewId);
+        },
+        "reader-button"
+      );
+      if (isReaderActive) {
+        readerButton.classList.add("reader-active");
+      }
+
+      menu.appendChild(readerButton);
+
+      // AI Summarize sub-menu button
+      const peekPanel = peekData?.divContainer?.querySelector(".peek-panel");
+      const isSummarizeActive = peekPanel?.dataset?.summarize === "true";
+      const summarizeButton = createAction(
+        this.iconUtils.summarize,
+        "AI Summary",
+        (event) => {
+          const button = event?.currentTarget;
+          if (!button) return;
+          const active = button.classList.contains("summarize-active");
+          if (!active) {
+            button.classList.add("summarize-active");
+          } else {
+            button.classList.remove("summarize-active");
+          }
+          this.#toggleSummarize(webviewId);
+        },
+        "summarize-button"
+      );
+      if (isSummarizeActive) {
+        summarizeButton.classList.add("summarize-active");
+      }
+      menu.appendChild(summarizeButton);
+
+      group.appendChild(translateButton);
+      group.appendChild(menu);
+      return group;
+    }
+
+    toggleReaderView(webviewId) {
+      const data = this.webviews.get(webviewId);
+      const webview = data?.webview;
+      if (!webview) return;
+
+      const isReaderActive = webview.dataset.arcpeekReader === "true";
+
+      if (isReaderActive) {
+        this.#removeReaderMode(webviewId);
+      } else {
+        this.#applyReaderMode(webviewId);
+      }
+    }
+
+    #applyReaderMode(webviewId) {
+      const url = this.getPeekUrl(webviewId);
+      if (!url) return;
+      const data = this.webviews.get(webviewId);
+      const webview = data?.webview;
+      if (!webview) return;
+
+      webview.dataset.arcpeekReaderOriginalUrl = url;
+      webview.dataset.arcpeekReader = "true";
+      this.navigatePeekToUrl(webviewId, this.READER_VIEW_URL + url, {
+        recordHistory: true,
+      });
+    }
+
+    #removeReaderMode(webviewId) {
+      const data = this.webviews.get(webviewId);
+      const webview = data?.webview;
+      const fallback = webview?.dataset?.arcpeekReaderOriginalUrl;
+      delete webview?.dataset?.arcpeekReaderOriginalUrl;
+      delete webview?.dataset?.arcpeekReader;
+
+      if (fallback) {
+        this.navigatePeekToUrl(webviewId, fallback, { recordHistory: true });
+      }
+    }
+
+    // =========================
+    // AI Summarize
+    // =========================
+
+    #toggleSummarize(webviewId) {
+      const data = this.webviews.get(webviewId);
+      const peekPanel = data?.divContainer?.querySelector(".peek-panel");
+      if (!peekPanel) return;
+
+      const isActive = peekPanel.dataset.summarize === "true";
+      if (isActive) {
+        this.#hideSummarizePanel(webviewId);
+      } else {
+        this.#showSummarizePanel(webviewId);
+      }
+    }
+
+    #ensureSummarizePanel(webviewId) {
+      const data = this.webviews.get(webviewId);
+      const peekPanel = data?.divContainer?.querySelector(".peek-panel");
+      if (!peekPanel) return null;
+
+      let panel = peekPanel.querySelector(":scope > .peek-summarize-panel");
+      if (panel) return panel;
+
+      panel = document.createElement("div");
+      panel.className = "peek-summarize-panel";
+      panel.innerHTML = '<div class="summarize-content"><div class="summarize-placeholder">Click to summarize this page.</div></div>';
+
+      peekPanel.appendChild(panel);
+      return panel;
+    }
+
+    #showSummarizePanel(webviewId) {
+      const data = this.webviews.get(webviewId);
+      const peekPanel = data?.divContainer?.querySelector(".peek-panel");
+      if (!peekPanel) return;
+
+      // Abort any previous request
+      if (data._summarizeAbort) {
+        data._summarizeAbort.abort();
+      }
+      const abortController = new AbortController();
+      data._summarizeAbort = abortController;
+
+      const panel = this.#ensureSummarizePanel(webviewId);
+      if (!panel) return;
+
+      peekPanel.dataset.summarize = "true";
+      panel.hidden = false;
+
+      const contentEl = panel.querySelector(".summarize-content");
+      const currentUrl = this.getPeekUrl(webviewId);
+
+      // Cache hit — render cached markdown immediately
+      const cache = data._summarizeCache;
+      if (cache && cache.url === currentUrl && cache.html) {
+        contentEl.innerHTML = `<div class="summarize-rendered">${cache.html}</div>`;
+        data._summarizeAbort = null;
+        return;
+      }
+
+      contentEl.innerHTML = `
+        <div class="summarize-loading">
+          <span class="summarize-spinner"></span>
+          Extracting page content&hellip;
+        </div>
+      `;
+
+      // Extract content then stream AI summary
+      this.#extractPageContent(webviewId).then((pageContent) => {
+        if (abortController.signal.aborted) return;
+        if (!pageContent || pageContent.error) {
+          contentEl.innerHTML = `<div class="summarize-error">Failed to extract page content: ${pageContent?.error || "unknown error"}</div>`;
+          return;
+        }
+        this.#streamAISummary(webviewId, pageContent, abortController);
+      });
+    }
+
+    #hideSummarizePanel(webviewId) {
+      const data = this.webviews.get(webviewId);
+      const peekPanel = data?.divContainer?.querySelector(".peek-panel");
+      if (!peekPanel) return;
+
+      // Abort in-flight request (but keep cache for later reuse)
+      if (data._summarizeAbort) {
+        data._summarizeAbort.abort();
+        data._summarizeAbort = null;
+      }
+
+      peekPanel.removeAttribute("data-summarize");
+      const panel = peekPanel.querySelector(":scope > .peek-summarize-panel");
+      if (panel) {
+        panel.hidden = true;
+      }
+    }
+
+    #extractPageContent(webviewId) {
+      const data = this.webviews.get(webviewId);
+      const webview = data?.webview;
+      if (!webview) return Promise.resolve(null);
+
+      return new Promise((resolve) => {
+        webview.executeScript({
+          code: `
+            (() => {
+              try {
+                // Article extraction — common content selectors, best-effort.
+                const selectors = [
+                  'article', '[role="main"]', 'main',
+                  '.post-content', '.article-content', '.entry-content',
+                  '.markdown-body', '#content', '.content', '#article',
+                ];
+                let article = null;
+                for (const sel of selectors) {
+                  article = document.querySelector(sel);
+                  if (article && article.innerText.length > 200) break;
+                  article = null;
+                }
+
+                const source = article || document.body;
+                // Skip non-content elements
+                const clone = source.cloneNode(true);
+                const removeSelectors = [
+                  'script', 'style', 'nav', 'header', 'footer',
+                  '.sidebar', '.nav', '.menu', '.advertisement',
+                  '[role="navigation"]', '[aria-hidden="true"]',
+                  'iframe', 'noscript', 'svg',
+                ];
+                removeSelectors.forEach(function(sel) {
+                  clone.querySelectorAll(sel).forEach(function(el) { el.remove(); });
+                });
+
+                const text = (clone.innerText || clone.textContent || '').replace(/\\n{3,}/g, '\\n\\n').trim();
+                const MAX_CHARS = 14000;
+                const truncated = text.length > MAX_CHARS
+                  ? text.substring(0, MAX_CHARS) + '\\n\\n...[truncated]'
+                  : text;
+
+                return JSON.stringify({
+                  title: document.title || location.hostname,
+                  text: truncated,
+                  url: location.href,
+                  textLength: text.length,
+                });
+              } catch (e) {
+                return JSON.stringify({ error: e.message || 'extraction failed' });
+              }
+            })();
+          `,
+        }, (results) => {
+          if (chrome.runtime.lastError) {
+            resolve({ error: chrome.runtime.lastError.message });
+            return;
+          }
+          try {
+            resolve(JSON.parse(results?.[0] || "null"));
+          } catch (_) {
+            resolve({ error: "parse error" });
+          }
+        });
+      });
+    }
+
+    async #streamAISummary(webviewId, pageContent, abortController) {
+      const data = this.webviews.get(webviewId);
+      const panel = data?.divContainer?.querySelector(".peek-summarize-panel");
+      const contentEl = panel?.querySelector(".summarize-content");
+      if (!contentEl) return;
+
+      const { apiEndpoint, apiKey, model, temperature, maxTokens } = PEEK_AI_CONFIG;
+
+      if (!apiEndpoint || !apiKey) {
+        contentEl.innerHTML = `
+          <div class="summarize-error">
+            <div class="summarize-error-title">AI Not Configured</div>
+            <p>Set your API key in <strong>vivaldi:settings/appearance</strong> &rarr; Mod Config &rarr; AI Config.</p>
+            <p>Mods that need AI: select "Arc Peek" from the AI Mod Config dropdown, or fill in Common AI Config.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const systemPrompt = "You are a helpful assistant. Summarize the given web page content concisely and clearly. Use the page's language for the summary. Organize with brief sections if appropriate.";
+      const lang = (pageContent.text.match(/[一-鿿]/g) || []).length > pageContent.text.length * 0.15
+        ? "Chinese" : "the page's language";
+      const userPrompt = `Summarize the following web page in ${lang}. Use markdown formatting for readability.\n\n**Title:** ${pageContent.title}\n**URL:** ${pageContent.url}\n\n**Content:**\n${pageContent.text}`;
+
+      contentEl.innerHTML = "";
+
+      try {
+        const response = await fetch(apiEndpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            model,
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: userPrompt },
+            ],
+            temperature,
+            max_tokens: maxTokens,
+            stream: true,
+          }),
+          signal: abortController.signal,
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text().catch(() => "");
+          let detail = `HTTP ${response.status}`;
+          try {
+            const err = JSON.parse(errorText);
+            detail = err.error?.message || err.message || detail;
+          } catch (_) {}
+          contentEl.innerHTML = `<div class="summarize-error">API Error: ${detail}</div>`;
+          return;
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        let streaming = false;
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop() || "";
+
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed || !trimmed.startsWith("data:")) continue;
+            const payload = trimmed.slice(5).trim();
+            if (!payload || payload === "[DONE]") continue;
+
+            try {
+              const parsed = JSON.parse(payload);
+              const token = parsed.choices?.[0]?.delta?.content || "";
+              if (token) {
+                if (!streaming) {
+                  streaming = true;
+                  contentEl.innerHTML = '<div class="summarize-stream"></div>';
+                }
+                contentEl.querySelector(".summarize-stream").textContent += token;
+              }
+            } catch (_) {}
+          }
+        }
+
+        // Render collected markdown → HTML + cache
+        const streamEl = contentEl.querySelector(".summarize-stream");
+        const rawText = streamEl ? streamEl.textContent : "";
+        if (rawText) {
+          const html = this.#renderMarkdown(rawText);
+          contentEl.innerHTML = `<div class="summarize-rendered">${html}</div>`;
+          // Cache for this URL
+          const currentUrl = this.getPeekUrl(webviewId);
+          if (currentUrl) {
+            data._summarizeCache = { url: currentUrl, rawText, html };
+          }
+        } else if (!streaming) {
+          contentEl.innerHTML = '<div class="summarize-stream">(No content returned)</div>';
+        }
+        data._summarizeAbort = null;
+      } catch (error) {
+        if (error.name === "AbortError") return;
+        contentEl.innerHTML = `<div class="summarize-error">Stream Error: ${error.message || "unknown"}</div>`;
+        data._summarizeAbort = null;
+      }
+    }
+
+    /**
+     * Minimal markdown → HTML renderer. Handles the most common elements
+     * returned by LLM summarization: headings, bold/italic, code blocks,
+     * inline code, links, unordered/ordered lists, blockquotes, and hr.
+     */
+    #renderMarkdown(text) {
+      if (!text) return "";
+
+      const escapeHtml = (s) =>
+        s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+      const renderInline = (s) => {
+        // Order matters: code (protects backticks), then bold, then italic, then links
+        s = s.replace(/`([^`]+)`/g, "<code>$1</code>");
+        s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+        s = s.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, "<em>$1</em>");
+        s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
+          const safe = /^(https?:|\/)/i.test(url) ? url : "#";
+          return `<a href="${safe}" target="_blank" rel="noreferrer">${text}</a>`;
+        });
+        return s;
+      };
+
+      const lines = text.split("\n");
+      const out = [];
+      let inCode = false;
+      let codeBuf = [];
+      let inList = null; // "ul" | "ol" | null
+
+      const closeList = () => {
+        if (inList) {
+          out.push(`</${inList}>`);
+          inList = null;
+        }
+      };
+
+      for (let i = 0; i < lines.length; i++) {
+        const raw = lines[i];
+
+        // Fenced code block
+        if (/^```/.test(raw)) {
+          if (inCode) {
+            out.push(`<pre><code>${escapeHtml(codeBuf.join("\n"))}</code></pre>`);
+            codeBuf = [];
+            inCode = false;
+          } else {
+            closeList();
+            inCode = true;
+          }
+          continue;
+        }
+        if (inCode) {
+          codeBuf.push(raw);
+          continue;
+        }
+
+        // Blank line — skip, but keep lists open.
+        // CommonMark allows blank lines between list items (loose mode).
+        if (!raw.trim()) {
+          continue;
+        }
+
+        // Headings
+        const hMatch = raw.match(/^(#{1,4})\s+(.+)/);
+        if (hMatch) {
+          closeList();
+          const level = hMatch[1].length;
+          out.push(`<h${level}>${renderInline(escapeHtml(hMatch[2]))}</h${level}>`);
+          continue;
+        }
+
+        // HR
+        if (/^[-*_]{3,}\s*$/.test(raw)) {
+          closeList();
+          out.push("<hr>");
+          continue;
+        }
+
+        // Blockquote
+        if (raw.startsWith("> ")) {
+          closeList();
+          out.push(`<blockquote><p>${renderInline(escapeHtml(raw.slice(2)))}</p></blockquote>`);
+          continue;
+        }
+
+        // Unordered list
+        if (/^[-*]\s/.test(raw)) {
+          if (inList !== "ul") { closeList(); out.push("<ul>"); inList = "ul"; }
+          out.push(`<li>${renderInline(escapeHtml(raw.replace(/^[-*]\s/, "")))}</li>`);
+          continue;
+        }
+
+        // Ordered list
+        if (/^\d+\.\s/.test(raw)) {
+          if (inList !== "ol") { closeList(); out.push("<ol>"); inList = "ol"; }
+          out.push(`<li>${renderInline(escapeHtml(raw.replace(/^\d+\.\s/, "")))}</li>`);
+          continue;
+        }
+
+        // Table — current line has |, next line is a separator row
+        if (raw.includes("|") && i + 1 < lines.length) {
+          const nextLine = lines[i + 1];
+          if (/^\|?[\s:-]+\|[\s:-]+\|?/.test(nextLine) && nextLine.includes("-")) {
+            closeList();
+            const tbl = this.#parseTableBlock(lines, i, escapeHtml, renderInline);
+            if (tbl) {
+              out.push(tbl.html);
+              i = tbl.lastIndex;
+              continue;
+            }
+          }
+        }
+
+        // Regular paragraph
+        closeList();
+        out.push(`<p>${renderInline(escapeHtml(raw))}</p>`);
+      }
+
+      closeList();
+      if (inCode) {
+        out.push(`<pre><code>${escapeHtml(codeBuf.join("\n"))}</code></pre>`);
+      }
+
+      return out.join("\n");
+    }
+
+    /**
+     * Parse a markdown table block starting at `startIndex`.
+     * Consumes header + separator + data rows, returns rendered HTML
+     * and the index of the last consumed line.
+     */
+    #parseTableBlock(lines, startIndex, escapeHtml, renderInline) {
+      const parseCells = (line) =>
+        line.split("|")
+          .map((c) => c.trim())
+          .filter((c, idx, arr) => c !== "" || (idx > 0 && idx < arr.length - 1));
+
+      const header = parseCells(lines[startIndex]);
+      const sep = parseCells(lines[startIndex + 1]);
+      if (!header.length || !sep.length) return null;
+
+      // Derive alignments from separator
+      const aligns = sep.map((cell) => {
+        const left = cell.startsWith(":");
+        const right = cell.endsWith(":");
+        if (left && right) return "center";
+        if (right) return "right";
+        return "left";
+      });
+
+      const cellAttrs = (j) => {
+        const a = aligns[j];
+        return a && a !== "left" ? ` style="text-align:${a}"` : "";
+      };
+
+      let html = "<table><thead><tr>";
+      for (let j = 0; j < header.length; j++) {
+        html += `<th${cellAttrs(j)}>${renderInline(escapeHtml(header[j]))}</th>`;
+      }
+      html += "</tr></thead><tbody>";
+
+      let i = startIndex + 2;
+      while (i < lines.length) {
+        const line = lines[i];
+        if (!line.includes("|")) break;
+        const cells = parseCells(line);
+        if (!cells.length) break;
+        html += "<tr>";
+        for (let j = 0; j < Math.min(cells.length, header.length); j++) {
+          html += `<td${cellAttrs(j)}>${renderInline(escapeHtml(cells[j]))}</td>`;
+        }
+        html += "</tr>";
+        i++;
+      }
+
+      html += "</tbody></table>";
+      return { html, lastIndex: i - 1 };
+    }
+
     triggerCopyButtonFeedback(button) {
       if (!button) return;
       const originalIcon = button.dataset.originalIcon || button.innerHTML;
@@ -4371,14 +5170,6 @@
 
     getWebviewId() {
       return Math.floor(Math.random() * 10000) + (new Date().getTime() % 1000);
-    }
-
-    showReaderView(webview) {
-      if (webview.src.includes(this.READER_VIEW_URL)) {
-        webview.src = webview.src.replace(this.READER_VIEW_URL, "");
-      } else {
-        webview.src = this.READER_VIEW_URL + webview.src;
-      }
     }
 
     isUsablePeekUrl(url) {
@@ -4914,7 +5705,10 @@
             await this.disposePeek(webviewId, { animated: false, closeRuntimeTab: true, closeParallelTab: false });
             return;
           }
-          // Invalid — null it so ensureParallelTab doesn't re-check
+          // Invalid — null it so ensureParallelTab doesn't re-check.
+          // The tab is now a standalone tab (handed off to the user),
+          // so remove it from the orphan-tracking set.
+          this.#unmarkParallelTab(data.parallelTabId);
           data.parallelTabId = null;
           data._hiddenWorkspaceId = null;
         }
@@ -5009,7 +5803,8 @@
         closeRuntimeTab: true,
         closeParallelTab: false,
       });
-      void this.holdSnapshotUntilTabReady(overlay, usedTabId || sourceTabId);
+      const targetTabId = usedTabId || sourceTabId;
+      void this.holdSnapshotUntilTabReady(overlay, targetTabId);
     }
 
     isArcPeekSplitTab(tab, ownerTabId = null) {
@@ -5985,7 +6780,7 @@
     static SVG = {
       ellipsis: '<svg xmlns="http://www.w3.org/2000/svg" height="2em" viewBox="0 0 448 512"><path d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0 56 56 0 1 1 -112 0zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z"/></svg>',
       close: '<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>',
-      readerView: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path d="M3 4h10v1H3zM3 6h10v1H3zM3 8h10v1H3zM3 10h6v1H3z"></path></svg>',
+      readerView: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
       newTab: '<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><path d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"/></svg>',
       splitView: '<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><path d="M64 64C28.7 64 0 92.7 0 128V384c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64H64zm160 64V384H64V128H224zm64 256V128H448V384H288z"/></svg>',
       openHere: '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M200-120q-33 0-56.5-23.5T120-200v-120h80v120h560v-480H200v120h-80v-200q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm260-140-56-56 83-84H120v-80h367l-83-84 56-56 180 180-180 180Z"/></svg>',
@@ -5993,6 +6788,7 @@
       copyLink: '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link2-icon lucide-link-2"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></svg>',
       check: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon"><path d="M20 6 9 17l-5-5"/></svg>',
       translate: '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe-icon"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>',
+      summarize: '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>',
     };
 
     static VIVALDI_BUTTONS = [
@@ -6047,6 +6843,7 @@
     get copyLink() { return this.getIcon("copyLink"); }
     get check() { return this.getIcon("check"); }
     get translate() { return this.getIcon("translate"); }
+    get summarize() { return this.getIcon("summarize"); }
   }
 
   function bootstrapPeekMod() {

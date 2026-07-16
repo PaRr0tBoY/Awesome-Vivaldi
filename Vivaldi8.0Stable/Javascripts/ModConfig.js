@@ -26,6 +26,7 @@
     { key: "tidyTitles", label: "Tidy Titles" },
     { key: "tidyDownloads", label: "Tidy Downloads" },
     { key: "tidyAddress", label: "Tidy Address" },
+    { key: "arcPeek", label: "Arc Peek" },
   ];
 
   const CONFIG_PANELS = [
