@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>a});var i=n(24602),s=n(33638);class o extends i.Z{getInitialState(){return[]}getScripts(){return this.getState()}reduce(e,t){switch(t.actionType){case"CONTENT_SCRIPTS_UPDATED":case"CONTENT_SCRIPTS_INITIALIZE":return t.scripts}return e}}const a=new o(s.Z)

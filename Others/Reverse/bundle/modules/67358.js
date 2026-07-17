@@ -1,0 +1,1 @@
+"use strict";n.d(t,{a:()=>s,x:()=>o});var i=n(33638);function s(e,t,n){i.Z.dispatch({actionType:"MAIL_COMPOSER_SET_FORMAT",windowId:e,pageId:t,composeFormat:n})}function o(e,t){i.Z.dispatch({actionType:"MAIL_COMPOSER_TOGGLE_FORMAT",pageId:t,windowId:e})}

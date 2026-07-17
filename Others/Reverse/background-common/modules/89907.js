@@ -1,0 +1,1 @@
+"use strict";n.d(t,{k:()=>a});const a="undefined"==typeof window&&"object"==typeof self.vivaldi?.prefs

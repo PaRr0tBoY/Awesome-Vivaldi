@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>o});var a=n(71320),r=n(10671),i=n(5863);const o=function(e,t){return i.O4.some((e=>t.includes(e)))||function(e){return[...e.entries()].some((([e,t])=>{if(t.deleted)return!1;const n=a.Z.get(e);if(!n)return console.error("Source filter not found "+e),!1;const{accountId:o,path:s}=n;return r.Z.getFolderType(o,s)===i.Hd}))}(e)}

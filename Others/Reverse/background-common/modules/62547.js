@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>i});var a=n(23791),r=n(94591);const i=function(e,t){return t.length<2?e:(0,a.Z)(e,(0,r.Z)(t,0,-1))}

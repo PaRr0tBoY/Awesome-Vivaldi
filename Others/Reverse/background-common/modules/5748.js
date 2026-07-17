@@ -1,0 +1,1 @@
+"use strict";var a=n(74309),r=n(26354),i=n(75866);e.exports=function(){for(var e=i(this),t=arguments.length,n=Array(t),o=0,s=a._,l=!1;t>o;)(n[o]=arguments[o++])===s&&(l=!0);return function(){var a,i=this,o=arguments,c=o.length,d=0,u=0;if(!l&&!c)return r(e,n,i);if(a=n.slice(),l)for(;t>d;d++)a[d]===s&&(a[d]=o[u++]);for(;c>u;)a.push(o[u++]);return r(e,a,i)}}

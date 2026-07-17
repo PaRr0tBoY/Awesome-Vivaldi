@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>l});var a=n(81353),r=n(1230),i=n(23524),o=n(36574),s=n(96594);const l=(0,a.Z)((0,r.Z)(["fantasy-land/chain","chain"],o.Z,(function(e,t){return"function"==typeof t?function(n){return e(t(n))(n)}:(0,i.Z)(!1)((0,s.Z)(e,t))})))

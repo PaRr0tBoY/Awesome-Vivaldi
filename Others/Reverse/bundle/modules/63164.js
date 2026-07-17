@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Tg:()=>a,VN:()=>o});var i=n(92292);const s=new Map;function o(e,t,n){return i.Z.tabs.sendMessage(e,t,n)}function a(e){const t=(t,n,s)=>{i.Z.runtime.id===n.id&&e(t,n,s)};return s.set(e,t),i.Z.runtime.onMessage.addListener(t)}

@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>s});var i=n(33638);const s={set:function(e,t,n,s,o){i.Z.dispatch({actionType:"MAIL_ERROR_SET",accountId:e,category:t,error:n,code:s,level:o})},remove:function(e,t){i.Z.dispatch({actionType:"MAIL_ERROR_DELETE",category:t,accountId:e})}}

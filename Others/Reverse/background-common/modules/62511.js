@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>u});var a=n(58746),r=n(67290),i=n(23195),o=Function.prototype,s=Object.prototype,l=o.toString,c=s.hasOwnProperty,d=l.call(Object);const u=function(e){if(!(0,i.Z)(e)||"[object Object]"!=(0,a.Z)(e))return!1;var t=(0,r.Z)(e);if(null===t)return!0;var n=c.call(t,"constructor")&&t.constructor;return"function"==typeof n&&n instanceof n&&l.call(n)==d}

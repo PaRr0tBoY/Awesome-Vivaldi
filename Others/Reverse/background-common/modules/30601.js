@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>i});var a=n(81353),r=n(23723);const i=(0,a.Z)((function(e,t){return(0,r.Z)([e],t)}))

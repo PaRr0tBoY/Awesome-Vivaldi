@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>a});var i=n(71320),s=n(10671),o=n(5863);function a(e){const t=i.Z.getByIds(e),n=s.Z.getFolderTypes(t);return[o.Nz,o.kY,o.fZ].some((e=>n.has(e)))}

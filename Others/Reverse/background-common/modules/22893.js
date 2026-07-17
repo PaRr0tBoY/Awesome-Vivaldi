@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>s});var a=n(98388),r=n(81353),i=n(85142),o=n(96594);const s=(0,r.Z)((function(e,t){return"function"==typeof t["fantasy-land/ap"]?t["fantasy-land/ap"](e):"function"==typeof e.ap?e.ap(t):"function"==typeof e?function(n){return e(n)(t(n))}:(0,i.Z)((function(e,n){return(0,a.Z)(e,(0,o.Z)(n,t))}),[],e)}))

@@ -1,0 +1,1 @@
+"use strict";n.d(t,{h:()=>r,i:()=>l});var i=n(75481),s=n(33638);const o=(e,t)=>t?setTimeout(e,t):e();let a;function r(e,t=0){clearTimeout(a),a=o((()=>s.Z.dispatch({actionType:"TOOLTIP_SET",id:e})),t)}function l(e=0){clearTimeout(a),i.Z.allHidden()||(a=o((()=>s.Z.dispatch({actionType:"TOOLTIP_SET",id:null})),e))}

@@ -1,0 +1,1 @@
+"use strict";var i=n(67294).__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;t.c=function(e){return i.H.useMemoCache(e)}

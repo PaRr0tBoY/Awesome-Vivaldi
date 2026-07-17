@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>r});var a=n(7064);async function r(e){if(e.length>0)return new Promise((t=>{try{a.Z.mailPrivate.createMessages(e,(e=>{e||console.warn("Failed to store messages in FTS db"),t()}))}catch(t){const n=e.map((e=>e.searchListId)).join();console.error(`Failed storing messages: ${n}`,t)}}))}

@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>o});var i=n(24602);class s extends i.Z{getInitialState(){return{isActive:!1}}reduce(e,t){return"BREAKMODE"===t.actionType?{isActive:!e.isActive}:e}}const o=new s

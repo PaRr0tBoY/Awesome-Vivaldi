@@ -15,7 +15,7 @@
 
 <div align="center">
 
-**English** | [简体中文](../Doc/READMEZH/README79.md)
+**English** | [简体中文](../Doc/READMEZH/README80.md)
 
 </div>
 
@@ -163,10 +163,10 @@ cd path/to/Awesome-Vivaldi
 git pull
 
 # Re-install CSS mods
-# Copy the contents of Vivaldi7.9Stable/ to your Vivaldi CSS mods folder
+# Copy the contents of Vivaldi8.0Stable/ to your Vivaldi CSS mods folder
 
 # Re-install JavaScript mods
-# Copy the contents of Vivaldi7.9Stable/Javascripts/ to your Vivaldi resources directory
+# Copy the contents of Vivaldi8.0Stable/Javascripts/ to your Vivaldi resources directory
 # Then update window.html with any new script references
 ```
 
@@ -260,7 +260,7 @@ Vivaldi exposes theme-aware CSS custom properties on `#browser`. These follow th
 - [ ] Enable **CSS Customization** at `vivaldi://flags`
 - [ ] Set correct folder path  
   → `Settings > Appearance > Custom UI Modifications`  
-  → `Awesome-Vivaldi-main\Vivaldi7.9Stable`
+  → `Awesome-Vivaldi-main\Vivaldi8.0Stable`
 - [ ] Copied all the **contents** under [./Javascripts](./Javascripts/) to your `<YOURVIVALDIDIRECTORY>\Application\<VERSI0N>\resources\vivaldi\`
 
 ---

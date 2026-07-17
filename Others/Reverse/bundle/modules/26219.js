@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>s});var i=n(56371);async function s(e,t){const{chrome:n}=e;return new Promise(((e,s)=>{n.fileSystem.chooseEntry({type:"openFile",acceptsMultiple:!0,accepts:[{mimeTypes:["text/*"],extensions:t,description:(0,i.Z)("files of type $1",[t.join(", ")])}]},(t=>{n.runtime.lastError||!t?s(n.runtime.lastError||"Cancelled opening files"):e(t)}))}))}

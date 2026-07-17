@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>s});var i=n(33638);const s=new class{setActiveWebView(e,t){i.Z.dispatch({actionType:"WEBVIEW_SET_ACTIVE",windowId:e,component:t})}clearIfActive(e,t){i.Z.dispatch({actionType:"WEBVIEW_CLEAR_IF_ACTIVE",windowId:e,component:t})}}

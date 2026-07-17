@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>a});var i=n(26067),s=n(92292),o=n(7064);function a(e,t,n,a){return r=a,l=(0,i.ZP)(e,t,n),new Promise(((e,t)=>{const{pathArray:n,fileName:i}=l;o.Z.mailPrivate.writeTextToMessageFile(n,i,r,!1,(()=>{s.Z.runtime.lastError&&t({lastError:s.Z.runtime.lastError,pathArray:n,fileName:i}),e()}))})).catch((e=>{console.warn("writeToDisk %o",e)}));var r,l}

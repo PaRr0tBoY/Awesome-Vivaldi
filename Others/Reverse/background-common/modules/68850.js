@@ -1,0 +1,1 @@
+"use strict";function a(e,t){for(var n=0,a=t.length-(e-1),r=new Array(a>=0?a:0);n<a;)r[n]=Array.prototype.slice.call(t,n,n+e),n+=1;return r}n.d(t,{Z:()=>a})

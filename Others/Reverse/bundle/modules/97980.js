@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>a});var i=n(92026);const{kPolicyIncognitoModeAvailability:s=null}=(()=>{try{return n(17885)}catch{return{}}})(),o=Object.freeze({ENABLED:0,DISABLED:1,FORCED:2});const a={isIncognitoEnabled:function(){return!s||i.Z.get(s)!==o.DISABLED},isIncognitoForced:function(){return!!s&&i.Z.get(s)===o.FORCED}}

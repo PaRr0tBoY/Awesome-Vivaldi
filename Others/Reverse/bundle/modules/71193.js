@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>l});var i=n(96951),s=n(92026),o=n(53454),a=n(35369),r=n(17885);function l(e){const t=o.Z.getActiveWorkspaceId(e),n=i.ZP.getPages(e,{workspaceId:t});if(s.Z.get(r.kTabsCycleByRecentOrder)){const t=i.ZP.getPageHistory(e).toReversed(),s=new Map(n.map((e=>[e.id,e]))),o=t.map((e=>s.get(e))).filter(Boolean);return(0,a.aV)(o)}return n}

@@ -1,0 +1,1 @@
+"use strict";n.d(t,{T:()=>o});var i=n(2497),s=n(7064);async function o(e){try{const t=(0,i.Z)(e);s.Z.savedpasswords.createDelegate(),t.chrome.passwordsPrivate.exportPasswords().catch((e=>{throw new Error(e)}))}catch(e){console.error("Password Export Failed.",e.message)}}

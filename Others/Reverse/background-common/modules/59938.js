@@ -1,0 +1,1 @@
+"use strict";n.d(t,{F:()=>a});const a=(0,n(56371).Z)("Sent with Vivaldi Mail. Download Vivaldi for free at vivaldi.com")

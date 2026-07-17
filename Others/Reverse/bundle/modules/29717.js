@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>s});var i=n(33638);const s={enableCapture:function(e,t){i.Z.dispatch({actionType:"CAPTURE_ENABLE",winId:e,noteId:t})},disableCapture:function(e){i.Z.dispatch({actionType:"CAPTURE_DISABLE",winId:e})}}

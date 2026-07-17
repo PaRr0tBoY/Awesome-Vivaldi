@@ -1,0 +1,1 @@
+"use strict";function a(e,t){return e===t||"inbox"===e.toLowerCase()&&"inbox"===t.toLowerCase()}n.d(t,{Z:()=>a})

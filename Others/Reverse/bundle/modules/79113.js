@@ -1,0 +1,1 @@
+"use strict";n.d(t,{o:()=>i,w:()=>s});const i=/^[a-zA-Z0-9_-]{11}$/;function s(e){if(!i.test(e))return"";const t=function(e){return`https://www.youtube-nocookie.com/embed/${e}?rel=0`}(e);return`<iframe src="${t}" frameborder="0" allowfullscreen name="vivaldi-youtube-frame"></iframe>`}

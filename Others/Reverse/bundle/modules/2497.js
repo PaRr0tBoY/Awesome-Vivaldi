@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>s});var i=n(92292);function s(e){const t=i.Z.extension.getViews({windowId:e});if(!t||0===t.length)throw new Error(`chrome.extension.getViews ( ${e} ) returned no views. `);return t[0]}

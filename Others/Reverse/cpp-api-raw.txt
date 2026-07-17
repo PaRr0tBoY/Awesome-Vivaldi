@@ -1,0 +1,606 @@
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/access_keys/access_keys_api.h:16:  DECLARE_EXTENSION_FUNCTION("accessKeys.getAccessKeysForPage",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/access_keys/access_keys_api.h:31:  DECLARE_EXTENSION_FUNCTION("accessKeys.action", ACCESSKEYS_ACTION)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.cc:64:UpdateEventRouter::UpdateEventRouter(Profile* profile,
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.cc:71:UpdateEventRouter::~UpdateEventRouter() {}
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.cc:95:void UpdateEventRouter::OnUpdateProgress(UpdateService* service,
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.cc:105:void UpdateEventRouter::DispatchEvent(Profile* profile,
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.cc:108:  if (profile && EventRouter::Get(profile)) {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.cc:109:    EventRouter* event_router = EventRouter::Get(profile);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.cc:127:  EventRouter* event_router = EventRouter::Get(context);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.cc:161:  update_event_router_ = std::make_unique<UpdateEventRouter>(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.cc:164:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.h:44:class UpdateEventRouter : public UpdateModelObserver {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.h:46:  explicit UpdateEventRouter(Profile* profile, UpdateService* update_service);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.h:47:  ~UpdateEventRouter() override;
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.h:68:                      public EventRouter::Observer {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.h:98:  // EventRouter::Observer implementation.
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.h:153:  std::unique_ptr<UpdateEventRouter> update_event_router_;
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.h:167:  DECLARE_EXTENSION_FUNCTION("autoUpdate.checkForUpdates",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.h:180:  DECLARE_EXTENSION_FUNCTION("autoUpdate.isUpdateNotifierEnabled",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.h:193:  DECLARE_EXTENSION_FUNCTION("autoUpdate.enableUpdateNotifier",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.h:206:  DECLARE_EXTENSION_FUNCTION("autoUpdate.disableUpdateNotifier",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.h:219:  DECLARE_EXTENSION_FUNCTION("autoUpdate.installUpdateAndRestart",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.h:230:  DECLARE_EXTENSION_FUNCTION("autoUpdate.getAutoInstallUpdates",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.h:241:  DECLARE_EXTENSION_FUNCTION("autoUpdate.setAutoInstallUpdates",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.h:252:  DECLARE_EXTENSION_FUNCTION("autoUpdate.getLastCheckTime",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.h:263:  DECLARE_EXTENSION_FUNCTION("autoUpdate.getUpdateStatus",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.h:280:  DECLARE_EXTENSION_FUNCTION("autoUpdate.hasAutoUpdates",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.h:293:  DECLARE_EXTENSION_FUNCTION("autoUpdate.needsCodecRestart",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.h:305:  DECLARE_EXTENSION_FUNCTION("autoUpdate.runStartupChecks",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.h:316:  DECLARE_EXTENSION_FUNCTION("autoUpdate.startUpdate", AUTOUPDATE_STARTUPDATE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.h:329:  DECLARE_EXTENSION_FUNCTION("autoUpdate.getAboutInfo", AUTOUPDATE_GETABOUTINFO)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/auto_update/auto_update_api.h:341:  DECLARE_EXTENSION_FUNCTION("autoUpdate.getAboutPathsInfo",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/bookmarks/bookmarks_private_api.h:75:  DECLARE_EXTENSION_FUNCTION(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/bookmarks/bookmarks_private_api.h:91:  DECLARE_EXTENSION_FUNCTION("bookmarksPrivate.getFolderIds",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/bookmarks/bookmarks_private_api.h:105:  DECLARE_EXTENSION_FUNCTION("bookmarksPrivate.emptyTrash",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/bookmarks/bookmarks_private_api.h:119:  DECLARE_EXTENSION_FUNCTION("bookmarksPrivate.updatePartners",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/bookmarks/bookmarks_private_api.h:137:  DECLARE_EXTENSION_FUNCTION("bookmarksPrivate.isCustomThumbnail",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/bookmarks/bookmarks_private_api.h:176:  DECLARE_EXTENSION_FUNCTION("bookmarksPrivate.export",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/bookmark_context_menu/bookmark_context_menu_api.h:50:  DECLARE_EXTENSION_FUNCTION("bookmarkContextMenu.show",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/bookmark_context_menu/bookmark_context_menu_api.h:80:  DECLARE_EXTENSION_FUNCTION("bookmarkContextMenu.close",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.cc:253:CalendarEventRouter::CalendarEventRouter(Profile* profile,
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.cc:260:CalendarEventRouter::~CalendarEventRouter() {}
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.cc:262:void CalendarEventRouter::ExtensiveCalendarChangesBeginning(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.cc:265:void CalendarEventRouter::ExtensiveCalendarChangesEnded(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.cc:320:void CalendarEventRouter::OnEventCreated(CalendarService* service,
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.cc:328:void CalendarEventRouter::OnIcsFileOpened(std::string path) {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.cc:333:void CalendarEventRouter::OnWebcalUrlOpened(GURL url) {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.cc:338:void CalendarEventRouter::OnMailtoOpened(GURL mailto) {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.cc:343:void CalendarEventRouter::OnNotificationChanged(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.cc:351:void CalendarEventRouter::OnCalendarModified(CalendarService* service) {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.cc:357:void CalendarEventRouter::DispatchEvent(Profile* profile,
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.cc:360:  if (profile && EventRouter::Get(profile)) {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.cc:361:    EventRouter* event_router = EventRouter::Get(profile);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.cc:376:  EventRouter* event_router = EventRouter::Get(context);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.cc:384:  EventRouter* event_router = EventRouter::Get(browser_context_);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.cc:393:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.cc:460:  calendar_event_router_ = std::make_unique<CalendarEventRouter>(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.cc:463:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:39:class CalendarEventRouter : public CalendarModelObserver {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:41:  explicit CalendarEventRouter(Profile* profile,
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:43:  ~CalendarEventRouter() override;
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:73:                    public EventRouter::Observer {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:84:  // EventRouter::Observer implementation.
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:100:  std::unique_ptr<CalendarEventRouter> calendar_event_router_;
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:127:  DECLARE_EXTENSION_FUNCTION("calendar.getAllEvents", CALENDAR_GETALLEVENTS)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:143:  DECLARE_EXTENSION_FUNCTION("calendar.eventCreate", CALENDAR_CREATEEVENT)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:160:  DECLARE_EXTENSION_FUNCTION("calendar.eventsCreate", CALENDAR_CREATEEVENTS)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:177:  DECLARE_EXTENSION_FUNCTION("calendar.updateEvent", CALENDAR_UPDATEEVENT)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:190:  DECLARE_EXTENSION_FUNCTION("calendar.deleteEvent", CALENDAR_DELETEEVENT)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:206:  DECLARE_EXTENSION_FUNCTION("calendar.updateRecurrenceException",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:223:  DECLARE_EXTENSION_FUNCTION("calendar.deleteEventException",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:240:  DECLARE_EXTENSION_FUNCTION("calendar.create", CALENDAR_CREATE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:256:  DECLARE_EXTENSION_FUNCTION("calendar.getAll", CALENDAR_GETALL)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:272:  DECLARE_EXTENSION_FUNCTION("calendar.update", CALENDAR_UPDATE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:285:  DECLARE_EXTENSION_FUNCTION("calendar.delete", CALENDAR_DELETE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:301:  DECLARE_EXTENSION_FUNCTION("calendar.getAllEventTypes",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:319:  DECLARE_EXTENSION_FUNCTION("calendar.eventTypeCreate",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:337:  DECLARE_EXTENSION_FUNCTION("calendar.eventTypeUpdate",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:355:  DECLARE_EXTENSION_FUNCTION("calendar.deleteEventType",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:372:  DECLARE_EXTENSION_FUNCTION("calendar.createEventException",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:390:  DECLARE_EXTENSION_FUNCTION("calendar.getAllNotifications",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:406:  DECLARE_EXTENSION_FUNCTION("calendar.createNotification",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:424:  DECLARE_EXTENSION_FUNCTION("calendar.updateNotification",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:438:  DECLARE_EXTENSION_FUNCTION("calendar.deleteNotification",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:455:  DECLARE_EXTENSION_FUNCTION("calendar.createInvite", CALENDAR_CREATE_INVITE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:472:  DECLARE_EXTENSION_FUNCTION("calendar.deleteInvite", CALENDAR_DELETE_INVITE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:488:  DECLARE_EXTENSION_FUNCTION("calendar.updateInvite", CALENDAR_UPDATE_INVITE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:505:  DECLARE_EXTENSION_FUNCTION("calendar.createAccount", CALENDAR_CREATE_ACCOUNT)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:522:  DECLARE_EXTENSION_FUNCTION("calendar.deleteAccount", CALENDAR_DELETEACCOUNT)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:539:  DECLARE_EXTENSION_FUNCTION("calendar.updateAccount", CALENDAR_UPDATEACCOUNT)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:555:  DECLARE_EXTENSION_FUNCTION("calendar.getAllAccounts", CALENDAR_GETALLACCOUNTS)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:571:  DECLARE_EXTENSION_FUNCTION("calendar.createEventTemplate",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:589:  DECLARE_EXTENSION_FUNCTION("calendar.getAllEventTemplates",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:607:  DECLARE_EXTENSION_FUNCTION("calendar.updateEventTemplate",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:621:  DECLARE_EXTENSION_FUNCTION("calendar.deleteEventTemplate",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/calendar/calendar_api.h:638:  DECLARE_EXTENSION_FUNCTION("calendar.getParentExceptionId",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.cc:177:ContactEventRouter::ContactEventRouter(Profile* profile)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.cc:183:ContactEventRouter::~ContactEventRouter() {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.cc:187:void ContactEventRouter::ExtensiveContactChangesBeginning(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.cc:190:void ContactEventRouter::ExtensiveContactChangesEnded(ContactService* model) {}
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.cc:192:void ContactEventRouter::OnContactCreated(ContactService* service,
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.cc:199:void ContactEventRouter::OnContactDeleted(ContactService* service,
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.cc:206:void ContactEventRouter::OnContactChanged(ContactService* service,
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.cc:214:void ContactEventRouter::DispatchEvent(const std::string& event_name,
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.cc:216:  EventRouter* event_router = EventRouter::Get(browser_context_);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.cc:226:  EventRouter* event_router = EventRouter::Get(browser_context_);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.cc:236:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.cc:249:      new ContactEventRouter(Profile::FromBrowserContext(browser_context_)));
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.cc:250:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.h:34:class ContactEventRouter : public ContactModelObserver {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.h:36:  explicit ContactEventRouter(Profile* profile);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.h:37:  ~ContactEventRouter() override;
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.h:60:                    public EventRouter::Observer {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.h:71:  // EventRouter::Observer implementation.
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.h:88:  std::unique_ptr<ContactEventRouter> contact_event_router_;
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.h:114:  DECLARE_EXTENSION_FUNCTION("contacts.getAll", CONTACTS_GETALL)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.h:130:  DECLARE_EXTENSION_FUNCTION("contacts.getAllEmailAddresses",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.h:148:  DECLARE_EXTENSION_FUNCTION("contacts.create", CONTACTS_CREATE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.h:165:  DECLARE_EXTENSION_FUNCTION("contacts.createMany", CONTACTS_CREATE_MANY)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.h:183:  DECLARE_EXTENSION_FUNCTION("contacts.update", CONTACTS_UPDATE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.h:199:  DECLARE_EXTENSION_FUNCTION("contacts.delete", CONTACTS_DELETE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.h:215:  DECLARE_EXTENSION_FUNCTION("contacts.addPropertyItem",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.h:232:  DECLARE_EXTENSION_FUNCTION("contacts.updatePropertyItem",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.h:249:  DECLARE_EXTENSION_FUNCTION("contacts.removePropertyItem",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.h:266:  DECLARE_EXTENSION_FUNCTION("contacts.addEmailAddress", CONTACTS_ADD_EMAIL)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.h:283:  DECLARE_EXTENSION_FUNCTION("contacts.removeEmailAddress",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.h:301:  DECLARE_EXTENSION_FUNCTION("contacts.updateEmailAddress",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/contacts/contacts_api.h:319:  DECLARE_EXTENSION_FUNCTION("contacts.readThunderbirdContacts",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.cc:228:ContentBlockingEventRouter::ContentBlockingEventRouter(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.cc:244:void ContentBlockingEventRouter::OnRuleServiceStateLoaded(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.cc:251:void ContentBlockingEventRouter::OnKnownSourceAdded(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.cc:262:void ContentBlockingEventRouter::OnKnownSourceRemoved(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.cc:272:void ContentBlockingEventRouter::OnKnownSourceEnabled(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.cc:281:void ContentBlockingEventRouter::OnKnownSourceDisabled(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.cc:291:void ContentBlockingEventRouter::OnRuleSourceUpdated(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.cc:302:void ContentBlockingEventRouter::OnExceptionListStateChanged(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.cc:311:void ContentBlockingEventRouter::OnExceptionListChanged(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.cc:322:void ContentBlockingEventRouter::OnNewBlockedUrlsReported(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.cc:338:void ContentBlockingEventRouter::OnAllowAttributionChanged(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.cc:348:void ContentBlockingEventRouter::OnNewAttributionTrackerAllowed(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.cc:363:void ContentBlockingEventRouter::Shutdown() {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.cc:377:ContentBlockingEventRouter::~ContentBlockingEventRouter() {}
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.cc:381:  EventRouter* event_router = EventRouter::Get(browser_context_);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.cc:401:      new ContentBlockingEventRouter(browser_context_));
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.cc:402:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.cc:409:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:23:class ContentBlockingEventRouter
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:29:  explicit ContentBlockingEventRouter(content::BrowserContext* browser_context);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:30:  ~ContentBlockingEventRouter() override;
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:74:                           public EventRouter::Observer {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:86:  // EventRouter::Observer implementation.
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:101:  std::unique_ptr<ContentBlockingEventRouter> content_blocking_event_router_;
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:125:  DECLARE_EXTENSION_FUNCTION("contentBlocking.addKnownSourceFromURL",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:138:  DECLARE_EXTENSION_FUNCTION("contentBlocking.addKnownSourceFromFile",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:151:  DECLARE_EXTENSION_FUNCTION("contentBlocking.setKnownSourceSettings",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:164:  DECLARE_EXTENSION_FUNCTION("contentBlocking.enableSource",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:177:  DECLARE_EXTENSION_FUNCTION("contentBlocking.disableSource",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:190:  DECLARE_EXTENSION_FUNCTION("contentBlocking.fetchSourceNow",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:203:  DECLARE_EXTENSION_FUNCTION("contentBlocking.deleteKnownSource",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:216:  DECLARE_EXTENSION_FUNCTION("contentBlocking.resetPresetSources",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:229:  DECLARE_EXTENSION_FUNCTION("contentBlocking.getRuleSource",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:242:  DECLARE_EXTENSION_FUNCTION("contentBlocking.getRuleSources",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:255:  DECLARE_EXTENSION_FUNCTION("contentBlocking.setActiveExceptionsList",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:268:  DECLARE_EXTENSION_FUNCTION("contentBlocking.getActiveExceptionsList",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:281:  DECLARE_EXTENSION_FUNCTION("contentBlocking.addExceptionForDomain",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:294:  DECLARE_EXTENSION_FUNCTION("contentBlocking.removeExceptionForDomain",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:307:  DECLARE_EXTENSION_FUNCTION("contentBlocking.removeAllExceptions",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:320:  DECLARE_EXTENSION_FUNCTION("contentBlocking.getExceptions",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:333:  DECLARE_EXTENSION_FUNCTION("contentBlocking.getAllExceptionLists",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:346:  DECLARE_EXTENSION_FUNCTION("contentBlocking.getBlockedUrlsInfo",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:359:  DECLARE_EXTENSION_FUNCTION("contentBlocking.getAdBlockingStats",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:374:  DECLARE_EXTENSION_FUNCTION("contentBlocking.clearAdBlockingStats",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:387:  DECLARE_EXTENSION_FUNCTION("contentBlocking.isExemptOfFiltering",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:400:  DECLARE_EXTENSION_FUNCTION("contentBlocking.isExemptByPartnerURL",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:413:  DECLARE_EXTENSION_FUNCTION("contentBlocking.getAdAttributionDomain",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/content_blocking/content_blocking_api.h:427:  DECLARE_EXTENSION_FUNCTION(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/context_menu/context_menu_api.h:23:  DECLARE_EXTENSION_FUNCTION("contextMenu.show", CONTEXTMENU_SHOW)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/context_menu/context_menu_api.h:35:  DECLARE_EXTENSION_FUNCTION("contextMenu.update", CONTEXTMENU_UPDATE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/devtools/devtools_private_api.h:13:  DECLARE_EXTENSION_FUNCTION("devtoolsPrivate.getDockingStateSizes",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/devtools/devtools_private_api.h:26:  DECLARE_EXTENSION_FUNCTION("devtoolsPrivate.closeDevtools",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/devtools/devtools_private_api.h:39:  DECLARE_EXTENSION_FUNCTION("devtoolsPrivate.toggleDevtools",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/direct_match/direct_match_api.h:67:  DECLARE_EXTENSION_FUNCTION("directMatch.hide", DIRECT_MATCH_HIDE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/direct_match/direct_match_api.h:77:  DECLARE_EXTENSION_FUNCTION("directMatch.getPopularSites",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/direct_match/direct_match_api.h:88:  DECLARE_EXTENSION_FUNCTION("directMatch.getForCategory",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/direct_match/direct_match_api.h:99:  DECLARE_EXTENSION_FUNCTION("directMatch.resetHidden",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/doh/doh_functions.h:12:  DECLARE_EXTENSION_FUNCTION("dnsOverHttpsPrivate.dataFetcher",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/doh/doh_functions.h:26:  DECLARE_EXTENSION_FUNCTION("dnsOverHttpsPrivate.configTest",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/editcommand/editcommand_api.h:13:  DECLARE_EXTENSION_FUNCTION("editcommand.execute", EDITCOMMAND_EXECUTE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/events/vivaldi_ui_events.cc:411:// RenderWidgetHostInputEventRouter::FindViewAtLocation(), and it is simpler to
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/extension_action_utils/extension_action_utils_api.h:117:  DECLARE_EXTENSION_FUNCTION("extensionActionUtils.getToolbarExtensions",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/extension_action_utils/extension_action_utils_api.h:131:  DECLARE_EXTENSION_FUNCTION("extensionActionUtils.executeExtensionAction",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/extension_action_utils/extension_action_utils_api.h:144:  DECLARE_EXTENSION_FUNCTION("extensionActionUtils.removeExtension",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/extension_action_utils/extension_action_utils_api.h:158:  DECLARE_EXTENSION_FUNCTION("extensionActionUtils.showExtensionOptions",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/extension_action_utils/extension_action_utils_api.h:171:  DECLARE_EXTENSION_FUNCTION("extensionActionUtils.getExtensionMenu",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/extension_action_utils/extension_action_utils_api.h:184:  DECLARE_EXTENSION_FUNCTION("extensionActionUtils.executeMenuAction",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/extension_action_utils/extension_action_utils_api.h:197:  DECLARE_EXTENSION_FUNCTION("extensionActionUtils.showGlobalError",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/extension_action_utils/extension_action_utils_api.h:211:  DECLARE_EXTENSION_FUNCTION("extensionActionUtils.triggerGlobalErrors",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/guest_view/web_view_private_api.h:36:  DECLARE_EXTENSION_FUNCTION("webViewPrivate.getThumbnail",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/guest_view/web_view_private_api.h:63:  DECLARE_EXTENSION_FUNCTION("webViewPrivate.showPageInfo",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/guest_view/web_view_private_api.h:75:  DECLARE_EXTENSION_FUNCTION("webViewPrivate.setIsFullscreen",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/guest_view/web_view_private_api.h:87:  DECLARE_EXTENSION_FUNCTION("webViewPrivate.getPageHistory",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/guest_view/web_view_private_api.h:99:  DECLARE_EXTENSION_FUNCTION("webViewPrivate.allowBlockedInsecureContent",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/guest_view/web_view_private_api.h:111:  DECLARE_EXTENSION_FUNCTION("webViewPrivate.sendRequest",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/guest_view/web_view_private_api.h:123:  DECLARE_EXTENSION_FUNCTION("webViewPrivate.getPageSelection",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/history/history_private_api.cc:73:  EventRouter* event_router = EventRouter::Get(browser_context_);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/history/history_private_api.cc:81:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/history/history_private_api.cc:168:  history_event_router_.reset(new HistoryPrivateEventRouter(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/history/history_private_api.cc:171:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/history/history_private_api.cc:174:HistoryPrivateEventRouter::HistoryPrivateEventRouter(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/history/history_private_api.cc:182:HistoryPrivateEventRouter::~HistoryPrivateEventRouter() {}
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/history/history_private_api.cc:184:void HistoryPrivateEventRouter::OnURLsModified(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/history/history_private_api.cc:199:void HistoryPrivateEventRouter::DispatchEvent(Profile* profile,
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/history/history_private_api.cc:202:  if (profile && EventRouter::Get(profile)) {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/history/history_private_api.cc:203:    EventRouter::Get(profile)->BroadcastEvent(base::WrapUnique(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/history/history_private_api.h:25:class HistoryPrivateEventRouter : public history::HistoryServiceObserver {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/history/history_private_api.h:27:  HistoryPrivateEventRouter(Profile* profile,
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/history/history_private_api.h:29:  ~HistoryPrivateEventRouter() override;
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/history/history_private_api.h:45:                          public EventRouter::Observer {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/history/history_private_api.h:61:  // EventRouter::Observer implementation.
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/history/history_private_api.h:74:  std::unique_ptr<HistoryPrivateEventRouter> history_event_router_;
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/history/history_private_api.h:79:  DECLARE_EXTENSION_FUNCTION("historyPrivate.deleteVisits",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/history/history_private_api.h:95:  DECLARE_EXTENSION_FUNCTION("historyPrivate.getTopUrlsPerDay",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/history/history_private_api.h:114:  DECLARE_EXTENSION_FUNCTION("historyPrivate.visitSearch",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/history/history_private_api.h:126:  DECLARE_EXTENSION_FUNCTION("historyPrivate.updateTopSites",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/import_data/import_data_api.h:104:  DECLARE_EXTENSION_FUNCTION("importData.getProfiles", IMPORTDATA_GETPROFILES)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/import_data/import_data_api.h:118:  DECLARE_EXTENSION_FUNCTION("importData.startImport", IMPORTDATA_STARTIMPORT)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/import_data/import_data_api.h:141:   DECLARE_EXTENSION_FUNCTION("importData.openThunderbirdMailbox",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/import_data/import_data_api.h:153:   DECLARE_EXTENSION_FUNCTION("importData.closeThunderbirdMailbox",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/import_data/import_data_api.h:166:   DECLARE_EXTENSION_FUNCTION("importData.readMessageFromThunderbirdMailbox",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/infobars/infobars_api.h:14:  DECLARE_EXTENSION_FUNCTION("infobars.showInfobar",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/infobars/infobars_api.h:28:  DECLARE_EXTENSION_FUNCTION("infobars.sendButtonAction",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.cc:135:MailEventRouter::MailEventRouter(Profile* profile,
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.cc:142:MailEventRouter::~MailEventRouter() {}
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.cc:144:void MailEventRouter::OnMigrationProgress(MailClientService* service,
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.cc:152:void MailEventRouter::OnDeleteMessagesProgress(MailClientService* service,
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.cc:160:void MailEventRouter::DispatchEvent(Profile* profile,
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.cc:163:  if (profile && EventRouter::Get(profile)) {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.cc:164:    EventRouter* event_router = EventRouter::Get(profile);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.cc:174:  EventRouter* event_router = EventRouter::Get(browser_context_);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.cc:183:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.cc:198:  mail_client_event_router_ = std::make_unique<MailEventRouter>(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.cc:201:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:19:class MailEventRouter : public mail_client::MailClientModelObserver {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:21:  explicit MailEventRouter(Profile* profile, MailClientService* mail_service);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:22:  ~MailEventRouter() override;
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:45:class MailAPI : public BrowserContextKeyedAPI, public EventRouter::Observer {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:56:  // EventRouter::Observer implementation.
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:70:  std::unique_ptr<MailEventRouter> mail_client_event_router_;
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:84:  DECLARE_EXTENSION_FUNCTION("mailPrivate.getFilePaths", MAIL_GET_FILE_PATHS)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:98:  DECLARE_EXTENSION_FUNCTION("mailPrivate.getFullPath", MAIL_GET_FULL_PATH)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:110:  DECLARE_EXTENSION_FUNCTION("mailPrivate.getMailFilePaths",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:125:  DECLARE_EXTENSION_FUNCTION("mailPrivate.writeBufferToMessageFile",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:138:  DECLARE_EXTENSION_FUNCTION("mailPrivate.writeTextToMessageFile",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:151:  DECLARE_EXTENSION_FUNCTION("mailPrivate.deleteMessageFile",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:164:  DECLARE_EXTENSION_FUNCTION("mailPrivate.renameMessageFile",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:182:  DECLARE_EXTENSION_FUNCTION("mailPrivate.readFileToBuffer",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:195:  DECLARE_EXTENSION_FUNCTION("mailPrivate.readMessageFileToBuffer",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:208:  DECLARE_EXTENSION_FUNCTION("mailPrivate.messageFileExists",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:220:  DECLARE_EXTENSION_FUNCTION("mailPrivate.readFileToText",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:238:  DECLARE_EXTENSION_FUNCTION("mailPrivate.getFileDirectory",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:251:  DECLARE_EXTENSION_FUNCTION("mailPrivate.createFileDirectory",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:265:  DECLARE_EXTENSION_FUNCTION("mailPrivate.createMessages", MAIL_CREATE_MESSAGES)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:282:  DECLARE_EXTENSION_FUNCTION("mailPrivate.deleteMessages", MAIL_DELETE_MESSAGES)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:299:  DECLARE_EXTENSION_FUNCTION("mailPrivate.updateMessage", MAIL_UPDATE_MESSAGE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:315:  DECLARE_EXTENSION_FUNCTION("mailPrivate.searchMessages", MAIL_SEARCH_MESSAGES)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:332:  DECLARE_EXTENSION_FUNCTION("mailPrivate.matchMessage", MAIL_MATCH_MESSAGE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:349:  DECLARE_EXTENSION_FUNCTION("mailPrivate.getDBVersion", MAIL_GET_DB_VERSION)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:362:  DECLARE_EXTENSION_FUNCTION("mailPrivate.startMigration", MAIL_START_MIGRATION)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:375:  DECLARE_EXTENSION_FUNCTION("mailPrivate.deleteMailSearchDB",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:390:  DECLARE_EXTENSION_FUNCTION("mailPrivate.checkMailSearchDBHealth",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/mail/mail_private_api.h:404:  DECLARE_EXTENSION_FUNCTION("mailPrivate.getMailSearchDBCount",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/menubar/menubar_api.h:34:  DECLARE_EXTENSION_FUNCTION("menubar.getHasWindows", MENUBAR_GET_HAS_WINDOWS)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/menubar/menubar_api.h:46:  DECLARE_EXTENSION_FUNCTION("menubar.setup", MENUBAR_SETUP)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/menubar_menu/menubar_menu_api.h:73:  DECLARE_EXTENSION_FUNCTION("menubarMenu.show", MENUBARMENU_SHOW)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/menubar_menu/menubar_menu_api.h:85:  DECLARE_EXTENSION_FUNCTION("menubarMenu.getMaxId", MENUBARMENU_GET_MAX_ID)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/menu_content/menu_content_api.cc:118:  EventRouter* event_router = EventRouter::Get(browser_context_);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/menu_content/menu_content_api.cc:124:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/menu_content/menu_content_api.cc:146:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/menu_content/menu_content_api.h:21:                       public EventRouter::Observer,
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/menu_content/menu_content_api.h:30:  // EventRouter::Observer implementation.
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/menu_content/menu_content_api.h:67:  DECLARE_EXTENSION_FUNCTION("menuContent.get", MENUCONTENT_GET)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/menu_content/menu_content_api.h:84:  DECLARE_EXTENSION_FUNCTION("menuContent.move", MENUCONTENT_MOVE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/menu_content/menu_content_api.h:96:  DECLARE_EXTENSION_FUNCTION("menuContent.create", MENUCONTENT_CREATE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/menu_content/menu_content_api.h:108:  DECLARE_EXTENSION_FUNCTION("menuContent.remove", MENUCONTENT_REMOVE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/menu_content/menu_content_api.h:121:  DECLARE_EXTENSION_FUNCTION("menuContent.removeAction",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/menu_content/menu_content_api.h:138:  DECLARE_EXTENSION_FUNCTION("menuContent.update", MENUCONTENT_UPDATE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/menu_content/menu_content_api.h:151:  DECLARE_EXTENSION_FUNCTION("menuContent.reset", MENUCONTENT_RESET)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/menu_content/menu_content_api.h:167:  DECLARE_EXTENSION_FUNCTION("menuContent.resetAll", MENUCONTENT_RESET_ALL)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/notes/notes_api.cc:146:  EventRouter* event_router = EventRouter::Get(browser_context_);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/notes/notes_api.cc:158:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/notes/notes_api.cc:169:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/notes/notes_api.h:18:                 public EventRouter::Observer,
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/notes/notes_api.h:30:  // EventRouter::Observer implementation.
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/notes/notes_api.h:64:  DECLARE_EXTENSION_FUNCTION("notes.get", NOTES_GET)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/notes/notes_api.h:76:  DECLARE_EXTENSION_FUNCTION("notes.getTree", NOTES_GETTREE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/notes/notes_api.h:93:  DECLARE_EXTENSION_FUNCTION("notes.move", NOTES_MOVE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/notes/notes_api.h:104:  DECLARE_EXTENSION_FUNCTION("notes.search", NOTES_SEARCH)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/notes/notes_api.h:115:  DECLARE_EXTENSION_FUNCTION("notes.create", NOTES_CREATE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/notes/notes_api.h:126:  DECLARE_EXTENSION_FUNCTION("notes.update", NOTES_UPDATE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/notes/notes_api.h:137:  DECLARE_EXTENSION_FUNCTION("notes.remove", NOTES_REMOVE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/notes/notes_api.h:148:  DECLARE_EXTENSION_FUNCTION("notes.emptyTrash", NOTES_EMPTYTRASH)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/notes/notes_api.h:159:  DECLARE_EXTENSION_FUNCTION("notes.beginImport", NOTES_BEGINIMPORT)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/notes/notes_api.h:170:  DECLARE_EXTENSION_FUNCTION("notes.endImport", NOTES_ENDIMPORT)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/omnibox/omnibox_private_api.cc:48:  EventRouter* event_router = EventRouter::Get(browser_context_);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/omnibox/omnibox_private_api.cc:54:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/omnibox/omnibox_private_api.cc:75:  omnibox_event_router_.reset(new OmniboxEventRouter(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/omnibox/omnibox_private_api.cc:77:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/omnibox/omnibox_private_api.cc:80:OmniboxEventRouter::OmniboxEventRouter(Profile* profile,
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/omnibox/omnibox_private_api.cc:89:OmniboxEventRouter::~OmniboxEventRouter() {}
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/omnibox/omnibox_private_api.cc:92:void OmniboxEventRouter::DispatchEvent(Profile* profile,
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/omnibox/omnibox_private_api.cc:95:  if (profile && EventRouter::Get(profile)) {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/omnibox/omnibox_private_api.cc:96:    EventRouter::Get(profile)->BroadcastEvent(base::WrapUnique(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/omnibox/omnibox_private_api.cc:309:void OmniboxEventRouter::OnResultChanged(AutocompleteController* controller,
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/omnibox/omnibox_private_api.h:27:class OmniboxEventRouter : public OmniboxServiceObserver {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/omnibox/omnibox_private_api.h:29:  OmniboxEventRouter(Profile* profile, OmniboxService* omnibox_service);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/omnibox/omnibox_private_api.h:31:  ~OmniboxEventRouter() override;
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/omnibox/omnibox_private_api.h:50:                          public EventRouter::Observer {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/omnibox/omnibox_private_api.h:61:  // EventRouter::Observer implementation.
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/omnibox/omnibox_private_api.h:73:  std::unique_ptr<OmniboxEventRouter> omnibox_event_router_;
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/omnibox/omnibox_private_api.h:78:  DECLARE_EXTENSION_FUNCTION("omniboxPrivate.startOmnibox",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/omnibox/omnibox_private_api.h:90:   DECLARE_EXTENSION_FUNCTION("omniboxPrivate.addOrUpdateShortcut",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/omnibox/omnibox_private_api.h:102:   DECLARE_EXTENSION_FUNCTION("omniboxPrivate.deleteShortcut",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/page_actions/page_actions_api.cc:31:PageActionsEventRouter::PageActionsEventRouter(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/page_actions/page_actions_api.cc:39:void PageActionsEventRouter::OnScriptPathsChanged() {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/page_actions/page_actions_api.cc:45:void PageActionsEventRouter::OnScriptOverridesChanged(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/page_actions/page_actions_api.cc:57:PageActionsEventRouter::~PageActionsEventRouter() {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/page_actions/page_actions_api.cc:66:  EventRouter* event_router = EventRouter::Get(browser_context_);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/page_actions/page_actions_api.cc:86:      new PageActionsEventRouter(browser_context_));
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/page_actions/page_actions_api.cc:87:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/page_actions/page_actions_api.cc:92:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/page_actions/page_actions_api.h:18:class PageActionsEventRouter : page_actions::Service::Observer {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/page_actions/page_actions_api.h:20:  explicit PageActionsEventRouter(content::BrowserContext* browser_context);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/page_actions/page_actions_api.h:21:  PageActionsEventRouter(const PageActionsEventRouter& other) = delete;
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/page_actions/page_actions_api.h:22:  PageActionsEventRouter& operator=(const PageActionsEventRouter& other) =
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/page_actions/page_actions_api.h:24:  ~PageActionsEventRouter() override;
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/page_actions/page_actions_api.h:38:                       public EventRouter::Observer {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/page_actions/page_actions_api.h:51:  // EventRouter::Observer implementation.
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/page_actions/page_actions_api.h:66:  std::unique_ptr<PageActionsEventRouter> page_actions_event_router_;
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/page_actions/page_actions_api.h:90:  DECLARE_EXTENSION_FUNCTION("pageActions.getScripts", PAGE_ACTIONS_GET_SCRIPTS)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/page_actions/page_actions_api.h:105:  DECLARE_EXTENSION_FUNCTION("pageActions.setScriptOverrideForTab",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/page_actions/page_actions_api.h:121:  DECLARE_EXTENSION_FUNCTION("pageActions.getScriptOverridesForTab",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/prefs/prefs_api.h:85:  DECLARE_EXTENSION_FUNCTION("prefs.get", PREFS_GET)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/prefs/prefs_api.h:95:  DECLARE_EXTENSION_FUNCTION("prefs.set", PREFS_SET)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/prefs/prefs_api.h:105:  DECLARE_EXTENSION_FUNCTION("prefs.getForCache", PREFS_GET_FOR_CACHE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/prefs/prefs_api.h:115:  DECLARE_EXTENSION_FUNCTION("prefs.setLanguagePairToAlwaysTranslate",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/prefs/prefs_api.h:126:  DECLARE_EXTENSION_FUNCTION("prefs.setLanguageToNeverTranslate",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/prefs/prefs_api.h:137:  DECLARE_EXTENSION_FUNCTION("prefs.getTranslateSettings",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/prefs/prefs_api.h:148:  DECLARE_EXTENSION_FUNCTION("prefs.setSiteToNeverTranslate",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/prefs/prefs_api.h:159:  DECLARE_EXTENSION_FUNCTION("prefs.setTranslationDeclined",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/prefs/prefs_api.h:170:  DECLARE_EXTENSION_FUNCTION("prefs.resetTranslationPrefs",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/prefs/prefs_api.h:181:  DECLARE_EXTENSION_FUNCTION("prefs.resetAllToDefault", PREFS_RESETALLTODEFAULT)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/protonvpn/protonvpn_api.h:12:  DECLARE_EXTENSION_FUNCTION("protonvpn.getStatus", PROTONVPN_PRIVATE_GET_STATUS)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/reading_list/reading_list_api.h:57:  DECLARE_EXTENSION_FUNCTION("readingListPrivate.add",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/reading_list/reading_list_api.h:71:  DECLARE_EXTENSION_FUNCTION("readingListPrivate.remove",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/reading_list/reading_list_api.h:85:  DECLARE_EXTENSION_FUNCTION("readingListPrivate.getAll",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/reading_list/reading_list_api.h:99:  DECLARE_EXTENSION_FUNCTION("readingListPrivate.setReadStatus",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/runtime/runtime_api.h:36:  DECLARE_EXTENSION_FUNCTION("runtimePrivate.exit", RUNTIME_EXIT)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/runtime/runtime_api.h:47:  DECLARE_EXTENSION_FUNCTION("runtimePrivate.restart", RUNTIME_RESTART_VIVALDI)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/runtime/runtime_api.h:58:  DECLARE_EXTENSION_FUNCTION("runtimePrivate.getAllFeatureFlags",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/runtime/runtime_api.h:71:  DECLARE_EXTENSION_FUNCTION("runtimePrivate.isGuestSession",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/runtime/runtime_api.h:84:  DECLARE_EXTENSION_FUNCTION("runtimePrivate.hasGuestSession",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/runtime/runtime_api.h:97:  DECLARE_EXTENSION_FUNCTION("runtimePrivate.switchToGuestSession",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/runtime/runtime_api.h:110:  DECLARE_EXTENSION_FUNCTION("runtimePrivate.closeGuestSession",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/runtime/runtime_api.h:124:  DECLARE_EXTENSION_FUNCTION("runtimePrivate.openProfileSelectionWindow",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/runtime/runtime_api.h:137:  DECLARE_EXTENSION_FUNCTION("runtimePrivate.getUserProfiles",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/runtime/runtime_api.h:155:  DECLARE_EXTENSION_FUNCTION("runtimePrivate.openNamedProfile",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/runtime/runtime_api.h:168:  DECLARE_EXTENSION_FUNCTION("runtimePrivate.closeActiveProfile",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/runtime/runtime_api.h:181:  DECLARE_EXTENSION_FUNCTION("runtimePrivate.getUserProfileImages",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/runtime/runtime_api.h:194:  DECLARE_EXTENSION_FUNCTION("runtimePrivate.updateActiveProfile",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/runtime/runtime_api.h:207:  DECLARE_EXTENSION_FUNCTION("runtimePrivate.getProfileDefaults",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/runtime/runtime_api.h:220:  DECLARE_EXTENSION_FUNCTION("runtimePrivate.createProfile",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/runtime/runtime_api.h:239:  DECLARE_EXTENSION_FUNCTION("runtimePrivate.getProfileStatistics",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/runtime/runtime_api.h:258:  DECLARE_EXTENSION_FUNCTION("runtimePrivate.deleteProfile",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/runtime/runtime_api.h:271:  DECLARE_EXTENSION_FUNCTION("runtimePrivate.hasDesktopShortcut",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/savedpasswords/savedpasswords_api.h:23:  DECLARE_EXTENSION_FUNCTION("savedpasswords.getList", SAVEDPASSWORDS_GETLIST)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/savedpasswords/savedpasswords_api.h:44:  DECLARE_EXTENSION_FUNCTION("savedpasswords.remove", SAVEDPASSWORDS_REMOVE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/savedpasswords/savedpasswords_api.h:66:  DECLARE_EXTENSION_FUNCTION("savedpasswords.add", SAVEDPASSWORDS_ADD)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/savedpasswords/savedpasswords_api.h:79:  DECLARE_EXTENSION_FUNCTION("savedpasswords.get", SAVEDPASSWORDS_GET)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/savedpasswords/savedpasswords_api.h:98:  DECLARE_EXTENSION_FUNCTION("savedpasswords.createDelegate", SAVEDPASSWORDS_CREATEDELEGATE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/savedpasswords/savedpasswords_api.h:109:  DECLARE_EXTENSION_FUNCTION("savedpasswords.delete", SAVEDPASSWORDS_DELETE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/savedpasswords/savedpasswords_api.h:120:  DECLARE_EXTENSION_FUNCTION("savedpasswords.authenticate",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/search_engines/search_engines_api.h:49:  DECLARE_EXTENSION_FUNCTION("searchEngines.getKeywordForUrl",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/search_engines/search_engines_api.h:60:  DECLARE_EXTENSION_FUNCTION("searchEngines.getTemplateUrls",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/search_engines/search_engines_api.h:71:  DECLARE_EXTENSION_FUNCTION("searchEngines.addTemplateUrl",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/search_engines/search_engines_api.h:82:  DECLARE_EXTENSION_FUNCTION("searchEngines.removeTemplateUrl",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/search_engines/search_engines_api.h:93:  DECLARE_EXTENSION_FUNCTION("searchEngines.updateTemplateUrl",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/search_engines/search_engines_api.h:104:  DECLARE_EXTENSION_FUNCTION("searchEngines.moveTemplateUrl",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/search_engines/search_engines_api.h:115:  DECLARE_EXTENSION_FUNCTION("searchEngines.setDefault",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/search_engines/search_engines_api.h:126:  DECLARE_EXTENSION_FUNCTION("searchEngines.getSearchRequest",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/search_engines/search_engines_api.h:138:  DECLARE_EXTENSION_FUNCTION("searchEngines.repairPrepopulatedTemplateUrls",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/search_engines/search_engines_api.h:149:  DECLARE_EXTENSION_FUNCTION("searchEngines.getSwitchPromptData",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/search_engines/search_engines_api.h:160:  DECLARE_EXTENSION_FUNCTION("searchEngines.acknowledgeSwitchPrompt",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/search_engines/search_engines_api.h:171:  DECLARE_EXTENSION_FUNCTION("searchEngines.setIsActive",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sessions/vivaldi_sessions_api.h:69:  DECLARE_EXTENSION_FUNCTION("sessionsPrivate.add", SESSIONS_ADD)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sessions/vivaldi_sessions_api.h:85:  DECLARE_EXTENSION_FUNCTION("sessionsPrivate.getAll", SESSIONS_GETALL)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sessions/vivaldi_sessions_api.h:102:  DECLARE_EXTENSION_FUNCTION("sessionsPrivate.getAutosaveIds", SESSIONS_GET_AUTOSAVE_IDS)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sessions/vivaldi_sessions_api.h:114:  DECLARE_EXTENSION_FUNCTION("sessionsPrivate.getContent", SESSIONS_GET_CONTENT)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sessions/vivaldi_sessions_api.h:126:  DECLARE_EXTENSION_FUNCTION("sessionsPrivate.modifyContent", SESSIONS_MODIFY_CONTENT)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sessions/vivaldi_sessions_api.h:138:  DECLARE_EXTENSION_FUNCTION("sessionsPrivate.update", SESSIONS_UPDATE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sessions/vivaldi_sessions_api.h:151:  DECLARE_EXTENSION_FUNCTION("sessionsPrivate.open", SESSIONS_OPEN)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sessions/vivaldi_sessions_api.h:163:  DECLARE_EXTENSION_FUNCTION("sessionsPrivate.makeContainer", SESSIONS_MAKE_CONTAINER)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sessions/vivaldi_sessions_api.h:176:  DECLARE_EXTENSION_FUNCTION("sessionsPrivate.move", SESSIONS_MOVE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sessions/vivaldi_sessions_api.h:189:  DECLARE_EXTENSION_FUNCTION("sessionsPrivate.rename", SESSIONS_RENAME)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sessions/vivaldi_sessions_api.h:201:  DECLARE_EXTENSION_FUNCTION("sessionsPrivate.delete", SESSIONS_DELETE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sessions/vivaldi_sessions_api.h:213:  DECLARE_EXTENSION_FUNCTION("sessionsPrivate.emptyTrash", SESSIONS_EMPTY_TRASH)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sessions/vivaldi_sessions_api.h:225:  DECLARE_EXTENSION_FUNCTION("sessionsPrivate.restoreLastClosed",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sessions/vivaldi_sessions_api.h:239:  DECLARE_EXTENSION_FUNCTION("sessionsPrivate.restoreSyncTabs",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/settings/settings_api.h:17:  DECLARE_EXTENSION_FUNCTION("settings.setContentSetting",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/site_permissions/site_permissions_api.h:50:  DECLARE_EXTENSION_FUNCTION("sitePermissions.getAvailablePermissions",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/site_permissions/site_permissions_api.h:58:  DECLARE_EXTENSION_FUNCTION("sitePermissions.getOverriddenSites",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/site_permissions/site_permissions_api.h:66:  DECLARE_EXTENSION_FUNCTION("sitePermissions.getOverridesForSite",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/site_permissions/site_permissions_api.h:74:  DECLARE_EXTENSION_FUNCTION("sitePermissions.setSitePermission",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/site_permissions/site_permissions_api.h:82:  DECLARE_EXTENSION_FUNCTION("sitePermissions.resetSitePermissions",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.cc:323:SyncEventRouter::SyncEventRouter(Profile* profile) : profile_(profile) {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.cc:329:SyncEventRouter::~SyncEventRouter() {}
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.cc:331:void SyncEventRouter::OnStateChanged(syncer::SyncService* sync) {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.cc:338:void SyncEventRouter::OnSyncCycleCompleted(syncer::SyncService* sync) {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.cc:345:void SyncEventRouter::OnSyncShutdown(syncer::SyncService* sync) {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.cc:350:  EventRouter* event_router = EventRouter::Get(browser_context_);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.cc:370:      new SyncEventRouter(Profile::FromBrowserContext(browser_context_)));
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.cc:371:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.cc:381:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.h:32:class SyncEventRouter : public syncer::SyncServiceObserver {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.h:34:  explicit SyncEventRouter(Profile* profile);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.h:35:  ~SyncEventRouter() override;
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.h:46:class SyncAPI : public BrowserContextKeyedAPI, public EventRouter::Observer {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.h:57:  // EventRouter::Observer implementation.
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.h:75:  std::unique_ptr<SyncEventRouter> sync_event_router_;
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.h:82:  DECLARE_EXTENSION_FUNCTION("sync.start", SYNC_START)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.h:93:  DECLARE_EXTENSION_FUNCTION("sync.stop", SYNC_STOP)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.h:104:  DECLARE_EXTENSION_FUNCTION("sync.setEncryptionPassword",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.h:116:  DECLARE_EXTENSION_FUNCTION("sync.backupEncryptionToken",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.h:129:  DECLARE_EXTENSION_FUNCTION("sync.restoreEncryptionToken",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.h:142:  DECLARE_EXTENSION_FUNCTION("sync.getDefaultSessionName",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.h:156:  DECLARE_EXTENSION_FUNCTION("sync.setTypes", SYNC_SET_TYPES)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.h:167:  DECLARE_EXTENSION_FUNCTION("sync.getEngineState", SYNC_GET_ENGINE_STATE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.h:178:  DECLARE_EXTENSION_FUNCTION("sync.getLastCycleState",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.h:190:  DECLARE_EXTENSION_FUNCTION("sync.setupComplete", SYNC_SETUP_COMPLETE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/sync/sync_api.h:201:  DECLARE_EXTENSION_FUNCTION("sync.clearData", SYNC_CLEAR_DATA)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/tabs/tabs_private_api.h:246:  DECLARE_EXTENSION_FUNCTION("tabsPrivate.update", TABSPRIVATE_UPDATE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/tabs/tabs_private_api.h:260:  DECLARE_EXTENSION_FUNCTION("tabsPrivate.get", TABSPRIVATE_GET)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/tabs/tabs_private_api.h:274:  DECLARE_EXTENSION_FUNCTION("tabsPrivate.insertText", TABSPRIVATE_INSERTTEXT)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/tabs/tabs_private_api.h:287:  DECLARE_EXTENSION_FUNCTION("tabsPrivate.startDrag", TABSPRIVATE_STARTDRAG)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/tabs/tabs_private_api.h:310:  DECLARE_EXTENSION_FUNCTION("tabsPrivate.scrollPage", TABSPRIVATE_SCROLLPAGE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/tabs/tabs_private_api.h:323:  DECLARE_EXTENSION_FUNCTION("tabsPrivate.moveSpatnavRect",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/tabs/tabs_private_api.h:339:  DECLARE_EXTENSION_FUNCTION("tabsPrivate.activateSpatnavElement",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/tabs/tabs_private_api.h:354:  DECLARE_EXTENSION_FUNCTION("tabsPrivate.closeSpatnavOrCurrentOpenMenu",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/tabs/tabs_private_api.h:369:  DECLARE_EXTENSION_FUNCTION("tabsPrivate.hasBeforeUnloadOrUnload",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/tabs/tabs_private_api.h:383:  DECLARE_EXTENSION_FUNCTION("tabsPrivate.translatePage",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/tabs/tabs_private_api.h:397:  DECLARE_EXTENSION_FUNCTION("tabsPrivate.revertTranslatePage",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/tabs/tabs_private_api.h:411:  DECLARE_EXTENSION_FUNCTION("tabsPrivate.determineTextLanguage",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/tabs/tabs_private_api.h:426:  DECLARE_EXTENSION_FUNCTION("tabsPrivate.loadViaLifeCycleUnit",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/tabs/tabs_private_api.h:440:  DECLARE_EXTENSION_FUNCTION("tabsPrivate.getTabPerformanceData",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/tabs/tabs_private_api.h:454:  DECLARE_EXTENSION_FUNCTION("tabsPrivate.getSendTabToSelfEntries",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/tabs/tabs_private_api.h:469:  DECLARE_EXTENSION_FUNCTION("tabsPrivate.dismissSendTabToSelfEntries",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/tabs/tabs_private_api.h:483:  DECLARE_EXTENSION_FUNCTION("tabsPrivate.execSendTabToSelfAction",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/tabs/tabs_private_api.h:497:  DECLARE_EXTENSION_FUNCTION("tabsPrivate.getSendTabToSelfTargets",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/tabs/tabs_private_api.h:513:  DECLARE_EXTENSION_FUNCTION("tabsPrivate.sendSendTabToSelfTarget",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/theme/theme_private_api.h:49:  DECLARE_EXTENSION_FUNCTION("themePrivate.export", THEMEPRIVATE_EXPORT)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/theme/theme_private_api.h:65:  DECLARE_EXTENSION_FUNCTION("themePrivate.import", THEMEPRIVATE_IMPORT)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/theme/theme_private_api.h:81:  DECLARE_EXTENSION_FUNCTION("themePrivate.download", THEMEPRIVATE_DOWNLOAD)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/theme/theme_private_api.h:107:  DECLARE_EXTENSION_FUNCTION("themePrivate.getThemeData",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/thumbnails/thumbnails_api.h:25:  DECLARE_EXTENSION_FUNCTION("thumbnails.captureUI", THUMBNAILS_CAPTUREUI)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/thumbnails/thumbnails_api.h:43:  DECLARE_EXTENSION_FUNCTION("thumbnails.captureTab", THUMBNAILS_CAPTURETAB)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/thumbnails/thumbnails_api.h:57:  DECLARE_EXTENSION_FUNCTION("thumbnails.captureBookmark",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/translate_history/translate_history_api.cc:41:  EventRouter* event_router = EventRouter::Get(browser_context_);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/translate_history/translate_history_api.cc:53:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/translate_history/translate_history_api.cc:61:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/translate_history/translate_history_api.h:20:                            public EventRouter::Observer,
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/translate_history/translate_history_api.h:30:  // EventRouter::Observer implementation.
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/translate_history/translate_history_api.h:78:  DECLARE_EXTENSION_FUNCTION("translateHistory.get", TRANSLATEHISTORY_GET)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/translate_history/translate_history_api.h:90:  DECLARE_EXTENSION_FUNCTION("translateHistory.add", TRANSLATEHISTORY_ADD)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/translate_history/translate_history_api.h:102:  DECLARE_EXTENSION_FUNCTION("translateHistory.remove", TRANSLATEHISTORY_REMOVE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/translate_history/translate_history_api.h:114:  DECLARE_EXTENSION_FUNCTION("translateHistory.reset", TRANSLATEHISTORY_RESET)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_account/vivaldi_account_api.cc:78:VivaldiAccountEventRouter::VivaldiAccountEventRouter(Profile* profile)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_account/vivaldi_account_api.cc:86:VivaldiAccountEventRouter::~VivaldiAccountEventRouter() {}
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_account/vivaldi_account_api.cc:88:void VivaldiAccountEventRouter::OnVivaldiAccountUpdated() {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_account/vivaldi_account_api.cc:96:void VivaldiAccountEventRouter::OnTokenFetchSucceeded() {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_account/vivaldi_account_api.cc:104:void VivaldiAccountEventRouter::OnTokenFetchFailed() {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_account/vivaldi_account_api.cc:112:void VivaldiAccountEventRouter::OnAccountPasswordStateChanged() {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_account/vivaldi_account_api.cc:120:void VivaldiAccountEventRouter::OnVivaldiAccountShutdown() {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_account/vivaldi_account_api.cc:144:  EventRouter* event_router = EventRouter::Get(browser_context_);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_account/vivaldi_account_api.cc:152:  vivaldi_account_event_router_.reset(new VivaldiAccountEventRouter(
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_account/vivaldi_account_api.cc:154:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_account/vivaldi_account_api.cc:159:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_account/vivaldi_account_api.h:31:class VivaldiAccountEventRouter
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_account/vivaldi_account_api.h:35:  explicit VivaldiAccountEventRouter(Profile* profile);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_account/vivaldi_account_api.h:36:  ~VivaldiAccountEventRouter() override;
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_account/vivaldi_account_api.h:52:                          public EventRouter::Observer {
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_account/vivaldi_account_api.h:63:  // EventRouter::Observer implementation.
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_account/vivaldi_account_api.h:78:  std::unique_ptr<VivaldiAccountEventRouter> vivaldi_account_event_router_;
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_account/vivaldi_account_api.h:83:  DECLARE_EXTENSION_FUNCTION("vivaldiAccount.login", VIVALDI_ACCOUNT_LOGIN)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_account/vivaldi_account_api.h:94:  DECLARE_EXTENSION_FUNCTION("vivaldiAccount.logout", VIVALDI_ACCOUNT_LOGOUT)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_account/vivaldi_account_api.h:105:  DECLARE_EXTENSION_FUNCTION("vivaldiAccount.getState",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_account/vivaldi_account_api.h:117:  DECLARE_EXTENSION_FUNCTION("vivaldiAccount.setPendingRegistration",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_account/vivaldi_account_api.h:134:  DECLARE_EXTENSION_FUNCTION("vivaldiAccount.getPendingRegistration",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.cc:180:  EventRouter* event_router = EventRouter::Get(browser_context_);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.cc:246:  EventRouter::Get(browser_context_)->UnregisterObserver(this);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.cc:359:  PasswordsPrivateEventRouter* router =
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.cc:360:      PasswordsPrivateEventRouterFactory::GetForProfile(profile);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:43:                            public EventRouter::Observer,
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:65:  // EventRouter::Observer implementation.
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:203:  DECLARE_EXTENSION_FUNCTION("utilities.print", UTILITIES_PRINT)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:214:  DECLARE_EXTENSION_FUNCTION("utilities.clearCache", UTILITIES_CLEAR_CACHE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:226:  DECLARE_EXTENSION_FUNCTION("utilities.clearAllRecentlyClosedSessions",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:238:  DECLARE_EXTENSION_FUNCTION("utilities.clearRecentlyClosedTabs",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:250:  DECLARE_EXTENSION_FUNCTION("utilities.isTabInLastSession",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:265:  DECLARE_EXTENSION_FUNCTION("utilities.isUrlValid", UTILITIES_ISURLVALID)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:277:  DECLARE_EXTENSION_FUNCTION("utilities.canOpenUrlExternally",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:295:  DECLARE_EXTENSION_FUNCTION("utilities.getUrlFragments",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:310:  DECLARE_EXTENSION_FUNCTION("utilities.urlToThumbnailText",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:323:  DECLARE_EXTENSION_FUNCTION("utilities.getSelectedText",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:336:  DECLARE_EXTENSION_FUNCTION("utilities.selectFile", UTILITIES_SELECTFILE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:350:  DECLARE_EXTENSION_FUNCTION("utilities.openFolder", UTILITIES_OPEN_FOLDER)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:362:  DECLARE_EXTENSION_FUNCTION("utilities.selectLocalImage",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:385:  DECLARE_EXTENSION_FUNCTION("utilities.storeImage", UTILITIES_STOREIMAGE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:403:  DECLARE_EXTENSION_FUNCTION("utilities.cleanUnusedImages",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:416:  DECLARE_EXTENSION_FUNCTION("utilities.getVersion", UTILITIES_GETVERSION)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:427:  DECLARE_EXTENSION_FUNCTION("utilities.getEnvVars", UTILITIES_GET_ENV_VARS)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:438:  DECLARE_EXTENSION_FUNCTION("utilities.getMediaAvailableState",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:450:  DECLARE_EXTENSION_FUNCTION("utilities.setSharedData", UTILITIES_SETSHAREDDATA)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:462:  DECLARE_EXTENSION_FUNCTION("utilities.getSharedData", UTILITIES_GETSHAREDDATA)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:474:  DECLARE_EXTENSION_FUNCTION("utilities.takeMutex", UTILITIES_TAKEMUTEX)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:487:  DECLARE_EXTENSION_FUNCTION("utilities.releaseMutex", UTILITIES_RELEASEMUTEX)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:498:  DECLARE_EXTENSION_FUNCTION("utilities.getSystemDateFormat",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:514:  DECLARE_EXTENSION_FUNCTION("utilities.getSystemCountry",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:526:  DECLARE_EXTENSION_FUNCTION("utilities.setLanguage", UTILITIES_SETLANGUAGE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:537:  DECLARE_EXTENSION_FUNCTION("utilities.getLanguage", UTILITIES_GETLANGUAGE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:548:  DECLARE_EXTENSION_FUNCTION("utilities.setVivaldiAsDefaultBrowser",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:564:  DECLARE_EXTENSION_FUNCTION("utilities.isVivaldiDefaultBrowser",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:580:  DECLARE_EXTENSION_FUNCTION("utilities.launchNetworkSettings",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:592:  DECLARE_EXTENSION_FUNCTION("utilities.savePage", UTILITIES_SAVEPAGE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:603:  DECLARE_EXTENSION_FUNCTION("utilities.openPage", UTILITIES_OPENPAGE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:614:  DECLARE_EXTENSION_FUNCTION("utilities.broadcastMessage",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:626:  DECLARE_EXTENSION_FUNCTION("utilities.setDefaultContentSettings",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:638:  DECLARE_EXTENSION_FUNCTION("utilities.getDefaultContentSettings",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:650:  DECLARE_EXTENSION_FUNCTION("utilities.setBlockThirdPartyCookies",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:662:  DECLARE_EXTENSION_FUNCTION("utilities.getBlockThirdPartyCookies",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:674:  DECLARE_EXTENSION_FUNCTION("utilities.openTaskManager",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:686:  DECLARE_EXTENSION_FUNCTION("utilities.createQRCode", UTILITIES_CREATE_QR_CODE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:697:  DECLARE_EXTENSION_FUNCTION("utilities.getStartupAction",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:709:  DECLARE_EXTENSION_FUNCTION("utilities.setStartupAction",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:721:  DECLARE_EXTENSION_FUNCTION("utilities.canShowWhatsNewPage",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:733:  DECLARE_EXTENSION_FUNCTION("utilities.showPasswordDialog",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:744:  DECLARE_EXTENSION_FUNCTION("utilities.setDialogPosition",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:755:  DECLARE_EXTENSION_FUNCTION("utilities.isRazerChromaAvailable",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:766:  DECLARE_EXTENSION_FUNCTION("utilities.isRazerChromaReady",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:777:  DECLARE_EXTENSION_FUNCTION("utilities.setRazerChromaColor",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:788:  DECLARE_EXTENSION_FUNCTION("utilities.isDownloadManagerReady",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:799:  DECLARE_EXTENSION_FUNCTION("utilities.setContentSettings",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:810:  DECLARE_EXTENSION_FUNCTION("utilities.isDialogOpen", UTILITIES_IS_DIALOG_OPEN)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:820:  DECLARE_EXTENSION_FUNCTION("utilities.focusDialog", UTILITIES_FOCUS_DIALOG)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:830:  DECLARE_EXTENSION_FUNCTION("utilities.startChromecast",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:841:  DECLARE_EXTENSION_FUNCTION("utilities.generateQRCode",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:855:  DECLARE_EXTENSION_FUNCTION("utilities.getGAPIKey",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:866:  DECLARE_EXTENSION_FUNCTION("utilities.getGOAuthClientId",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:877:  DECLARE_EXTENSION_FUNCTION("utilities.getGOAuthClientSecret",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:888:  DECLARE_EXTENSION_FUNCTION("utilities.getMOAuthClientId",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:899:  DECLARE_EXTENSION_FUNCTION("utilities.getYOAuthClientId",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:910:  DECLARE_EXTENSION_FUNCTION("utilities.getYOAuthClientSecret",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:922:  DECLARE_EXTENSION_FUNCTION("utilities.getVivaldiNetOAuthClientSecret",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:933:  DECLARE_EXTENSION_FUNCTION("utilities.getVivaldiNetOAuthClientId",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:944:  DECLARE_EXTENSION_FUNCTION("utilities.getFOAuthClientId",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:955:  DECLARE_EXTENSION_FUNCTION("utilities.getAOLOAuthClientId",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:966:  DECLARE_EXTENSION_FUNCTION("utilities.getAOLOAuthClientSecret",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:977:  DECLARE_EXTENSION_FUNCTION("utilities.getOSGeolocationState",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:988:  DECLARE_EXTENSION_FUNCTION("utilities.openOSGeolocationSettings",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:999:  DECLARE_EXTENSION_FUNCTION("utilities.getCommandLineValue",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:1010:  DECLARE_EXTENSION_FUNCTION("utilities.osCrypt", UTILITIES_OS_CRYPT)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:1022:  DECLARE_EXTENSION_FUNCTION("utilities.osDecrypt", UTILITIES_OS_DECRYPT)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:1034:  DECLARE_EXTENSION_FUNCTION("utilities.translateText",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:1052:  DECLARE_EXTENSION_FUNCTION("utilities.showManageSSLCertificates",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:1063:  DECLARE_EXTENSION_FUNCTION("utilities.setProtocolHandling",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:1074:  DECLARE_EXTENSION_FUNCTION("utilities.browserWindowReady",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:1085:  DECLARE_EXTENSION_FUNCTION("utilities.readImage", UTILITIES_LOAD_IMAGE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:1102:  DECLARE_EXTENSION_FUNCTION("utilities.isRTL", UTILITIES_IS_RTL)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:1112:  DECLARE_EXTENSION_FUNCTION("utilities.emulateUserInput",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:1123:  DECLARE_EXTENSION_FUNCTION("utilities.isVivaldiPinnedToLaunchBar",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:1136:  DECLARE_EXTENSION_FUNCTION("utilities.pinVivaldiToLaunchBar",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:1149:  DECLARE_EXTENSION_FUNCTION("utilities.downloadsDrag",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:1160:  DECLARE_EXTENSION_FUNCTION("utilities.hasCommandLineSwitch",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:1171:  DECLARE_EXTENSION_FUNCTION("utilities.acknowledgeCrashedSession",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:1182:  DECLARE_EXTENSION_FUNCTION("utilities.silentlyInstallExtension",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:1196:  DECLARE_EXTENSION_FUNCTION("utilities.allowVPNIncognito",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:1207:  DECLARE_EXTENSION_FUNCTION("utilities.requestVivaldiSyncStatus",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:1218:  DECLARE_EXTENSION_FUNCTION("utilities.openPrivacyReportDialog",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:1229:  DECLARE_EXTENSION_FUNCTION("utilities.updatePrimarySelection",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:1240:  DECLARE_EXTENSION_FUNCTION("utilities.showAdditionalStartupPages",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/vivaldi_utilities/vivaldi_utilities_api.h:1252:  DECLARE_EXTENSION_FUNCTION("utilities.copyToClipboard",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/window/window_private_api.h:35:  DECLARE_EXTENSION_FUNCTION("windowPrivate.create", WINDOW_PRIVATE_CREATE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/window/window_private_api.h:51:  DECLARE_EXTENSION_FUNCTION("windowPrivate.getCurrentId",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/window/window_private_api.h:65:  DECLARE_EXTENSION_FUNCTION("windowPrivate.setState", WINDOW_PRIVATE_SET_STATE)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/window/window_private_api.h:79:  DECLARE_EXTENSION_FUNCTION("windowPrivate.updateMaximizeButtonPosition",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/window/window_private_api.h:93:  DECLARE_EXTENSION_FUNCTION("windowPrivate.getFocusedElementInfo",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/window/window_private_api.h:108:  DECLARE_EXTENSION_FUNCTION("windowPrivate.isOnScreenWithNotch",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/window/window_private_api.h:125:  DECLARE_EXTENSION_FUNCTION("windowPrivate.setControlButtonsPosition",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/window/window_private_api.h:142:  DECLARE_EXTENSION_FUNCTION("windowPrivate.performHapticFeedback",
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/zoom/zoom_api.cc:64:  EventRouter* event_router = EventRouter::Get(browser_context_);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/zoom/zoom_api.cc:74:  EventRouter* event_router = EventRouter::Get(browser_context_);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/zoom/zoom_api.cc:86:  EventRouter* event_router = EventRouter::Get(browser_context_);
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/zoom/zoom_api.h:19:                private EventRouter::Observer,
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/zoom/zoom_api.h:33:  // EventRouter::Observer implementation.
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/zoom/zoom_api.h:59:  DECLARE_EXTENSION_FUNCTION("zoom.setVivaldiUIZoom", ZOOM_SET_VIVALDI_UI_ZOOM)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/zoom/zoom_api.h:70:  DECLARE_EXTENSION_FUNCTION("zoom.getVivaldiUIZoom", ZOOM_GET_VIVALDI_UI_ZOOM)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/zoom/zoom_api.h:81:  DECLARE_EXTENSION_FUNCTION("zoom.setDefaultZoom", ZOOM_SET_DEFAULT_ZOOM)
+C:/Users/Acid/Documents/repo/Vivaldi-browser/extensions/api/zoom/zoom_api.h:92:  DECLARE_EXTENSION_FUNCTION("zoom.getDefaultZoom", ZOOM_GET_DEFAULT_ZOOM)

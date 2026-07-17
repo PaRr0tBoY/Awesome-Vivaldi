@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>a});const a={isValidEmail:e=>{if(!e||!e.MAIL_EMAIL)return!1;const t=e.MAIL_EMAIL.split("@");if(t&&2===t.length){const e=t[1].split(".");return!!(e&&e[1]&&e[1].length>1)}return!1}}

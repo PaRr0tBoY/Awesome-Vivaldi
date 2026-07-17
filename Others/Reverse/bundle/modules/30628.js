@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>o});var i=n(48868),s=n(5863);class o{static m3GetAll(){return i.Z.transaction("rw",[i.Z.searchList,i.Z.filters],(()=>i.Z.filters.where("[accountId+path]").equals([s.of,s.J8]).first().then((e=>{if(!e)throw new Error("Outbox filter not found");return i.Z.searchList.where("sourceFilterIds").equals(e.id).toArray()}))))}}

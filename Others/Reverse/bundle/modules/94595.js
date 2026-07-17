@@ -1,0 +1,1 @@
+"use strict";n.d(t,{M:()=>l,Z:()=>r});var i=n(92026),s=n(17885),o=n(10373);const a=/^(\s*javascript:)+/i;function r(e){const{textToStrip:t,caretPosition:n,selectionEnd:a,currentValue:r=""}=e,c=i.Z.get(s.kAddressBarStripJavascriptOnPaste),d=(0,o.iu)(r,t,n,a);return c&&l(d)?d.replace(/javascript:/gi,""):d}function l(e){return a.test(e)}

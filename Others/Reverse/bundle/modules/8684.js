@@ -1,0 +1,1 @@
+"use strict";n.d(t,{c:()=>i});function i(e){const t=new Notification(e.title,{body:e.body,icon:e.icon?e.icon:"/resources/icon_notifications.png",silent:Boolean(e.silent),tag:e.tag,renotify:!0});t.onclick=()=>{e.onClick&&e.onClick(),t.close()},setTimeout((()=>t.close()),e.timeout||18e4)}

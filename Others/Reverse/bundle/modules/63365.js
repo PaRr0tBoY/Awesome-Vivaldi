@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>a});var i=n(65398),s=n(33638);class o extends i.Z{_trash=[];getTrash(){return this._trash}isEmpty(){return 0===this._trash.length}dispatchAction(e){if("CHROME_SET_SESSION"===e.actionType)this._trash=e.session,this.emitChange()}}const a=new o(s.Z)

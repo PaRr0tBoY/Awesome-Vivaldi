@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>i});var a=n(92292);const r=(0,n(82786).M)();async function i(e,t){const n=await r();try{const r=await a.Z.windows.get(e),i=r.vivExtData&&JSON.parse(r.vivExtData)||{},o=JSON.stringify({...i,...t});await a.Z.windows.update(e,{vivExtData:o})}finally{n()}}

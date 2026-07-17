@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>o});var i=n(56371);const s="Ð",o=function(e,t,n){const o=Array.from(arguments);o[0]=s+o[0];let a=(0,i.Z)(...o);return a.startsWith(s)&&(a=a.substr(1)),{label:(0,i.Z)(...arguments),labelEnglish:a}}

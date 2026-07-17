@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>r});var a=function(){function e(e){this.f=e}return e.prototype["@@transducer/init"]=function(){throw new Error("init not implemented on XWrap")},e.prototype["@@transducer/result"]=function(e){return e},e.prototype["@@transducer/step"]=function(e,t){return this.f(e,t)},e}();function r(e){return new a(e)}

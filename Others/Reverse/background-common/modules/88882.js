@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>s});var a=n(81353),r=n(1230),i=n(27761),o=n(19324);const s=(0,a.Z)((0,r.Z)(["take"],i.Z,(function(e,t){return(0,o.Z)(0,e<0?1/0:e,t)})))
