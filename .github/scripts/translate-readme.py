@@ -1,157 +1,238 @@
 """
-README translator powered by OpenRouter API.
-Usage:
-  MODE=main   python3 translate-readme.py  # translate main README
-  MODE=80     python3 translate-readme.py  # translate Vivaldi 8.0 README
+README full-translation powered by OpenRouter API.
 
-Env vars: OPENROUTER_KEY, DIFF, ZH_CURRENT, MODE (main|80), OUTPUT_FILE
+Strategy:
+  1. Extract ALL paths/URLs from English README → replace with [PATH_NNN] tokens
+  2. Send tokenized text + repo file tree to AI for translation
+  3. Restore tokens → output is guaranteed path-safe (AI can't corrupt what isn't there)
+
+Usage:
+  python3 translate-readme.py <english_file> <output_file> [mode: main|80]
+
+Env vars: OPENROUTER_KEY, OPENROUTER_MODEL (optional)
 """
 import json, os, re, subprocess, sys
 
-# ============================================================
-# Path protection utilities
-# ============================================================
-PATH_PATTERN = re.compile(r'(?:\.\.?/[^\s<>"\'()\[\]]+|https?://[^\s<>"\'()\[\]]+)')
 
-def protect_paths(text):
-    """Replace all relative paths and URLs with __P0__, __P1__, ... placeholders.
-    Returns (protected_text, [original_paths_list])."""
-    paths = []
-    def _repl(m):
-        paths.append(m.group(0))
-        return f'__P{len(paths)-1}__'
-    protected = PATH_PATTERN.sub(_repl, text)
-    return protected, paths
+# ============================================================
+# Path tokenization
+# ============================================================
+# Match markdown links [text](url), images ![alt](url), bare URLs, and relative paths
+PATH_RE = re.compile(
+    r'(!?\[[^\]]*\]\([^)]+\))'         # [text](url) or ![alt](url)
+    r'|(https?://[^\s<>"\')\]]+)'       # bare http(s) URLs
+    r'|(src="[^"]+")'                   # src="..."
+    r'|(\.\.?/[^\s<>"\')\]]+)'          # relative paths like ./foo/bar
+)
 
-def restore_paths(text, paths):
-    """Replace __P0__, __P1__, ... placeholders back with original paths."""
+# Paths we never tokenize (these are placeholders in the README template)
+PRESERVE_PREFIXES = [
+    # Keep markdown anchor links like (#section) — they're not paths
+]
+
+
+def tokenize(text):
+    """Replace all paths/URLs with [PATH_NNN] tokens. Returns (tokenized_text, token_map)."""
+    token_map = {}  # token → original
+    counter = [0]
+
+    def replacer(m):
+        original = m.group(0)
+        token = f'[PATH_{counter[0]:03d}]'
+        token_map[token] = original
+        counter[0] += 1
+        return token
+
+    # Find and replace in order (important: replace from left to right)
+    result = PATH_RE.sub(replacer, text)
+
+    return result, token_map
+
+
+def detokenize(text, token_map):
+    """Replace [PATH_NNN] tokens back to original paths."""
     result = text
-    for i, original in enumerate(paths):
-        result = result.replace(f'__P{i}__', original)
+    for token, original in token_map.items():
+        result = result.replace(token, original)
     return result
 
-# ============================================================
-# Load inputs
-# ============================================================
-diff_text = os.environ.get('DIFF', '')
-zh_current = os.environ.get('ZH_CURRENT', '')
-mode = os.environ.get('MODE', 'main')
-output_file = os.environ.get('OUTPUT_FILE', '/tmp/translated_output.md')
-
-# Protect paths in both the diff and existing translation
-diff_protected, diff_paths = protect_paths(diff_text)
-zh_protected, zh_paths = protect_paths(zh_current)
-
-# Combined paths list for restoration later
-all_paths = diff_paths + zh_paths
 
 # ============================================================
-# Build prompt
+# Repo structure (file tree)
 # ============================================================
-if mode == '80':
-    header_nav = '[English](../../Vivaldi8.0Stable/README.md) | **简体中文**'
-else:
-    header_nav = '[English](../../README.md) | **简体中文**'
+def get_repo_structure():
+    """Generate a simplified file tree of the repo for AI context."""
+    important_dirs = [
+        '.', 'Doc', 'Doc/READMEZH', 'Doc/mod', 'Doc/modzh', 'Doc/dev',
+        'Others', 'Others/assets', 'Vivaldi8.0Stable',
+        'Vivaldi8.0Stable/CSS', 'Vivaldi8.0Stable/Javascripts',
+    ]
+    lines = []
+    for d in important_dirs:
+        if os.path.isdir(d):
+            files = sorted(os.listdir(d))[:30]  # cap per dir
+            lines.append(f'{d}/')
+            for f in files:
+                lines.append(f'  {f}')
+            if len(os.listdir(d)) > 30:
+                lines.append(f'  ... ({len(os.listdir(d))} files total)')
+    return '\n'.join(lines)
 
-prompt = f"""You are a README translator for a Vivaldi browser mod project.
 
-TASK: Apply the English diff to the existing Chinese translation. Only translate and update the changed parts based on the diff. Keep everything else completely identical.
+# ============================================================
+# Main
+# ============================================================
+def main():
+    if len(sys.argv) < 3:
+        print("Usage: python3 translate-readme.py <english_file> <output_file> [mode]", file=sys.stderr)
+        sys.exit(1)
 
-CRITICAL RULES:
-1. NEVER modify any file path, URL, or relative path — these are IDENTIFIERS, not text to translate
-2. NEVER modify image sources (src="..."), links ([...](...)), or HTML attributes
-3. NEVER modify code blocks, backtick-quoted text, bash commands, or file names
-4. NEVER translate "Vivaldi8.0Stable", "Vivaldi", variable names, or mod file names like "VividPeek.js"
-5. Keep all markdown structure, HTML tags, badges, anchor links (#xxx), and relative paths EXACTLY as-is
-6. The header navigation must stay: {header_nav}
-7. Output the COMPLETE updated Chinese README (not just the diff)
-8. No commentary, no code fences, just raw markdown
-9. If a markdown table has alignment markers (| :--- | :--- |), preserve them exactly
+    english_file = sys.argv[1]
+    output_file = sys.argv[2]
+    mode = sys.argv[3] if len(sys.argv) > 3 else 'main'
 
-ENGLISH DIFF (what changed):
+    if not os.path.exists(english_file):
+        print(f"::error::English file not found: {english_file}", file=sys.stderr)
+        sys.exit(1)
+
+    with open(english_file, 'r', encoding='utf-8') as f:
+        english_text = f.read()
+
+    if not english_text.strip():
+        print("::error::English README is empty", file=sys.stderr)
+        sys.exit(1)
+
+    # Step 1: Tokenize paths → AI can't corrupt them
+    tokenized_text, token_map = tokenize(english_text)
+    print(f"Tokenized {len(token_map)} paths/URLs", file=sys.stderr)
+
+    # Step 2: Get repo structure for context
+    repo_tree = get_repo_structure()
+
+    # Step 3: Build header navigation label
+    if mode == '80':
+        header_nav = '[English](../../Vivaldi8.0Stable/README.md) | **简体中文**'
+    else:
+        header_nav = '[English](../../README.md) | **简体中文**'
+
+    # Step 4: Build prompt
+    prompt = f"""You are translating a README for the Awesome Vivaldi browser mod project from English to Simplified Chinese.
+
+## Translation Rules
+
+1. Translate ALL English prose to natural Simplified Chinese (简体中文)
+2. [PATH_NNN] tokens are PATH PLACEHOLDERS — keep them EXACTLY as-is, DO NOT modify, reorder, translate, or delete them
+3. Keep ALL markdown structure intact (headings, lists, tables, code blocks, badges, HTML tags)
+4. DO NOT translate: "Vivaldi", "Vivaldi8.0Stable", "Awesome Vivaldi", file names (like "VividPeek.js"), variable names, bash commands, code
+5. Keep the header navigation as: {header_nav}
+6. Table alignment markers (| :--- | :--- |) must be preserved exactly
+7. Output ONLY the translated markdown — no commentary, no code fences, no explanations
+8. The project is at https://github.com/PaRr0tBoY/Awesome-Vivaldi
+
+## Repository Structure (for context)
+
+This is the file layout of the project. Use this to understand what paths are valid:
+
 ```
-{diff_protected}
+{repo_tree}
+```
+
+## English README to Translate
+
+```
+{tokenized_text}
 ```
 """
 
-if zh_protected:
-    prompt += f"""
-EXISTING CHINESE README:
-```
-{zh_protected}
-```"""
-else:
-    prompt += """
-EXISTING CHINESE README: (empty — translate the full diff as a new file)"""
+    # Step 5: Call OpenRouter API
+    api_key = os.environ.get('OPENROUTER_KEY', '')
+    if not api_key:
+        print("::error::OPENROUTER_KEY is not set", file=sys.stderr)
+        sys.exit(1)
 
-prompt += """
+    model = os.environ.get('OPENROUTER_MODEL', '').strip() or 'openrouter/free'
 
-IMPORTANT: Compare the diff against the existing Chinese file. Only modify sections that correspond to the changed lines in the diff. Copy everything else verbatim."""
+    print(f"Using model: {model}", file=sys.stderr)
+    print(f"Prompt size: {len(prompt)} chars", file=sys.stderr)
 
-# ============================================================
-# Call OpenRouter API
-# ============================================================
-api_key = os.environ.get('OPENROUTER_KEY', '')
-if not api_key:
-    print("::error::OPENROUTER_KEY is not set", file=sys.stderr)
-    sys.exit(1)
+    import time
+    start = time.time()
 
-model = os.environ.get('OPENROUTER_MODEL', '').strip() or 'openrouter/free'
+    # Configure payload based on model
+    payload_data = {
+        "model": model,
+        "messages": [{"role": "user", "content": prompt}]
+    }
 
-payload = json.dumps({
-    "model": model,
-    "messages": [{"role": "user", "content": prompt}]
-})
+    # For reasoning models, set max_tokens
+    if any(m in model.lower() for m in ['deepseek-r1', 'o1', 'o3', 'claude']):
+        payload_data["max_tokens"] = 16000
 
-try:
-    resp = subprocess.run(
-        ["curl", "-s", "-w", "\n%{http_code}",
-         "https://openrouter.ai/api/v1/chat/completions",
-         "-H", f"Authorization: Bearer {api_key}",
-         "-H", "Content-Type: application/json",
-         "-d", payload],
-        capture_output=True, text=True, timeout=120
-    )
-except subprocess.TimeoutExpired:
-    print("::error::API request timed out after 120s", file=sys.stderr)
-    sys.exit(1)
+    payload = json.dumps(payload_data)
 
-stdout = resp.stdout
-# Separate body and status code (last line)
-lines = stdout.strip().split('\n')
-http_code = lines[-1].strip()
-body = '\n'.join(lines[:-1])
+    try:
+        resp = subprocess.run(
+            ["curl", "-s", "-w", "\n%{http_code}",
+             "https://openrouter.ai/api/v1/chat/completions",
+             "-H", f"Authorization: Bearer {api_key}",
+             "-H", "Content-Type: application/json",
+             "-d", payload],
+            capture_output=True, text=True, timeout=180
+        )
+    except subprocess.TimeoutExpired:
+        print("::error::API request timed out after 180s", file=sys.stderr)
+        sys.exit(1)
 
-if http_code != "200":
-    print(f"::error::API returned HTTP {http_code}: {body}", file=sys.stderr)
-    sys.exit(1)
+    elapsed = time.time() - start
+    print(f"API response in {elapsed:.1f}s", file=sys.stderr)
 
-# Parse response
-try:
-    data = json.loads(body)
-    translated = data.get('choices', [{}])[0].get('message', {}).get('content', '')
-except (json.JSONDecodeError, KeyError, IndexError) as e:
-    print(f"::error::Failed to parse API response: {e}", file=sys.stderr)
-    print(body, file=sys.stderr)
-    sys.exit(1)
+    stdout = resp.stdout
+    lines = stdout.strip().split('\n')
+    http_code = lines[-1].strip()
+    body = '\n'.join(lines[:-1])
 
-if not translated or translated == 'null':
-    print("::error::Translation returned empty content", file=sys.stderr)
-    print(body, file=sys.stderr)
-    sys.exit(1)
+    if http_code != "200":
+        print(f"::error::API returned HTTP {http_code}: {body}", file=sys.stderr)
+        sys.exit(1)
 
-# ============================================================
-# Restore paths
-# ============================================================
-translated = restore_paths(translated, all_paths)
+    # Parse response
+    try:
+        data = json.loads(body)
+        translated = data.get('choices', [{}])[0].get('message', {}).get('content', '')
+    except (json.JSONDecodeError, KeyError, IndexError) as e:
+        print(f"::error::Failed to parse API response: {e}", file=sys.stderr)
+        print(body[:500], file=sys.stderr)
+        sys.exit(1)
 
-# Verify: if any __P remains, something went wrong
-remaining = re.findall(r'__P\d+__', translated)
-if remaining:
-    print(f"::warning::Found {len(remaining)} unreplaced path placeholders in translated output", file=sys.stderr)
+    if not translated or translated == 'null':
+        print("::error::Translation returned empty content", file=sys.stderr)
+        sys.exit(1)
 
-# Write output file
-with open(output_file, 'w', encoding='utf-8') as f:
-    f.write(translated)
+    # Step 6: Detokenize — restore original paths
+    translated = detokenize(translated, token_map)
 
-print(f"Translation ({mode}) completed successfully", file=sys.stderr)
+    # Step 7: Verify all tokens were restored
+    missing = re.findall(r'\[PATH_\d{3}\]', translated)
+    if missing:
+        print(f"::warning::{len(missing)} unreplaced tokens remain: {missing[:5]}", file=sys.stderr)
+        # Try to recover: these tokens might have been mangled by the AI
+        # Remove any remaining tokens so they don't appear in output
+        for token in set(missing):
+            if token in token_map:
+                translated = translated.replace(token, token_map[token])
+
+    # Final check
+    final_missing = re.findall(r'\[PATH_\d{3}\]', translated)
+    if final_missing:
+        print(f"::error::{len(final_missing)} unrecoverable tokens", file=sys.stderr)
+        sys.exit(1)
+
+    # Write output
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.write(translated)
+
+    print(f"Translation complete ({len(translated)} chars)", file=sys.stderr)
+
+
+if __name__ == '__main__':
+    main()

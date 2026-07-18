@@ -14,71 +14,75 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
-      - name: Detect changed READMEs
+      - name: Detect stale Chinese READMEs
         id: detect
         run: |
-          CHANGED=""
-          if git diff --name-only HEAD~1 HEAD | grep -qx "README.md"; then
-            CHANGED="${CHANGED}main"
-          fi
-          if git diff --name-only HEAD~1 HEAD | grep -qx "Vivaldi8.0Stable/README.md"; then
-            CHANGED="${CHANGED} 80"
-          fi
-          echo "changed=${CHANGED}" >> "$GITHUB_OUTPUT"
+          STALE=""
+
+          for target in "main:README.md:Doc/READMEZH/READMEMAIN.md" \
+                        "80:Vivaldi8.0Stable/README.md:Doc/READMEZH/README80.md"; do
+            LABEL="${target%%:*}"
+            REST="${target#*:}"
+            EN_FILE="${REST%%:*}"
+            ZH_FILE="${REST#*:}"
+
+            # Get last commit timestamp for English README
+            EN_TS=$(git log -1 --format=%ct -- "$EN_FILE" 2>/dev/null || echo "0")
+            # Get last commit timestamp for Chinese README (0 if never committed)
+            ZH_TS=$(git log -1 --format=%ct -- "$ZH_FILE" 2>/dev/null || echo "0")
+
+            if [ "$ZH_TS" -lt "$EN_TS" ]; then
+              STALE="${STALE}${LABEL} "
+              echo "::notice::$LABEL: Chinese is behind (EN=$EN_TS, ZH=$ZH_TS)"
+            else
+              echo "$LABEL: up to date (EN=$EN_TS, ZH=$ZH_TS)"
+            fi
+          done
+
+          echo "stale=${STALE}" >> "$GITHUB_OUTPUT"
 
       - name: Translate main README
-        if: contains(steps.detect.outputs.changed, 'main')
+        if: contains(steps.detect.outputs.stale, 'main')
         env:
           OPENROUTER_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
         run: |
-          export DIFF="$(git diff HEAD~1 HEAD -- README.md)"
-          export ZH_CURRENT="$(cat Doc/READMEZH/READMEMAIN.md)"
-          export MODE="main"
-          export OUTPUT_FILE="/tmp/translated_output.md"
+          python3 .github/scripts/translate-readme.py \
+            README.md \
+            /tmp/translated_main.md \
+            main
 
-          python3 .github/scripts/translate-readme.py
-
-          TRANSLATED="$(cat /tmp/translated_output.md)"
-          if [ -z "$TRANSLATED" ]; then
+          if [ ! -s /tmp/translated_main.md ]; then
             echo "::error::Translation produced empty output"
             exit 1
           fi
-          echo "$TRANSLATED" > Doc/READMEZH/READMEMAIN.md
+
+          cp /tmp/translated_main.md Doc/READMEZH/READMEMAIN.md
           echo "Updated Doc/READMEZH/READMEMAIN.md"
 
       - name: Translate Vivaldi 8.0 README
-        if: contains(steps.detect.outputs.changed, '80')
+        if: contains(steps.detect.outputs.stale, '80')
         env:
           OPENROUTER_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
         run: |
-          export DIFF="$(git diff HEAD~1 HEAD -- Vivaldi8.0Stable/README.md)"
-          export MODE="80"
-          export OUTPUT_FILE="/tmp/translated_output_80.md"
+          python3 .github/scripts/translate-readme.py \
+            Vivaldi8.0Stable/README.md \
+            /tmp/translated_80.md \
+            80
 
-          ZH_FILE="Doc/READMEZH/README80.md"
-          if [ ! -f "$ZH_FILE" ]; then
-            echo "::notice::README80.md does not exist yet. Creating from scratch via full translation."
-            export ZH_CURRENT=""
-          else
-            export ZH_CURRENT="$(cat "$ZH_FILE")"
-          fi
-
-          python3 .github/scripts/translate-readme.py
-
-          TRANSLATED="$(cat /tmp/translated_output_80.md)"
-          if [ -z "$TRANSLATED" ]; then
+          if [ ! -s /tmp/translated_80.md ]; then
             echo "::error::Translation produced empty output"
             exit 1
           fi
-          echo "$TRANSLATED" > "$ZH_FILE"
-          echo "Updated $ZH_FILE"
+
+          cp /tmp/translated_80.md Doc/READMEZH/README80.md
+          echo "Updated Doc/READMEZH/README80.md"
 
       - name: Commit changes
-        if: contains(steps.detect.outputs.changed, 'main') || contains(steps.detect.outputs.changed, '80')
+        if: contains(steps.detect.outputs.stale, 'main') || contains(steps.detect.outputs.stale, '80')
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -87,7 +91,8 @@ jobs:
 
           if git diff --cached --quiet; then
             echo "No changes to commit"
-          else
-            git commit -m "docs: auto-sync Chinese README translations"
-            git push
+            exit 0
           fi
+
+          git commit -m "docs: auto-sync Chinese README translations"
+          git push
