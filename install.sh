@@ -151,6 +151,7 @@ tr() {
             deploy_css_done)          echo "{0} 个 CSS 模组已部署到 user_mods/css/" ;;
             deploy_js_done)           echo "{0} 个 JS 模组已部署到 user_mods/js/" ;;
             deploy_success)           echo "安装完成! 请重启 Vivaldi 以生效." ;;
+            deploy_cleaned)          echo "清理了 {0} 个之前手动安装的模组." ;;
             post_vivaldi_running)     echo "Vivaldi 正在运行." ;;
             post_restart_prompt)      echo "是否现在重启 Vivaldi? [Y] 是  [N] 否" ;;
             post_launch_prompt)       echo "是否现在启动 Vivaldi? [Y] 是  [N] 否" ;;
@@ -293,6 +294,7 @@ tr() {
             deploy_css_done)          echo "{0} CSS mods deployed to user_mods/css/" ;;
             deploy_js_done)           echo "{0} JS mods deployed to user_mods/js/" ;;
             deploy_success)           echo "Installation complete! Restart Vivaldi to take effect." ;;
+            deploy_cleaned)          echo "Cleaned up {0} previously installed mod(s)." ;;
             post_vivaldi_running)     echo "Vivaldi is currently running." ;;
             post_restart_prompt)      echo "Restart Vivaldi now? [Y] Yes  [N] No" ;;
             post_launch_prompt)       echo "Launch Vivaldi now? [Y] Yes  [N] No" ;;
@@ -981,6 +983,8 @@ backup_window_html() {
 inject_mod_loader() {
     local vivaldi_dir="$1"; local html_path="$vivaldi_dir/window.html"
     echo "$(tr deploy_inject_start)"
+    # Strip old manual <script> tags (except injectMods.js) leftover from pre-installer installs
+    sed -i '/<script[^>]*src="[^"]*\.js"/{ /injectMods\.js/!d; }' "$html_path" 2>/dev/null || true
     if grep -q 'injectMods\.js' "$html_path" 2>/dev/null; then echo "$(tr deploy_inject_skip)"; return; fi
     { sed -i '' '/<body[^>]*>/a\
   <script src="injectMods.js"></script>' "$html_path" 2>/dev/null; } || { sed -i '/<body[^>]*>/a\  <script src="injectMods.js"></script>' "$html_path" 2>/dev/null; } || true
@@ -994,6 +998,22 @@ deploy_mod_files() {
     local user_mods_dir="$vivaldi_dir/user_mods"; local user_css_dir="$user_mods_dir/css"; local user_js_dir="$user_mods_dir/js"
     mkdir -p "$user_css_dir" "$user_js_dir"
     local source_css_dir="$source_dir/CSS"; local source_js_dir="$source_dir/Javascripts"
+
+    # Cleanup: remove known mod files from a previous manual install
+    # Same-name files get overwritten anyway, but this also handles orphans
+    local cleaned=0
+    for f in "$user_css_dir"/*.css; do
+        [ -f "$f" ] || continue
+        local bn; bn="$(basename "$f")"
+        [ -f "$source_css_dir/$bn" ] && { rm -f "$f"; cleaned=$((cleaned + 1)); }
+    done
+    for f in "$user_js_dir"/*.js; do
+        [ -f "$f" ] || continue
+        local bn; bn="$(basename "$f")"
+        [ "$bn" = "ModConfig.js" ] && continue
+        [ -f "$source_js_dir/$bn" ] && { rm -f "$f"; cleaned=$((cleaned + 1)); }
+    done
+    [ "$cleaned" -gt 0 ] && echo "$(trf deploy_cleaned "$cleaned")"
 
     # injectMods.js
     local inj_src="$source_dir/injectMods.js"

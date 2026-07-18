@@ -124,6 +124,7 @@ $Script:Loc = @{
 		deploy_css_done        = "{0} CSS mods deployed to user_mods/css/"
 		deploy_js_done         = "{0} JS mods deployed to user_mods/js/"
 		deploy_success         = "Installation complete! Restart Vivaldi to take effect."
+	deploy_cleaned         = "Cleaned up {0} previously installed mod(s)."
 
 		# ── Post-install ──
 		post_vivaldi_running   = "Vivaldi is currently running."
@@ -1184,7 +1185,20 @@ function Invoke-HtmlInjection {
 	Write-Host (tr deploy_inject_start)
 
 	$content = Get-Content -Raw -Path $htmlPath
-	if ($content -match 'injectMods\.js') {
+	$hasInjector = $content -match 'injectMods\.js'
+
+	# Strip any old manual <script> tags that reference known mod JS files
+	# (leftover from pre-installer manual installs).  Preserve injectMods.js.
+	$scriptPattern = '\s*<script\s+src="(?!injectMods\.js)([^"]+\.js)"[^>]*>\s*</script>\s*'
+	$stripped = $content -replace $scriptPattern, "`r`n"
+	# Also catch self-closing variants
+	$stripped = $stripped -replace '\s*<script\s+src="(?!injectMods\.js)([^"]+\.js)"[^>]*/>\s*', "`r`n"
+	if ($stripped -ne $content) {
+		$content = $stripped
+		Write-Host "  Old manual script tags removed."
+	}
+
+	if ($hasInjector) {
 		Write-Host (tr deploy_inject_skip)
 		return
 	}
@@ -1223,6 +1237,28 @@ function Deploy-ModFiles {
 		Write-Host "  $_"
 		return
 	}
+
+	# ── Cleanup: remove any known mod files from a previous manual install ──
+	#   Same-name files would be overwritten by Copy-Item -Force anyway, but
+	#   this also cleans orphans (mods that were in the pack before but aren't
+	#   selected now).  Unknown files (user's own custom mods) are left alone.
+	$cleaned = 0
+	foreach ($known in $Script:ModCssFiles) {
+		$existing = Join-Path $userCssDir $known
+		if (Test-Path $existing) {
+			Remove-Item $existing -Force -ErrorAction SilentlyContinue
+			$cleaned++
+		}
+	}
+	foreach ($known in $Script:ModJsFiles) {
+		if ($known -eq "ModConfig.js") { continue }  # always keep core
+		$existing = Join-Path $userJsDir $known
+		if (Test-Path $existing) {
+			Remove-Item $existing -Force -ErrorAction SilentlyContinue
+			$cleaned++
+		}
+	}
+	if ($cleaned -gt 0) { Write-Host (trf deploy_cleaned $cleaned) }
 
 	$sourceCssDir = Join-Path $SourceDir "CSS"
 	$sourceJsDir  = Join-Path $SourceDir "Javascripts"
