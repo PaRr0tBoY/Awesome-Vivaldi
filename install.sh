@@ -114,6 +114,7 @@ tr() {
             summary_js_mods)          echo "JS 模组" ;;
             confirm_deploy_hint)      echo "ENTER 部署 | LEFT/RIGHT 切换页面 | L 语言 | ESC/Q 退出" ;;
             manage_confirm_title)     echo "变更确认" ;;
+            manage_applying)         echo "正在应用更改..." ;;
             manage_new_mods)          echo "新增安装" ;;
             manage_removed_mods)      echo "将要卸载" ;;
             manage_unchanged_mods)    echo "保持不变" ;;
@@ -255,6 +256,7 @@ tr() {
             summary_js_mods)          echo "JS mods" ;;
             confirm_deploy_hint)      echo "ENTER to deploy | LEFT/RIGHT switch page | L lang | ESC/Q quit" ;;
             manage_confirm_title)     echo "Confirm Changes" ;;
+            manage_applying)         echo "Applying changes..." ;;
             manage_new_mods)          echo "New mods to install" ;;
             manage_removed_mods)      echo "Mods to remove" ;;
             manage_unchanged_mods)    echo "Unchanged mods" ;;
@@ -423,6 +425,16 @@ clear_content() {
     local buf="${e}[$((BANNER_LINES + 1));0H${e}[J"
     tty_printf "%s" "$buf"
     LAST_FRAME_LINES=0
+}
+
+test_writable() {
+    local dir="$1"
+    local test_file="$dir/.awesome-vivaldi-write-test"
+    if echo "test" > "$test_file" 2>/dev/null; then
+        rm -f "$test_file" 2>/dev/null
+        return 0
+    fi
+    return 1
 }
 
 exit_installer() {
@@ -1256,7 +1268,22 @@ install_flow() {
         esac
     done
 
-    clear_content
+    # Permission check before touching Vivaldi's directory
+    if ! test_writable "$vivaldi_dir"; then
+        local sb="${e}[1;31m$(tr error_permission)${e}[0m"$'\n'
+        sb+="  $(tr target_path): $vivaldi_dir"$'\n'
+        sb+="${e}[90m$(tr error_admin_required)${e}[0m"$'\n\n'
+        sb+="  ${e}[90m$(tr key_exit)${e}[0m"$'\n'
+        write_frame "$sb"; read_key > /dev/null
+        return 1
+    fi
+
+    # Show deploying status in frame
+    local dsb="${e}[1m$(tr deploy_start)${e}[0m"$'\n'
+    dsb+="  $(tr target_path): $vivaldi_dir"$'\n\n'
+    write_frame "$dsb"
+
+    # Deploy — output goes below frame while status stays in view
     backup_window_html "$vivaldi_dir"
     deploy_mod_files "$source_dir" "$vivaldi_dir" "" "$final_css" "$final_js"
     inject_mod_loader "$vivaldi_dir"
@@ -1362,7 +1389,22 @@ manage_flow() {
         esac
     done
 
-    clear_content
+    # Permission check before touching Vivaldi's directory
+    if ! test_writable "$vivaldi_dir"; then
+        local sb="${e}[1;31m$(tr error_permission)${e}[0m"$'\n'
+        sb+="  $(tr target_path): $vivaldi_dir"$'\n'
+        sb+="${e}[90m$(tr error_admin_required)${e}[0m"$'\n\n'
+        sb+="  ${e}[90m$(tr key_exit)${e}[0m"$'\n'
+        write_frame "$sb"; read_key > /dev/null
+        return 1
+    fi
+
+    # Show deploying status in frame
+    local dsb="${e}[1m$(tr manage_applying)${e}[0m"$'\n'
+    dsb+="  $(tr target_path): $vivaldi_dir"$'\n\n'
+    write_frame "$dsb"
+
+    # Deploy — output goes below frame while status stays in view
     local user_css_dir="$vivaldi_dir/user_mods/css"; local user_js_dir="$vivaldi_dir/user_mods/js"
     for m in $removed_css; do [ -z "$m" ] && continue; rm -f "$user_css_dir/$m"; echo "  ${e}[31m- $m${e}[0m"; done
     for m in $removed_js; do [ -z "$m" ] && continue; rm -f "$user_js_dir/$m"; echo "  ${e}[31m- $m${e}[0m"; done
