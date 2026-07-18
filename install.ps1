@@ -81,6 +81,7 @@ $Script:Loc = @{
 
 		# ── Manage summary ──
 		manage_confirm_title  = "Confirm Changes"
+		manage_applying       = "Applying changes..."
 		manage_new_mods       = "New mods to install"
 		manage_removed_mods   = "Mods to remove"
 		manage_unchanged_mods = "Unchanged mods"
@@ -410,6 +411,18 @@ function Read-TuiKey {
 		68 { return 'D' }
 		81 { return 'Q' }
 		default { return 'OTHER' }
+	}
+}
+
+function Test-Writable {
+	param([string]$Path)
+	try {
+		$testFile = Join-Path $Path ".awesome-vivaldi-write-test"
+		"test" | Out-File -FilePath $testFile -ErrorAction Stop
+		Remove-Item $testFile -Force -ErrorAction SilentlyContinue
+		return $true
+	} catch {
+		return $false
 	}
 }
 
@@ -2144,17 +2157,34 @@ function Invoke-InstallFlow {
 					$pagesConfirmed[2] = $false
 					continue
 				}
-				if ($pagesConfirmed[2]) {
-					$pagesConfirmed[2] = $true
-					break
-				}
-				$pagesConfirmed[2] = $true
-				continue
+				# Deploy immediately on ENTER — exit outer while
+				break
 			}
 		}
 	}
 
-	Clear-ContentArea
+	# Permission check before touching Vivaldi's directory
+	if (-not (Test-Writable $Target.VivaldiDir)) {
+		$sb = [Text.StringBuilder]::new()
+		[void]$sb.AppendLine()
+		[void]$sb.AppendLine("  $e[1;31m$(tr error_permission)$e[0m")
+		[void]$sb.AppendLine("  $(tr target_path): $($Target.VivaldiDir)")
+		$elevationMsg = if ($Target.IsSystem) { "  $e[90m$(tr error_admin_required)$e[0m" } else { '' }
+		if ($elevationMsg) { [void]$sb.AppendLine($elevationMsg) }
+		[void]$sb.AppendLine()
+		[void]$sb.AppendLine("  $e[90m$(tr key_exit)$e[0m")
+		Write-FrameContent $sb.ToString()
+		Read-TuiKey | Out-Null
+		return $null
+	}
+
+	# Show deploying status in frame
+	$sb = [Text.StringBuilder]::new()
+	[void]$sb.AppendLine()
+	[void]$sb.AppendLine("  $e[1m$(tr deploy_start)$e[0m")
+	[void]$sb.AppendLine("  $(tr target_path): $($Target.VivaldiDir)")
+	[void]$sb.AppendLine()
+	Write-FrameContent $sb.ToString()
 
 	# Deploy
 	Backup-WindowHtml -VivaldiDir $Target.VivaldiDir -PersistentDir $Target.PersistentDir
@@ -2336,14 +2366,34 @@ function Invoke-ManageFlow {
 					$pagesConfirmed[2] = $false
 					continue
 				}
-				if ($pagesConfirmed[2]) { break }
-				$pagesConfirmed[2] = $true
-				continue
+				# Deploy immediately on ENTER — exit outer while
+				break
 			}
 		}
 	}
 
-	Clear-ContentArea
+	# Permission check before touching Vivaldi's directory
+	if (-not (Test-Writable $Target.VivaldiDir)) {
+		$sb = [Text.StringBuilder]::new()
+		[void]$sb.AppendLine()
+		[void]$sb.AppendLine("  $e[1;31m$(tr error_permission)$e[0m")
+		[void]$sb.AppendLine("  $(tr target_path): $($Target.VivaldiDir)")
+		$elevationMsg = if ($Target.IsSystem) { "  $e[90m$(tr error_admin_required)$e[0m" } else { '' }
+		if ($elevationMsg) { [void]$sb.AppendLine($elevationMsg) }
+		[void]$sb.AppendLine()
+		[void]$sb.AppendLine("  $e[90m$(tr key_exit)$e[0m")
+		Write-FrameContent $sb.ToString()
+		Read-TuiKey | Out-Null
+		return $null
+	}
+
+	# Show deploying status in frame
+	$sb = [Text.StringBuilder]::new()
+	[void]$sb.AppendLine()
+	[void]$sb.AppendLine("  $e[1m$(tr manage_applying)$e[0m")
+	[void]$sb.AppendLine("  $(tr target_path): $($Target.VivaldiDir)")
+	[void]$sb.AppendLine()
+	Write-FrameContent $sb.ToString()
 
 	# Remove unchecked mods from disk
 	$vivaldiDir = $Target.VivaldiDir
