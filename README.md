@@ -233,7 +233,7 @@ Install https://github.com/PaRr0tBoY/Awesome-Vivaldi for me.
 
 ## Documentation
 
-Browse the full documentation portal at **[parr0tboy.github.io/docs/](https://parr0tboy.github.io/docs/)** — design philosophy, mod architecture deep-dives, API references, and reverse-engineered Vivaldi internals.
+Browse the full documentation portal at **[Doc](https://parr0tboy.github.io/docs/)** — design philosophy, mod architecture deep-dives, API references, and reverse-engineered Vivaldi internals.
 
 ---
 
