@@ -1,4 +1,4 @@
-name: Test Minimal
+name: Test Heredoc
 
 on:
   push:
@@ -9,5 +9,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Hello
-        run: echo "hello world"
+      - name: Test heredoc with python
+        run: |
+          python3 << 'PYEOF'
+import sys
+print("hello from python heredoc", file=sys.stderr)
+PYEOF
+          echo "done"
