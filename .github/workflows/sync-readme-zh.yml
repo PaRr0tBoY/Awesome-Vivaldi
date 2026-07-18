@@ -29,17 +29,27 @@ jobs:
             EN_FILE="${REST%%:*}"
             ZH_FILE="${REST#*:}"
 
-            # Get last commit timestamp for English README
-            EN_TS=$(git log -1 --format=%ct -- "$EN_FILE" 2>/dev/null || echo "0")
-            # Get last commit timestamp for Chinese README (0 if never committed)
-            ZH_TS=$(git log -1 --format=%ct -- "$ZH_FILE" 2>/dev/null || echo "0")
+            # Get current English README commit hash
+            EN_SHA=$(git log -1 --format=%H -- "$EN_FILE" 2>/dev/null || echo "0000000")
 
-            if [ "$ZH_TS" -lt "$EN_TS" ]; then
-              STALE="${STALE}${LABEL} "
-              echo "::notice::$LABEL: Chinese is behind (EN=$EN_TS, ZH=$ZH_TS)"
+            # Extract the source-commit marker from Chinese README
+            if [ -f "$ZH_FILE" ]; then
+              ZH_SOURCE=$(grep -oP '<!-- source-commit: \K[a-f0-9]+' "$ZH_FILE" 2>/dev/null || echo "none")
             else
-              echo "$LABEL: up to date (EN=$EN_TS, ZH=$ZH_TS)"
+              ZH_SOURCE="missing"
             fi
+
+            if [ "$EN_SHA" != "$ZH_SOURCE" ]; then
+              STALE="${STALE}${LABEL} "
+              echo "::notice::$LABEL stale (EN=$EN_SHA, ZH=$ZH_SOURCE)"
+            else
+              echo "$LABEL: up to date"
+            fi
+
+            # Store the source commit hash for the translation step
+            # Output name: main_source_sha or v80_source_sha
+            [ "$LABEL" = "80" ] && OUTKEY="v80_source_sha" || OUTKEY="${LABEL}_source_sha"
+            echo "${OUTKEY}=${EN_SHA}" >> "$GITHUB_OUTPUT"
           done
 
           echo "stale=${STALE}" >> "$GITHUB_OUTPUT"
@@ -49,6 +59,7 @@ jobs:
         env:
           OPENROUTER_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
+          SOURCE_COMMIT: ${{ steps.detect.outputs.main_source_sha }}
         run: |
           python3 .github/scripts/translate-readme.py \
             README.md \
@@ -60,7 +71,7 @@ jobs:
             exit 1
           fi
 
-          cp /tmp/translated_main.md Doc/READMEZH/READMEMAIN.md
+          mv /tmp/translated_main.md Doc/READMEZH/READMEMAIN.md
           echo "Updated Doc/READMEZH/READMEMAIN.md"
 
       - name: Translate Vivaldi 8.0 README
@@ -68,6 +79,7 @@ jobs:
         env:
           OPENROUTER_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
+          SOURCE_COMMIT: ${{ steps.detect.outputs.v80_source_sha }}
         run: |
           python3 .github/scripts/translate-readme.py \
             Vivaldi8.0Stable/README.md \
@@ -79,7 +91,7 @@ jobs:
             exit 1
           fi
 
-          cp /tmp/translated_80.md Doc/READMEZH/README80.md
+          mv /tmp/translated_80.md Doc/READMEZH/README80.md
           echo "Updated Doc/READMEZH/README80.md"
 
       - name: Commit changes

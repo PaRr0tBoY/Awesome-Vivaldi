@@ -227,6 +227,11 @@ This is the file layout of the project. Use this to understand what paths are va
         print(f"::error::{len(final_missing)} unrecoverable tokens", file=sys.stderr)
         sys.exit(1)
 
+    # Prepend source-commit marker for staleness detection
+    source_commit = os.environ.get('SOURCE_COMMIT', '').strip()
+    if source_commit:
+        translated = f'<!-- source-commit: {source_commit} -->\n{translated}'
+
     # Write output
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(translated)
