@@ -170,47 +170,67 @@ This is the file layout of the project. Use this to understand what paths are va
 
     payload = json.dumps(payload_data)
 
-    try:
-        resp = subprocess.run(
-            ["curl", "-s", "-w", "\n%{http_code}",
-             "https://openrouter.ai/api/v1/chat/completions",
-             "-H", f"Authorization: Bearer {api_key}",
-             "-H", "Content-Type: application/json",
-             "-d", payload],
-            capture_output=True, text=True, timeout=180
-        )
-    except subprocess.TimeoutExpired:
-        print("::error::API request timed out after 180s", file=sys.stderr)
-        sys.exit(1)
+    # Retry loop for transient API failures (free tier rate limits, etc.)
+    MAX_RETRIES = 3
+    RETRY_DELAY = 3  # seconds
 
-    elapsed = time.time() - start
-    print(f"API response in {elapsed:.1f}s", file=sys.stderr)
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            resp = subprocess.run(
+                ["curl", "-s", "-w", "\n%{http_code}",
+                 "https://openrouter.ai/api/v1/chat/completions",
+                 "-H", f"Authorization: Bearer {api_key}",
+                 "-H", "Content-Type: application/json",
+                 "-d", payload],
+                capture_output=True, text=True, timeout=180
+            )
+        except subprocess.TimeoutExpired:
+            print(f"::warning::API request timed out (attempt {attempt}/{MAX_RETRIES})", file=sys.stderr)
+            if attempt < MAX_RETRIES:
+                time.sleep(RETRY_DELAY)
+                continue
+            print("::error::API request timed out after all retries", file=sys.stderr)
+            sys.exit(1)
 
-    stdout = resp.stdout
-    lines = stdout.strip().split('\n')
-    http_code = lines[-1].strip()
-    body = '\n'.join(lines[:-1])
+        elapsed = time.time() - start
+        print(f"API response in {elapsed:.1f}s (attempt {attempt}/{MAX_RETRIES})", file=sys.stderr)
 
-    if http_code != "200":
-        print(f"::error::API returned HTTP {http_code}: {body}", file=sys.stderr)
-        sys.exit(1)
+        stdout = resp.stdout
+        lines = stdout.strip().split('\n')
+        http_code = lines[-1].strip()
+        body = '\n'.join(lines[:-1])
 
-    # Parse response
-    try:
-        data = json.loads(body)
-        translated = data.get('choices', [{}])[0].get('message', {}).get('content', '')
-    except (json.JSONDecodeError, KeyError, IndexError) as e:
-        print(f"::error::Failed to parse API response: {e}", file=sys.stderr)
-        print(body[:500], file=sys.stderr)
-        sys.exit(1)
+        if http_code != "200":
+            print(f"::warning::API returned HTTP {http_code} (attempt {attempt}/{MAX_RETRIES})", file=sys.stderr)
+            if attempt < MAX_RETRIES:
+                time.sleep(RETRY_DELAY)
+                continue
+            print(f"::error::API returned HTTP {http_code}: {body[:300]}", file=sys.stderr)
+            sys.exit(1)
 
-    if not translated or translated == 'null':
-        print("::warning::Translation returned empty content", file=sys.stderr)
-        # Print finish_reason for debugging
+        # Parse response
+        try:
+            data = json.loads(body)
+            translated = data.get('choices', [{}])[0].get('message', {}).get('content', '')
+        except (json.JSONDecodeError, KeyError, IndexError) as e:
+            print(f"::warning::Failed to parse API response (attempt {attempt}/{MAX_RETRIES}): {e}", file=sys.stderr)
+            print(f"::debug::Body: {body[:200]}", file=sys.stderr)
+            if attempt < MAX_RETRIES:
+                time.sleep(RETRY_DELAY)
+                continue
+            print(f"::error::Failed to parse API response after all retries: {e}", file=sys.stderr)
+            sys.exit(1)
+
+        if translated and translated != 'null':
+            break  # Success!
+
+        print(f"::warning::Translation returned empty content (attempt {attempt}/{MAX_RETRIES})", file=sys.stderr)
         finish = data.get('choices', [{}])[0].get('finish_reason', 'unknown')
-        print(f"::warning::Finish reason: {finish}, model: {model}", file=sys.stderr)
-        # Print first 500 chars of raw response for debugging
-        print(f"::debug::Raw response snippet: {body[:300]}", file=sys.stderr)
+        print(f"::warning::Finish reason: {finish}", file=sys.stderr)
+        if attempt < MAX_RETRIES:
+            time.sleep(RETRY_DELAY)
+            continue
+        print("::error::Translation returned empty content after all retries", file=sys.stderr)
         sys.exit(1)
 
     # Step 6: Detokenize — restore original paths
