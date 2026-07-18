@@ -227,7 +227,7 @@ Use `vivaldi:inspect/#apps` to inspect Vivaldi's own UI elements. Click the blue
 To learn about Vivaldi's internal APIs and contribute to the modpack, check out:
 
 - **[PrettyBundle.js](../Others/UsefulResources/Source/source/pretty-bundle.js)** and **[common.css](../Others/UsefulResources/Source/source/common.css)** — Vivaldi's core bundle files that reveal internal APIs
-- **[Doc/](../Doc/)** — Documentation on Vivaldi's JavaScript mods API
+- **[Docs](https://parr0tboy.github.io/docs/)** — Documentation portal for Vivaldi's JavaScript mods API
 - **Vivaldi Browser Source**: https://github.com/ric2b/Vivaldi-browser
 - **DeepWiki (Vivaldi Source)**: https://deepwiki.com/ric2b/Vivaldi-browser
 - **Lonm's Vivaldi Modders API Reference**: https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/everything.html

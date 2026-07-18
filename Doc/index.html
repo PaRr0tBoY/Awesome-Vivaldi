@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Awesome Vivaldi — Documentation</title>
+<style>
+/* ============================================================
+   CSS Custom Properties — Design Tokens
+   ============================================================ */
+:root {
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "Cascadia Code", Consolas, "Liberation Mono", monospace;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 350ms cubic-bezier(0.16, 1, 0.3, 1);
+  --sidebar-width: 288px;
+}
+
+/* Dark theme (default) */
+[data-theme="dark"] {
+  --bg-root: #101112;
+  --bg-surface: #18191b;
+  --bg-surface-raised: #1e1f22;
+  --bg-surface-overlay: #242529;
+  --bg-sidebar: #141517;
+  --fg-primary: #e8e6e0;
+  --fg-secondary: #9d9c9a;
+  --fg-tertiary: #6b6a68;
+  --border-subtle: #2a2b2e;
+  --border-default: #35373a;
+  --accent: oklch(0.68 0.10 160);
+  --accent-muted: oklch(0.68 0.10 160 / 0.12);
+  --accent-fg: #0d1512;
+  --shadow: 0 2px 8px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
+  --code-bg: #1a1b1f;
+  --code-border: #2a2b2e;
+  --card-hover: #1e1f22;
+  --search-bg: #1a1b1e;
+  --scrollbar-thumb: #3a3b3e;
+  --scrollbar-track: transparent;
+  --tag-bg: #1e2a25;
+  --tag-fg: oklch(0.75 0.08 160);
+}
+
+/* Light theme */
+[data-theme="light"] {
+  --bg-root: #f5f4f2;
+  --bg-surface: #faf9f8;
+  --bg-surface-raised: #ffffff;
+  --bg-surface-overlay: #ffffff;
+  --bg-sidebar: #f0efed;
+  --fg-primary: #1c1b1f;
+  --fg-secondary: #5d5b59;
+  --fg-tertiary: #8d8b89;
+  --border-subtle: #e8e6e0;
+  --border-default: #d8d6d2;
+  --accent: oklch(0.58 0.12 160);
+  --accent-muted: oklch(0.58 0.12 160 / 0.08);
+  --accent-fg: #ffffff;
+  --shadow: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
+  --code-bg: #eeedeb;
+  --code-border: #e0ded9;
+  --card-hover: #f5f4f2;
+  --search-bg: #f0efed;
+  --scrollbar-thumb: #c8c6c2;
+  --scrollbar-track: transparent;
+  --tag-bg: #e0efe8;
+  --tag-fg: oklch(0.48 0.10 160);
+}
+
+/* ============================================================
+   Reset & Base
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 15px; -webkit-font-smoothing: antialiased; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-root);
+  color: var(--fg-primary);
+  line-height: 1.55;
+  display: flex;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--fg-tertiary); }
+
+/* ============================================================
+   Sidebar
+   ============================================================ */
+.sidebar {
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  height: 100vh;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  z-index: 100;
+  transition: transform var(--transition-normal);
+}
+
+.sidebar-header {
+  padding: 20px 20px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.sidebar-header .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--fg-primary);
+  text-decoration: none;
+}
+
+.sidebar-header .logo .icon {
+  width: 28px; height: 28px;
+  background: var(--accent);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem;
+  color: var(--accent-fg);
+  flex-shrink: 0;
+}
+
+.sidebar-header .subtitle {
+  font-size: 0.72rem;
+  color: var(--fg-tertiary);
+  margin-top: 4px;
+  padding-left: 38px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px;
+}
+
+/* Category toggle */
+.nav-category {
+  margin-bottom: 2px;
+}
+
+.nav-category-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--fg-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.nav-category-header:hover { background: var(--accent-muted); color: var(--fg-primary); }
+.nav-category-header .chevron {
+  width: 14px; height: 14px;
+  transition: transform var(--transition-fast);
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+.nav-category.open .nav-category-header .chevron { transform: rotate(90deg); opacity: 1; }
+
+.nav-category-items {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height var(--transition-slow);
+}
+.nav-category.open .nav-category-items { max-height: 2000px; }
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px 6px 24px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.82rem;
+  color: var(--fg-secondary);
+  transition: background var(--transition-fast), color var(--transition-fast);
+  text-decoration: none;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-sans);
+}
+.nav-item:hover { background: var(--accent-muted); color: var(--fg-primary); text-decoration: none; }
+.nav-item.active { background: var(--accent-muted); color: var(--accent); font-weight: 500; }
+.nav-item .dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--fg-tertiary);
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity var(--transition-fast), background var(--transition-fast);
+}
+.nav-item.active .dot { opacity: 1; background: var(--accent); }
+
+.nav-badge {
+  font-size: 0.65rem;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: var(--tag-bg);
+  color: var(--tag-fg);
+  margin-left: auto;
+  font-weight: 500;
+}
+
+/* Sidebar footer */
+.sidebar-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  color: var(--fg-secondary);
+  font-size: 0.78rem;
+  font-family: var(--font-sans);
+  transition: all var(--transition-fast);
+}
+.theme-toggle:hover { border-color: var(--border-default); color: var(--fg-primary); }
+.theme-toggle svg { width: 14px; height: 14px; opacity: 0.6; }
+
+.sidebar-footer .gh-link {
+  margin-left: auto;
+  color: var(--fg-tertiary);
+  transition: color var(--transition-fast);
+  display: flex;
+  align-items: center;
+}
+.sidebar-footer .gh-link:hover { color: var(--fg-primary); }
+
+/* ============================================================
+   Main Content
+   ============================================================ */
+.main {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Top bar */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bg-root);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  /* Subtle bottom fade — use a border for simplicity */
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transition-fast);
+}
+.topbar.scrolled { border-bottom-color: var(--border-subtle); }
+
+.search-bar {
+  flex: 1;
+  max-width: 520px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  background: var(--search-bg);
+  border: 1px solid var(--border-subtle);
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+  cursor: text;
+}
+.search-bar:focus-within {
+  border-color: var(--accent);
+  background: var(--bg-surface-raised);
+}
+.search-bar svg { width: 16px; height: 16px; opacity: 0.4; flex-shrink: 0; }
+.search-bar input {
+  flex: 1;
+  border: none;
+  background: none;
+  color: var(--fg-primary);
+  font-size: 0.85rem;
+  font-family: var(--font-sans);
+  outline: none;
+}
+.search-bar input::placeholder { color: var(--fg-tertiary); }
+.search-shortcut {
+  font-size: 0.68rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--border-subtle);
+  color: var(--fg-tertiary);
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+}
+
+.breadcrumb {
+  font-size: 0.78rem;
+  color: var(--fg-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Content area */
+.content { padding: 0 32px 64px; }
+
+/* ============================================================
+   Home View — Category Cards
+   ============================================================ */
+.home-view { padding-top: 12px; }
+
+.home-hero {
+  margin-bottom: 40px;
+}
+.home-hero h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+.home-hero p {
+  font-size: 0.95rem;
+  color: var(--fg-secondary);
+  max-width: 560px;
+  line-height: 1.6;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.category-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+.category-card:hover {
+  background: var(--card-hover);
+  border-color: var(--border-default);
+  box-shadow: var(--shadow);
+  text-decoration: none;
+}
+.category-card .card-icon {
+  width: 40px; height: 40px;
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  margin-bottom: 16px;
+  background: var(--accent-muted);
+}
+.category-card h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+.category-card p {
+  font-size: 0.82rem;
+  color: var(--fg-secondary);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+.category-card .card-count {
+  font-size: 0.72rem;
+  color: var(--fg-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ============================================================
+   Document View
+   ============================================================ */
+.doc-view { display: none; padding-top: 8px; }
+.doc-view.active { display: block; }
+.home-view.hidden { display: none; }
+
+.doc-header {
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.doc-header .doc-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.doc-header .doc-tag {
+  font-size: 0.68rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--tag-bg);
+  color: var(--tag-fg);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.doc-header .doc-lang {
+  font-size: 0.68rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--border-subtle);
+  color: var(--fg-tertiary);
+  font-weight: 500;
+}
+.doc-header h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+.doc-header .doc-path {
+  font-size: 0.78rem;
+  color: var(--fg-tertiary);
+  font-family: var(--font-mono);
+}
+
+.doc-body { max-width: 820px; }
+
+.doc-body h1 { font-size: 1.4rem; font-weight: 700; margin: 32px 0 12px; letter-spacing: -0.01em; }
+.doc-body h1:first-child { margin-top: 0; }
+.doc-body h2 { font-size: 1.15rem; font-weight: 600; margin: 28px 0 10px; letter-spacing: -0.01em; }
+.doc-body h3 { font-size: 1rem; font-weight: 600; margin: 22px 0 8px; }
+.doc-body h4 { font-size: 0.9rem; font-weight: 600; margin: 18px 0 6px; }
+.doc-body p { margin: 10px 0; line-height: 1.65; color: var(--fg-primary); }
+.doc-body a { color: var(--accent); }
+.doc-body ul, .doc-body ol { margin: 10px 0; padding-left: 24px; }
+.doc-body li { margin: 4px 0; line-height: 1.55; }
+.doc-body li::marker { color: var(--fg-tertiary); }
+.doc-body code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  color: var(--fg-primary);
+}
+.doc-body pre {
+  margin: 14px 0;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  overflow-x: auto;
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+.doc-body pre code {
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: inherit;
+}
+.doc-body blockquote {
+  margin: 14px 0;
+  padding: 12px 16px;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-muted);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--fg-secondary);
+}
+.doc-body blockquote p { margin: 4px 0; }
+.doc-body table {
+  width: 100%;
+  margin: 14px 0;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.doc-body th, .doc-body td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.doc-body th { font-weight: 600; color: var(--fg-secondary); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.03em; }
+.doc-body tr:hover td { background: var(--accent-muted); }
+.doc-body hr { margin: 28px 0; border: none; border-top: 1px solid var(--border-subtle); }
+.doc-body img { max-width: 100%; border-radius: var(--radius-md); }
+.doc-body strong { font-weight: 600; color: var(--fg-primary); }
+.doc-body em { font-style: italic; }
+
+/* Loading / Error states */
+.doc-loading, .doc-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  text-align: center;
+  color: var(--fg-secondary);
+}
+.doc-loading .spinner {
+  width: 32px; height: 32px;
+  border: 3px solid var(--border-subtle);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.doc-error .gh-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 8px 18px;
+  border-radius: var(--radius-md);
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-weight: 500;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: opacity var(--transition-fast);
+}
+.doc-error .gh-btn:hover { opacity: 0.88; text-decoration: none; }
+
+/* ============================================================
+   Search Results Dropdown
+   ============================================================ */
+.search-results {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-width: 520px;
+  margin-top: 6px;
+  background: var(--bg-surface-overlay);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  max-height: 360px;
+  overflow-y: auto;
+  z-index: 200;
+}
+.search-results.active { display: block; }
+
+.search-result-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover { background: var(--accent-muted); }
+.search-result-item .result-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--fg-primary);
+  margin-bottom: 2px;
+}
+.search-result-item .result-desc {
+  font-size: 0.75rem;
+  color: var(--fg-tertiary);
+  line-height: 1.4;
+}
+.search-result-item .result-cat {
+  font-size: 0.65rem;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: var(--tag-bg);
+  color: var(--tag-fg);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.search-empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--fg-tertiary);
+  font-size: 0.85rem;
+}
+
+/* ============================================================
+   Mobile — Sidebar toggle
+   ============================================================ */
+.menu-btn {
+  display: none;
+  width: 36px; height: 36px;
+  align-items: center; justify-content: center;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  cursor: pointer;
+  color: var(--fg-secondary);
+  flex-shrink: 0;
+}
+.menu-btn:hover { color: var(--fg-primary); border-color: var(--border-default); }
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 99;
+}
+.sidebar-overlay.active { display: block; }
+
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .sidebar-overlay.active { display: block; }
+  .main { margin-left: 0; }
+  .menu-btn { display: flex; }
+  .topbar { padding: 12px 16px; }
+  .content { padding: 0 16px 48px; }
+  .home-hero h1 { font-size: 1.5rem; }
+  .category-grid { grid-template-columns: 1fr; }
+  .doc-body { max-width: 100%; }
+  .doc-body pre { font-size: 0.76rem; padding: 12px; }
+  .search-shortcut { display: none; }
+}
+
+/* Print */
+@media print {
+  .sidebar, .topbar { display: none; }
+  .main { margin-left: 0; }
+  .content { padding: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     Sidebar
+     ============================================================ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <a href="#" class="logo" data-nav="home">
+      <span class="icon">📚</span>
+      Awesome Vivaldi
+    </a>
+    <div class="subtitle">Documentation Portal</div>
+  </div>
+
+  <nav class="sidebar-nav" id="sidebarNav">
+    <!-- Populated by JS -->
+  </nav>
+
+  <div class="sidebar-footer">
+    <button class="theme-toggle" id="themeToggle" title="Toggle dark/light theme">
+      <svg id="themeIconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg id="themeIconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      Theme
+    </button>
+    <a href="https://github.com/PaRr0tBoY/Awesome-Vivaldi" class="gh-link" target="_blank" title="GitHub">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+    </a>
+  </div>
+</aside>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ============================================================
+     Main Content
+     ============================================================ -->
+<main class="main" id="mainContent">
+  <div class="topbar" id="topbar">
+    <button class="menu-btn" id="menuBtn" aria-label="Toggle menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="search-bar" id="searchBar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="searchInput" placeholder="Search documentation…" autocomplete="off">
+      <span class="search-shortcut">/</span>
+    </div>
+    <span class="breadcrumb" id="breadcrumb"></span>
+  </div>
+
+  <div class="content" id="content">
+    <!-- Home View -->
+    <div class="home-view" id="homeView"></div>
+    <!-- Document View -->
+    <div class="doc-view" id="docView">
+      <div class="doc-header" id="docHeader"></div>
+      <div class="doc-body" id="docBody"></div>
+    </div>
+  </div>
+
+  <!-- Search Results Dropdown -->
+  <div class="search-results" id="searchResults"></div>
+</main>
+
+<!-- ============================================================
+     marked.js CDN (for Markdown rendering)
+     ============================================================ -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<script>
+/* ============================================================
+   Document Metadata Catalog
+   ============================================================ */
+const REPO_RAW = 'https://raw.githubusercontent.com/PaRr0tBoY/Awesome-Vivaldi/main/Doc';
+
+const DOCUMENTS = [
+  // ── Design Philosophy ──
+  { id:'design-design',   title:'DESIGN.md',    cat:'design', path:'design/DESIGN.md',
+    desc:'Color strategy, typography, spacing, border radius, elevation, motion, component specs, anti-patterns', lang:'en' },
+  { id:'design-product',  title:'PRODUCT.md',   cat:'design', path:'design/PRODUCT.md',
+    desc:'User personas, brand personality, product positioning, anti-references', lang:'en' },
+
+  // ── Development ──
+  { id:'dev-installer',   title:'installer-design.md', cat:'dev', path:'dev/installer-design.md',
+    desc:'Installer v3 architecture: TUI flow, i18n, path discovery, deploy sequencing, risk analysis', lang:'en' },
+
+  // ── Mod Docs — English ──
+  { id:'mod-arcpeek',      title:'ArcPeek.md',             cat:'mod-en', path:'mod/ArcPeek.md',
+    desc:'Arc Peek internals — Vivaldi internal API dependencies and architecture' },
+  { id:'mod-askonpage',    title:'AskOnPage.md',           cat:'mod-en', path:'mod/AskOnPage.md',
+    desc:'AI sidebar: page Q&A, summarization, rewriting — WebPanel integration' },
+  { id:'mod-autohidepanel',title:'AutoHidePanel.md',       cat:'mod-en', path:'mod/AutoHidePanel.md',
+    desc:'Auto-collapse side panel on mouse leave' },
+  { id:'mod-easyfiles',    title:'EasyFiles.md',           cat:'mod-en', path:'mod/EasyFiles.md',
+    desc:'Quick file attach via clipboard & downloads when dragging' },
+  { id:'mod-interactionfeedback', title:'InteractionFeedback.md', cat:'mod-en', path:'mod/InteractionFeedback.md',
+    desc:'Button click micro-feedback animations' },
+  { id:'mod-modconfig',    title:'ModConfig.md',           cat:'mod-en', path:'mod/ModConfig.md',
+    desc:'*Core* Shared settings panel: AI keys, mod parameters, OPFS storage, import/export' },
+  { id:'mod-monochromeicons', title:'MonochromeIcons.md',  cat:'mod-en', path:'mod/MonochromeIcons.md',
+    desc:'Unified monochrome web panel icons' },
+  { id:'mod-pinnedtabrestore', title:'PinnedTabRestore.md', cat:'mod-en', path:'mod/PinnedTabRestore.md',
+    desc:'Right-click to restore recently closed pinned tabs' },
+  { id:'mod-quickcapture', title:'QuickCapture.md',        cat:'mod-en', path:'mod/QuickCapture.md',
+    desc:'Smart area selection for screenshots' },
+  { id:'mod-tabmanager',   title:'TabManager.md',          cat:'mod-en', path:'mod/TabManager.md',
+    desc:'Workspace tab management panel with batch operations' },
+  { id:'mod-tabtree',      title:'tabtree.md',             cat:'mod-en', path:'mod/tabtree.md',
+    desc:'Tab tree data structure and hierarchy' },
+  { id:'mod-tidyaddress',  title:'TidyAddress.md',         cat:'mod-en', path:'mod/TidyAddress.md',
+    desc:'AI rewrites address bar URLs to readable short titles' },
+  { id:'mod-tidydownloads',title:'TidyDownloads.md',       cat:'mod-en', path:'mod/TidyDownloads.md',
+    desc:'AI cleans up garbled download filenames automatically' },
+  { id:'mod-tidytabs',     title:'TidyTabs.md',            cat:'mod-en', path:'mod/TidyTabs.md',
+    desc:'AI auto-groups related tabs by content similarity' },
+  { id:'mod-tidytitles',   title:'TidyTitles.md',          cat:'mod-en', path:'mod/TidyTitles.md',
+    desc:'AI condenses tab titles to meaningful short phrases' },
+  { id:'mod-vividpeek',    title:'VividPeek.md',           cat:'mod-en', path:'mod/VividPeek.md',
+    desc:'Arc-style popup page preview — design and implementation analysis' },
+  { id:'mod-vividplayer',  title:'VividPlayer.md',         cat:'mod-en', path:'mod/VividPlayer.md',
+    desc:'Floating video player popup with music note animations' },
+  { id:'mod-vividtoast',   title:'VividToast.md',          cat:'mod-en', path:'mod/VividToast.md',
+    desc:'Toast-style notification popups — enter/exit animation system' },
+  { id:'mod-workspacetheme', title:'WorkspaceThemeSwitcher.md', cat:'mod-en', path:'mod/WorkspaceThemeSwitcher.md',
+    desc:'Auto-switch Vivaldi theme when changing workspaces' },
+
+  // ── Mod Docs — Chinese Translations ──
+  { id:'modzh-askonpage',    title:'AskOnPage.md',           cat:'mod-zh', path:'mod/modzh/AskOnPage.md',
+    desc:'AI sidebar: page Q&A, summarization, rewriting (Chinese translation)', lang:'zh' },
+  { id:'modzh-autohidepanel',title:'AutoHidePanel.md',       cat:'mod-zh', path:'mod/modzh/AutoHidePanel.md',
+    desc:'Auto-collapse side panel on mouse leave (Chinese translation)', lang:'zh' },
+  { id:'modzh-easyfiles',    title:'EasyFiles.md',           cat:'mod-zh', path:'mod/modzh/EasyFiles.md',
+    desc:'Quick file attach via clipboard & downloads (Chinese translation)', lang:'zh' },
+  { id:'modzh-interactionfeedback', title:'InteractionFeedback.md', cat:'mod-zh', path:'mod/modzh/InteractionFeedback.md',
+    desc:'Button click micro-feedback animations (Chinese translation)', lang:'zh' },
+  { id:'modzh-modconfig',    title:'ModConfig.md',           cat:'mod-zh', path:'mod/modzh/ModConfig.md',
+    desc:'Shared settings panel: AI keys, mod parameters, OPFS storage (Chinese translation)', lang:'zh' },
+  { id:'modzh-monochromeicons', title:'MonochromeIcons.md',  cat:'mod-zh', path:'mod/modzh/MonochromeIcons.md',
+    desc:'Unified monochrome web panel icons (Chinese translation)', lang:'zh' },
+  { id:'modzh-pinnedtabrestore', title:'PinnedTabRestore.md', cat:'mod-zh', path:'mod/modzh/PinnedTabRestore.md',
+    desc:'Right-click to restore recently closed pinned tabs (Chinese translation)', lang:'zh' },
+  { id:'modzh-quickcapture', title:'QuickCapture.md',        cat:'mod-zh', path:'mod/modzh/QuickCapture.md',
+    desc:'Smart area selection for screenshots (Chinese translation)', lang:'zh' },
+  { id:'modzh-tabmanager',   title:'TabManager.md',          cat:'mod-zh', path:'mod/modzh/TabManager.md',
+    desc:'Workspace tab management panel (Chinese translation)', lang:'zh' },
+  { id:'modzh-tidyaddress',  title:'TidyAddress.md',         cat:'mod-zh', path:'mod/modzh/TidyAddress.md',
+    desc:'AI rewrites address bar URLs to short titles (Chinese translation)', lang:'zh' },
+  { id:'modzh-tidydownloads',title:'TidyDownloads.md',       cat:'mod-zh', path:'mod/modzh/TidyDownloads.md',
+    desc:'AI cleans up garbled download filenames (Chinese translation)', lang:'zh' },
+  { id:'modzh-tidytabs',     title:'TidyTabs.md',            cat:'mod-zh', path:'mod/modzh/TidyTabs.md',
+    desc:'AI auto-groups related tabs (Chinese translation)', lang:'zh' },
+  { id:'modzh-tidytitles',   title:'TidyTitles.md',          cat:'mod-zh', path:'mod/modzh/TidyTitles.md',
+    desc:'AI condenses tab titles to meaningful phrases (Chinese translation)', lang:'zh' },
+  { id:'modzh-vividpeek',    title:'VividPeek.md',           cat:'mod-zh', path:'mod/modzh/VividPeek.md',
+    desc:'Arc-style popup page preview — design analysis (Chinese translation)', lang:'zh' },
+  { id:'modzh-vividplayer',  title:'VividPlayer.md',         cat:'mod-zh', path:'mod/modzh/VividPlayer.md',
+    desc:'Floating video player popup (Chinese translation)', lang:'zh' },
+  { id:'modzh-vividtoast',   title:'VividToast.md',          cat:'mod-zh', path:'mod/modzh/VividToast.md',
+    desc:'Toast-style notification popups (Chinese translation)', lang:'zh' },
+  { id:'modzh-workspacetheme', title:'WorkspaceThemeSwitcher.md', cat:'mod-zh', path:'mod/modzh/WorkspaceThemeSwitcher.md',
+    desc:'Auto-switch theme per workspace (Chinese translation)', lang:'zh' },
+
+  // ── API Reference ──
+  { id:'api-everyapi',     title:'EveryAPI.txt',           cat:'api', path:'EveryAPI.txt',
+    desc:'Complete Vivaldi API quick reference — every vivaldi.* API surface (329 KB)', lang:'en' },
+  { id:'api-bundle-api',   title:'Internal API (BundleReverse)', cat:'api', path:'BundleReverse/api.md',
+    desc:'Vivaldi internal API reference: vivaldi.prefs, vivaldi.tabs, vivaldi.window, and more' },
+  { id:'api-bundle-pref',  title:'Preferences System',     cat:'api', path:'BundleReverse/pref.md',
+    desc:'Vivaldi preference paths, defaults, and the vivaldi.prefs API surface' },
+
+  // ── Reverse Engineering ──
+  { id:'reverse-tabdrag',  title:'Tab Drag Implementation', cat:'reverse', path:'BundleReverse/tabdrag.md',
+    desc:'How Vivaldi implements tab dragging: tabsPrivate.startDrag, MIME types, cross-window drops' },
+  { id:'reverse-tile',     title:'Tile System',            cat:'reverse', path:'BundleReverse/tile.md',
+    desc:'Vivaldi tab tiling: layout algorithms, resize logic, and DOM structure' },
+  { id:'reverse-autohide', title:'Autohide Mechanics',     cat:'reverse', path:'BundleReverse/autohide.md',
+    desc:'UI autohide behavior: triggers, timers, and edge detection' },
+  { id:'reverse-sync',     title:'Sync System',            cat:'reverse', path:'BundleReverse/Sync.md',
+    desc:'Vivaldi sync internals: data types, encryption, conflict resolution' },
+  { id:'reverse-capturetab', title:'captureTab Reference', cat:'reverse', path:'BundleReverse/captureTab-reference.md',
+    desc:'vivaldi.thumbnails.captureTab / captureUI API reference and usage patterns' },
+
+  // ── Console Scripts ──
+  { id:'console-arcpeek',  title:'arcpeek-related-tab-adoption-probe.js', cat:'console', path:'BundleReverse/ConsoleScripts/arcpeek-related-tab-adoption-probe.js',
+    desc:'Debug probe for ArcPeek related tab adoption feature', lang:'en' },
+  { id:'console-capturetab', title:'captureTab-lab.js',    cat:'console', path:'BundleReverse/ConsoleScripts/captureTab-lab.js',
+    desc:'Experimental lab script for captureTab API testing', lang:'en' },
+
+  // ── README Translations ──
+  { id:'readmezh-main',    title:'READMEMAIN.md',          cat:'readmezh', path:'READMEZH/READMEMAIN.md',
+    desc:'Main README — Chinese translation', lang:'zh' },
+  { id:'readmezh-80',      title:'README80.md',            cat:'readmezh', path:'READMEZH/README80.md',
+    desc:'Vivaldi 8.0 README — Chinese translation', lang:'zh' },
+  { id:'readmezh-79',      title:'README79.md',            cat:'readmezh', path:'READMEZH/README79.md',
+    desc:'Vivaldi 7.9 README — Chinese translation', lang:'zh' },
+  { id:'readmezh-76',      title:'README76.md',            cat:'readmezh', path:'READMEZH/README76.md',
+    desc:'Vivaldi 7.6 README — Chinese translation', lang:'zh' },
+];
+
+// LonmDoc API collection (individual files under LonmDoc/)
+const LONMDOC_FILES = [
+  'vivaldi.accessKeys.txt','vivaldi.bookmarksPrivate.txt','vivaldi.contacts.txt',
+  'vivaldi.directMatch.txt','vivaldi.editcommand.txt','vivaldi.historyPrivate.txt',
+  'vivaldi.menubar.txt','vivaldi.menubarMenu.txt','vivaldi.notes.txt',
+  'vivaldi.omniboxPrivate.txt','vivaldi.pipPrivate.txt','vivaldi.prefs.txt',
+  'vivaldi.runtimePrivate.txt','vivaldi.sitePermissions.txt','vivaldi.sync.txt',
+  'vivaldi.tabsPrivate.txt','vivaldi.themePrivate.txt','vivaldiAccount.txt',
+  'vivaldiZoom.txt','vivaldi_import_data.txt','vivaldi_private_view.txt',
+  'vivaldi_readingListPrivate.txt','vivaldi_savedpasswords.txt',
+  'vivaldi_sessions_private.txt','vivaldi_utilities.txt',
+  'vivaldi search engines.txt','Vivaldi Translate History.txt',
+  'vivaldi-auto-update.txt','vivaldi-bookmark-context-menu.txt',
+  'vivaldi-calendar.txt','vivaldi-content-blocking.txt','vivaldi-context-menu.txt',
+  'vivaldi-devtools.txt','vivaldi-dnsOverHttpsPrivate.txt',
+  'vivaldi-extension-utils.txt','vivaldi-infobars.txt','vivaldi-menu-content.txt',
+  'vivaldi-page-actions.txt','vivaldi-preferences.txt','vivaldi-settings.txt',
+  'vivaldi-thumbnails.txt','vivaldi-window-private.txt'
+];
+
+// Add LonmDoc as a virtual category entry
+const LONMDOC_ENTRIES = LONMDOC_FILES.map((f,i) => ({
+  id: `lonmdoc-${i}`,
+  title: f,
+  cat: 'lonmdoc',
+  path: `LonmDoc/${f}`,
+  desc: `Lonm\'s Vivaldi Modders API documentation for ${f.replace('vivaldi.','').replace('vivaldi','').replace('.txt','').replace(/_/g,' ').trim()}`,
+  lang: 'en'
+}));
+
+const ALL_DOCS = [...DOCUMENTS, ...LONMDOC_ENTRIES];
+
+/* ============================================================
+   Category Definitions
+   ============================================================ */
+const CATEGORIES = [
+  { id:'design',   icon:'🎨', label:'Design Philosophy',   desc:'Color strategy, typography, spacing, components, motion, anti-patterns' },
+  { id:'dev',      icon:'🔧', label:'Development',          desc:'Installer architecture and engineering documentation' },
+  { id:'mod-en',   icon:'🧩', label:'Mod Docs (English)',   desc:'Per-mod design and implementation analysis' },
+  { id:'mod-zh',   icon:'🧩', label:'Mod Docs (Chinese)',   desc:'Chinese translations of all mod documentation' },
+  { id:'api',      icon:'📖', label:'API Reference',        desc:'Vivaldi internal API surfaces, preferences, and quick reference' },
+  { id:'reverse',  icon:'🔬', label:'Reverse Engineering',  desc:'Deconstructed Vivaldi internals: tab drag, tiling, sync, autohide' },
+  { id:'lonmdoc',  icon:'📋', label:'LonmDoc API Collection', desc:'Complete vivaldi.* API documentation by Lonm (41 files)' },
+  { id:'console',  icon:'🛠️', label:'Console Scripts',      desc:'Browser console debugging and lab scripts' },
+  { id:'readmezh', icon:'🌐', label:'README Translations',  desc:'Chinese translations of project README files' },
+];
+
+/* ============================================================
+   State
+   ============================================================ */
+let activeDocId = null;
+let activeCategory = null;
+
+/* ============================================================
+   DOM Refs
+   ============================================================ */
+const $ = (s,d=document) => d.querySelector(s);
+const $$ = (s,d=document) => d.querySelectorAll(s);
+
+const sidebar = $('#sidebar');
+const sidebarNav = $('#sidebarNav');
+const sidebarOverlay = $('#sidebarOverlay');
+const menuBtn = $('#menuBtn');
+const mainContent = $('#mainContent');
+const topbar = $('#topbar');
+const breadcrumb = $('#breadcrumb');
+const searchInput = $('#searchInput');
+const searchBar = $('#searchBar');
+const searchResults = $('#searchResults');
+const homeView = $('#homeView');
+const docView = $('#docView');
+const docHeader = $('#docHeader');
+const docBody = $('#docBody');
+const themeToggle = $('#themeToggle');
+const themeIconSun = $('#themeIconSun');
+const themeIconMoon = $('#themeIconMoon');
+
+/* ============================================================
+   Theme
+   ============================================================ */
+function getTheme() { return localStorage.getItem('av-docs-theme') || 'dark'; }
+function setTheme(t) {
+  localStorage.setItem('av-docs-theme', t);
+  document.documentElement.setAttribute('data-theme', t);
+  themeIconSun.style.display = t === 'dark' ? '' : 'none';
+  themeIconMoon.style.display = t === 'dark' ? 'none' : '';
+}
+setTheme(getTheme());
+themeToggle.addEventListener('click', () => setTheme(getTheme() === 'dark' ? 'light' : 'dark'));
+
+/* ============================================================
+   Mobile sidebar
+   ============================================================ */
+function openSidebar() { sidebar.classList.add('open'); sidebarOverlay.classList.add('active'); }
+function closeSidebar() { sidebar.classList.remove('open'); sidebarOverlay.classList.remove('active'); }
+menuBtn.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
+sidebarOverlay.addEventListener('click', closeSidebar);
+
+/* ============================================================
+   Build Sidebar Navigation
+   ============================================================ */
+function buildSidebar() {
+  sidebarNav.innerHTML = '';
+  CATEGORIES.forEach(cat => {
+    const docs = ALL_DOCS.filter(d => d.cat === cat.id);
+    if (!docs.length) return;
+
+    const section = document.createElement('div');
+    section.className = 'nav-category' + (activeCategory === cat.id ? ' open' : '');
+    section.dataset.cat = cat.id;
+
+    const count = docs.length;
+    section.innerHTML = `
+      <div class="nav-category-header">
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        <span>${cat.icon} ${cat.label}</span>
+        <span class="nav-badge">${count}</span>
+      </div>
+      <div class="nav-category-items">
+        ${docs.map(d => `
+          <button class="nav-item${activeDocId === d.id ? ' active' : ''}" data-doc="${d.id}" title="${d.desc}">
+            <span class="dot"></span>
+            <span>${d.title.replace('.md','').replace('.txt','').replace('.js','')}</span>
+            ${d.lang === 'zh' ? '<span class="nav-badge">zh</span>' : ''}
+          </button>
+        `).join('')}
+      </div>
+    `;
+
+    section.querySelector('.nav-category-header').addEventListener('click', () => {
+      section.classList.toggle('open');
+    });
+
+    section.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const docId = item.dataset.doc;
+        navigateToDoc(docId);
+        closeSidebar();
+      });
+    });
+
+    sidebarNav.appendChild(section);
+  });
+}
+
+/* ============================================================
+   Build Home View — Category Cards
+   ============================================================ */
+function buildHomeView() {
+  homeView.innerHTML = `
+    <div class="home-hero">
+      <h1>Awesome Vivaldi Documentation</h1>
+      <p>Design philosophy, mod architecture, API references, and reverse-engineered internals — all in one place.</p>
+    </div>
+    <div class="category-grid">
+      ${CATEGORIES.map(cat => {
+        const count = ALL_DOCS.filter(d => d.cat === cat.id).length;
+        if (!count) return '';
+        return `
+          <div class="category-card" data-nav-cat="${cat.id}">
+            <div class="card-icon">${cat.icon}</div>
+            <h3>${cat.label}</h3>
+            <p>${cat.desc}</p>
+            <div class="card-count">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              ${count} document${count !== 1 ? 's' : ''}
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+
+  // Click category cards → open sidebar category
+  homeView.querySelectorAll('.category-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const catId = card.dataset.navCat;
+      navigateToCategory(catId);
+    });
+  });
+}
+
+/* ============================================================
+   Navigation
+   ============================================================ */
+function navigateToDoc(docId) {
+  activeDocId = docId;
+  const doc = ALL_DOCS.find(d => d.id === docId);
+  if (!doc) return;
+
+  activeCategory = doc.cat;
+  homeView.classList.add('hidden');
+  docView.classList.add('active');
+  breadcrumb.textContent = doc.path;
+
+  // Render doc header
+  const catInfo = CATEGORIES.find(c => c.id === doc.cat);
+  docHeader.innerHTML = `
+    <div class="doc-meta">
+      <span class="doc-tag">${catInfo ? catInfo.label : doc.cat}</span>
+      ${doc.lang ? `<span class="doc-lang">${doc.lang === 'zh' ? 'Chinese' : 'English'}</span>` : ''}
+    </div>
+    <h1>${doc.title}</h1>
+    <div class="doc-path">Doc/${doc.path}</div>
+  `;
+
+  // Load & render document
+  loadDocument(doc);
+
+  // Update sidebar
+  buildSidebar();
+  // Open the category in sidebar
+  const catSection = sidebarNav.querySelector(`[data-cat="${doc.cat}"]`);
+  if (catSection) catSection.classList.add('open');
+
+  // Scroll to top
+  mainContent.scrollTop = 0;
+}
+
+function navigateToCategory(catId) {
+  activeCategory = catId;
+  activeDocId = null;
+  homeView.classList.add('hidden');
+  docView.classList.add('active');
+  docHeader.innerHTML = '';
+
+  const catInfo = CATEGORIES.find(c => c.id === catId);
+  const docs = ALL_DOCS.filter(d => d.cat === catId);
+  breadcrumb.textContent = catInfo ? catInfo.label : catId;
+
+  docBody.innerHTML = `
+    <div style="padding-top:8px">
+      <h1 style="font-size:1.4rem;font-weight:700;margin-bottom:6px">${catInfo.icon} ${catInfo.label}</h1>
+      <p style="color:var(--fg-secondary);margin-bottom:24px">${docs.length} document${docs.length !== 1 ? 's' : ''}</p>
+      <div style="display:flex;flex-direction:column;gap:2px">
+        ${docs.map(d => `
+          <a href="#" data-doc-link="${d.id}" style="
+            display:flex;align-items:baseline;gap:10px;padding:10px 14px;
+            border-radius:var(--radius-sm);text-decoration:none;color:var(--fg-primary);
+            transition:background var(--transition-fast);
+          " onmouseenter="this.style.background='var(--accent-muted)'" onmouseleave="this.style.background=''">
+            <span style="font-size:0.85rem;font-weight:500;flex-shrink:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px">${d.title}</span>
+            <span style="font-size:0.78rem;color:var(--fg-tertiary);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.desc}</span>
+            ${d.lang === 'zh' ? '<span style="font-size:0.65rem;padding:1px 6px;border-radius:8px;background:var(--tag-bg);color:var(--tag-fg);flex-shrink:0">zh</span>' : ''}
+          </a>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  // Click handlers for doc links
+  docBody.querySelectorAll('[data-doc-link]').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      navigateToDoc(link.dataset.docLink);
+    });
+  });
+
+  buildSidebar();
+  const catSection = sidebarNav.querySelector(`[data-cat="${catId}"]`);
+  if (catSection) catSection.classList.add('open');
+  mainContent.scrollTop = 0;
+}
+
+function navigateHome() {
+  activeDocId = null;
+  activeCategory = null;
+  homeView.classList.remove('hidden');
+  docView.classList.remove('active');
+  breadcrumb.textContent = '';
+  buildSidebar();
+  mainContent.scrollTop = 0;
+}
+
+// Logo click → home
+$('.logo').addEventListener('click', e => { e.preventDefault(); navigateHome(); });
+
+/* ============================================================
+   Document Loading & Markdown Rendering
+   ============================================================ */
+async function loadDocument(doc) {
+  docBody.innerHTML = `
+    <div class="doc-loading">
+      <div class="spinner"></div>
+      <p>Loading document…</p>
+    </div>
+  `;
+
+  const url = `${REPO_RAW}/${doc.path}`;
+
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text();
+
+    if (typeof marked !== 'undefined') {
+      // Configure marked
+      marked.setOptions({ breaks: false, gfm: true });
+      const html = marked.parse(text);
+      docBody.innerHTML = html;
+      // Add target="_blank" to external links
+      docBody.querySelectorAll('a[href^="http"]').forEach(a => a.setAttribute('target', '_blank'));
+    } else {
+      // Fallback: show raw text in <pre>
+      docBody.innerHTML = `<pre style="white-space:pre-wrap;font-family:var(--font-mono);font-size:0.82rem;line-height:1.6;padding:20px;background:var(--code-bg);border:1px solid var(--code-border);border-radius:var(--radius-md)">${escapeHtml(text)}</pre>`;
+    }
+  } catch (err) {
+    docBody.innerHTML = `
+      <div class="doc-error">
+        <p>Could not load this document inline.</p>
+        <p style="font-size:0.82rem;color:var(--fg-tertiary);margin-top:4px">${escapeHtml(err.message)}</p>
+        <a class="gh-btn" href="https://github.com/PaRr0tBoY/Awesome-Vivaldi/blob/main/Doc/${doc.path}" target="_blank">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          View on GitHub
+        </a>
+      </div>
+    `;
+  }
+}
+
+function escapeHtml(text) {
+  const map = { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' };
+  return text.replace(/[&<>"']/g, c => map[c]);
+}
+
+/* ============================================================
+   Search
+   ============================================================ */
+let searchTimeout;
+
+function doSearch(query) {
+  if (!query.trim()) {
+    searchResults.classList.remove('active');
+    return;
+  }
+
+  const q = query.toLowerCase();
+  const results = ALL_DOCS.filter(d =>
+    d.title.toLowerCase().includes(q) ||
+    d.desc.toLowerCase().includes(q) ||
+    d.path.toLowerCase().includes(q) ||
+    (d.cat && CATEGORIES.find(c => c.id === d.cat)?.label.toLowerCase().includes(q))
+  ).slice(0, 20);
+
+  if (!results.length) {
+    searchResults.innerHTML = '<div class="search-empty">No results found</div>';
+  } else {
+    searchResults.innerHTML = results.map(d => {
+      const catInfo = CATEGORIES.find(c => c.id === d.cat);
+      return `
+        <div class="search-result-item" data-doc="${d.id}">
+          <div style="flex:1;min-width:0">
+            <div class="result-title">${highlightMatch(d.title, q)}</div>
+            <div class="result-desc">${highlightMatch(d.desc, q)}</div>
+          </div>
+          <span class="result-cat">${catInfo ? catInfo.icon + ' ' + catInfo.label : d.cat}</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  searchResults.classList.add('active');
+
+  // Click handlers
+  searchResults.querySelectorAll('.search-result-item').forEach(item => {
+    item.addEventListener('click', () => {
+      navigateToDoc(item.dataset.doc);
+      searchResults.classList.remove('active');
+      searchInput.value = '';
+      searchInput.blur();
+    });
+  });
+}
+
+function highlightMatch(text, query) {
+  const idx = text.toLowerCase().indexOf(query.toLowerCase());
+  if (idx === -1) return escapeHtml(text);
+  const before = escapeHtml(text.slice(0, idx));
+  const match = escapeHtml(text.slice(idx, idx + query.length));
+  const after = escapeHtml(text.slice(idx + query.length));
+  return `${before}<strong style="color:var(--accent)">${match}</strong>${after}`;
+}
+
+searchInput.addEventListener('input', () => {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => doSearch(searchInput.value), 150);
+});
+
+searchInput.addEventListener('focus', () => {
+  if (searchInput.value.trim()) doSearch(searchInput.value);
+});
+
+// Close search on click outside
+document.addEventListener('click', e => {
+  if (!searchBar.contains(e.target) && !searchResults.contains(e.target)) {
+    searchResults.classList.remove('active');
+  }
+});
+
+// Close search on Escape
+searchInput.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    searchResults.classList.remove('active');
+    searchInput.blur();
+  }
+});
+
+// Global keyboard shortcut: / to focus search
+document.addEventListener('keydown', e => {
+  if (e.key === '/' && document.activeElement !== searchInput &&
+      !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) {
+    e.preventDefault();
+    searchInput.focus();
+    searchInput.select();
+  }
+});
+
+/* ============================================================
+   Topbar scroll effect
+   ============================================================ */
+mainContent.addEventListener('scroll', () => {
+  topbar.classList.toggle('scrolled', mainContent.scrollTop > 0);
+});
+
+/* ============================================================
+   Init
+   ============================================================ */
+buildSidebar();
+buildHomeView();
+
+// Open a category section by default in sidebar
+const firstCat = sidebarNav.querySelector('.nav-category');
+if (firstCat) firstCat.classList.add('open');
+
+console.log('%c📚 Awesome Vivaldi Docs %cready',
+  'font-weight:700;color:oklch(0.68 0.10 160)','');
+console.log('%cTry pressing / to search, or click a category to explore.',
+  'color:var(--fg-secondary)');
+</script>
+</body>
+</html>

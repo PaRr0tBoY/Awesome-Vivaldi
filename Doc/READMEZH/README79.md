@@ -293,7 +293,7 @@ git pull
 要了解 Vivaldi 的内部 API 并为此修改包做贡献，请查看：
 
 - **[PrettyBundle.js](../../../Others/UsefulResources/Source/source/pretty-bundle.js)** 和 **[common.css](../../../Others/UsefulResources/Source/source/common.css)** — Vivaldi 的核心 bundle 文件，揭示内部 API
-- **[Doc/](../../../Doc/)** — Vivaldi JavaScript 修改 API 文档
+- **[Docs](https://parr0tboy.github.io/docs/)** — Vivaldi JavaScript 修改 API 文档门户
 - **Vivaldi Browser Source**: https://github.com/ric2b/Vivaldi-browser
 - **DeepWiki (Vivaldi Source)**: https://deepwiki.com/ric2b/Vivaldi-browser
 - **Lonm's Vivaldi Modders API Reference**: https://lonmcgregor.github.io/VivaldiModdersAPI/OfficialApi/everything.html
