@@ -427,6 +427,12 @@ function Test-Writable {
 	}
 }
 
+function Test-IsAdmin {
+	$identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+	$principal = New-Object Security.Principal.WindowsPrincipal($identity)
+	return $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+}
+
 # ============================================================
 #  4.  Source Acquisition
 # ============================================================
@@ -2627,7 +2633,25 @@ function Main {
 
 	$target = $targetItems[$selectedIdx].Install
 
-	# ── Check installation state ──
+	# ---- Elevate early if system install ----
+	if ($target.IsSystem -and -not (Test-IsAdmin)) {
+		$e = [char]27
+		$sb = [Text.StringBuilder]::new()
+		[void]$sb.AppendLine()
+		[void]$sb.AppendLine("  $e[1;33m$($target.DisplayName) is installed system-wide.$e[0m")
+		[void]$sb.AppendLine("  $(tr target_path): $($target.VivaldiDir)")
+		[void]$sb.AppendLine("  $e[90m$(tr error_admin_required)$e[0m")
+		[void]$sb.AppendLine()
+		[void]$sb.AppendLine("  $e[1m$(tr elevate_prompt)$e[0m")
+		Write-FrameContent $sb.ToString()
+		$key = Read-TuiKey
+		if ($key -eq 'ENTER') {
+			$scriptPath = if ($PSCommandPath) { $PSCommandPath } else { (Get-Command $MyInvocation.MyCommand.Name).Source }
+			Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$scriptPath`"" -Verb RunAs
+		}
+		Exit-Installer
+	}
+
 	$isInstalled = Test-IsInstalled -VivaldiDir $target.VivaldiDir
 	$state = Get-InstallState -VivaldiDir $target.VivaldiDir
 
