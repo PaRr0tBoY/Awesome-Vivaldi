@@ -39,6 +39,7 @@
 - [Vivaldi Max (AI Features)](#vivaldi-maxai-features)
 - [Mod List](#mod-list)
 - [Community Mods](#community-mods)
+- [Documentation](#documentation)
 
 ## Introduction
 
