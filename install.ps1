@@ -2054,7 +2054,7 @@ function Invoke-InstallFlow {
 		}
 	}
 
-	while ($true) {
+	:pageLoop while ($true) {
 		switch ($currentPage) {
 			0 {
 				# CSS selection page
@@ -2158,7 +2158,7 @@ function Invoke-InstallFlow {
 					continue
 				}
 				# Deploy immediately on ENTER — exit outer while
-				break
+				break pageLoop
 			}
 		}
 	}
@@ -2233,7 +2233,7 @@ function Invoke-ManageFlow {
 		}
 	}
 
-	while ($true) {
+	:pageLoop while ($true) {
 		switch ($currentPage) {
 			0 {
 				Set-StepInfo 0 $totalPages $stepLabels
@@ -2366,8 +2366,8 @@ function Invoke-ManageFlow {
 					$pagesConfirmed[2] = $false
 					continue
 				}
-				# Deploy immediately on ENTER — exit outer while
-				break
+				# Apply immediately on ENTER — exit outer while
+				break pageLoop
 			}
 		}
 	}
