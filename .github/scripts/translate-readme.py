@@ -96,7 +96,7 @@ if not api_key:
     print("::error::OPENROUTER_KEY is not set", file=sys.stderr)
     sys.exit(1)
 
-model = os.environ.get('OPENROUTER_MODEL', 'openrouter/free')
+model = os.environ.get('OPENROUTER_MODEL', '').strip() or 'openrouter/free'
 
 payload = json.dumps({
     "model": model,
