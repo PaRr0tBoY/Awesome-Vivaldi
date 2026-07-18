@@ -1725,6 +1725,33 @@ function Invoke-Uninstall {
 		$userModsDir = Join-Path $vivaldiDir "user_mods"
 		$injectorPath = Join-Path $vivaldiDir "injectMods.js"
 
+		# Permission check for system installs
+		if (-not (Test-Writable $vivaldiDir)) {
+			$sb = [Text.StringBuilder]::new()
+			[void]$sb.AppendLine()
+			[void]$sb.AppendLine("  $e[1;31m$(tr error_permission)$e[0m")
+			[void]$sb.AppendLine("  $(tr target_path): $vivaldiDir")
+			if ($Target.IsSystem) {
+				[void]$sb.AppendLine("  $e[90m$(tr error_admin_required)$e[0m")
+				[void]$sb.AppendLine()
+				[void]$sb.AppendLine("  $e[1;33m$(tr elevate_prompt)$e[0m")
+				Write-FrameContent $sb.ToString()
+				$key = Read-TuiKey
+				if ($key -eq 'ENTER') {
+					$scriptPath = if ($PSCommandPath) { $PSCommandPath } else { (Get-Command $MyInvocation.MyCommand.Name).Source }
+					Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$scriptPath`"" -Verb RunAs
+					Exit-Installer
+				}
+				Exit-Installer
+			} else {
+				[void]$sb.AppendLine()
+				[void]$sb.AppendLine("  $e[90m$(tr key_exit)$e[0m")
+				Write-FrameContent $sb.ToString()
+				Read-TuiKey | Out-Null
+			}
+			return
+		}
+
 		Write-Host (tr uninstall_restoring)
 		if (Test-Path $bakPath) {
 			Copy-Item -Path $bakPath -Destination $htmlPath -Force
@@ -1899,6 +1926,33 @@ function Invoke-Uninstall {
 		# Execute removal
 		Clear-ContentArea
 		$vivaldiDir = $Target.VivaldiDir
+
+		if (-not (Test-Writable $vivaldiDir)) {
+			$sb = [Text.StringBuilder]::new()
+			[void]$sb.AppendLine()
+			[void]$sb.AppendLine("  $e[1;31m$(tr error_permission)$e[0m")
+			[void]$sb.AppendLine("  $(tr target_path): $vivaldiDir")
+			if ($Target.IsSystem) {
+				[void]$sb.AppendLine("  $e[90m$(tr error_admin_required)$e[0m")
+				[void]$sb.AppendLine()
+				[void]$sb.AppendLine("  $e[1;33m$(tr elevate_prompt)$e[0m")
+				Write-FrameContent $sb.ToString()
+				$key = Read-TuiKey
+				if ($key -eq 'ENTER') {
+					$scriptPath = if ($PSCommandPath) { $PSCommandPath } else { (Get-Command $MyInvocation.MyCommand.Name).Source }
+					Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File \`"$scriptPath\`"" -Verb RunAs
+					Exit-Installer
+				}
+				Exit-Installer
+			} else {
+				[void]$sb.AppendLine()
+				[void]$sb.AppendLine("  $e[90m$(tr key_exit)$e[0m")
+				Write-FrameContent $sb.ToString()
+				Read-TuiKey | Out-Null
+			}
+			return
+		}
+
 		$userCssDir = Join-Path $vivaldiDir "user_mods\css"
 		$userJsDir  = Join-Path $vivaldiDir "user_mods\js"
 

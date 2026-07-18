@@ -1551,6 +1551,17 @@ do_uninstall() {
         if [ "$key" != "Y" ] && [ "$key" != "ENTER" ]; then echo ""; echo "$(tr uninstall_cancelled)"; return; fi
         local html_path="$vivaldi_dir/window.html"; local bak_path="${html_path}.bak"
         local user_mods_dir="$vivaldi_dir/user_mods"; local injector_path="$vivaldi_dir/injectMods.js"
+
+        # Permission check
+        if ! test_writable "$vivaldi_dir"; then
+            local sb="${e}[1;31m$(tr error_permission)${e}[0m"$'\n'
+            sb+="  $(tr target_path): $vivaldi_dir"$'\n'
+            sb+="${e}[90m$(tr error_admin_required)${e}[0m"$'\n\n'
+            sb+="  ${e}[90m$(tr key_exit)${e}[0m"$'\n'
+            write_frame "$sb"; read_key > /dev/null
+            return 1
+        fi
+
         echo ""; echo "$(tr uninstall_restoring)"
         if [ -f "$bak_path" ]; then cp "$bak_path" "$html_path"; echo "  Restored from $bak_path"
         else echo "  $(tr uninstall_no_bak)"; fi
