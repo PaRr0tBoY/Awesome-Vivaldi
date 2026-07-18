@@ -141,6 +141,7 @@ $Script:Loc = @{
 
 		# ── Errors ──
 		error_admin_required  = "Administrator privileges required. Requesting elevation..."
+		elevate_prompt        = "ENTER to request elevation | ESC/Q to quit"
 		error_download        = "ERROR: Failed to download modpack. Check your internet connection."
 		error_extract         = "ERROR: Failed to extract modpack archive."
 		error_no_source       = "ERROR: Could not locate mod source files."
@@ -2169,12 +2170,25 @@ function Invoke-InstallFlow {
 		[void]$sb.AppendLine()
 		[void]$sb.AppendLine("  $e[1;31m$(tr error_permission)$e[0m")
 		[void]$sb.AppendLine("  $(tr target_path): $($Target.VivaldiDir)")
-		$elevationMsg = if ($Target.IsSystem) { "  $e[90m$(tr error_admin_required)$e[0m" } else { '' }
-		if ($elevationMsg) { [void]$sb.AppendLine($elevationMsg) }
-		[void]$sb.AppendLine()
-		[void]$sb.AppendLine("  $e[90m$(tr key_exit)$e[0m")
-		Write-FrameContent $sb.ToString()
-		Read-TuiKey | Out-Null
+		if ($Target.IsSystem) {
+			[void]$sb.AppendLine("  $e[90m$(tr error_admin_required)$e[0m")
+			[void]$sb.AppendLine()
+			[void]$sb.AppendLine("  $e[1;33m$(tr elevate_prompt)$e[0m")
+			Write-FrameContent $sb.ToString()
+			$key = Read-TuiKey
+			if ($key -eq 'ENTER') {
+				# Re-launch self as administrator
+				$scriptPath = if ($PSCommandPath) { $PSCommandPath } else { (Get-Command $MyInvocation.MyCommand.Name).Source }
+				Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$scriptPath`"" -Verb RunAs
+				Exit-Installer
+			}
+			Exit-Installer
+		} else {
+			[void]$sb.AppendLine()
+			[void]$sb.AppendLine("  $e[90m$(tr key_exit)$e[0m")
+			Write-FrameContent $sb.ToString()
+			Read-TuiKey | Out-Null
+		}
 		return $null
 	}
 
@@ -2378,12 +2392,24 @@ function Invoke-ManageFlow {
 		[void]$sb.AppendLine()
 		[void]$sb.AppendLine("  $e[1;31m$(tr error_permission)$e[0m")
 		[void]$sb.AppendLine("  $(tr target_path): $($Target.VivaldiDir)")
-		$elevationMsg = if ($Target.IsSystem) { "  $e[90m$(tr error_admin_required)$e[0m" } else { '' }
-		if ($elevationMsg) { [void]$sb.AppendLine($elevationMsg) }
-		[void]$sb.AppendLine()
-		[void]$sb.AppendLine("  $e[90m$(tr key_exit)$e[0m")
-		Write-FrameContent $sb.ToString()
-		Read-TuiKey | Out-Null
+		if ($Target.IsSystem) {
+			[void]$sb.AppendLine("  $e[90m$(tr error_admin_required)$e[0m")
+			[void]$sb.AppendLine()
+			[void]$sb.AppendLine("  $e[1;33m$(tr elevate_prompt)$e[0m")
+			Write-FrameContent $sb.ToString()
+			$key = Read-TuiKey
+			if ($key -eq 'ENTER') {
+				$scriptPath = if ($PSCommandPath) { $PSCommandPath } else { (Get-Command $MyInvocation.MyCommand.Name).Source }
+				Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$scriptPath`"" -Verb RunAs
+				Exit-Installer
+			}
+			Exit-Installer
+		} else {
+			[void]$sb.AppendLine()
+			[void]$sb.AppendLine("  $e[90m$(tr key_exit)$e[0m")
+			Write-FrameContent $sb.ToString()
+			Read-TuiKey | Out-Null
+		}
 		return $null
 	}
 
