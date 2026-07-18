@@ -28,9 +28,9 @@
   // OpenRouter: https://openrouter.ai/api/v1/chat/completions
   // DeepSeek: https://api.deepseek.com/chat/completions
   const AI_CONFIG = {
-    apiEndpoint: "https://open.bigmodel.cn/api/paas/v4/chat/completions",
-    apiKey: "",
-    model: "glm-4-flash",
+    apiEndpoint: "https://openrouter.ai/api/v1/chat/completions",
+    apiKey: "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",
+    model: "openrouter/free",
     timeout: 15000,
     temperature: 0.1,
     maxTokens: 1000,
