@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>r});var a=n(7064);async function r(e){return(await a.Z.mailPrivate.searchMessages(e)).search_list_ids}

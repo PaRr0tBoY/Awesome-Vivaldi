@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>a});const a=function(e,t){if(!t)return;const n=e?"html":"text";let a;for(const e of t)"text"!==e.type&&"html"!==e.type||!(!a||e.type===n&&(a.type!==n||a.content.length<e.content.length)||0===a.content.length&&e.content.length>0)||(a=e);return a}

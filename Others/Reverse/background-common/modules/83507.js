@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>o});var a=n(92292),r=n(26067),i=n(7064);const o={call:function(e,t,n){return new Promise((o=>{const{pathArray:s,fileName:l}=(0,r.ZP)(e,n,t);i.Z.mailPrivate.readMessageFileToBuffer(s,l,(e=>{if(a.Z.runtime.lastError)o();else{const t=new Uint8Array(e);o(t)}}))}))}}

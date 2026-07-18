@@ -1,0 +1,1 @@
+"use strict";function i(e){return Array.isArray(e)&&(e=e.join(", ")),e&&(e=e.replace(/left/gi,"←").replace(/right/gi,"→").replace(/up/gi,"↑").replace(/down/gi,"↓").replace(/(^|\+)(\w)/g,(e=>e.toUpperCase()))),e}function s(e){return Array.isArray(e)&&(e=e.join(", ")),e&&(e=e.replace(/(^|\+ ?)(\w)/g,(e=>e.toUpperCase()))),e}n.d(t,{$:()=>i,G:()=>s})

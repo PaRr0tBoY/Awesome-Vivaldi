@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>s});var i=n(33638);const s=new class{composerSearchListId;setSearchListId(e){this.composerSearchListId=e}addAttachments(e){i.Z.dispatch({actionType:"MAIL_ACTIVE_COMPOSER_ADD_ATTACHMENTS",newAttachments:e})}}

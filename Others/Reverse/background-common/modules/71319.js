@@ -1,0 +1,1 @@
+var a=n(98119),r=n(17185),i=n(26354),o=n(5748),s=a.navigator,l=!!s&&/MSIE .\./.test(s.userAgent),c=function(e){return l?function(t,n){return e(i(o,[].slice.call(arguments,2),"function"==typeof t?t:Function(t)),n)}:e};r(r.G+r.B+r.F*l,{setTimeout:c(a.setTimeout),setInterval:c(a.setInterval)})

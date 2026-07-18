@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>s});var a=n(39350),r=n(97828),i=/\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/,o=/^\w*$/;const s=function(e,t){if((0,a.Z)(e))return!1;var n=typeof e;return!("number"!=n&&"symbol"!=n&&"boolean"!=n&&null!=e&&!(0,r.Z)(e))||(o.test(e)||!i.test(e)||null!=t&&e in Object(t))}

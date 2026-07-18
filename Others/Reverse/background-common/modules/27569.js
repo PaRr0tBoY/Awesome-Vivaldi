@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>i});var a=n(89122),r=Object.create;const i=function(){function e(){}return function(t){if(!(0,a.Z)(t))return{};if(r)return r(t);e.prototype=t;var n=new e;return e.prototype=void 0,n}}()

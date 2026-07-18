@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>o});var a=n(81353),r=n(35643),i=function(){function e(e,t){this.xf=t,this.f=e}return e.prototype["@@transducer/init"]=r.Z.init,e.prototype["@@transducer/result"]=r.Z.result,e.prototype["@@transducer/step"]=function(e,t){return this.f(t)?this.xf["@@transducer/step"](e,t):e},e}();const o=(0,a.Z)((function(e,t){return new i(e,t)}))

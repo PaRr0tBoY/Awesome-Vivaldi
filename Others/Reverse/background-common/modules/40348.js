@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>r});var a=n(7064);async function r(e){const t=await a.Z.mailPrivate.readFileToBuffer(e);return new Uint8Array(t)}

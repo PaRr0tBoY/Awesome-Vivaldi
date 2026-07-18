@@ -1,0 +1,4418 @@
+-webkit-app-region: drag;
+}
+button,
+input,
+select,
+.tab-strip .tab-position,
+#tabs-subcontainer,
+.topmenu,
+.menu.horizontal > ul > li > .menu,
+.tab-group-indicator,
+.page-zoom-controls,
+.selectable,
+.SyncStatus-Warning,
+.panel-group,
+#browser.native #header,
+#browser.no-app-dragging .toolbar-statusbar,
+#browser.no-app-dragging #header {
+  -webkit-app-region: no-drag;
+}
+
+box-shadow: none;
+}
+#browser.native.stacks-off #tabs-tabbar-container {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+display: none;
+}
+#browser.native.mac #tabs-tabbar-container {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+#browser.native.mac.tabs-bottom #tabs-tabbar-container {
+  padding-top: 0;
+}
+
+#browser.native.linux #browser.native.win.normal #tabs-tabbar-container.top {
+  padding-top: 6px;
+}
+
+height: 30px;
+}
+#browser.native.linux #browser.native.win.normal:not(.alt) #tabs-tabbar-container.top {
+  padding-right: 0;
+}
+
+#browser.native.linux #browser.native.win.alt #tabs-tabbar-container.top {
+  padding-left: 0;
+}
+
+text-align: left;
+}
+/* The image colors win over other colors if present, so enable only where
+ the image is visible. */
+#browser .tabbar-wrapper,
+#browser.tabs-top #header,
+#browser.tabs-bottom #footer {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--colorTabBar);
+  justify-content: flex-end;
+}
+
+.transparent-tabbar#browser .tabbar-wrapper,
+.transparent-tabbar#browser.tabs-top #header,
+.transparent-tabbar#browser.tabs-bottom #footer {
+  --colorImageFg: var(--colorImageTopFg);
+  --colorImageBgAlpha: var(--colorImageTopBgAlpha);
+  --colorImageBgAlphaHeavy: var(--colorImageTopBgAlphaHeavy);
+}
+
+.color-behind-tabs-on#browser .tabbar-wrapper,
+.color-behind-tabs-on#browser.tabs-top #header,
+.color-behind-tabs-on#browser.tabs-bottom #footer {
+  color: var(--colorImageFg, var(--colorAccentFg));
+}
+
+.auto-hide.color-behind-tabs-on#browser .tabbar-wrapper,
+.auto-hide.color-behind-tabs-on#browser.tabs-top #header,
+.auto-hide.color-behind-tabs-on#browser.tabs-bottom #footer {
+  --colorTabBar: var(--colorAccentBg);
+}
+
+.color-behind-tabs-off#browser .tabbar-wrapper,
+.color-behind-tabs-off#browser.tabs-top #header,
+.color-behind-tabs-off#browser.tabs-bottom #footer {
+  color: var(--colorImageFg, var(--colorFg));
+}
+
+.transparent-tabbar.color-accent-from-page.acc-dark.bg-dark.color-behind-tabs-on#browser .tabbar-wrapper,
+.transparent-tabbar.color-accent-from-page.acc-dark.bg-dark.color-behind-tabs-on#browser.tabs-top #header,
+.transparent-tabbar.color-accent-from-page.acc-dark.bg-dark.color-behind-tabs-on#browser.tabs-bottom #footer {
+  color: var(--colorAccentFg);
+}
+
+.auto-hide.transparent-tabbar.color-accent-from-page.acc-dark.bg-dark.color-behind-tabs-on#browser .tabbar-wrapper,
+.auto-hide.transparent-tabbar.color-accent-from-page.acc-dark.bg-dark.color-behind-tabs-on#browser.tabs-top #header,
+.auto-hide.transparent-tabbar.color-accent-from-page.acc-dark.bg-dark.color-behind-tabs-on#browser.tabs-bottom #footer {
+  --colorTabBar: var(--colorAccentBg);
+}
+
+display: block;
+  }
+}
+#browser.win .topmenu + #tabs-tabbar-container.top,
+#browser.linux .topmenu + #tabs-tabbar-container.top {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+height: 30px;
+}
+.tabs-right#browser.win .window-buttongroup button:not(.on-mainbar) .tabs-left#browser.win .window-buttongroup button:not(.on-mainbar),
+.tabs-bottom#browser.win .window-buttongroup button:not(.on-mainbar) {
+  fill: var(--colorFg);
+}
+
+.color-behind-tabs-off.tabs-right#browser.win .window-buttongroup button:not(.on-mainbar) .tabs-left#browser.win .window-buttongroup button:not(.on-mainbar),
+.color-behind-tabs-off.tabs-bottom#browser.win .window-buttongroup button:not(.on-mainbar) {
+  fill: var(--colorAccentFg);
+}
+
+margin-left: calc(13px / var(--uiZoomLevel));
+}
+#browser.mac.disable-titlebar #header:has(#tabs-tabbar-container.none) {
+  display: none;
+}
+
+min-height: calc(32px / var(--uiZoomLevel));
+}
+#browser.mac.macos26:not(.RTL, .fullscreen, .native) #tabs-container:not(.none).top .window-buttongroup {
+  margin-left: calc(24px / var(--uiZoomLevel));
+}
+
+flex-direction: row-reverse;
+}
+#browser.linux.alt .topmenu + #tabs-tabbar-container.top {
+  padding-left: 6px;
+  padding-right: 0;
+}
+
+#browser.isblurred.dim-blurred header,
+#browser.isblurred.dim-blurred footer,
+#browser.isblurred.dim-blurred .topmenu,
+#browser.isblurred.dim-blurred .panel-group,
+#browser.isblurred.dim-blurred .bookmark-bar,
+#browser.isblurred.dim-blurred .manager-editor,
+#browser.isblurred.dim-blurred .vivaldi-settings,
+#browser.isblurred.dim-blurred .toolbar,
+#browser.isblurred.dim-blurred .mainbar,
+#browser.isblurred.dim-blurred:not(.is-settingspage) #header,
+#browser.isblurred.dim-blurred #switch,
+#browser.isblurred.dim-blurred .tabbar-wrapper {
+  --colorFg: var(--colorFgFadedMore);
+  --colorFgFaded: var(--colorFgFadedMore);
+  --colorBg: var(--colorBgLight);
+  --colorBgLighter: var(--colorBgLight);
+  --colorBgDarker: var(--colorBgDark);
+  --colorBgLightIntense: var(--colorBgLight);
+  --colorBgIntense: var(--colorBgLight);
+  --colorBgIntenser: var(--colorBgLight);
+  --colorBgInverse: var(--colorBgLight);
+  --colorBgInverser: var(--colorBgLight);
+  --colorBgFaded: var(--colorBgLight);
+}
+
+#browser.isblurred.dim-blurred header img,
+#browser.isblurred.dim-blurred footer img,
+#browser.isblurred.dim-blurred .topmenu img,
+#browser.isblurred.dim-blurred .panel-group img,
+#browser.isblurred.dim-blurred .bookmark-bar img,
+#browser.isblurred.dim-blurred .manager-editor img,
+#browser.isblurred.dim-blurred .vivaldi-settings img,
+#browser.isblurred.dim-blurred .toolbar img,
+#browser.isblurred.dim-blurred .mainbar img,
+#browser.isblurred.dim-blurred:not(.is-settingspage) #header img,
+#browser.isblurred.dim-blurred #switch img,
+#browser.isblurred.dim-blurred .tabbar-wrapper img,
+#browser.isblurred.dim-blurred header svg,
+#browser.isblurred.dim-blurred footer svg,
+#browser.isblurred.dim-blurred .topmenu svg,
+#browser.isblurred.dim-blurred .panel-group svg,
+#browser.isblurred.dim-blurred .bookmark-bar svg,
+#browser.isblurred.dim-blurred .manager-editor svg,
+#browser.isblurred.dim-blurred .vivaldi-settings svg,
+#browser.isblurred.dim-blurred .toolbar svg,
+#browser.isblurred.dim-blurred .mainbar svg,
+#browser.isblurred.dim-blurred:not(.is-settingspage) #header svg,
+#browser.isblurred.dim-blurred #switch svg,
+#browser.isblurred.dim-blurred .tabbar-wrapper svg {
+  filter: opacity(0.65);
+}
+
+.color-behind-tabs-on:not(.transparent-tabbar)#browser.isblurred.dim-blurred header,
+.color-behind-tabs-on:not(.transparent-tabbar)#browser.isblurred.dim-blurred footer,
+.color-behind-tabs-on:not(.transparent-tabbar)#browser.isblurred.dim-blurred .topmenu,
+.color-behind-tabs-on:not(.transparent-tabbar)#browser.isblurred.dim-blurred .panel-group,
+.color-behind-tabs-on:not(.transparent-tabbar)#browser.isblurred.dim-blurred .bookmark-bar,
+.color-behind-tabs-on:not(.transparent-tabbar)#browser.isblurred.dim-blurred .manager-editor,
+.color-behind-tabs-on:not(.transparent-tabbar)#browser.isblurred.dim-blurred .vivaldi-settings,
+.color-behind-tabs-on:not(.transparent-tabbar)#browser.isblurred.dim-blurred .toolbar,
+.color-behind-tabs-on:not(.transparent-tabbar)#browser.isblurred.dim-blurred .mainbar,
+.color-behind-tabs-on:not(.transparent-tabbar)#browser.isblurred.dim-blurred:not(.is-settingspage) #header,
+.color-behind-tabs-on:not(.transparent-tabbar)#browser.isblurred.dim-blurred #switch,
+.color-behind-tabs-on:not(.transparent-tabbar)#browser.isblurred.dim-blurred .tabbar-wrapper {
+  --colorTabBar: var(--colorAccentBgFaded);
+}
+
+.color-behind-tabs-off:not(.transparent-tabbar)#browser.isblurred.dim-blurred header,
+.color-behind-tabs-off:not(.transparent-tabbar)#browser.isblurred.dim-blurred footer,
+.color-behind-tabs-off:not(.transparent-tabbar)#browser.isblurred.dim-blurred .topmenu,
+.color-behind-tabs-off:not(.transparent-tabbar)#browser.isblurred.dim-blurred .panel-group,
+.color-behind-tabs-off:not(.transparent-tabbar)#browser.isblurred.dim-blurred .bookmark-bar,
+.color-behind-tabs-off:not(.transparent-tabbar)#browser.isblurred.dim-blurred .manager-editor,
+.color-behind-tabs-off:not(.transparent-tabbar)#browser.isblurred.dim-blurred .vivaldi-settings,
+.color-behind-tabs-off:not(.transparent-tabbar)#browser.isblurred.dim-blurred .toolbar,
+.color-behind-tabs-off:not(.transparent-tabbar)#browser.isblurred.dim-blurred .mainbar,
+.color-behind-tabs-off:not(.transparent-tabbar)#browser.isblurred.dim-blurred:not(.is-settingspage) #header,
+.color-behind-tabs-off:not(.transparent-tabbar)#browser.isblurred.dim-blurred #switch,
+.color-behind-tabs-off:not(.transparent-tabbar)#browser.isblurred.dim-blurred .tabbar-wrapper {
+  --colorTabBar: var(--colorBgFaded);
+}
+
+#browser.isblurred.dim-blurred .manager-editor,
+#browser.isblurred.dim-blurred .toolbar:not(
+    .toolbar-mainbar,
+    .toolbar-statusbar,
+    .toolbar-tabbar-before,
+    .toolbar-tabbar-after,
+    .toolbar-insideinput
+  ) {
+  color: var(--colorFg);
+}
+
+.transparent-tabbar #browser.isblurred.dim-blurred .manager-editor,
+.transparent-tabbar #browser.isblurred.dim-blurred .toolbar:not(
+    .toolbar-mainbar,
+    .toolbar-statusbar,
+    .toolbar-tabbar-before,
+    .toolbar-tabbar-after,
+    .toolbar-insideinput
+  ) {
+  color: var(--colorImageFg, var(--colorFg));
+}
+
+#browser.isblurred.dim-blurred #header .window-buttongroup img,
+#browser.isblurred.dim-blurred #tabs-tabbar-container .favicon img,
+#browser.isblurred.dim-blurred #header .window-buttongroup svg,
+#browser.isblurred.dim-blurred #tabs-tabbar-container .favicon svg {
+  filter: initial;
+}
+
+#browser.isblurred.dim-blurred #pagetitle,
+#browser.isblurred.dim-blurred .button-badge,
+#browser.isblurred.dim-blurred .settings-header,
+#browser.isblurred.dim-blurred .toolbar-statusbar > *:not(.StatusInfo),
+#browser.isblurred.dim-blurred #tabs-tabbar-container .favicon,
+#browser.isblurred.dim-blurred #tabs-tabbar-container .tab:not(.active) .title,
+#browser.isblurred.dim-blurred .tabbar-workspace-button .button-icon,
+#browser.isblurred.dim-blurred .tabbar-workspace-button .button-title {
+  opacity: 0.65;
+}
+
+left: -6px;
+  }
+  #browser.tabs-left .tabbar-wrapper .workspace-popup,
+  #browser.tabs-right .tabbar-wrapper .workspace-popup,
+  #browser .startpage .startpage-navigation {
+    border-bottom: 1px solid;
+  }
+
+content: unset !important;
+  }
+  #browser #tabs-container .tab.active,
+  #browser #tabs-subcontainer .tab.active {
+    border: var(--border-width) solid;
+    --border-width: 1px;
+  }
+
+.address-top#browser #tabs-container.top,
+  .address-top#browser #tabs-subcontainer.top {
+    border-bottom: var(--border-width) solid;
+  }
+
+#browser #tabs-container.top .tab,
+  #browser #tabs-subcontainer.top .tab {
+    border: var(--border-width) solid;
+    border-width: var(--border-width) var(--border-width) 0;
+    margin-bottom: auto;
+  }
+
+#browser #tabs-container.bottom,
+  #browser #tabs-subcontainer.bottom {
+    border-top: 0.5px solid;
+  }
+
+#browser #tabs-container.bottom .tab,
+  #browser #tabs-subcontainer.bottom .tab {
+    border: var(--border-width) solid;
+    border-width: 0 var(--border-width) var(--border-width);
+    margin-top: auto;
+  }
+
+#browser #tabs-subcontainer.right,
+  .tabs-left#browser .tabbar-wrapper {
+    border-right: 0.5px solid;
+  }
+
+#browser #tabs-subcontainer.left,
+  .tabs-right#browser .tabbar-wrapper {
+    border-left: 0.5px solid;
+  }
+
+border-color: #000 !important;
+  }
+}
+.tab-tile-targets {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 48px;
+  position: absolute;
+  inset: 0;
+  padding: 18px;
+  z-index: 6;
+}
+
+.tab-tile-targets div {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  text-shadow: 0 2px 3px #000c;
+  border-radius: var(--radius);
+  pointer-events: none;
+  margin: 0;
+  backdrop-filter: var(--backgroundBlur);
+  color: var(--colorHighlightFg);
+  background-color: color-mix(in srgb, var(--colorFg), transparent 20%);
+}
+
+.theme-dark .tab-tile-targets div {
+  color: var(--colorFg);
+  background-color: color-mix(in srgb, var(--colorBg), transparent 20%);
+}
+
+.tab-tile-targets .selected {
+  border-width: 4px;
+  border-color: var(--colorAccentBg);
+  border-style: solid;
+}
+
+.tab-tile-targets .top,
+.tab-tile-targets .bottom {
+  grid-column-start: 2;
+}
+
+.tab-tile-targets .left,
+.tab-tile-targets .right,
+.tab-tile-targets .move {
+  grid-row-start: 2;
+}
+
+.tab-dropzone {
+  display: flex;
+  position: absolute;
+  inset: 0;
+  padding: 18px;
+  z-index: 6;
+}
+
+.tab-dropzone h1 {
+  position: absolute;
+  inset: 18px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  text-shadow: 0 2px 3px #000c;
+  border-radius: var(--radius);
+  color: var(--colorHighlightFg);
+  pointer-events: none;
+  margin: 0;
+  background-color: color-mix(in srgb, var(--colorHighlightBg), transparent 10%);
+  will-change: inset;
+  transition: inset 64ms ease-in-out;
+  backdrop-filter: var(--backgroundBlur);
+}
+
+.tab-dropzone.movingtile.dropcenter h1 {
+  inset: 20%;
+  background-color: color-mix(in srgb, var(--colorFg), transparent 20%);
+}
+
+.theme-dark .tab-dropzone.movingtile.dropcenter h1 {
+  color: var(--colorFg);
+  background-color: color-mix(in srgb, var(--colorBg), transparent 20%);
+}
+
+.tab-dropzone.dropleft > h1 {
+  inset: 18px 70% 18px 18px;
+}
+
+.tab-dropzone.dropright > h1 {
+  inset: 18px 18px 18px 70%;
+}
+
+.tab-dropzone.droptop > h1 {
+  inset: 18px 18px 70% 18px;
+}
+
+.tab-dropzone.dropbottom > h1 {
+  inset: 70% 18px 18px 18px;
+}
+
+.tab-dropzone.dropcenter:not(.movingtile) > h1 {
+  inset: 20%;
+  color: var(--colorFg);
+  background-color: color-mix(in srgb, var(--colorBg), transparent 20%);
+  border: 2px solid var(--colorFg);
+  text-shadow: none;
+}
+
+.tab-dropzone .dropzone-title {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.tab-dropzone .dropzone-icon {
+  fill: currentColor;
+}
+
+display: none;
+}
+#browser.mac.transparent-tabbar:not(.acc-dark.bg-dark.color-accent-from-page.color-behind-tabs-on) .tab-strip::-webkit-scrollbar-thumb,
+#browser.simple-scrollbar.transparent-tabbar:not(.acc-dark.bg-dark.color-accent-from-page.color-behind-tabs-on) .tab-strip::-webkit-scrollbar-thumb,
+#browser.mac .welcome-content::-webkit-scrollbar-thumb,
+#browser.simple-scrollbar .welcome-content::-webkit-scrollbar-thumb,
+#browser.mac .sdwrapper::-webkit-scrollbar-thumb,
+#browser.simple-scrollbar .sdwrapper::-webkit-scrollbar-thumb {
+  background-color: var(--colorImageCenterFgAlpha, var(--colorFgFadedMost));
+}
+
+#browser.mac.transparent-tabbar:not(.acc-dark.bg-dark.color-accent-from-page.color-behind-tabs-on) .tab-strip::-webkit-scrollbar-thumb:hover,
+#browser.simple-scrollbar.transparent-tabbar:not(.acc-dark.bg-dark.color-accent-from-page.color-behind-tabs-on) .tab-strip::-webkit-scrollbar-thumb:hover,
+#browser.mac .welcome-content::-webkit-scrollbar-thumb:hover,
+#browser.simple-scrollbar .welcome-content::-webkit-scrollbar-thumb:hover,
+#browser.mac .sdwrapper::-webkit-scrollbar-thumb:hover,
+#browser.simple-scrollbar .sdwrapper::-webkit-scrollbar-thumb:hover,
+#browser.mac.transparent-tabbar:not(.acc-dark.bg-dark.color-accent-from-page.color-behind-tabs-on) .tab-strip::-webkit-scrollbar-thumb:active,
+#browser.simple-scrollbar.transparent-tabbar:not(.acc-dark.bg-dark.color-accent-from-page.color-behind-tabs-on) .tab-strip::-webkit-scrollbar-thumb:active,
+#browser.mac .welcome-content::-webkit-scrollbar-thumb:active,
+#browser.simple-scrollbar .welcome-content::-webkit-scrollbar-thumb:active,
+#browser.mac .sdwrapper::-webkit-scrollbar-thumb:active,
+#browser.simple-scrollbar .sdwrapper::-webkit-scrollbar-thumb:active {
+  background-color: var(--colorImageCenterFg, var(--colorFgFaded));
+}
+
+overflow: visible;
+  contain: unset;
+  z-index: 6;
+}
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) .auto-hide-wrapper.show:not(:has(.OmniDropdown, .CustomizePanelPopup, ~ .extension-popup, ~.button-popup)) .toolbar .toolbar-spacer,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).address-top .toolbar-mainbar .toolbar-spacer,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mail-bar-top .toolbar-mainbar .toolbar-spacer,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-mainbar .toolbar-spacer,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-statusbar .toolbar-spacer,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.top .toolbar:not(.expecting-drop) .toolbar-spacer,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.bottom .toolbar:not(.expecting-drop) .toolbar-spacer,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) .auto-hide-wrapper.show:not(:has(.OmniDropdown, .CustomizePanelPopup, ~ .extension-popup, ~.button-popup)) .toolbar .toolbar-spacer-flexible,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).address-top .toolbar-mainbar .toolbar-spacer-flexible,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mail-bar-top .toolbar-mainbar .toolbar-spacer-flexible,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-mainbar .toolbar-spacer-flexible,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-statusbar .toolbar-spacer-flexible,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.top .toolbar:not(.expecting-drop) .toolbar-spacer-flexible,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.bottom .toolbar:not(.expecting-drop) .toolbar-spacer-flexible,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) .auto-hide-wrapper.show:not(:has(.OmniDropdown, .CustomizePanelPopup, ~ .extension-popup, ~.button-popup)) .toolbar .toolbar-spacer-panel,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).address-top .toolbar-mainbar .toolbar-spacer-panel,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mail-bar-top .toolbar-mainbar .toolbar-spacer-panel,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-mainbar .toolbar-spacer-panel,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-statusbar .toolbar-spacer-panel,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.top .toolbar:not(.expecting-drop) .toolbar-spacer-panel,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.bottom .toolbar:not(.expecting-drop) .toolbar-spacer-panel,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) .auto-hide-wrapper.show:not(:has(.OmniDropdown, .CustomizePanelPopup, ~ .extension-popup, ~.button-popup)) .toolbar .toolbar-divider,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).address-top .toolbar-mainbar .toolbar-divider,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mail-bar-top .toolbar-mainbar .toolbar-divider,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-mainbar .toolbar-divider,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-statusbar .toolbar-divider,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.top .toolbar:not(.expecting-drop) .toolbar-divider,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.bottom .toolbar:not(.expecting-drop) .toolbar-divider,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) .auto-hide-wrapper.show:not(:has(.OmniDropdown, .CustomizePanelPopup, ~ .extension-popup, ~.button-popup)) .toolbar .toolbar-spacer button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).address-top .toolbar-mainbar .toolbar-spacer button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mail-bar-top .toolbar-mainbar .toolbar-spacer button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-mainbar .toolbar-spacer button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-statusbar .toolbar-spacer button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.top .toolbar:not(.expecting-drop) .toolbar-spacer button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.bottom .toolbar:not(.expecting-drop) .toolbar-spacer button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) .auto-hide-wrapper.show:not(:has(.OmniDropdown, .CustomizePanelPopup, ~ .extension-popup, ~.button-popup)) .toolbar .toolbar-spacer-flexible button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).address-top .toolbar-mainbar .toolbar-spacer-flexible button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mail-bar-top .toolbar-mainbar .toolbar-spacer-flexible button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-mainbar .toolbar-spacer-flexible button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-statusbar .toolbar-spacer-flexible button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.top .toolbar:not(.expecting-drop) .toolbar-spacer-flexible button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.bottom .toolbar:not(.expecting-drop) .toolbar-spacer-flexible button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) .auto-hide-wrapper.show:not(:has(.OmniDropdown, .CustomizePanelPopup, ~ .extension-popup, ~.button-popup)) .toolbar .toolbar-spacer-panel button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).address-top .toolbar-mainbar .toolbar-spacer-panel button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mail-bar-top .toolbar-mainbar .toolbar-spacer-panel button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-mainbar .toolbar-spacer-panel button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-statusbar .toolbar-spacer-panel button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.top .toolbar:not(.expecting-drop) .toolbar-spacer-panel button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.bottom .toolbar:not(.expecting-drop) .toolbar-spacer-panel button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) .auto-hide-wrapper.show:not(:has(.OmniDropdown, .CustomizePanelPopup, ~ .extension-popup, ~.button-popup)) .toolbar .toolbar-divider button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).address-top .toolbar-mainbar .toolbar-divider button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mail-bar-top .toolbar-mainbar .toolbar-divider button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-mainbar .toolbar-divider button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)).mac .toolbar-statusbar .toolbar-divider button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.top .toolbar:not(.expecting-drop) .toolbar-divider button,
+#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.bottom .toolbar:not(.expecting-drop) .toolbar-divider button {
+  -webkit-app-region: drag;
+}
+
+/* Add pseudo element to edge buttons */
+  /* Reset horizontal toolbar padding */
+  /* Add horizontal padding to edge buttons instead of the toolbar */
+}
+#browser.fullscreen .mainbar .toolbar-visible > .button-toolbar:is(:first-of-type, :last-of-type) button:after,
+#browser.win.maximized .mainbar .toolbar-visible > .button-toolbar:is(:first-of-type, :last-of-type) button:after,
+#browser.linux.maximized .mainbar .toolbar-visible > .button-toolbar:is(:first-of-type, :last-of-type) button:after,
+#browser.fullscreen #panels-container .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after,
+#browser.win.maximized #panels-container .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after,
+#browser.linux.maximized #panels-container .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after,
+#browser.fullscreen #tabs-container:is(.top, .bottom) .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after,
+#browser.win.maximized #tabs-container:is(.top, .bottom) .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after,
+#browser.linux.maximized #tabs-container:is(.top, .bottom) .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after,
+#browser.fullscreen #footer .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after,
+#browser.win.maximized #footer .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after,
+#browser.linux.maximized #footer .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after {
+  content: '';
+  position: absolute;
+  app-region: no-drag;
+}
+
+#browser.fullscreen #tabs-container.top .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after,
+#browser.win.maximized #tabs-container.top .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after,
+#browser.linux.maximized #tabs-container.top .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after {
+  inset: -6px 0 0 0;
+}
+
+inset: 0 -6px 0 0;
+}
+#browser.fullscreen #tabs-container.bottom .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after,
+#browser.win.maximized #tabs-container.bottom .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after,
+#browser.linux.maximized #tabs-container.bottom .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after,
+#browser.fullscreen #footer .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after,
+#browser.win.maximized #footer .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after,
+#browser.linux.maximized #footer .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after {
+  inset: 0 0 -6px 0;
+}
+
+padding-left: calc(6px / var(--uiZoomLevel));
+  padding-right: calc(6px / var(--uiZoomLevel));
+}
+#browser.fullscreen:is(.tabs-top, .tabs-bottom) .toolbar-tabbar-before,
+#browser.win.maximized:is(.tabs-top, .tabs-bottom) .toolbar-tabbar-before,
+#browser.linux.maximized:is(.tabs-top, .tabs-bottom) .toolbar-tabbar-before,
+#browser.fullscreen:is(.tabs-top, .tabs-bottom).toolbar-tabbar-after,
+#browser.win.maximized:is(.tabs-top, .tabs-bottom).toolbar-tabbar-after,
+#browser.linux.maximized:is(.tabs-top, .tabs-bottom).toolbar-tabbar-after,
+#browser.fullscreen .toolbar-statusbar,
+#browser.win.maximized .toolbar-statusbar,
+#browser.linux.maximized .toolbar-statusbar,
+#browser.fullscreen .toolbar-mainbar,
+#browser.win.maximized .toolbar-mainbar,
+#browser.linux.maximized .toolbar-mainbar {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+#browser.fullscreen:is(.tabs-top, .tabs-bottom) .toolbar-tabbar-before > div:first-of-type,
+#browser.win.maximized:is(.tabs-top, .tabs-bottom) .toolbar-tabbar-before > div:first-of-type,
+#browser.linux.maximized:is(.tabs-top, .tabs-bottom) .toolbar-tabbar-before > div:first-of-type,
+#browser.fullscreen .mainbar .toolbar > div:first-of-type,
+#browser.win.maximized .mainbar .toolbar > div:first-of-type,
+#browser.linux.maximized .mainbar .toolbar > div:first-of-type,
+#browser.fullscreen .statusbar > div:first-of-type,
+#browser.win.maximized .statusbar > div:first-of-type,
+#browser.linux.maximized .statusbar > div:first-of-type {
+  padding-left: 3px;
+  margin-left: 0 !important;
+}
+
+#browser.fullscreen:is(.tabs-top, .tabs-bottom) .toolbar-tabbar-after > div:last-of-type,
+#browser.win.maximized:is(.tabs-top, .tabs-bottom) .toolbar-tabbar-after > div:last-of-type,
+#browser.linux.maximized:is(.tabs-top, .tabs-bottom) .toolbar-tabbar-after > div:last-of-type,
+#browser.fullscreen .mainbar .toolbar > div:last-of-type,
+#browser.win.maximized .mainbar .toolbar > div:last-of-type,
+#browser.linux.maximized .mainbar .toolbar > div:last-of-type,
+#browser.fullscreen .statusbar > div:last-of-type,
+#browser.win.maximized .statusbar > div:last-of-type,
+#browser.linux.maximized .statusbar > div:last-of-type {
+  padding-right: 3px;
+}
+
+position: absolute;
+  z-index: -1;
+  visibility: hidden;
+}
+.tabs-left .tabbar-wrapper,
+.tabs-right .tabbar-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.tabbar-wrapper:empty {
+  display: none;
+}
+
+#browser.color-behind-tabs-on .tabbar-wrapper .tab-strip::-webkit-scrollbar-thumb {
+  background-color: var(--colorAccentFgFaded);
+}
+
+.tabs-top .toolbar-tabbar {
+  margin-top: auto;
+}
+
+.tabs-bottom .toolbar-tabbar {
+  margin-bottom: auto;
+}
+
+.toolbar-tabbar > .button-toolbar > button,
+.toolbar-tabbar > .toolbar-group > .button-toolbar > button {
+  border: unset;
+  min-width: 30px;
+  min-height: 30px;
+  padding: 0;
+}
+
+.toolbar-tabbar > .button-toolbar > button:focus-visible,
+.toolbar-tabbar > .toolbar-group > .button-toolbar > button:focus-visible {
+  outline: 2px solid var(--colorHighlightBg);
+  outline-offset: -2px;
+}
+
+.toolbar-tabbar > .button-toolbar.tabs-locked > button,
+.toolbar-tabbar > .toolbar-group > .button-toolbar.tabs-locked > button {
+  opacity: 1;
+}
+
+.toolbar-tabbar > .button-toolbar.tabs-button .toolbar-tabbar > .button-toolbar.toggle-trash,
+.toolbar-tabbar > .button-toolbar.tabs-button .toolbar-tabbar > .toolbar-group > .button-toolbar.toggle-trash,
+.toolbar-tabbar > .toolbar-group > .button-toolbar.tabs-button .toolbar-tabbar > .button-toolbar.toggle-trash,
+.toolbar-tabbar > .toolbar-group > .button-toolbar.tabs-button .toolbar-tabbar > .toolbar-group > .button-toolbar.toggle-trash,
+.toolbar-tabbar > .button-toolbar.synced-tabs-button,
+.toolbar-tabbar > .toolbar-group > .button-toolbar.synced-tabs-button {
+  align-self: flex-end;
+}
+
+.toolbar-tabbar > .button-toolbar.toggle-trash.hidden,
+.toolbar-tabbar > .toolbar-group > .button-toolbar.toggle-trash.hidden {
+  display: none;
+}
+
+.toolbar-tabbar > .button-toolbar.horizontal-scroll-arrow > button,
+.toolbar-tabbar > .toolbar-group > .button-toolbar.horizontal-scroll-arrow > button {
+  transition: transform 100ms linear;
+}
+
+.toolbar-tabbar > .button-toolbar.horizontal-scroll-arrow.disabled > button,
+.toolbar-tabbar > .toolbar-group > .button-toolbar.horizontal-scroll-arrow.disabled > button {
+  opacity: 0.3;
+}
+
+.toolbar-tabbar > .button-toolbar.horizontal-scroll-arrow:not(.disabled) > button:hover,
+.toolbar-tabbar > .toolbar-group > .button-toolbar.horizontal-scroll-arrow:not(.disabled) > button:hover {
+  transform: scale(1.2);
+}
+
+.toolbar-tabbar > .button-toolbar.horizontal-scroll-arrow > button svg,
+.toolbar-tabbar > .toolbar-group > .button-toolbar.horizontal-scroll-arrow > button svg,
+.toolbar-tabbar > .button-toolbar.horizontal-scroll-arrow > button img,
+.toolbar-tabbar > .toolbar-group > .button-toolbar.horizontal-scroll-arrow > button img {
+  flex: 0 1 16px;
+  height: 16px;
+  width: 16px;
+}
+
+.toolbar-tabbar .tabs-button.receiving button,
+.toolbar-tabbar .synced-tabs-button.receiving button {
+  opacity: 1;
+}
+
+.toolbar-tabbar .newtab > button svg {
+  border-radius: var(--radius);
+}
+
+#tabs-tabbar-container .toolbar-tabbar-before,
+#tabs-tabbar-container .toolbar-tabbar-after {
+  --ToolbarItemGap: 0 6px;
+  min-width: 6px;
+  gap: max(var(--densityGap), 1px);
+}
+
+.toolbar-edit-mode #tabs-tabbar-container .toolbar-tabbar-before,
+.toolbar-edit-mode #tabs-tabbar-container .toolbar-tabbar-after {
+  min-width: 30px;
+  min-height: 30px;
+  background-color: var(--colorFgAlpha);
+}
+
+.tabs-left #tabs-tabbar-container .toolbar-tabbar-before,
+.tabs-left #tabs-tabbar-container .toolbar-tabbar-after,
+.tabs-right #tabs-tabbar-container .toolbar-tabbar-before,
+.tabs-right #tabs-tabbar-container .toolbar-tabbar-after {
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 0 max(calc(var(--densityGap) * 2), 1px) 3px;
+}
+
+.tabs-top #tabs-tabbar-container .toolbar-tabbar-before,
+.tabs-top #tabs-tabbar-container .toolbar-tabbar-after,
+.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-before,
+.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-after {
+  min-width: min-content;
+}
+
+.tabs-top #tabs-tabbar-container .toolbar-tabbar-before:empty,
+.tabs-top #tabs-tabbar-container .toolbar-tabbar-after:empty,
+.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-before:empty,
+.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-after:empty {
+  padding: 0;
+  min-width: 6px;
+  height: 100%;
+  border-radius: var(--radius);
+}
+
+.tabs-top #tabs-tabbar-container .toolbar-tabbar-before:empty.modifier,
+.tabs-top #tabs-tabbar-container .toolbar-tabbar-after:empty.modifier,
+.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-before:empty.modifier,
+.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-after:empty.modifier,
+.toolbar-edit-mode.tabs-top #tabs-tabbar-container .toolbar-tabbar-before:empty,
+.toolbar-edit-mode.tabs-top #tabs-tabbar-container .toolbar-tabbar-after:empty,
+.toolbar-edit-mode.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-before:empty,
+.toolbar-edit-mode.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-after:empty {
+  pointer-events: auto;
+}
+
+.toolbar-edit-mode.tabs-top #tabs-tabbar-container .toolbar-tabbar-before:empty,
+.toolbar-edit-mode.tabs-top #tabs-tabbar-container .toolbar-tabbar-after:empty,
+.toolbar-edit-mode.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-before:empty,
+.toolbar-edit-mode.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-after:empty {
+  min-width: 30px;
+  -webkit-app-region: no-drag;
+}
+
+.tabs-top #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField,
+.tabs-top #tabs-tabbar-container .toolbar-tabbar-after .UrlBar-AddressField,
+.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField,
+.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-after .UrlBar-AddressField {
+  min-width: 300px;
+  max-width: 460px;
+  margin-top: auto;
+}
+
+.tabs-top #tabs-tabbar-container .toolbar-tabbar-before,
+.tabs-top #tabs-tabbar-container .toolbar-tabbar-after {
+  margin-top: auto;
+}
+
+.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-before,
+.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-after {
+  margin-bottom: auto;
+}
+
+#tabs-tabbar-container .toolbar-tabbar-before > div > .button-toolbar > button,
+#tabs-tabbar-container .toolbar-tabbar-after > div > .button-toolbar > button,
+#tabs-tabbar-container .toolbar-tabbar-before > .button-toolbar > button,
+#tabs-tabbar-container .toolbar-tabbar-after > .button-toolbar > button {
+  border: unset;
+  height: 30px;
+  min-width: 30px;
+  padding: 0;
+}
+
+.color-behind-tabs-on #tabs-tabbar-container .toolbar-tabbar-before > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]),
+.color-behind-tabs-on #tabs-tabbar-container .toolbar-tabbar-after > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]) {
+  color: inherit;
+}
+
+.color-behind-tabs-on #tabs-tabbar-container .toolbar-tabbar-before > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]):hover,
+.color-behind-tabs-on #tabs-tabbar-container .toolbar-tabbar-after > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]):hover,
+.color-behind-tabs-on #tabs-tabbar-container .toolbar-tabbar-before > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]).button-pressed,
+.color-behind-tabs-on #tabs-tabbar-container .toolbar-tabbar-after > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]).button-pressed {
+  background-color: var(--colorAccentBgAlphaHeavy);
+}
+
+.color-behind-tabs-on #tabs-tabbar-container .toolbar-tabbar-before > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]):active,
+.color-behind-tabs-on #tabs-tabbar-container .toolbar-tabbar-after > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]):active {
+  background-color: var(--colorAccentBgAlpha);
+}
+
+.unified-ui-transparent #tabs-tabbar-container .toolbar-tabbar-before > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]),
+.unified-ui-transparent #tabs-tabbar-container .toolbar-tabbar-after > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]) {
+  color: inherit;
+}
+
+.unified-ui-transparent #tabs-tabbar-container .toolbar-tabbar-before > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]):hover,
+.unified-ui-transparent #tabs-tabbar-container .toolbar-tabbar-after > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]):hover,
+.unified-ui-transparent #tabs-tabbar-container .toolbar-tabbar-before > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]).button-pressed,
+.unified-ui-transparent #tabs-tabbar-container .toolbar-tabbar-after > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]).button-pressed {
+  background-color: color-mix(in srgb, var(--colorImageBg) 30%, transparent);
+}
+
+.unified-ui-transparent #tabs-tabbar-container .toolbar-tabbar-before > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]):active,
+.unified-ui-transparent #tabs-tabbar-container .toolbar-tabbar-after > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]):active {
+  background-color: color-mix(in srgb, var(--colorImageBg) 70%, transparent);
+}
+
+.tabs-left #tabs-tabbar-container .toolbar-spacer-flexible + .button-toolbar.newtab:last-of-type,
+.tabs-right #tabs-tabbar-container .toolbar-spacer-flexible + .button-toolbar.newtab:last-of-type,
+.tabs-left #tabs-tabbar-container .button-toolbar.newtab:first-of-type:has(+ .toolbar-spacer-flexible),
+.tabs-right #tabs-tabbar-container .button-toolbar.newtab:first-of-type:has(+ .toolbar-spacer-flexible),
+.tabs-left #tabs-tabbar-container .button-toolbar.workspace-popup,
+.tabs-right #tabs-tabbar-container .button-toolbar.workspace-popup {
+  max-width: unset;
+  width: stretch;
+}
+
+.tabs-left #tabs-tabbar-container .UrlBar-AddressField,
+.tabs-right #tabs-tabbar-container .UrlBar-AddressField,
+.tabs-left #tabs-tabbar-container .UrlBar-SearchField,
+.tabs-right #tabs-tabbar-container .UrlBar-SearchField {
+  min-width: 100%;
+  max-width: 0;
+  padding: 0;
+  z-index: 3;
+  padding: 0 3px;
+  margin: 0 auto;
+}
+
+.tabs-left #tabs-tabbar-container .button-popup,
+.tabs-right #tabs-tabbar-container .button-popup,
+.tabs-left #tabs-tabbar-container .OmniDropdown,
+.tabs-right #tabs-tabbar-container .OmniDropdown,
+.tabs-left #tabs-tabbar-container .menu,
+.tabs-right #tabs-tabbar-container .menu {
+  max-height: 45vh;
+}
+
+.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField,
+.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField,
+.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField,
+.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField {
+  overflow: hidden;
+}
+
+#browser:not(.toolbar-edit-mode).tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:focus-within,
+#browser:not(.toolbar-edit-mode).tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:focus-within,
+#browser:not(.toolbar-edit-mode).tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:focus-within,
+#browser:not(.toolbar-edit-mode).tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:focus-within {
+  z-index: 10;
+  min-width: calc(360px - var(--densityGap) * 4);
+  box-shadow: 0 0 12px #0004;
+  overflow: visible;
+}
+
+.tabs-left:not(.toolbar-edit-mode)#browser:not(.toolbar-edit-mode).tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:focus-within,
+.tabs-left:not(.toolbar-edit-mode)#browser:not(.toolbar-edit-mode).tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:focus-within,
+.tabs-left:not(.toolbar-edit-mode)#browser:not(.toolbar-edit-mode).tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:focus-within,
+.tabs-left:not(.toolbar-edit-mode)#browser:not(.toolbar-edit-mode).tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:focus-within {
+  transform: translateX(50%);
+  left: -50%;
+}
+
+.tabs-right:not(.toolbar-edit-mode)#browser:not(.toolbar-edit-mode).tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:focus-within,
+.tabs-right:not(.toolbar-edit-mode)#browser:not(.toolbar-edit-mode).tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:focus-within,
+.tabs-right:not(.toolbar-edit-mode)#browser:not(.toolbar-edit-mode).tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:focus-within,
+.tabs-right:not(.toolbar-edit-mode)#browser:not(.toolbar-edit-mode).tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:focus-within {
+  justify-content: flex-end;
+  transform: translateX(-50%);
+  right: -50%;
+}
+
+#browser:not(.toolbar-edit-mode).tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:focus-within:has(.OmniDropdown, .menu),
+#browser:not(.toolbar-edit-mode).tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:focus-within:has(.OmniDropdown, .menu),
+#browser:not(.toolbar-edit-mode).tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:focus-within:has(.OmniDropdown, .menu),
+#browser:not(.toolbar-edit-mode).tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:focus-within:has(.OmniDropdown, .menu) {
+  box-shadow: unset;
+  outline: unset;
+}
+
+.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField .UrlBar-UrlObfuscationWarning,
+.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField .UrlBar-UrlObfuscationWarning,
+.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField .UrlBar-UrlObfuscationWarning,
+.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField .UrlBar-UrlObfuscationWarning,
+.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField .pageload-ticker,
+.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField .pageload-ticker,
+.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField .pageload-ticker,
+.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField .pageload-ticker {
+  display: none;
+}
+
+.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within),
+.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within),
+.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within),
+.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) {
+  justify-content: flex-start;
+}
+
+.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .UrlBar-UrlFieldWrapper + .toolbar .button-toolbar:not(
+          .permission-popup.is-undecided,
+          .permission-popup.is-allowing
+        ),
+.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .UrlBar-UrlFieldWrapper + .toolbar .button-toolbar:not(
+          .permission-popup.is-undecided,
+          .permission-popup.is-allowing
+        ),
+.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .UrlBar-UrlFieldWrapper + .toolbar .button-toolbar:not(
+          .permission-popup.is-undecided,
+          .permission-popup.is-allowing
+        ),
+.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .UrlBar-UrlFieldWrapper + .toolbar .button-toolbar:not(
+          .permission-popup.is-undecided,
+          .permission-popup.is-allowing
+        ),
+.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .UrlFragments > .UrlFragment--Lowlight,
+.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .UrlFragments > .UrlFragment--Lowlight,
+.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .UrlFragments > .UrlFragment--Lowlight,
+.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .UrlFragments > .UrlFragment--Lowlight,
+.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .ContentBlocker-Control:not([aria-expanded='true']),
+.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .ContentBlocker-Control:not([aria-expanded='true']),
+.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .ContentBlocker-Control:not([aria-expanded='true']),
+.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .ContentBlocker-Control:not([aria-expanded='true']),
+.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .BookmarkButton,
+.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .BookmarkButton,
+.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .BookmarkButton,
+.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .BookmarkButton,
+.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .drop-down-menu,
+.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .drop-down-menu,
+.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .drop-down-menu,
+.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .drop-down-menu {
+  display: none;
+  scale: 0;
+}
+
+.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .UrlBar-UrlFieldWrapper,
+.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .UrlBar-UrlFieldWrapper,
+.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .UrlBar-UrlFieldWrapper,
+.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .UrlBar-UrlFieldWrapper {
+  min-width: unset;
+}
+
+#browser:not(.linux).tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .UrlFragment-Wrapper,
+#browser:not(.linux).tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .UrlFragment-Wrapper,
+#browser:not(.linux).tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .UrlFragment-Wrapper,
+#browser:not(.linux).tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .UrlFragment-Wrapper {
+  text-overflow: clip;
+}
+
+#browser:not(.linux).tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .UrlBar-UrlFieldWrapper,
+#browser:not(.linux).tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .UrlBar-UrlFieldWrapper,
+#browser:not(.linux).tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .UrlBar-UrlFieldWrapper,
+#browser:not(.linux).tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .UrlBar-UrlFieldWrapper {
+  mask-image: -webkit-linear-gradient(180deg, transparent 0, #fff 2ch);
+  mask-position: top right;
+}
+
+#tabs-tabbar-container .toolbar-tabbar-after {
+  position: relative;
+  align-content: flex-start;
+  flex: 1;
+}
+
+.tabs-top #tabs-tabbar-container .toolbar-tabbar-after,
+.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-after {
+  padding-right: 6px;
+}
+
+.tabs-left #tabs-tabbar-container .toolbar-tabbar-after,
+.tabs-right #tabs-tabbar-container .toolbar-tabbar-after {
+  min-width: min-content;
+}
+
+.tabs-left #tabs-tabbar-container .toolbar-tabbar-after .toolbar-spacer-flexible,
+.tabs-right #tabs-tabbar-container .toolbar-tabbar-after .toolbar-spacer-flexible {
+  min-width: 100%;
+  height: calc(100% - var(--densityGap) - var(--spacerRows) * (30px + var(--densityGap)));
+  margin: auto 0;
+}
+
+.tabs-left #tabs-tabbar-container .toolbar-tabbar-after .toolbar-spacer-flexible button,
+.tabs-right #tabs-tabbar-container .toolbar-tabbar-after .toolbar-spacer-flexible button {
+  height: 100%;
+}
+
+.tabs-left #tabs-tabbar-container .toolbar-tabbar-after .toolbar-spacer-flexible .button-dragover:after,
+.tabs-right #tabs-tabbar-container .toolbar-tabbar-after .toolbar-spacer-flexible .button-dragover:after {
+  top: 3px;
+  bottom: 3px;
+}
+
+.tabs-left #tabs-tabbar-container .toolbar-tabbar-after .toolbar-spacer-flexible ~ .toolbar-spacer-flexible,
+.tabs-right #tabs-tabbar-container .toolbar-tabbar-after .toolbar-spacer-flexible ~ .toolbar-spacer-flexible {
+  min-width: auto;
+  height: 30px;
+}
+
+.tabs-left #tabs-tabbar-container.narrow .toolbar-tabbar-before .UrlBar-AddressField,
+.tabs-right #tabs-tabbar-container.narrow .toolbar-tabbar-before .UrlBar-AddressField,
+.tabs-left #tabs-tabbar-container.narrow .toolbar-tabbar-after .UrlBar-AddressField,
+.tabs-right #tabs-tabbar-container.narrow .toolbar-tabbar-after .UrlBar-AddressField,
+.tabs-left #tabs-tabbar-container.narrow .toolbar-tabbar-before .UrlBar-SearchField,
+.tabs-right #tabs-tabbar-container.narrow .toolbar-tabbar-before .UrlBar-SearchField,
+.tabs-left #tabs-tabbar-container.narrow .toolbar-tabbar-after .UrlBar-SearchField,
+.tabs-right #tabs-tabbar-container.narrow .toolbar-tabbar-after .UrlBar-SearchField {
+  flex: 0 0 30px;
+  min-width: 30px;
+}
+
+.tabs-left #tabs-tabbar-container.narrow .toolbar-tabbar-before .SearchField-SlideBar,
+.tabs-right #tabs-tabbar-container.narrow .toolbar-tabbar-before .SearchField-SlideBar,
+.tabs-left #tabs-tabbar-container.narrow .toolbar-tabbar-after .SearchField-SlideBar,
+.tabs-right #tabs-tabbar-container.narrow .toolbar-tabbar-after .SearchField-SlideBar {
+  display: none;
+}
+
+.tabs-left .tabbar-workspace-button + .toolbar-divider,
+.tabs-right .tabbar-workspace-button + .toolbar-divider {
+  width: stretch;
+}
+
+.tabs-left .tabbar-workspace-button + .toolbar-divider .ToolbarButton-Button,
+.tabs-right .tabbar-workspace-button + .toolbar-divider .ToolbarButton-Button {
+  max-width: 100%;
+  max-height: 12px;
+}
+
+.tabs-left .tabbar-workspace-button + .toolbar-divider .ToolbarButton-Button .button-icon,
+.tabs-right .tabbar-workspace-button + .toolbar-divider .ToolbarButton-Button .button-icon {
+  overflow: clip;
+}
+
+.tabs-left .tabbar-workspace-button + .toolbar-divider .ToolbarButton-Button svg,
+.tabs-right .tabbar-workspace-button + .toolbar-divider .ToolbarButton-Button svg {
+  rotate: 90deg;
+  scale: 1 100;
+  transform-origin: center;
+}
+
+opacity: 0.65;
+}
+.tabs-left:not(.toolbar-edit-mode) .toolbar-tabbar-before,
+.tabs-right:not(.toolbar-edit-mode) .toolbar-tabbar-before {
+  container-type: inline-size;
+}
+
+.tabs-left:not(.toolbar-edit-mode) .toolbar-tabbar-after,
+.tabs-right:not(.toolbar-edit-mode) .toolbar-tabbar-after {
+  container-name: narrowToolbar;
+  container-type: size;
+}
+
+display: flex;
+  }
+}
+.color-behind-tabs-off #tabs-tabbar-container .toolbar:not(.toolbar-small) > .button-toolbar,
+.color-behind-tabs-off #tabs-tabbar-container .toolbar:not(.toolbar-small) > div > .button-toolbar,
+.color-behind-tabs-off #tabs-tabbar-container .toolbar:not(.toolbar-small) > .button-toolbar:hover,
+.color-behind-tabs-off #tabs-tabbar-container .toolbar:not(.toolbar-small) > div > .button-toolbar:hover {
+  color: var(--colorImageFg, var(--colorFg));
+}
+
+.color-behind-tabs-on #tabs-tabbar-container .toolbar:not(.toolbar-small) > .button-toolbar,
+.color-behind-tabs-on #tabs-tabbar-container .toolbar:not(.toolbar-small) > div > .button-toolbar,
+.color-behind-tabs-on #tabs-tabbar-container .toolbar:not(.toolbar-small) > .button-toolbar:hover,
+.color-behind-tabs-on #tabs-tabbar-container .toolbar:not(.toolbar-small) > div > .button-toolbar:hover {
+  color: var(--colorImageFg, var(--colorAccentFg));
+}
+
+.color-behind-tabs-on.color-accent-from-page #tabs-tabbar-container .toolbar:not(.toolbar-small) > .button-toolbar,
+.color-behind-tabs-on.color-accent-from-page #tabs-tabbar-container .toolbar:not(.toolbar-small) > div > .button-toolbar,
+.color-behind-tabs-on.color-accent-from-page #tabs-tabbar-container .toolbar:not(.toolbar-small) > .button-toolbar:hover,
+.color-behind-tabs-on.color-accent-from-page #tabs-tabbar-container .toolbar:not(.toolbar-small) > div > .button-toolbar:hover {
+  color: var(--colorAccentFg);
+}
+
+.color-behind-tabs-on.color-accent-from-page.transparent-tabbar:not(.acc-dark.bg-dark) #tabs-tabbar-container .toolbar:not(.toolbar-small) > .button-toolbar,
+.color-behind-tabs-on.color-accent-from-page.transparent-tabbar:not(.acc-dark.bg-dark) #tabs-tabbar-container .toolbar:not(.toolbar-small) > div > .button-toolbar,
+.color-behind-tabs-on.color-accent-from-page.transparent-tabbar:not(.acc-dark.bg-dark) #tabs-tabbar-container .toolbar:not(.toolbar-small) > .button-toolbar:hover,
+.color-behind-tabs-on.color-accent-from-page.transparent-tabbar:not(.acc-dark.bg-dark) #tabs-tabbar-container .toolbar:not(.toolbar-small) > div > .button-toolbar:hover {
+  color: var(--colorImageFg, var(--colorFg));
+}
+
+#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .UrlBar-AddressField:not(:focus-within),
+#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .UrlBar-SearchField:not(:focus-within),
+#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .SiteInfoButton.warning:not(:focus-within) {
+  background: var(--colorAccentBgDark);
+  color: var(--colorAccentFg);
+  fill: var(--colorAccentFg);
+  border-color: var(--colorAccentBgDarker);
+}
+
+#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .UrlBar-AddressField:not(:focus-within) .SiteInfoButton.warning:not(:focus-within),
+#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .UrlBar-SearchField:not(:focus-within) .SiteInfoButton.warning:not(:focus-within),
+#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .SiteInfoButton.warning:not(:focus-within) .SiteInfoButton.warning:not(:focus-within) {
+  border-width: 0;
+}
+
+#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .UrlBar-AddressField:not(:focus-within) .UrlFragment-Wrapper,
+#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .UrlBar-SearchField:not(:focus-within) .UrlFragment-Wrapper,
+#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .SiteInfoButton.warning:not(:focus-within) .UrlFragment-Wrapper,
+#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .UrlBar-AddressField:not(:focus-within) .UrlFragment-Wrapper--ShouldHighlight,
+#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .UrlBar-SearchField:not(:focus-within) .UrlFragment-Wrapper--ShouldHighlight,
+#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .SiteInfoButton.warning:not(:focus-within) .UrlFragment-Wrapper--ShouldHighlight {
+  --HighlightColor: var(--colorAccentFg);
+  --LowlightColor: var(--colorAccentFgFaded);
+}
+
+#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .UrlBar-AddressField:not(:focus-within) .BookmarkButton:not(:hover) .bookmark-outline,
+#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .UrlBar-SearchField:not(:focus-within) .BookmarkButton:not(:hover) .bookmark-outline,
+#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .SiteInfoButton.warning:not(:focus-within) .BookmarkButton:not(:hover) .bookmark-outline {
+  stroke: var(--colorAccentFg);
+}
+
+#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .UrlBar-AddressField:not(:focus-within) .BookmarkButton:not(:hover) .bookmark-animated-fill,
+#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .UrlBar-SearchField:not(:focus-within) .BookmarkButton:not(:hover) .bookmark-animated-fill,
+#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .SiteInfoButton.warning:not(:focus-within) .BookmarkButton:not(:hover) .bookmark-animated-fill {
+  fill: var(--colorAccentFg);
+}
+
+#browser.unified-ui:not(.is-settingspage) #header:before,
+#browser.unified-ui:not(.is-settingspage) .tabbar-wrapper:before,
+#browser.unified-ui:not(.is-settingspage) footer:before {
+  display: none;
+}
+
+#browser.unified-ui:not(.is-settingspage) #tabs-tabbar-container {
+  box-shadow: unset !important;
+}
+
+flex: 1;
+  min-width: 6ch;
+}
+.vivaldi-tree .tree-row .tab-audio {
+  margin-right: 0;
+  transform: translate(-1px, 0);
+}
+
+border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+.auto-hide-wrapper.top.has-tabbar.has-mainbar ~ #main #modal-bg.slide {
+  top: 15vw;
+}
+
+.auto-hide-wrapper.top.has-tabbar.has-mainbar ~ #main #modal-bg.slide > div {
+  border-radius: var(--radiusHalf);
+}
+
+margin-left: auto;
+}
+.tabbar-wrapper .button-toolbar.workspace-popup.tabbar-workspace-button button {
+  z-index: 1;
+  height: inherit;
+  border: 0;
+  border-radius: var(--radiusHalf);
+}
+
+.density-on .tabbar-wrapper .button-toolbar.workspace-popup.tabbar-workspace-button button {
+  border-radius: var(--radius);
+}
+
+border-radius: var(--radius);
+}
+.tabs-left .button-toolbar.workspace-popup.tabbar-workspace-button,
+.tabs-right .button-toolbar.workspace-popup.tabbar-workspace-button {
+  container-type: inline-size;
+  container-name: workspace_button;
+  max-width: none;
+  gap: 4px;
+  background-color: var(--colorTabBar);
+}
+
+#app .tabs-left .button-toolbar.workspace-popup.tabbar-workspace-button button,
+#app .tabs-right .button-toolbar.workspace-popup.tabbar-workspace-button button {
+  height: 30px;
+}
+
+.tabs-left .button-toolbar.workspace-popup.tabbar-workspace-button:has(.override) button,
+.tabs-right .button-toolbar.workspace-popup.tabbar-workspace-button:has(.override) button {
+  padding-left: 0;
+}
+
+.transparent-tabbar.tabs-top:not(.density-on) .button-toolbar.workspace-popup.tabbar-workspace-button button {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.transparent-tabbar.tabs-bottom:not(.density-on) .button-toolbar.workspace-popup.tabbar-workspace-button button {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+width: 100%;
+}
+.WorkspacePopup-Items .title p:not(.tab-count) {
+  display: contents;
+}
+
+flex-basis: 100%;
+}
+.WorkspacePopup-Items .workspace-item-wrapper .title .tab-count,
+.WorkspacePopup-Items .this-window .title .tab-count {
+  font-size: 11.5px;
+  color: var(--colorFgFadedMost);
+}
+
+transform: scale(1.5) translateX(2px) translateY(2px);
+  opacity: 0;
+  transition: 0.4s;
+  fill: var(--colorHighlightFg);
+  position: absolute;
+  height: 16px;
+  width: 16px;
+  bottom: 5px;
+  right: 5px;
+  z-index: 1;
+}
+.selectbox .selectbox-image .tab-preview {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.selectbox .selectbox-image .tab-preview .thumb-preview-colorBg {
+  fill: var(--colorBg);
+}
+
+.selectbox .selectbox-image .tab-preview .thumb-preview-colorAccentBg {
+  fill: var(--colorAccentBg);
+}
+
+.selectbox .selectbox-image .tab-preview .thumb-preview-colorBgDark {
+  fill: var(--colorBgDark);
+}
+
+.selectbox .selectbox-image .tab-preview .thumb-preview-colorBgLightIntense {
+  fill: var(--colorBgLightIntense);
+}
+
+.selectbox .selectbox-image .tab-preview .thumb-preview-non-active-tab {
+  fill: #fff;
+}
+
+.theme-dark .selectbox .selectbox-image .tab-preview .thumb-preview-non-active-tab {
+  fill: rgba(255, 255, 255, 0.2);
+}
+
+opacity: 1;
+  transform: none;
+}
+.tabbar-position .selectbox {
+  width: 100px;
+}
+
+max-width: unset;
+  box-shadow: 0 1px rgba(0, 0, 0, 0.5);
+}
+.tab .button-badge {
+  top: 2px;
+  left: 15px;
+  right: auto;
+}
+
+overflow: hidden;
+}
+.toolbar-edit-mode.hasfocus .toolbar-droptarget.toolbar-mainbar > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ) svg,
+.toolbar-edit-mode.hasfocus .toolbar-droptarget.toolbar-panel > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ) svg,
+.toolbar-edit-mode.hasfocus .toolbar-droptarget.toolbar-statusbar > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ) svg,
+.toolbar-edit-mode.hasfocus #tabs-container .toolbar-droptarget > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ) svg,
+.toolbar-edit-mode.hasfocus .toolbar-droptarget.toolbar-mainbar > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ) img,
+.toolbar-edit-mode.hasfocus .toolbar-droptarget.toolbar-panel > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ) img,
+.toolbar-edit-mode.hasfocus .toolbar-droptarget.toolbar-statusbar > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ) img,
+.toolbar-edit-mode.hasfocus #tabs-container .toolbar-droptarget > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ) img {
+  animation: horizontal-wiggle 700ms linear infinite;
+}
+
+.toolbar-edit-mode.hasfocus .toolbar-droptarget.toolbar-mainbar > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ):nth-child(2n) svg,
+.toolbar-edit-mode.hasfocus .toolbar-droptarget.toolbar-panel > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ):nth-child(2n) svg,
+.toolbar-edit-mode.hasfocus .toolbar-droptarget.toolbar-statusbar > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ):nth-child(2n) svg,
+.toolbar-edit-mode.hasfocus #tabs-container .toolbar-droptarget > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ):nth-child(2n) svg,
+.toolbar-edit-mode.hasfocus .toolbar-droptarget.toolbar-mainbar > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ):nth-child(2n) img,
+.toolbar-edit-mode.hasfocus .toolbar-droptarget.toolbar-panel > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ):nth-child(2n) img,
+.toolbar-edit-mode.hasfocus .toolbar-droptarget.toolbar-statusbar > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ):nth-child(2n) img,
+.toolbar-edit-mode.hasfocus #tabs-container .toolbar-droptarget > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ):nth-child(2n) img {
+  animation-delay: 300ms;
+}
+
+.toolbar-edit-mode.hasfocus .toolbar-droptarget.toolbar-mainbar > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ):nth-child(3n) svg,
+.toolbar-edit-mode.hasfocus .toolbar-droptarget.toolbar-panel > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ):nth-child(3n) svg,
+.toolbar-edit-mode.hasfocus .toolbar-droptarget.toolbar-statusbar > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ):nth-child(3n) svg,
+.toolbar-edit-mode.hasfocus #tabs-container .toolbar-droptarget > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ):nth-child(3n) svg,
+.toolbar-edit-mode.hasfocus .toolbar-droptarget.toolbar-mainbar > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ):nth-child(3n) img,
+.toolbar-edit-mode.hasfocus .toolbar-droptarget.toolbar-panel > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ):nth-child(3n) img,
+.toolbar-edit-mode.hasfocus .toolbar-droptarget.toolbar-statusbar > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ):nth-child(3n) img,
+.toolbar-edit-mode.hasfocus #tabs-container .toolbar-droptarget > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ):nth-child(3n) img {
+  animation-delay: 500ms;
+}
+
+.toolbar-edit-mode.hasfocus .toolbar-droptarget.toolbar-mainbar > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ):nth-child(4n) svg,
+.toolbar-edit-mode.hasfocus .toolbar-droptarget.toolbar-panel > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ):nth-child(4n) svg,
+.toolbar-edit-mode.hasfocus .toolbar-droptarget.toolbar-statusbar > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ):nth-child(4n) svg,
+.toolbar-edit-mode.hasfocus #tabs-container .toolbar-droptarget > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ):nth-child(4n) svg,
+.toolbar-edit-mode.hasfocus .toolbar-droptarget.toolbar-mainbar > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ):nth-child(4n) img,
+.toolbar-edit-mode.hasfocus .toolbar-droptarget.toolbar-panel > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ):nth-child(4n) img,
+.toolbar-edit-mode.hasfocus .toolbar-droptarget.toolbar-statusbar > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ):nth-child(4n) img,
+.toolbar-edit-mode.hasfocus #tabs-container .toolbar-droptarget > *:not(
+    .toolbar-divider,
+    .toolbar-spacer,
+    .toolbar-spacer-flexible,
+    .toolbar-spacer-panel,
+    .UrlBar-AddressField,
+    .UrlBar-SearchField,
+    .StatusInfo,
+    .biscuit-setting-version,
+    .button-textonly
+  ):nth-child(4n) img {
+  animation-delay: 100ms;
+}
+
+display: none;
+}
+#browser.fullscreen.inner #header,
+#browser.fullscreen.inner .mainbar,
+#browser.fullscreen.inner .bookmark-bar,
+#browser.fullscreen.inner .find-in-page,
+#browser.fullscreen.inner .tabbar-wrapper,
+#browser.fullscreen.inner #panels-container,
+#browser.fullscreen.inner .toolbar-statusbar {
+  display: none;
+}
+
+color: var(--colorImageTopFg, var(--colorFgFaded));
+}
+.auto-hide-wrapper.top:has(.mainbar):not(.has-tabbar) .topmenu {
+  color: var(--colorFg);
+  background-color: var(--colorBg);
+}
+
+.color-behind-tabs-off .auto-hide-wrapper.top:has(.mainbar):not(.has-tabbar) .topmenu {
+  color: var(--colorAccentFg);
+  background-color: var(--colorAccentBg);
+}
+
+.auto-hide-wrapper.top.has-tabbar .topmenu {
+  color: var(--colorImageFg, var(--colorAccentFg));
+  background-color: var(--colorTabBar);
+}
+
+.color-behind-tabs-off .auto-hide-wrapper.top.has-tabbar .topmenu {
+  color: var(--colorImageFg, var(--colorFg));
+}
+
+color: var(--colorFg);
+  background-color: var(--colorBg);
+}
+#browser:not(
+.is-settingspage
+).color-accent-from-page.color-behind-tabs-on.transparent-tabbar.tabs-top #header:before,
+#browser:not(
+.is-settingspage
+).color-accent-from-page.color-behind-tabs-on.transparent-tabbar.tabs-left .inner > .tabbar-wrapper:before,
+#browser:not(
+.is-settingspage
+).color-accent-from-page.color-behind-tabs-on.transparent-tabbar.tabs-right .inner > .tabbar-wrapper:before,
+#browser:not(
+.is-settingspage
+).color-accent-from-page.color-behind-tabs-on.transparent-tabbar.tabs-bottom > footer:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  background-color: var(--colorAccentBg);
+  z-index: 0;
+  contain: content;
+  transition: background-color 100ms ease-in;
+}
+
+margin-right: 1px;
+}
+#browser.tabs-left #webview-container #webpage-stack,
+#browser #panels-container.left:not(.switcher).overlay.minimized + #webview-container #webpage-stack,
+#browser #panels-container.left:not(.switcher).icons + #webview-container #webpage-stack {
+  margin-left: 0;
+}
+
+#browser.tabs-right #webview-container #webpage-stack,
+#browser #panels-container.right:not(.switcher).overlay.minimized + #webview-container #webpage-stack,
+#browser #panels-container.right:not(.switcher).icons + #webview-container #webpage-stack {
+  margin-right: 0;
+}
+
+width: 16px;
+  height: 16px;
+}
+.tabbar-wrapper {
+  --currentRadius: var(--radiusHalf);
+}
+
+.density-on:not(.tabs-at-edge) .tabbar-wrapper,
+.unified-ui:not(.tabs-at-edge) .tabbar-wrapper {
+  --currentRadius: var(--radius);
+}
+
+.tab-position {
+  position: absolute;
+  display: flex;
+  transform: translateX(var(--PositionX)) translateY(var(--PositionY));
+  opacity: var(--Opacity);
+  height: var(--Height);
+  width: var(--Width);
+  z-index: var(--ZIndex);
+}
+
+.tabs-left #tabs-tabbar-container.resizing .tab-position:not(.accordion-toggle-arrow),
+.tabs-right #tabs-tabbar-container.resizing .tab-position:not(.accordion-toggle-arrow) {
+  width: 100%;
+}
+
+.tabs-top #tabs-tabbar-container.resizing .tab-position:not(.accordion-toggle-arrow),
+.tabs-bottom #tabs-tabbar-container.resizing .tab-position:not(.accordion-toggle-arrow) {
+  height: 100%;
+}
+
+.tab-position.is-substack > .tab.active {
+  border-top-left-radius: var(--currentRadius);
+  border-top-right-radius: var(--currentRadius);
+  border-bottom-left-radius: var(--currentRadius);
+  border-bottom-right-radius: var(--currentRadius);
+}
+
+transition: width 1s linear;
+  /* time in sync with PeriodicReloadStore.js */
+}
+.tab {
+  display: flex;
+  flex: 1;
+  flex-flow: column;
+  overflow: hidden;
+  font-size: 12px;
+  user-select: none;
+  position: relative;
+}
+
+.tabs-top.density-on.tabs-at-edge .tab:not(.tab-in-accordion).active,
+.tabs-top:not(.density-on) .tab:not(.tab-in-accordion).active,
+.tabs-bottom.density-on.tabs-at-edge .tab:not(.tab-in-accordion).active,
+.tabs-bottom:not(.density-on) .tab:not(.tab-in-accordion).active {
+  overflow: visible;
+}
+
+.unified-ui .tab {
+  color: inherit;
+  background-color: unset;
+}
+
+:not(.ui-transparent-tabs).unified-ui .tab {
+  background-color: var(--colorBgAlphaHeavier);
+}
+
+.unified-ui-transparent:not(.ui-transparent-tabs).unified-ui .tab {
+  background-color: color-mix(in srgb, var(--colorImageBg) 30%, transparent);
+}
+
+.unified-ui .tab:hover {
+  background-color: var(--colorBgAlphaHeavy);
+}
+
+.color-behind-tabs-on .tab {
+  color: var(--colorAccentFg);
+}
+
+#browser.color-behind-tabs-on .tab.active.active {
+  background-color: var(--colorBg);
+  color: var(--colorFg);
+}
+
+.color-behind-tabs-on:not(.ui-transparent-tabs) .tab,
+.color-behind-tabs-on.ui-transparent-tabs .tab-wrapper:hover .tab:not(.active) {
+  background-color: var(--colorAccentBgAlphaHeavy);
+}
+
+.color-behind-tabs-on:not(.ui-transparent-tabs) .tab-wrapper:hover .tab:not(.active) {
+  background-color: var(--colorAccentBgAlpha);
+}
+
+.color-behind-tabs-off .tab,
+.unified-ui:not(.unified-ui-transparent) .tab {
+  color: var(--colorFg);
+}
+
+#browser.color-behind-tabs-off .tab.active.active,
+#browser.unified-ui:not(.unified-ui-transparent) .tab.active.active {
+  color: var(--colorAccentFg);
+}
+
+.color-behind-tabs-off:not(.ui-transparent-tabs) .tab,
+.color-behind-tabs-off.ui-transparent-tabs .tab-wrapper:hover .tab:not(.active),
+.tab .unified-ui:not(.unified-ui-transparent, .ui-transparent-tabs),
+.unified-ui.ui-transparent-tabs:not(.unified-ui-transparent) .tab-wrapper:hover .tab:not(.active) {
+  background-color: color-mix(in srgb, var(--colorBgDarker) 40%, transparent);
+}
+
+.color-behind-tabs-off:not(.ui-transparent-tabs) .tab-wrapper:hover .tab:not(.active),
+.unified-ui:not(.unified-ui-transparent) .tab-wrapper:hover .tab:not(.active) {
+  background-color: color-mix(in srgb, var(--colorBgDarker) 80%, transparent);
+}
+
+.transparent-tabbar:not(.acc-dark.bg-dark.color-accent-from-page.color-behind-tabs-on) .tab {
+  color: var(--colorImageFg, var(--colorFg));
+}
+
+:not(.ui-transparent-tabs).transparent-tabbar:not(.acc-dark.bg-dark.color-accent-from-page.color-behind-tabs-on) .tab {
+  background-color: var(--colorImageBgAlphaHeavy, var(--colorBgAlphaHeavier));
+}
+
+.transparent-tabbar:not(.acc-dark.bg-dark.color-accent-from-page.color-behind-tabs-on) .tab-wrapper:hover .tab:not(.active) {
+  background-color: var(--colorImageBgAlpha, var(--colorBgAlpha));
+}
+
+#browser#browser .tab.tab-acceptsdrop {
+  background-color: var(--colorHighlightBg);
+  color: var(--colorHighlightFg);
+  transition: background-color 200ms linear;
+  filter: contrast(1.2);
+}
+
+#browser#browser .tab.tab-acceptsdrop:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: var(--currentRadius);
+  outline: var(--colorHighlightFg) 2px solid;
+  outline-offset: -2px;
+}
+
+.tabs-top:not(.density-on)#browser#browser .tab.tab-acceptsdrop.active:after {
+  bottom: 1px;
+}
+
+.tabs-bottom:not(.density-on)#browser#browser .tab.tab-acceptsdrop.active:after {
+  top: 1px;
+}
+
+.tab .spinner {
+  transform: scale(1);
+}
+
+.ui-transparent-tabs .tab {
+  background-color: rgba(0, 0, 0, 0.001);
+}
+
+#browser .tab.active {
+  color: var(--colorAccentFg);
+  background-color: var(--colorAccentBg);
+  will-change: opacity;
+}
+
+.color-behind-tabs-off#browser .tab.active.insubstrip {
+  color: var(--colorAccentFg);
+  background-color: var(--colorAccentBg);
+}
+
+.tab-wrapper:hover .tab:not(.active) {
+  will-change: opacity;
+}
+
+#browser.unified-ui-transparent .tab-wrapper:hover .tab:not(.active),
+#browser.transparent-tabbar .tab-wrapper:hover .tab:not(.active) {
+  color: var(--colorImageFg);
+  background-color: color-mix(in srgb, var(--colorImageBg) 70%, transparent);
+}
+
+.tab-wrapper[aria-hidden=true] .tab {
+  overflow: hidden;
+}
+
+.tabs-top.tabs-at-edge:not(.unified-ui) .tab-position:not(.is-substack) .tab.active,
+.tabs-top:not(.density-on, .unified-ui) .tab-position:not(.is-substack) .tab.active {
+  height: calc(var(--Height) + 1px);
+}
+
+.tabs-bottom.tabs-at-edge:not(.unified-ui) .tab-position:not(.is-substack) .tab.active,
+.tabs-bottom:not(.density-on, .unified-ui) .tab-position:not(.is-substack) .tab.active {
+  height: calc(var(--Height) + 1px);
+  padding-top: 1px;
+  top: -1px !important;
+}
+
+.tabs-top .tab:not(.active),
+.tabs-bottom .tab:not(.active) {
+  max-height: var(--Height);
+}
+
+.tabs-top:not(.density-on) .tab,
+.tabs-bottom:not(.density-on) .tab {
+  max-width: calc(var(--Width) - 1px);
+}
+
+.tabs-top.density-on .tab:not(.tab-in-accordion, .tab-accordion),
+.tabs-bottom.density-on .tab:not(.tab-in-accordion, .tab-accordion) {
+  max-width: calc(var(--Width) - var(--densityGap));
+}
+
+.tabs-top.density-on .tab:not(.tab-in-accordion, .tab-accordion).tab-small,
+.tabs-bottom.density-on .tab:not(.tab-in-accordion, .tab-accordion).tab-small {
+  max-width: calc(var(--Width) - 1px);
+}
+
+.tabs-bottom .is-substack .tab.active,
+.tabs-bottom .tab:not(.tab-in-accordion, .tab-accordion, .active),
+.tabs-bottom.density-on:not(.tabs-at-edge) .tab:not(.tab-in-accordion, .tab-accordion),
+.tabs-bottom.unified-ui .tab:not(.tab-in-accordion, .tab-accordion),
+.tabs-top .tab:not(.tab-in-accordion, .tab-accordion) {
+  border-top-left-radius: var(--currentRadius);
+  border-top-right-radius: var(--currentRadius);
+}
+
+.tabs-top .is-substack .tab.active,
+.tabs-top .tab:not(.tab-in-accordion, .tab-accordion, .active),
+.tabs-top.density-on:not(.tabs-at-edge) .tab:not(.tab-in-accordion, .tab-accordion),
+.tabs-top.unified-ui .tab:not(.tab-in-accordion, .tab-accordion),
+.tabs-bottom .tab:not(.tab-in-accordion, .tab-accordion) {
+  border-bottom-left-radius: var(--currentRadius);
+  border-bottom-right-radius: var(--currentRadius);
+}
+
+.tabs-left .tab:not(.tab-in-accordion, .tab-accordion),
+.tabs-right .tab:not(.tab-in-accordion, .tab-accordion) {
+  border-radius: var(--currentRadius);
+}
+
+.tabs-left .tab.tab-in-accordion.tab-first-in-group,
+.tabs-right .tab.tab-in-accordion.tab-first-in-group,
+.tabs-left .tab.tab-accordion,
+.tabs-right .tab.tab-accordion {
+  border-top-left-radius: var(--currentRadius);
+  border-top-right-radius: var(--currentRadius);
+}
+
+.tabs-left .tab:is(.tab-accordion, .tab-in-accordion) .tab-header,
+.tabs-right .tab:is(.tab-accordion, .tab-in-accordion) .tab-header {
+  padding-top: var(--densityGap);
+}
+
+.tabs-left .tab:not(.tab-accordion, .tab-in-accordion),
+.tabs-right .tab:not(.tab-accordion, .tab-in-accordion) {
+  max-height: calc(var(--Height) - max(var(--densityGap), 1px));
+}
+
+.tabs-left .tab:not(.tab-accordion, .tab-in-accordion):has(+ .tab-group-indicator),
+.tabs-right .tab:not(.tab-accordion, .tab-in-accordion):has(+ .tab-group-indicator) {
+  max-height: calc(var(--Height) - 7px - max(var(--densityGap), 1px));
+}
+
+.tab.insubstrip {
+  border-radius: var(--currentRadius);
+}
+
+.tabs-top.tabs-at-edge .tab.insubstrip.active:not(.marked),
+.tabs-top:not(.density-on, .unified-ui) .tab.insubstrip.active:not(.marked) {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.tabs-bottom.tabs-at-edge .tab.insubstrip.active:not(.marked),
+.tabs-bottom:not(.density-on, .unified-ui) .tab.insubstrip.active:not(.marked) {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.tab:not(.active) .svg-tab-selection .inner {
+  fill: var(--colorHighlightBgAlpha);
+}
+
+.tab.tab-in-accordion .svg-tab-selection .inner {
+  fill: url(#diagonalLinePattern);
+  fill-opacity: 0.2;
+}
+
+.tab.marked:not(.tab-first-in-group):not(.tab-accordion) {
+  position: relative;
+}
+
+.tab.pinned .close,
+.tab.pinned:hover .close {
+  display: none !important;
+}
+
+.tab.pinned .favicon,
+.tab.pinned:hover .favicon {
+  visibility: visible !important;
+}
+
+.tab.unread {
+  background-image: linear-gradient(-135deg, color-mix(in srgb, var(--colorImageFg, var(--colorFg)), transparent) calc(6px + var(--currentRadius) / 4), transparent calc(6px + var(--currentRadius) / 4));
+  background-position: top right;
+  background-repeat: no-repeat;
+}
+
+.color-behind-tabs-on .tab.unread {
+  background-image: linear-gradient(-135deg, color-mix(in srgb, var(--colorAccentFg), transparent) calc(6px + var(--currentRadius) / 4), transparent calc(6px + var(--currentRadius) / 4));
+}
+
+.tabs-bottom .tab.unread {
+  background-image: linear-gradient(-45deg, color-mix(in srgb, var(--colorImageFg, var(--colorFg)), transparent) calc(6px + var(--currentRadius) / 4), transparent calc(6px + var(--currentRadius) / 4));
+}
+
+.color-behind-tabs-on.tabs-bottom .tab.unread {
+  background-image: linear-gradient(-45deg, color-mix(in srgb, var(--colorAccentFg), transparent) calc(6px + var(--currentRadius) / 4), transparent calc(6px + var(--currentRadius) / 4));
+}
+
+.tabs-bottom .tab.unread .thumbnail-image {
+  mask-image: linear-gradient(-45deg, transparent calc(6px + var(--currentRadius) / 4), #000 calc(6px + var(--currentRadius) / 4));
+}
+
+.tab .tab-header {
+  display: flex;
+  flex: 0 0 30px;
+  position: relative;
+  padding-left: 6px;
+  overflow: hidden;
+  align-items: center;
+}
+
+.tab .tab-header.expecting-drop {
+  pointer-events: none;
+}
+
+.tab .favicon,
+.tab .close {
+  min-width: 18px;
+  min-height: 18px;
+  overflow: hidden;
+}
+
+.tab .stack-counter {
+  height: auto;
+  line-height: 1.3;
+  padding: 1px 4px;
+  border-radius: var(--radiusHalf);
+  font-size: 11.5px;
+  font-weight: 400;
+  overflow: visible;
+  min-width: 1.5em;
+  text-align: center;
+  margin-right: 6px;
+  align-self: center;
+}
+
+.color-behind-tabs.on .tab .stack-counter {
+  background-color: var(--colorImageBg, var(--colorAccentBgAlpha));
+  color: var(--colorImageFg, var(--colorAccentFg));
+}
+
+.color-behind-tabs-off .tab .stack-counter {
+  background-color: var(--colorImageBg, var(--colorBgDarker));
+  color: var(--colorImageFg, var(--colorFg));
+}
+
+.tab.active .stack-counter {
+  background-color: var(--colorBgDarker);
+  color: var(--colorFg);
+}
+
+.color-behind-tabs-off .tab.active .stack-counter {
+  background-color: var(--colorAccentBgAlpha);
+  color: var(--colorAccentFg);
+}
+
+.tab.tab-small .stack-counter {
+  display: none;
+}
+
+.tab .favicon.progress {
+  --currentAlpha: color-mix(in srgb, currentColor 20%, transparent);
+  filter: unset !important;
+  max-width: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  max-height: 16px;
+  margin: 1px;
+  border-radius: 50%;
+  background-image: conic-gradient(currentColor var(--progressInPercent), var(--currentAlpha) 0%);
+  transition: --progressInPercent 300ms linear;
+  mask-image: -webkit-gradient(radial, 8 8, 5, 8 8, 5.5, from(transparent), to(#000));
+  animation-fill-mode: forwards;
+}
+
+syntax: '<percentage>';
+  inherits: false;
+  initial-value: 0%;
+}
+.tab .favicon.progress.infinite-spin {
+  background-image: conic-gradient(currentColor 0%, currentColor 20%, var(--currentAlpha) 20% 50%, currentColor 50%, currentColor 70%, var(--currentAlpha) 70% 100%);
+  animation: spin 1s linear infinite;
+}
+
+.tab .favicon {
+  pointer-events: none;
+  flex: 0 0 18px;
+  border-radius: var(--radiusRounded);
+  min-width: 18px;
+  height: 18px;
+  padding: 1px;
+  filter: unset;
+  fill: currentColor;
+}
+
+.tab .favicon.hidden {
+  visibility: hidden !important;
+}
+
+.tab .favicon.svg span {
+  width: 16px;
+  height: 16px;
+}
+
+.tab .close {
+  display: none;
+  border-radius: var(--currentRadius);
+}
+
+.alt-tabs .tab .close {
+  order: -1;
+}
+
+.tab .close svg {
+  margin: auto;
+}
+
+.tab .title {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  margin-right: 3px;
+  padding-left: 4px;
+  height: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  line-height: 13px;
+}
+
+.tab .title:not(.editing) {
+  mask-image: -webkit-linear-gradient(180deg, transparent 0, #fff 12px);
+  mask-position: top right;
+}
+
+.tab .title input {
+  background-color: #f6f6f6;
+  color: #111;
+  width: stretch;
+  height: 22px;
+  margin-right: 1px;
+}
+
+.linux .tab .title {
+  mask: unset;
+  display: inline-block;
+  height: 29px;
+  line-height: 29px;
+}
+
+.linux .tab:not(.tab-small, .active) .title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.tab .progress-indicator[value='0']::-webkit-progress-value {
+  transition: unset;
+}
+
+.tab .thumbnail-image {
+  flex: 1;
+  margin: 0 2px 2px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  transition: background-image 0.3s;
+  width: auto;
+  border-radius: 0;
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+  color: var(--colorFg);
+  background-color: var(--colorBg);
+}
+
+.tab .thumbnail-image svg {
+  min-width: 16px;
+  min-height: 16px;
+  height: 50%;
+}
+
+.tab.highlighted:focus-visible,
+.tab.uifocusstop:not(.marked):focus-visible,
+.tab:focus-visible:not(.marked) {
+  border-radius: var(--radiusHalf);
+  outline: 2px solid var(--colorHighlightBg);
+  outline-offset: -1px;
+}
+
+.tabs-left .tab.highlighted:focus-visible,
+.tabs-left .tab.uifocusstop:not(.marked):focus-visible,
+.tabs-left .tab:focus-visible:not(.marked),
+.tabs-right .tab.highlighted:focus-visible,
+.tabs-right .tab.uifocusstop:not(.marked):focus-visible,
+.tabs-right .tab:focus-visible:not(.marked) {
+  outline: 2px solid var(--colorHighlightBg);
+  outline-offset: -2px;
+}
+
+.tab:hover,
+.tab.force-hover {
+  /* hide close buttons in small tabs */
+  /* show close button */
+  /* gradually cover favicon with close button in small tabs */
+}
+
+.tab:hover.tab-small .close,
+.tab.force-hover.tab-small .close,
+.tab:hover.tab-mini:not(.button-off).active .favicon,
+.tab.force-hover.tab-mini:not(.button-off).active .favicon,
+.tab:hover.tab-mini:not(.button-off).active .button-badge,
+.tab.force-hover.tab-mini:not(.button-off).active .button-badge,
+#browser:not(.alt-tabs) .tab:hover.tab:not(.button-off, .force-hover) .stack-counter,
+#browser:not(.alt-tabs) .tab.force-hover.tab:not(.button-off, .force-hover) .stack-counter,
+.alt-tabs .tab:hover.tab:not(.button-off) .favicon,
+.alt-tabs .tab.force-hover.tab:not(.button-off) .favicon,
+.alt-tabs .tab:hover.tab:not(.button-off) .button-badge,
+.alt-tabs .tab.force-hover.tab:not(.button-off) .button-badge {
+  display: none;
+}
+
+.tab:hover .close,
+.tab.force-hover .close,
+.tab:hover.active.tab-small .close,
+.tab.force-hover.active.tab-small .close,
+.tab:hover.tab.pinned .favicon,
+.tab.force-hover.tab.pinned .favicon,
+.alt-tabs .tab:hover.tab.pinned .favicon,
+.alt-tabs .tab.force-hover.tab.pinned .favicon,
+.alt-tabs .tab:hover.tab-small:not(.active) .favicon,
+.alt-tabs .tab.force-hover.tab-small:not(.active) .favicon {
+  display: flex;
+}
+
+#browser:not(.alt-tabs) .tab:hover.tab-small:not(.tab-mini).active .favicon,
+#browser:not(.alt-tabs) .tab.force-hover.tab-small:not(.tab-mini).active .favicon {
+  flex: 0 1 100%;
+  margin-right: auto;
+  min-width: 0;
+  max-width: 18px;
+  background-position: 1px 50%;
+}
+
+#browser:not(.alt-tabs) .tab:hover.tab-small:not(.tab-mini).active .title,
+#browser:not(.alt-tabs) .tab.force-hover.tab-small:not(.tab-mini).active .title {
+  display: none;
+}
+
+#browser:not(.alt-tabs) .tab:hover.tab-small:not(.tab-mini).active .close,
+#browser:not(.alt-tabs) .tab.force-hover.tab-small:not(.tab-mini).active .close {
+  flex: 0 0 auto;
+}
+
+.tab.active .tab-header input.tab-title-edit {
+  line-height: 1;
+  color: var(--colorAccentFg);
+  background-color: var(--colorAccentBgDark);
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: none;
+  border-width: 1px;
+  margin-left: -3px;
+}
+
+.color-behind-tabs-on .tab.active .tab-header input.tab-title-edit {
+  color: var(--colorFg);
+  background-color: var(--colorBgDark);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.transparent-tabbar .tab.active .tab-header .favicon:not(.svg),
+.theme-dark .tab.active .tab-header .favicon:not(.svg),
+.acc-dark.unified-ui .tab.active .tab-header .favicon:not(.svg),
+.acc-dark.color-behind-tabs-off .tab.active .tab-header .favicon:not(.svg) {
+  filter: drop-shadow(1px 0 0 rgba(246, 246, 246, 0.75)) drop-shadow(-1px 0 0 rgba(246, 246, 246, 0.75)) drop-shadow(0 1px 0 rgba(246, 246, 246, 0.75)) drop-shadow(0 -1px 0 rgba(246, 246, 246, 0.75));
+}
+
+.tab.active .thumbnail-image {
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.tab.active:not(.marked, .tab-mini):after {
+  transform: unset;
+}
+
+.density-on:not(.tabs-at-edge) .tab.active:not(.tab-in-accordion, .tab-accordion),
+.unified-ui:not(.tabs-at-edge) .tab.active:not(.tab-in-accordion, .tab-accordion) {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.tab-strip {
+  flex: 1 1 auto;
+  position: relative;
+}
+
+.tab-strip > span {
+  display: contents;
+}
+
+.tabs-top.density-on:not(.tabs-at-edge) #tabs-subcontainer .tab-strip,
+.tabs-bottom.density-on:not(.tabs-at-edge) #tabs-subcontainer .tab-strip {
+  margin: var(--densityGap);
+}
+
+.tab-strip.horizontal-scrolling {
+  overflow-x: scroll;
+  overflow-y: clip;
+  justify-content: flex-start;
+}
+
+.tab-strip.horizontal-scrolling.horizontal-scrolling-smooth {
+  scroll-behavior: smooth;
+}
+
+.stacks-substrip.tabs-top #tabs-container .tab-strip.horizontal-scrolling,
+.stacks-dotted.tabs-top #tabs-container .tab-strip.horizontal-scrolling {
+  padding-top: 6px;
+  margin-top: -6px;
+}
+
+.stacks-substrip.tabs-bottom #tabs-container .tab-strip.horizontal-scrolling,
+.stacks-dotted.tabs-bottom #tabs-container .tab-strip.horizontal-scrolling {
+  margin-bottom: -6px;
+}
+
+.stacks-substrip.tabs-bottom #tabs-container .tab-strip.horizontal-scrolling .tab-position,
+.stacks-dotted.tabs-bottom #tabs-container .tab-strip.horizontal-scrolling .tab-position {
+  margin-bottom: 6px;
+}
+
+.tab-strip.horizontal-scrolling::-webkit-scrollbar {
+  display: none;
+}
+
+.svg-tab-stack,
+.svg-tab-selection {
+  position: absolute;
+  pointer-events: none;
+  width: var(--Width);
+  height: var(--Height);
+  border-radius: var(--currentRadius);
+}
+
+.tab-indicator .svg-tab-stack,
+.tab-indicator .svg-tab-selection {
+  border-radius: 0;
+}
+
+.svg-tab-stack line,
+.svg-tab-selection line,
+.svg-tab-stack rect,
+.svg-tab-selection rect {
+  fill: none;
+  stroke-width: 4.001px;
+}
+
+.svg-tab-stack rect,
+.svg-tab-selection rect {
+  rx: var(--currentRadius);
+  ry: var(--currentRadius);
+}
+
+.tabs-top .svg-tab-stack,
+.tabs-top .svg-tab-selection,
+.tabs-bottom .svg-tab-stack,
+.tabs-bottom .svg-tab-selection {
+  max-height: 100%;
+  max-width: calc(var(--Width) - var(--densityGap));
+}
+
+.tabs-top .tab-small + .svg-tab-stack,
+.tabs-top .tab-small + .svg-tab-selection,
+.tabs-bottom .tab-small + .svg-tab-stack,
+.tabs-bottom .tab-small + .svg-tab-selection {
+  max-width: calc(var(--Width) - 1px);
+}
+
+.tabs-top .tab:is(.tab-accordion, .tab-in-accordion) + .svg-tab-stack,
+.tabs-top .tab:is(.tab-accordion, .tab-in-accordion) + .svg-tab-selection,
+.tabs-bottom .tab:is(.tab-accordion, .tab-in-accordion) + .svg-tab-stack,
+.tabs-bottom .tab:is(.tab-accordion, .tab-in-accordion) + .svg-tab-selection {
+  max-width: unset;
+}
+
+.tabs-left .svg-tab-stack,
+.tabs-left .svg-tab-selection,
+.tabs-right .svg-tab-stack,
+.tabs-right .svg-tab-selection {
+  width: 100%;
+  max-width: 100%;
+  height: calc(var(--Height) - var(--densityGap));
+}
+
+.tabs-left .tab:not(.tab-accordion, .tab-in-accordion) + .svg-tab-stack,
+.tabs-left .tab:not(.tab-accordion, .tab-in-accordion) + .svg-tab-selection,
+.tabs-right .tab:not(.tab-accordion, .tab-in-accordion.tab-first-in-group) + .svg-tab-stack,
+.tabs-right .tab:not(.tab-accordion, .tab-in-accordion.tab-first-in-group) + .svg-tab-selection {
+  max-height: calc(var(--Height) - 1px);
+}
+
+.density-on.tabs-left .tab:not(.tab-accordion, .tab-in-accordion) + .svg-tab-stack,
+.density-on.tabs-left .tab:not(.tab-accordion, .tab-in-accordion) + .svg-tab-selection,
+.density-on.tabs-right .tab:not(.tab-accordion, .tab-in-accordion.tab-first-in-group) + .svg-tab-stack,
+.density-on.tabs-right .tab:not(.tab-accordion, .tab-in-accordion.tab-first-in-group) + .svg-tab-selection {
+  max-height: calc(var(--Height) - var(--densityGap));
+}
+
+.tabs-left .tab.tab-group + .svg-tab-stack,
+.tabs-left .tab.tab-group + .svg-tab-selection,
+.tabs-right .tab.tab-group + .svg-tab-stack,
+.tabs-right .tab.tab-group + .svg-tab-selection {
+  max-height: calc(var(--Height) - var(--densityGap) - 6px);
+}
+
+.svg-tab-stack .stack-frame,
+.svg-tab-selection .stack-frame {
+  stroke: color-mix(in srgb, var(--colorFg), transparent 50%);
+}
+
+.color-behind-tabs-on .svg-tab-stack .stack-frame,
+.color-behind-tabs-on .svg-tab-selection .stack-frame {
+  stroke: color-mix(in srgb, var(--colorAccentFg), transparent 50%);
+}
+
+.unified-ui-transparent .svg-tab-stack .stack-frame,
+.unified-ui-transparent .svg-tab-selection .stack-frame,
+.transparent-tabbar .svg-tab-stack .stack-frame,
+.transparent-tabbar .svg-tab-selection .stack-frame {
+  stroke: color-mix(in srgb, var(--colorImageFg), transparent 50%);
+}
+
+.svg-tab-stack:not(.svg-tab-selection) .inner,
+.svg-tab-selection:not(.svg-tab-selection) .inner,
+.svg-tab-stack:not(.svg-tab-selection) .outer,
+.svg-tab-selection:not(.svg-tab-selection) .outer {
+  display: none;
+}
+
+stroke-dasharray: 5, 5;
+  stroke-dashoffset: 2;
+  stroke: var(--colorHighlightFg);
+}
+#app .svg-tab-selection:not(.svg-tab-stack) {
+  top: 0;
+}
+
+#app .svg-tab-selection:not(.svg-tab-stack) .stack-frame {
+  display: none;
+}
+
+#app .svg-tab-selection:not(.svg-tab-stack) line {
+  stroke-width: 5px;
+}
+
+#app .tab-indicator .svg-tab-selection:not(.svg-tab-stack) {
+  max-width: 100%;
+  max-height: 6px;
+}
+
+#app .tab-indicator .svg-tab-selection:not(.svg-tab-stack) .stack-frame {
+  display: none;
+}
+
+#app .tab-indicator .svg-tab-selection:not(.svg-tab-stack) line {
+  stroke-width: 6px;
+}
+
+flex-wrap: wrap;
+  flex: 1 0;
+  align-items: center;
+  justify-content: space-between;
+  height: auto;
+  overflow: hidden;
+  padding-bottom: 3px;
+}
+.tabs-left .subcontainer-lock,
+.tabs-right .subcontainer-lock {
+  flex-direction: column;
+}
+
+padding: 0 var(--densityGap);
+}
+.tabs-top:not(.tabs-at-edge) #tabs-subcontainer .toolbar.toolbar-tabbar,
+.tabs-bottom:not(.tabs-at-edge) #tabs-subcontainer .toolbar.toolbar-tabbar {
+  flex-direction: row;
+  align-items: center;
+  padding: var(--densityGap) 0;
+}
+
+.tab-audio {
+  contain: strict;
+  height: 16px;
+  width: 16px;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.tabs-left .tab-audio,
+.tabs-right .tab-audio {
+  margin-left: 3px;
+}
+
+.alt-tabs .tab-audio,
+.alt-tabs .tab-audio {
+  margin-right: 6px;
+}
+
+#app #browser .tab-audio:hover {
+  transform: scale(1.24);
+}
+
+transform: scale(0.5) translateZ(0);
+  transform-origin: left 2px;
+}
+#tabs-container {
+  min-height: 30px;
+}
+
+#tabs-container .resize {
+  position: relative;
+  pointer-events: none;
+  display: flex;
+  flex: 1 1 100%;
+  overflow: visible;
+}
+
+.tabs-top #tabs-container .resize,
+.tabs-bottom #tabs-container .resize {
+  margin-right: 3px;
+}
+
+#tabs-container .resize .tab-strip,
+#tabs-container .resize .tab-position,
+#tabs-container .resize .toolbar-tabbar {
+  pointer-events: auto;
+  -webkit-app-region: no-drag;
+}
+
+#tabs-container.left .resize,
+#tabs-container.right .resize {
+  flex-direction: column;
+  min-height: 36px;
+  max-height: 100%;
+}
+
+#tabs-container:not(.top) {
+  position: relative;
+}
+
+#tabs-container .tab-captured .audio-on .tab-audio,
+#tabs-container .audio-muted .tab-audio.tab-audio {
+  transform: none;
+}
+
+#tabs-container .tab.isdiscarded .favicon {
+  filter: grayscale(50%) opacity(0.5);
+  transition: filter 0.2s ease-in;
+}
+
+#tabs-container .tab.isdiscarded:hover .favicon {
+  filter: grayscale(0) opacity(1);
+}
+
+#tabs-container .tab.iscut {
+  opacity: 0.5;
+}
+
+#browser:not(.alt-tabs) #tabs-container .tab-audio,
+#browser:not(.alt-tabs) #tabs-container .tab.pinned:not(.active) .tab-audio {
+  position: absolute;
+  transition: transform 100ms ease-in;
+  transition-delay: 0ms;
+  top: 6px;
+}
+
+#browser:not(.alt-tabs) #tabs-container .tab:not(.audio-on, .tab-captured) .tab-audio {
+  transform: scale(0);
+}
+
+#browser:not(.alt-tabs) #tabs-container .favicon,
+#browser:not(.alt-tabs) #tabs-container .tab.pinned:not(.active) .favicon {
+  transition: transform 100ms ease-in;
+  transition-delay: 50ms;
+  transform: scale(1);
+}
+
+#browser:not(.alt-tabs) #tabs-container .tab:not(.tab-mini) .close {
+  margin-right: 6px;
+}
+
+#browser:not(.alt-tabs) #tabs-container .tab:not(.pinned, .tab-small).audio-on .tab-audio,
+#browser:not(.alt-tabs) #tabs-container .tab:not(.pinned, .tab-small).audio-muted .tab-audio,
+#browser:not(.alt-tabs) #tabs-container .tab:not(.pinned, .tab-small).tab-captured .tab-audio {
+  transition-delay: 50ms;
+  transform: scale(1);
+}
+
+#browser:not(.alt-tabs) #tabs-container .tab:not(.pinned, .tab-small).audio-on .favicon,
+#browser:not(.alt-tabs) #tabs-container .tab:not(.pinned, .tab-small).audio-muted .favicon,
+#browser:not(.alt-tabs) #tabs-container .tab:not(.pinned, .tab-small).tab-captured .favicon {
+  transition-delay: 0ms;
+  transform: scale(0);
+}
+
+.alt-tabs #tabs-container .tab-audio {
+  transition: transform 100ms ease-in, margin-left 100ms ease-in;
+  transform: scale(0);
+}
+
+.alt-tabs #tabs-container .tab.audio-on .tab-audio,
+.alt-tabs #tabs-container .tab.audio-muted .tab-audio .tab-captured {
+  transform: scale(1);
+  margin-left: 0;
+}
+
+#browser #tabs-container .tab.tab-small.audio-on .tab-audio,
+#browser #tabs-container .tab.pinned.audio-on .tab-audio,
+#browser #tabs-container .tab.tab-small.audio-muted .tab-audio,
+#browser #tabs-container .tab.pinned.audio-muted .tab-audio,
+#browser #tabs-container .tab.tab-small.tab-captured .tab-audio,
+#browser #tabs-container .tab.pinned.tab-captured .tab-audio {
+  position: absolute;
+  left: 0;
+  top: 11px;
+  padding: 2px;
+  margin-left: 0;
+  transition: transform 100ms ease-in;
+  transition-delay: 0ms;
+  height: 20px;
+  width: 20px;
+  border-radius: var(--radiusRound);
+  transform: scale(0.625);
+  background-color: #fff;
+}
+
+#browser #tabs-container .tab.tab-small.audio-on .tab-audio:hover,
+#browser #tabs-container .tab.pinned.audio-on .tab-audio:hover,
+#browser #tabs-container .tab.tab-small.audio-muted .tab-audio:hover,
+#browser #tabs-container .tab.pinned.audio-muted .tab-audio:hover,
+#browser #tabs-container .tab.tab-small.tab-captured .tab-audio:hover,
+#browser #tabs-container .tab.pinned.tab-captured .tab-audio:hover {
+  transform: scale(0.87);
+}
+
+#tabs-container .tab.tab-small.tab-mini .tab-header,
+#tabs-container .tab.pinned.tab-mini .tab-header {
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+  border-left: 1px solid transparent;
+  border-right: 1px solid transparent;
+}
+
+#tabs-container .tab.tab-small.tab-mini .tab-header .stack-counter,
+#tabs-container .tab.pinned.tab-mini .tab-header .stack-counter,
+#tabs-container .tab.tab-small.tab-mini .tab-header .title,
+#tabs-container .tab.pinned.tab-mini .tab-header .title {
+  display: none;
+}
+
+#tabs-container .tab.tab-small.tab-mini .tab-header .tab-audio,
+#tabs-container .tab.pinned.tab-mini .tab-header .tab-audio {
+  left: 0;
+}
+
+#tabs-container .SlideBar--FullWidth {
+  top: unset;
+  bottom: unset;
+}
+
+#tabs-container.none + .SlideBar--FullWidth {
+  display: none;
+}
+
+.tabs-right .tabbar-wrapper {
+  background-color: var(--colorImageRightFgAlphaHeavy);
+}
+
+.tabs-left .tabbar-wrapper {
+  background-color: var(--colorImageLeftFgAlphaHeavy);
+}
+
+#tabs-tabbar-container {
+  position: relative;
+  display: flex;
+  box-sizing: content-box;
+  /* The image colors win over other colors if present, so enable only where
+   the image is visible. */
+  /* border at inner edge */
+}
+
+#tabs-tabbar-container.none {
+  padding: 0;
+}
+
+#tabs-tabbar-container #tabs-container,
+#tabs-tabbar-container #tabs-subcontainer,
+#tabs-tabbar-container .SlideBar,
+#tabs-tabbar-container .separator {
+  box-sizing: border-box;
+}
+
+.tabs-top:not(.density-on) #tabs-tabbar-container #tabs-container,
+.tabs-top.tabs-at-edge #tabs-tabbar-container #tabs-container {
+  padding-bottom: 1px;
+}
+
+.tabs-bottom:not(.density-on) #tabs-tabbar-container #tabs-container,
+.tabs-bottom.tabs-at-edge #tabs-tabbar-container #tabs-container {
+  padding-top: 1px;
+}
+
+.tabs-top.density-on:not(.tabs-at-edge) #tabs-tabbar-container:not(:has(#tabs-subcontainer)) {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.tabs-bottom.density-on:not(.tabs-at-edge) #tabs-tabbar-container:not(:has(#tabs-subcontainer)) {
+  padding-top: 6px;
+}
+
+#browser:not(.transparent-tabbar) #tabs-tabbar-container {
+  background-color: var(--colorTabBar, transparent);
+}
+
+.unified-ui-transparent > #header #tabs-tabbar-container.top {
+  color: var(--colorImageTopFg);
+}
+
+.unified-ui-transparent > #header #tabs-tabbar-container.left {
+  color: var(--colorImageLeftFg);
+}
+
+.unified-ui-transparent > #header #tabs-tabbar-container.right {
+  color: var(--colorImageRightFg);
+}
+
+.unified-ui-transparent > #header #tabs-tabbar-container.bottom {
+  color: var(--colorImageBottomFg);
+}
+
+.color-behind-tabs-off.transparent-tabbar #tabs-tabbar-container {
+  color: var(--colorImageFg, var(--colorFg));
+}
+
+.color-behind-tabs-on.transparent-tabbar #tabs-tabbar-container {
+  color: var(--colorImageFg, var(--colorAccentFg));
+}
+
+.color-behind-tabs-on.color-accent-from-page.transparent-tabbar #tabs-tabbar-container {
+  color: var(--colorAccentFg);
+}
+
+.color-behind-tabs-on.color-accent-from-page.transparent-tabbar:not(.acc-dark.bg-dark).transparent-tabbar #tabs-tabbar-container {
+  color: var(--colorImageFg, var(--colorFg));
+}
+
+#tabs-tabbar-container.top {
+  flex-direction: column;
+  padding-top: calc(6px / var(--uiZoomLevel));
+}
+
+.tabs-at-edge #tabs-tabbar-container.top {
+  min-height: 31px;
+  padding-top: 0;
+}
+
+.win.normal .topmenu + #tabs-tabbar-container.top,
+.linux.normal .topmenu + #tabs-tabbar-container.top {
+  padding-top: 6px;
+}
+
+#tabs-tabbar-container.bottom {
+  flex-direction: column-reverse;
+  order: 3;
+  flex: 0 1 auto;
+  padding: 0 0 6px 0;
+}
+
+.tabs-at-edge #tabs-tabbar-container.bottom {
+  min-height: 31px;
+  padding-bottom: 0;
+}
+
+#tabs-tabbar-container.left,
+#tabs-tabbar-container.right {
+  max-width: 60vw;
+}
+
+#tabs-tabbar-container.left .tab-position:not(.accordion-toggle-arrow),
+#tabs-tabbar-container.right .tab-position:not(.accordion-toggle-arrow) {
+  width: 100%;
+}
+
+#browser:not(.unified-ui) #tabs-tabbar-container.left,
+#browser:not(.unified-ui) #tabs-tabbar-container.right,
+#browser:not(.unified-ui).auto-hide > .auto-hide-wrapper #tabs-tabbar-container.left,
+#browser:not(.unified-ui).auto-hide > .auto-hide-wrapper #tabs-tabbar-container.right {
+  padding-top: 6px;
+}
+
+#browser.unified-ui.auto-hide > .auto-hide-wrapper #tabs-tabbar-container.left,
+#browser.unified-ui.auto-hide > .auto-hide-wrapper #tabs-tabbar-container.right {
+  padding-top: 3px;
+}
+
+#tabs-tabbar-container.right {
+  flex-direction: row-reverse;
+}
+
+#browser:not(.theme-dark) #tabs-tabbar-container.top {
+  box-shadow: inset 0 -1px 0 0 rgba(0, 0, 0, 0.1);
+}
+
+#browser:not(.theme-dark) #tabs-tabbar-container.top.color-behind-tabs-off {
+  box-shadow: inset 0 -1px 0 0 var(--colorAccentBgDarker);
+}
+
+#browser:not(.theme-dark) #tabs-tabbar-container.right {
+  box-shadow: inset 1px 0 0 0 rgba(0, 0, 0, 0.1);
+}
+
+#browser:not(.theme-dark) #tabs-tabbar-container.bottom {
+  box-shadow: inset 0 1px 0 0 rgba(0, 0, 0, 0.1);
+}
+
+#browser:not(.theme-dark) #tabs-tabbar-container.bottom.color-behind-tabs-off {
+  box-shadow: inset 0 1px 0 0 var(--colorAccentBgDarker);
+}
+
+#browser:not(.theme-dark) #tabs-tabbar-container.left {
+  box-shadow: inset -1px 0 0 0 rgba(0, 0, 0, 0.1);
+}
+
+/* The image colors win over other colors if present, so enable only where
+the image is visible. */
+#browser.unified-ui.tabs-top,
+#browser.transparent-tabbar.tabs-top {
+  --colorImageFg: var(--colorImageTopFg);
+  --colorImageBg: var(--colorImageTopBg);
+  --colorImageBgAlpha: var(--colorImageTopBgAlpha);
+  --colorImageBgAlphaHeavy: var(--colorImageTopBgAlphaHeavy);
+}
+
+#browser.unified-ui.tabs-bottom,
+#browser.transparent-tabbar.tabs-bottom {
+  --colorImageFg: var(--colorImageBottomFg);
+  --colorImageBg: var(--colorImageBottomBg);
+  --colorImageBgAlpha: var(--colorImageBottomBgAlpha);
+  --colorImageBgAlphaHeavy: var(--colorImageBottomBgAlphaHeavy);
+}
+
+#browser.unified-ui.tabs-left,
+#browser.transparent-tabbar.tabs-left {
+  --colorImageFg: var(--colorImageLeftFg);
+  --colorImageBg: var(--colorImageLeftBg);
+  --colorImageBgAlpha: var(--colorImageLeftBgAlpha);
+  --colorImageBgAlphaHeavy: var(--colorImageLeftBgAlphaHeavy);
+}
+
+#browser.unified-ui.tabs-right,
+#browser.transparent-tabbar.tabs-right {
+  --colorImageFg: var(--colorImageRightFg);
+  --colorImageBg: var(--colorImageRightBg);
+  --colorImageBgAlpha: var(--colorImageRightBgAlpha);
+  --colorImageBgAlphaHeavy: var(--colorImageRightBgAlphaHeavy);
+}
+
+/* The #tabs-container is responsible for positioning the tabbar
+   Toolbar layout constraints are handled here. */
+.win .tabbar-wrapper:has(.window-buttongroup) #tabs-container:not(.none).top {
+  padding-right: calc(140px / var(--uiZoomLevel));
+}
+
+.linux .tabbar-wrapper:has(.window-buttongroup) #tabs-container:not(.none).top {
+  padding-right: calc(90px / var(--uiZoomLevel));
+}
+
+.alt #tabs-container:not(.none).top {
+  padding-left: calc(100px / var(--uiZoomLevel));
+  padding-right: calc(var(--menuWidth) / var(--uiZoomLevel));
+}
+
+.horizontal-menu #tabs-container:not(.none).top {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.mac.native #tabs-container:not(.none).top {
+  padding-left: 0;
+}
+
+.native #tabs-container:not(.none).top {
+  padding-right: 0;
+}
+
+.native.alt #tabs-container:not(.none).top {
+  padding-left: 0;
+  padding-right: calc(38px / var(--uiZoomLevel));
+}
+
+#tabs-container:not(.none).bottom {
+  padding: 0;
+}
+
+#tabs-container {
+  display: flex;
+  flex: 1 1 auto;
+}
+
+#tabs-container.none {
+  display: none;
+}
+
+#tabs-container.bottom {
+  order: 3;
+}
+
+#tabs-container.left,
+#tabs-container.right {
+  flex-direction: column;
+}
+
+#tabs-container.left:has(.tab-strip.overflow),
+#tabs-container.right:has(.tab-strip.overflow) {
+  padding-right: 0;
+}
+
+#tabs-container.left .tab-strip,
+#tabs-container.right .tab-strip {
+  margin: 0 max(calc(var(--densityGap) * 2), 1px);
+  max-width: calc(100% - var(--densityGap) * 2);
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+#tabs-container.left .tab-strip .thumbnail-image,
+#tabs-container.right .tab-strip .thumbnail-image {
+  margin-bottom: 2px;
+  background-position: 0 0;
+}
+
+#tabs-container.left .tab-strip.overflow,
+#tabs-container.right .tab-strip.overflow {
+  margin: 0 0 0 max(calc(var(--densityGap) * 2), 1px);
+  min-width: calc(30px + var(--scrollbarWidth));
+  max-width: calc(100% - var(--densityGap) * 1);
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+#tabs-container.left:focus-within,
+#tabs-container.right:focus-within {
+  z-index: 3;
+}
+
+#tabs-container.left > .toolbar > *:focus-within,
+#tabs-container.right > .toolbar > *:focus-within {
+  z-index: 3;
+}
+
+#tabs-container.left > .toolbar > *:focus-within ~ .SlideBar,
+#tabs-container.right > .toolbar > *:focus-within ~ .SlideBar {
+  z-index: 2;
+}
+
+#tabs-container.bottom:focus-within {
+  z-index: 6;
+}
+
+#tabs-container.top > .toolbar > *:focus-within,
+#tabs-container.bottom > .toolbar > *:focus-within {
+  z-index: 6;
+}
+
+#tabs-container.top > .toolbar > *:focus-within ~ .SlideBar,
+#tabs-container.bottom > .toolbar > *:focus-within ~ .SlideBar {
+  z-index: 5;
+}
+
+.tabs-top:not(.tabs-at-edge) #tabs-container:has(~ #tabs-subcontainer) {
+  padding-bottom: var(--densityGap);
+}
+
+.tabs-bottom:not(.tabs-at-edge) #tabs-container:has(~ #tabs-subcontainer) {
+  padding-top: var(--densityGap);
+}
+
+margin-right: 3px;
+}
+#tabs-subcontainer .resize .tab-strip,
+#tabs-subcontainer .resize .tab-position,
+#tabs-subcontainer .resize .toolbar-tabbar {
+  pointer-events: auto;
+  -webkit-app-region: no-drag;
+}
+
+position: relative;
+}
+#tabs-subcontainer .tab-captured .audio-on .tab-audio,
+#tabs-subcontainer .audio-muted .tab-audio.tab-audio {
+  transform: none;
+}
+
+#tabs-subcontainer .tab.isdiscarded .favicon {
+  filter: grayscale(50%) opacity(0.5);
+  transition: filter 0.2s ease-in;
+}
+
+#tabs-subcontainer .tab.isdiscarded:hover .favicon {
+  filter: grayscale(0) opacity(1);
+}
+
+#tabs-subcontainer .tab.iscut {
+  opacity: 0.5;
+}
+
+#browser:not(.alt-tabs) #tabs-subcontainer .tab-audio,
+#browser:not(.alt-tabs) #tabs-subcontainer .tab.pinned:not(.active) .tab-audio {
+  position: absolute;
+  transition: transform 100ms ease-in;
+  transition-delay: 0ms;
+  top: 6px;
+}
+
+#browser:not(.alt-tabs) #tabs-subcontainer .tab:not(.audio-on, .tab-captured) .tab-audio {
+  transform: scale(0);
+}
+
+#browser:not(.alt-tabs) #tabs-subcontainer .favicon,
+#browser:not(.alt-tabs) #tabs-subcontainer .tab.pinned:not(.active) .favicon {
+  transition: transform 100ms ease-in;
+  transition-delay: 50ms;
+  transform: scale(1);
+}
+
+#browser:not(.alt-tabs) #tabs-subcontainer .tab:not(.tab-mini) .close {
+  margin-right: 6px;
+}
+
+#browser:not(.alt-tabs) #tabs-subcontainer .tab:not(.pinned, .tab-small).audio-on .tab-audio,
+#browser:not(.alt-tabs) #tabs-subcontainer .tab:not(.pinned, .tab-small).audio-muted .tab-audio,
+#browser:not(.alt-tabs) #tabs-subcontainer .tab:not(.pinned, .tab-small).tab-captured .tab-audio {
+  transition-delay: 50ms;
+  transform: scale(1);
+}
+
+#browser:not(.alt-tabs) #tabs-subcontainer .tab:not(.pinned, .tab-small).audio-on .favicon,
+#browser:not(.alt-tabs) #tabs-subcontainer .tab:not(.pinned, .tab-small).audio-muted .favicon,
+#browser:not(.alt-tabs) #tabs-subcontainer .tab:not(.pinned, .tab-small).tab-captured .favicon {
+  transition-delay: 0ms;
+  transform: scale(0);
+}
+
+.alt-tabs #tabs-subcontainer .tab-audio {
+  transition: transform 100ms ease-in, margin-left 100ms ease-in;
+  transform: scale(0);
+}
+
+.alt-tabs #tabs-subcontainer .tab.audio-on .tab-audio,
+.alt-tabs #tabs-subcontainer .tab.audio-muted .tab-audio .tab-captured {
+  transform: scale(1);
+  margin-left: 0;
+}
+
+#browser #tabs-subcontainer .tab.tab-small.audio-on .tab-audio,
+#browser #tabs-subcontainer .tab.pinned.audio-on .tab-audio,
+#browser #tabs-subcontainer .tab.tab-small.audio-muted .tab-audio,
+#browser #tabs-subcontainer .tab.pinned.audio-muted .tab-audio,
+#browser #tabs-subcontainer .tab.tab-small.tab-captured .tab-audio,
+#browser #tabs-subcontainer .tab.pinned.tab-captured .tab-audio {
+  position: absolute;
+  left: 0;
+  top: 11px;
+  padding: 2px;
+  margin-left: 0;
+  transition: transform 100ms ease-in;
+  transition-delay: 0ms;
+  height: 20px;
+  width: 20px;
+  border-radius: var(--radiusRound);
+  transform: scale(0.625);
+  background-color: #fff;
+}
+
+#browser #tabs-subcontainer .tab.tab-small.audio-on .tab-audio:hover,
+#browser #tabs-subcontainer .tab.pinned.audio-on .tab-audio:hover,
+#browser #tabs-subcontainer .tab.tab-small.audio-muted .tab-audio:hover,
+#browser #tabs-subcontainer .tab.pinned.audio-muted .tab-audio:hover,
+#browser #tabs-subcontainer .tab.tab-small.tab-captured .tab-audio:hover,
+#browser #tabs-subcontainer .tab.pinned.tab-captured .tab-audio:hover {
+  transform: scale(0.87);
+}
+
+#tabs-subcontainer .tab.tab-small.tab-mini .tab-header,
+#tabs-subcontainer .tab.pinned.tab-mini .tab-header {
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+  border-left: 1px solid transparent;
+  border-right: 1px solid transparent;
+}
+
+#tabs-subcontainer .tab.tab-small.tab-mini .tab-header .stack-counter,
+#tabs-subcontainer .tab.pinned.tab-mini .tab-header .stack-counter,
+#tabs-subcontainer .tab.tab-small.tab-mini .tab-header .title,
+#tabs-subcontainer .tab.pinned.tab-mini .tab-header .title {
+  display: none;
+}
+
+#tabs-subcontainer .tab.tab-small.tab-mini .tab-header .tab-audio,
+#tabs-subcontainer .tab.pinned.tab-mini .tab-header .tab-audio {
+  left: 0;
+}
+
+flex-direction: column;
+}
+#tabs-subcontainer.left:has(.tab-strip.overflow),
+#tabs-subcontainer.right:has(.tab-strip.overflow) {
+  padding-right: 0;
+}
+
+#tabs-subcontainer.left .tab-strip,
+#tabs-subcontainer.right .tab-strip {
+  margin: 0 max(calc(var(--densityGap) * 2), 1px);
+  max-width: calc(100% - var(--densityGap) * 2);
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+#tabs-subcontainer.left .tab-strip .thumbnail-image,
+#tabs-subcontainer.right .tab-strip .thumbnail-image {
+  margin-bottom: 2px;
+  background-position: 0 0;
+}
+
+#tabs-subcontainer.left .tab-strip.overflow,
+#tabs-subcontainer.right .tab-strip.overflow {
+  margin: 0 0 0 max(calc(var(--densityGap) * 2), 1px);
+  min-width: calc(30px + var(--scrollbarWidth));
+  max-width: calc(100% - var(--densityGap) * 1);
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+z-index: 5;
+}
+#tabs-subcontainer .tab-strip {
+  flex: 0 0 auto;
+}
+
+background-color: var(--colorAccentBgDark);
+}
+.color-behind-tabs-off #tabs-subcontainer,
+.transparent-tabbar #tabs-subcontainer {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.theme-dark.color-behind-tabs-off #tabs-subcontainer,
+.theme-dark.transparent-tabbar #tabs-subcontainer {
+  background-color: rgba(255, 255, 255, 0.05);
+  backdrop-filter: saturate(1.1);
+}
+
+max-width: calc(60vw - 42px);
+}
+.tabs-top:not(.density-on, .unified-ui) .tab-strip:not(.horizontal-scrolling) .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after,
+.tabs-top:not(.density-on, .unified-ui) .tab-strip:not(.horizontal-scrolling) .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):before,
+.tabs-top.density-on.tabs-at-edge .tab-strip:not(.horizontal-scrolling) .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after,
+.tabs-top.density-on.tabs-at-edge .tab-strip:not(.horizontal-scrolling) .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):before,
+.tabs-bottom:not(.density-on, .unified-ui) .tab-strip:not(.horizontal-scrolling) .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after,
+.tabs-bottom:not(.density-on, .unified-ui) .tab-strip:not(.horizontal-scrolling) .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):before,
+.tabs-bottom.density-on.tabs-at-edge .tab-strip:not(.horizontal-scrolling) .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after,
+.tabs-bottom.density-on.tabs-at-edge .tab-strip:not(.horizontal-scrolling) .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):before {
+  contain: strict;
+  content: '';
+  position: absolute;
+  width: var(--radiusHalf);
+  height: var(--radiusHalf);
+  background-color: inherit;
+}
+
+.tabs-top .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after,
+.tabs-top .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):before {
+  bottom: 0;
+  mask-image: radial-gradient(circle at 0 0, rgba(0, 0, 0, 0) 70%, #000 73%);
+}
+
+.tabs-bottom .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after,
+.tabs-bottom .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):before {
+  top: 0;
+  mask-image: radial-gradient(circle at 0 100%, rgba(0, 0, 0, 0) 70%, #000 73%);
+}
+
+.is-substack .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after,
+.is-substack .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):before {
+  display: none;
+}
+
+.tab.active:before {
+  animation: rightfade 64ms linear;
+}
+
+.tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after {
+  animation: leftfade 64ms linear;
+}
+
+#browser:not(.unified-ui) .tab.tab-accordion.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after,
+#browser:not(.unified-ui) .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after {
+  right: calc(1px - var(--currentRadius));
+}
+
+.tabs-top#browser:not(.unified-ui) .tab.tab-accordion.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after,
+.tabs-top#browser:not(.unified-ui) .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after {
+  transform: rotate(90deg);
+}
+
+.tabs-bottom#browser:not(.unified-ui) .tab.tab-accordion.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after,
+.tabs-bottom#browser:not(.unified-ui) .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after {
+  transform: rotate(-90deg);
+}
+
+#browser:not(.unified-ui) .tab.active:not(.marked):not(.tab-mini):before {
+  left: calc(0px - var(--radiusHalf));
+}
+
+#browser:not(.unified-ui) .tab.active:not(.marked):not(.tab-mini).insubstrip:before {
+  left: calc(2px - var(--radiusHalf));
+}
+
+.tab-yield-space {
+  border: dashed var(--colorHighlightBg) 2px;
+  background-color: var(--colorHighlightBgAlpha);
+  border-radius: var(--radiusHalf);
+  animation: fade 200ms linear;
+  z-index: 0;
+}
+
+display: flex;
+  flex-direction: column;
+  text-align: center;
+  gap: 12px;
+  padding: 12px;
+  fill: var(--colorHighlightBg);
+}
+.tab-sync-qr-code {
+  width: 60%;
+  margin: auto;
+  padding: 6px;
+  border: 1px solid;
+  border-color: var(--colorBgDark);
+  border-radius: 6px;
+  background-color: #fff;
+}
+
+.tab-wrapper {
+  display: flex;
+  width: 100%;
+  max-height: var(--Height);
+  position: relative;
+  border-radius: var(--currentRadius);
+}
+
+.tab-wrapper:focus-visible {
+  outline: none;
+}
+
+.tabs-left .tab-wrapper,
+.tabs-right .tab-wrapper {
+  min-width: 30px;
+}
+
+.tabs-top .tab-wrapper,
+.tabs-bottom .tab-wrapper {
+  height: 100%;
+}
+
+#browser.maximized:not(.mac).tabs-left .tab-strip,
+#browser.fullscreen.tabs-left .tab-strip,
+#browser.maximized:not(.mac).tabs-right .tab-strip,
+#browser.fullscreen.tabs-right .tab-strip {
+  margin: 0;
+  max-width: 100%;
+}
+
+#browser.maximized:not(.mac).tabs-left .tab-strip .tab-position,
+#browser.fullscreen.tabs-left .tab-strip .tab-position,
+#browser.maximized:not(.mac).tabs-right .tab-strip .tab-position,
+#browser.fullscreen.tabs-right .tab-strip .tab-position {
+  padding: 0 1px;
+}
+
+#browser.maximized:not(.mac) .accordion-toggle-arrow:before,
+#browser.fullscreen .accordion-toggle-arrow:before,
+#browser.maximized:not(.mac) .tab-wrapper.extended:before,
+#browser.fullscreen .tab-wrapper.extended:before {
+  content: '';
+  position: absolute;
+  -webkit-app-region: no-drag;
+}
+
+.tabs-top#browser.maximized:not(.mac) .accordion-toggle-arrow:before,
+.tabs-top#browser.fullscreen .accordion-toggle-arrow:before,
+.tabs-top#browser.maximized:not(.mac) .tab-wrapper.extended:before,
+.tabs-top#browser.fullscreen .tab-wrapper.extended:before {
+  width: 100%;
+  height: 7px;
+  top: -7px;
+  left: 0;
+}
+
+.tabs-bottom#browser.maximized:not(.mac) .accordion-toggle-arrow:before,
+.tabs-bottom#browser.fullscreen .accordion-toggle-arrow:before,
+.tabs-bottom#browser.maximized:not(.mac) .tab-wrapper.extended:before,
+.tabs-bottom#browser.fullscreen .tab-wrapper.extended:before {
+  width: 100%;
+  height: 7px;
+  bottom: -7px;
+  left: 0;
+}
+
+.tabs-left#browser.maximized:not(.mac) .accordion-toggle-arrow:before,
+.tabs-left#browser.fullscreen .accordion-toggle-arrow:before,
+.tabs-left#browser.maximized:not(.mac) .tab-wrapper.extended:before,
+.tabs-left#browser.fullscreen .tab-wrapper.extended:before {
+  width: 7px;
+  height: 100%;
+  top: 0;
+  left: -7px;
+}
+
+.tabs-right#browser.maximized:not(.mac) .accordion-toggle-arrow:before,
+.tabs-right#browser.fullscreen .accordion-toggle-arrow:before,
+.tabs-right#browser.maximized:not(.mac) .tab-wrapper.extended:before,
+.tabs-right#browser.fullscreen .tab-wrapper.extended:before {
+  width: 7px;
+  height: 100%;
+  top: 0;
+  right: -7px;
+}
+
+--verticalTabSpace: 6px;
+}
+#browser.density-on:not(.tabs-at-edge) #tabs-tabbar-container:has(#tabs-subcontainer) {
+  --verticalTabSpace: 3px;
+}
+
+#browser.density-on:not(.tabs-at-edge):not(.tabs-at-edge, .unified-ui) .accordion-toggle-arrow:after,
+#browser.density-on:not(.tabs-at-edge):not(.tabs-at-edge, .unified-ui) .tab-wrapper:after {
+  content: '';
+  position: absolute;
+  -webkit-app-region: no-drag;
+}
+
+.tabs-top#browser.density-on:not(.tabs-at-edge):not(.tabs-at-edge, .unified-ui) .accordion-toggle-arrow:after,
+.tabs-top#browser.density-on:not(.tabs-at-edge):not(.tabs-at-edge, .unified-ui) .tab-wrapper:after {
+  width: 100%;
+  height: var(--verticalTabSpace);
+  bottom: calc(-1 * var(--verticalTabSpace));
+}
+
+.tabs-bottom#browser.density-on:not(.tabs-at-edge):not(.tabs-at-edge, .unified-ui) .accordion-toggle-arrow:after,
+.tabs-bottom#browser.density-on:not(.tabs-at-edge):not(.tabs-at-edge, .unified-ui) .tab-wrapper:after {
+  width: 100%;
+  height: var(--verticalTabSpace);
+  top: calc(-1 * var(--verticalTabSpace));
+}
+
+.tabs-left#browser.density-on:not(.tabs-at-edge):not(.tabs-at-edge, .unified-ui) .accordion-toggle-arrow:after,
+.tabs-left#browser.density-on:not(.tabs-at-edge):not(.tabs-at-edge, .unified-ui) .tab-wrapper:after {
+  width: 3px;
+  height: 100%;
+  top: 0;
+  right: -3px;
+}
+
+.tabs-right#browser.density-on:not(.tabs-at-edge):not(.tabs-at-edge, .unified-ui) .accordion-toggle-arrow:after,
+.tabs-right#browser.density-on:not(.tabs-at-edge):not(.tabs-at-edge, .unified-ui) .tab-wrapper:after {
+  width: 3px;
+  height: 100%;
+  top: 0;
+  left: -3px;
+}
+
+#browser .tab-position.colored .tab-wrapper:hover .tab:not(.active) {
+  color: var(--stackColorFg);
+  background-color: color-mix(in srgb, var(--stackColorBg), #fff 20%);
+}
+
+#browser .tab-position.colored.accordion-toggle-arrow,
+#browser .tab-position.colored .tab-indicator,
+#browser .tab-position.colored .tab:not(.active) {
+  color: var(--stackColorFg);
+  background-color: var(--stackColorBg);
+}
+
+#browser .tab-position.colored.accordion-toggle-arrow:hover,
+#browser .tab-position.colored .tab-indicator:hover,
+#browser .tab-position.colored .tab:not(.active):hover {
+  color: var(--stackColorFg);
+  background-color: color-mix(in srgb, var(--stackColorBg), #fff 20%);
+}
+
+#browser .tab-position.colored .tab:not(.marked) + svg .stack-frame {
+  stroke: var(--stackColorBg);
+}
+
+#browser .tab-position.colored .tab + .tab-group-indicator .tab-indicator:not(:hover) {
+  background-color: var(--stackColorBg);
+}
+
+.tabs-at-edge:is(.fullscreen, .maximized)#browser .tab-position.colored .tab:not(.active) + .tab-group-indicator .tab-indicator:not(:hover, .active) {
+  background-color: var(--stackColorFg);
+}
+
+#browser .tab-position.colored .stack-counter {
+  background-color: var(--stackColorBg);
+  color: var(--stackColorFg);
+}
+
+#browser .tab-position.colored .tab.active + .tab-group-indicator .tab-indicator.active {
+  background-color: var(--colorAccentBg);
+}
+
+.color-behind-tabs-on#browser .tab-position.colored .tab.active + .tab-group-indicator .tab-indicator.active {
+  background-color: var(--colorBg);
+}
+
+#browser .tab-position.colored .tab-wrapper.accordion,
+#browser .tab-position.colored .tab-wrapper.in-accordion {
+  margin: 0;
+}
+
+.tabs-top#browser .tab-position.colored .tab-wrapper.accordion .tab,
+.tabs-top#browser .tab-position.colored .tab-wrapper.in-accordion .tab,
+.tabs-bottom#browser .tab-position.colored .tab-wrapper.accordion .tab,
+.tabs-bottom#browser .tab-position.colored .tab-wrapper.in-accordion .tab {
+  max-width: var(--Width);
+}
+
+.tabs-top#browser .tab-position.colored .tab-wrapper.accordion .tab:not(.active),
+.tabs-top#browser .tab-position.colored .tab-wrapper.in-accordion .tab:not(.active),
+.tabs-bottom#browser .tab-position.colored .tab-wrapper.accordion .tab:not(.active),
+.tabs-bottom#browser .tab-position.colored .tab-wrapper.in-accordion .tab:not(.active) {
+  box-shadow: 3px 0 0 var(--stackColorBg);
+}
+
+.tabs-top#browser .tab-position.colored .tab-wrapper.accordion .tab.active.tab-accordion,
+.tabs-top#browser .tab-position.colored .tab-wrapper.in-accordion .tab.active.tab-accordion,
+.tabs-bottom#browser .tab-position.colored .tab-wrapper.accordion .tab.active.tab-accordion,
+.tabs-bottom#browser .tab-position.colored .tab-wrapper.in-accordion .tab.active.tab-accordion {
+  max-height: var(--Height);
+}
+
+.tabs-top#browser .tab-position.colored .tab-wrapper.accordion .tab:before,
+.tabs-top#browser .tab-position.colored .tab-wrapper.in-accordion .tab:before,
+.tabs-bottom#browser .tab-position.colored .tab-wrapper.accordion .tab:before,
+.tabs-bottom#browser .tab-position.colored .tab-wrapper.in-accordion .tab:before,
+.tabs-top#browser .tab-position.colored .tab-wrapper.accordion .tab:after,
+.tabs-top#browser .tab-position.colored .tab-wrapper.in-accordion .tab:after,
+.tabs-bottom#browser .tab-position.colored .tab-wrapper.accordion .tab:after,
+.tabs-bottom#browser .tab-position.colored .tab-wrapper.in-accordion .tab:after {
+  content: unset;
+}
+
+.tabs-top#browser .tab-position.colored .tab-wrapper.accordion .tab-accordion,
+.tabs-top#browser .tab-position.colored .tab-wrapper.in-accordion .tab-accordion,
+.tabs-top#browser .tab-position.colored .tab-wrapper.accordion .tab-first-in-group:not(.active),
+.tabs-top#browser .tab-position.colored .tab-wrapper.in-accordion .tab-first-in-group:not(.active) {
+  border-bottom-left-radius: var(--currentRadius);
+}
+
+.tabs-bottom#browser .tab-position.colored .tab-wrapper.accordion .tab-accordion,
+.tabs-bottom#browser .tab-position.colored .tab-wrapper.in-accordion .tab-accordion,
+.tabs-bottom#browser .tab-position.colored .tab-wrapper.accordion .tab-first-in-group:not(.active),
+.tabs-bottom#browser .tab-position.colored .tab-wrapper.in-accordion .tab-first-in-group:not(.active) {
+  border-top-left-radius: var(--currentRadius);
+}
+
+#browser .tab-position.colored.accordion-toggle-arrow {
+  background-clip: padding-box;
+  border-bottom-right-radius: var(--currentRadius);
+}
+
+.tabs-top#browser .tab-position.colored.accordion-toggle-arrow,
+.tabs-bottom#browser .tab-position.colored.accordion-toggle-arrow {
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+  border-top-right-radius: var(--currentRadius);
+}
+
+--stackColorBg: #ffa963;
+  --stackColorBgAlpha: rgba(255, 169, 99, var(--stackBgAlpha));
+  --stackColorFg: #000;
+}
+.color-behind-tabs-off:not(.transparent-tabbar) .tab-in-accordion {
+  background-color: var(--colorBg);
+}
+
+.tabs-top .tab-accordion {
+  border-top-left-radius: var(--currentRadius);
+}
+
+.density-on:not(.tabs-at-edge).tabs-top .tab-accordion {
+  border-bottom-left-radius: var(--currentRadius);
+}
+
+.tabs-bottom .tab-accordion {
+  border-bottom-left-radius: var(--currentRadius);
+}
+
+.density-on:not(.tabs-at-edge).tabs-bottom .tab-accordion {
+  border-top-left-radius: var(--currentRadius);
+}
+
+.tabs-top .tab-accordion.active,
+.tabs-top .tab-in-accordion.tab-first-in-group {
+  border-top-left-radius: var(--currentRadius);
+}
+
+.density-on:not(.tabs-at-edge).tabs-top .tab-accordion.active,
+.density-on:not(.tabs-at-edge).tabs-top .tab-in-accordion.tab-first-in-group {
+  border-bottom-left-radius: var(--currentRadius);
+}
+
+.tabs-bottom .tab-accordion.active,
+.tabs-bottom .tab-in-accordion.tab-first-in-group {
+  border-bottom-left-radius: var(--currentRadius);
+}
+
+.density-on:not(.tabs-at-edge).tabs-bottom .tab-accordion.active,
+.density-on:not(.tabs-at-edge).tabs-bottom .tab-in-accordion.tab-first-in-group {
+  border-top-left-radius: var(--currentRadius);
+}
+
+.tabs-left .tab-accordion.active,
+.tabs-left .tab-in-accordion.tab-first-in-group,
+.tabs-right .tab-accordion.active,
+.tabs-right .tab-in-accordion.tab-first-in-group {
+  border-top-left-radius: var(--currentRadius);
+  border-top-right-radius: var(--currentRadius);
+}
+
+.tabs-top .tab-in-accordion:not(.tab-first-in-group),
+.tabs-bottom .tab-in-accordion:not(.tab-first-in-group) {
+  border-radius: 0;
+}
+
+.tabs-top .tab.active.tab-accordion,
+.tabs-bottom .tab.active.tab-accordion {
+  margin-right: 0;
+}
+
+.tabs-top .tab.active.tab-accordion:after,
+.tabs-bottom .tab.active.tab-accordion:after {
+  right: calc(-16px - var(--currentRadius)) !important;
+}
+
+.tabs-left .tab.active.tab-accordion,
+.tabs-right .tab.active.tab-accordion {
+  margin-bottom: 0;
+}
+
+.tab-in-accordion + .svg-tab-selection .inner,
+.tab-in-accordion + .svg-tab-selection .outer {
+  stroke-width: 2px;
+}
+
+.tabs-top .tab-in-accordion + .svg-tab-selection .inner,
+.tabs-top .tab-in-accordion + .svg-tab-selection .outer,
+.tabs-bottom .tab-in-accordion + .svg-tab-selection .inner,
+.tabs-bottom .tab-in-accordion + .svg-tab-selection .outer {
+  x: 1px;
+  y: 3px;
+  width: calc(100% - 2px);
+  height: calc(100% - 6px);
+}
+
+.tabs-left .tab-in-accordion + .svg-tab-selection .inner,
+.tabs-left .tab-in-accordion + .svg-tab-selection .outer,
+.tabs-right .tab-in-accordion + .svg-tab-selection .inner,
+.tabs-right .tab-in-accordion + .svg-tab-selection .outer {
+  x: 3px;
+  y: 1px;
+  width: calc(100% - 6px);
+  height: calc(100% - 2px);
+}
+
+.tabs-top .tab-first-in-group.tab-in-accordion + .svg-tab-selection .inner,
+.tabs-top .tab-first-in-group.tab-in-accordion + .svg-tab-selection .outer,
+.tabs-bottom .tab-first-in-group.tab-in-accordion + .svg-tab-selection .inner,
+.tabs-bottom .tab-first-in-group.tab-in-accordion + .svg-tab-selection .outer {
+  x: 3px;
+  y: 3px;
+  width: calc(var(--Width) - 5px) !important;
+  height: calc(100% - 6px);
+}
+
+.tabs-left .tab-first-in-group.tab-in-accordion + .svg-tab-selection .inner,
+.tabs-left .tab-first-in-group.tab-in-accordion + .svg-tab-selection .outer,
+.tabs-right .tab-first-in-group.tab-in-accordion + .svg-tab-selection .inner,
+.tabs-right .tab-first-in-group.tab-in-accordion + .svg-tab-selection .outer {
+  x: 3px;
+  y: 3px;
+  width: calc(100% - 6px) !important;
+  height: calc(var(--Height) - 6px) !important;
+}
+
+.tab-in-accordion + .svg-tab-selection .svg-tab-stack {
+  height: calc(var(--Height) - 1px);
+}
+
+color: var(--colorAccentFg);
+}
+.transparent-tabbar .accordion-toggle-arrow:not(.closed.active) {
+  color: var(--colorImageFg);
+}
+
+.acc-dark.bg-dark.color-accent-from-page.color-behind-tabs-on.transparent-tabbar .accordion-toggle-arrow:not(.closed.active) {
+  color: currentColor;
+}
+
+border-top-right-radius: var(--currentRadius);
+}
+.tabs-left .accordion-toggle-arrow,
+.tabs-right .accordion-toggle-arrow {
+  width: 100%;
+  max-height: 16px;
+  border-bottom-left-radius: var(--currentRadius);
+  border-bottom-right-radius: var(--currentRadius);
+}
+
+transform: rotate(-90deg);
+}
+.tab-group-indicator {
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding-right: calc(var(--radiusHalf) + var(--densityGap));
+  padding-left: calc(var(--radiusHalf) + var(--densityGap));
+  display: flex;
+  flex: 1;
+}
+
+.tabs-top .tab-group-indicator,
+.tabs-left .tab-group-indicator,
+.tabs-right .tab-group-indicator {
+  top: -7px;
+}
+
+.tabs-bottom .tab-group-indicator {
+  bottom: -7px;
+}
+
+.tab-indicator {
+  flex: 1 1 100%;
+  height: 12px;
+  border-top: 3px solid transparent;
+  border-bottom: 6px solid transparent;
+  background-clip: content-box;
+  position: relative;
+}
+
+.tab-indicator + .tab-indicator {
+  margin-left: 1px;
+}
+
+.tabs-bottom .tab-indicator {
+  border-top: 6px solid transparent;
+  border-bottom: 3px solid transparent;
+}
+
+.tab-indicator:first-of-type {
+  border-top-left-radius: var(--radiusHalf);
+}
+
+.tabs-bottom .tab-indicator:first-of-type {
+  border-top-left-radius: unset;
+  border-bottom-left-radius: var(--radiusHalf);
+}
+
+.tab-indicator:last-of-type {
+  border-top-right-radius: var(--radiusHalf);
+}
+
+.tabs-bottom .tab-indicator:last-of-type {
+  border-top-right-radius: unset;
+  border-bottom-right-radius: var(--radiusHalf);
+}
+
+.tabs-top .tab-indicator:last-of-type,
+.tabs-bottom .tab-indicator:last-of-type {
+  margin-right: 1px;
+}
+
+.tab-indicator.active {
+  height: 9px;
+  border-bottom-width: 2px;
+}
+
+.tabs-bottom .tab-indicator.active {
+  border-top-width: 5px;
+  border-bottom-width: 0;
+}
+
+.tab-indicator.marked {
+  position: relative;
+  border-radius: 0;
+  background-color: var(--colorHighlightBgAlpha);
+}
+
+.tabs-bottom .tab-indicator.marked + .tab-group-indicator .svg-tab-selection {
+  bottom: 0;
+}
+
+.tab-indicator.marked.active.tab-indicator.marked:after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  height: 4px;
+  background-color: inherit;
+}
+
+.tabs-bottom .tab-indicator.marked.active.tab-indicator.marked:after {
+  top: -2px;
+}
+
+.tab.marked:not(.active) + .tab-group-indicator .tab-indicator.marked.active.tab-indicator.marked:after {
+  background-color: var(--colorHighlightBgAlpha);
+}
+
+.tab-indicator.hidden-for-drag {
+  visibility: hidden;
+}
+
+#app .tab-indicator .svg-tab-selection {
+  stroke-width: 5px;
+}
+
+#app .tab-indicator .svg-tab-selection .outer {
+  stroke: unset;
+}
+
+.stacks-dotted.tabs-right .tab-wrapper.group,
+.substrip-tabs-on.tabs-right .tab-wrapper.group,
+.stacks-dotted.tabs-left .tab-wrapper.group,
+.substrip-tabs-on.tabs-left .tab-wrapper.group {
+  margin-top: 7px;
+  background-clip: content-box;
+}
+
+.unified-ui .tab-indicator,
+.color-behind-tabs-off .tab-indicator {
+  background-color: var(--colorFgFadedMore);
+}
+
+.unified-ui .tab-indicator:hover,
+.color-behind-tabs-off .tab-indicator:hover {
+  background-color: var(--colorFgFaded);
+}
+
+.unified-ui .tab-indicator.active,
+.color-behind-tabs-off .tab-indicator.active {
+  background-color: var(--colorBgAlphaHeavier);
+}
+
+.unified-ui .tab.active + .tab-group-indicator .tab-indicator.active,
+.color-behind-tabs-off .tab.active + .tab-group-indicator .tab-indicator.active {
+  background-color: var(--colorAccentBg);
+}
+
+.color-behind-tabs-on .tab-indicator {
+  background-color: var(--colorBgAlpha);
+}
+
+.color-behind-tabs-on .tab-indicator:hover {
+  background-color: var(--colorHighlightFg);
+}
+
+.color-behind-tabs-on .tab-indicator.active {
+  background-color: var(--colorImageBgAlphaHeavy, var(--colorAccentBgAlphaHeavy));
+}
+
+.color-behind-tabs-on .tab.active + .tab-group-indicator .tab-indicator.active {
+  background-color: var(--colorBg);
+}
+
+.color-behind-tabs-on .tab:not(.active):hover .tab-indicator.active {
+  background-color: var(--colorImageBgAlpha, var(--colorAccentBgAlpha));
+}
+
+.tabs-at-edge.stacks-dotted.tabs-bottom .tab-group-indicator,
+.tabs-at-edge.substrip-tabs-on.tabs-bottom .tab-group-indicator {
+  bottom: 0;
+}
+
+.tabs-at-edge.stacks-dotted.tabs-bottom .tab-group-indicator .tab-indicator,
+.tabs-at-edge.substrip-tabs-on.tabs-bottom .tab-group-indicator .tab-indicator {
+  border-bottom: 0;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  translate: 0 2px;
+  height: 15px;
+}
+
+.tabs-at-edge.stacks-dotted:not(.tabs-bottom) .tab-group-indicator,
+.tabs-at-edge.substrip-tabs-on:not(.tabs-bottom) .tab-group-indicator {
+  top: 0;
+}
+
+.tabs-at-edge.stacks-dotted:not(.tabs-bottom) .tab-group-indicator .tab-indicator,
+.tabs-at-edge.substrip-tabs-on:not(.tabs-bottom) .tab-group-indicator .tab-indicator {
+  border-top: 0;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  translate: 0 -2px;
+  height: 15px;
+}
+
+.tabs-at-edge.stacks-dotted .tab-group-indicator,
+.tabs-at-edge.substrip-tabs-on .tab-group-indicator {
+  padding-right: var(--densityGap);
+  padding-left: var(--densityGap);
+}
+
+.color-behind-tabs-on.tabs-at-edge.stacks-dotted .tab-indicator,
+.color-behind-tabs-on.tabs-at-edge.substrip-tabs-on .tab-indicator {
+  background-color: var(--colorFgFaded);
+}
+
+.color-behind-tabs-off.tabs-at-edge.stacks-dotted .tab-indicator,
+.color-behind-tabs-off.tabs-at-edge.substrip-tabs-on .tab-indicator {
+  background-color: var(--colorHighlightFgAlpha);
+}
+
+.tabs-at-edge.stacks-dotted .tab-indicator.active,
+.tabs-at-edge.substrip-tabs-on .tab-indicator.active {
+  background-color: transparent;
+}
+
+display: flex;
+  gap: 9px;
+  flex-direction: column;
+  padding: 12px;
+}
+.StackEditor .tab-title-edit {
+  padding: 3px 6px;
+}
+
+transition: top 150ms ease 0s, left 150ms ease 0s;
+  display: flex;
+  align-items: flex-start;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 6;
+}
+#browser .auto-hide-wrapper.has-tabbar ~ #vivaldi-tooltip .tooltip,
+#browser.tabs-top > #vivaldi-tooltip .tooltip {
+  z-index: 16;
+}
+
+pointer-events: all;
+  flex: 0 0 auto;
+}
+#vivaldi-tooltip .tooltip .tab-solo .tooltip-item {
+  flex-direction: column;
+  width: 222px;
+  border-radius: var(--radiusHalf);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+#vivaldi-tooltip .tooltip .tab-solo .tooltip-item .close {
+  display: none;
+  left: 0;
+}
+
+#vivaldi-tooltip .tooltip .tab-solo .tooltip-item .thumbnail-image {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+#vivaldi-tooltip .tooltip .tab-group {
+  display: flex;
+  flex-wrap: wrap;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.2)) drop-shadow(-1px 0 0 rgba(0, 0, 0, 0.1)) drop-shadow(1px 0 0 rgba(0, 0, 0, 0.1));
+}
+
+#vivaldi-tooltip .tooltip .tab-group .tooltip-item {
+  flex-direction: row;
+  flex: 0 0 auto;
+  width: 340px;
+  height: 104px;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 9px;
+  border-radius: var(--radiusHalf);
+  box-shadow: inset -1px 0 0 0 var(--colorBorder), inset 0 -1px 0 0 var(--colorBorder);
+  overflow: hidden;
+}
+
+#vivaldi-tooltip .tooltip .tab-group .tooltip-item > * {
+  pointer-events: none;
+}
+
+#vivaldi-tooltip .tooltip .tab-group .thumbnail-image {
+  flex: 0 0 104px;
+  height: 85px;
+  border: 1px solid var(--colorBorderDisabled);
+}
+
+#vivaldi-tooltip .tooltip .tab-group .thumbnail-caption {
+  flex: 1;
+  padding: 0;
+  gap: 6px;
+}
+
+#vivaldi-tooltip .tooltip .tab-group .thumbnail-buttons {
+  display: flex;
+  flex: 0 0 18px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+#vivaldi-tooltip .tooltip .tab-group .thumbnail-buttons .favicon {
+  margin: 1px;
+  z-index: 1;
+}
+
+#vivaldi-tooltip .tooltip .tab-group .thumbnail-buttons .close {
+  position: absolute;
+  display: none;
+}
+
+#vivaldi-tooltip .tooltip .tab-group .tooltip-item:hover .favicon {
+  display: none;
+}
+
+#vivaldi-tooltip .tooltip .tab-group .tooltip-item:hover .close {
+  position: relative;
+  display: flex;
+}
+
+#vivaldi-tooltip .tooltip .tab-group .thumbnail-text {
+  white-space: normal;
+  padding: 0;
+  margin: 0;
+}
+
+#vivaldi-tooltip .tooltip .tab-group .close {
+  order: unset !important;
+}
+
+.tabs-right #vivaldi-tooltip .tooltip .tab-group {
+  justify-content: flex-end;
+}
+
+.tabs-bottom #vivaldi-tooltip .tooltip .tab-group {
+  align-items: flex-end;
+}
+
+#browser.alt-tabs #vivaldi-tooltip .tooltip .tab-group .thumbnail-image {
+  order: 3;
+}
+
+#browser.alt-tabs #vivaldi-tooltip .tooltip .tab-group .thumbnail-buttons {
+  order: -1;
+}
+
+#vivaldi-tooltip .tooltip .tab-group .tooltip-item:hover,
+#vivaldi-tooltip .tooltip .tab-group .tooltip-item:active,
+#vivaldi-tooltip .tooltip .tab-group .tooltip-item.active,
+#vivaldi-tooltip .tooltip .tab-group .tooltip-item.last-active {
+  background-color: var(--colorBgLighter);
+}
+
+#vivaldi-tooltip .tooltip .tab-group .tooltip-item:hover .thumbnail-image,
+#vivaldi-tooltip .tooltip .tab-group .tooltip-item:active .thumbnail-image,
+#vivaldi-tooltip .tooltip .tab-group .tooltip-item.active .thumbnail-image,
+#vivaldi-tooltip .tooltip .tab-group .tooltip-item.last-active .thumbnail-image {
+  opacity: 0.9;
+}
+
+#vivaldi-tooltip .tooltip .tab-group .tooltip-item.last-active .thumbnail-image,
+#vivaldi-tooltip .tooltip .tab-group .tooltip-item.active .thumbnail-image {
+  opacity: 1;
+}
+
+padding: 0;
+}
+#browser.auto-hide.unified-ui.address-top:has(> #main > .mainbar),
+#browser.auto-hide.unified-ui.bookmark-bar-top:has(> #main > .bookmark-bar),
+#browser.auto-hide.unified-ui.tabs-top:has(> #header > .tabbar-wrapper) {
+  padding-top: 0;
+}
+
+#browser.auto-hide.unified-ui.address-bottom:has(> #main > .mainbar),
+#browser.auto-hide.unified-ui.bookmark-bar-bottom:has(> #main > .bookmark-bar),
+#browser.auto-hide.unified-ui.tabs-bottom:has(> #footer > .tabbar-wrapper),
+#browser.auto-hide.unified-ui:has(> #footer > .toolbar-statusbar) {
+  padding-bottom: 0;
+}
+
+#browser.auto-hide.unified-ui.tabs-left:has(> #main > .inner > .tabbar-wrapper),
+#browser.auto-hide.unified-ui:has(> #main > .inner > #panels-container.left.button) {
+  padding-left: 0;
+}
+
+#browser.auto-hide.unified-ui.tabs-right:has(> #main > .inner > .tabbar-wrapper),
+#browser.auto-hide.unified-ui:has(> #main > .inner > #panels-container.right.button) {
+  padding-right: 0;
+}
+
+anchor-name: --auto-hide;
+}
+#browser.auto-hide.transparent-tabbar.color-behind-tabs-on .auto-hide-wrapper.has-tabbar {
+  background-color: var(--colorAccentBgAlphaBlur);
+}
+
+#browser.auto-hide.transparent-tabbar.color-behind-tabs-off .auto-hide-wrapper.has-tabbar {
+  background: var(--colorBg);
+}
+
+#browser.auto-hide.transparent-tabbar.color-behind-tabs-off .auto-hide-wrapper.has-tabbar,
+#browser.auto-hide.transparent-tabbar.color-behind-tabs-off .auto-hide-wrapper.has-tabbar .button-toolbar {
+  --colorImageFg: var(--colorFg);
+}
+
+border-top-right-radius: var(--radiusWindow);
+  border-bottom-right-radius: var(--radiusWindow);
+}
+.auto-hide .auto-hide-wrapper #tabs-tabbar-container,
+.auto-hide .auto-hide-wrapper #panels {
+  border-radius: inherit;
+}
+
+--colorAccentBg: var(--colorBgDarker);
+  --colorAccentBgDark: var(--colorFgFadedMore);
+  --colorAccentBgDarker: var(--colorFgFadedMost);
+  --colorAccentBgAlpha: var(--colorBgAlpha);
+  --colorAccentBgAlphaHeavy: var(--colorBgAlpha);
+  --colorAccentBgFaded: var(--colorBgDark);
+  --colorAccentBgFadedMore: var(--colorBg);
+  --colorAccentBgFadedMost: var(--colorBgFaded);
+  --colorAccentBorder: var(--colorBorder);
+  --colorAccentBorderDark: var(--colorBorderIntense);
+  --colorAccentFg: var(--colorFgIntense);
+  --colorAccentFgFaded: var(--colorFgFaded);
+  --colorAccentFgAlpha: var(--colorFgAlpha);
+}
+#browser.break-mode #pagetitle,
+#browser.break-mode #webpage-stack,
+#browser.break-mode #panels .button-toolbar-webpanel,
+#browser.break-mode .bookmarkbarItem span,
+#browser.break-mode .bookmarkbarItem img,
+#browser.break-mode .bookmarkbarItem svg,
+#browser.break-mode .button-badge,
+#browser.break-mode .panel,
+#browser.break-mode .pageload,
+#browser.break-mode .webpanel-title,
+#browser.break-mode .siteinfo-text,
+#browser.break-mode .SiteInfoButton-Favicon,
+#browser.break-mode .OmniDropdown,
+#browser.break-mode .tab-header progress,
+#browser.break-mode .tab-header .title,
+#browser.break-mode .tab-header .stack-counter,
+#browser.break-mode .tab-header .favicon svg,
+#browser.break-mode .tab-header .favicon img,
+#browser.break-mode .tabbar-workspace-button .button-title,
+#browser.break-mode .workspace-popup .button-title,
+#browser.break-mode .tabbar-workspace-button .button-icon,
+#browser.break-mode .workspace-popup .button-icon,
+#browser.break-mode .toolbar .toolbar-extensions,
+#browser.break-mode .toolbar .profile-popup img,
+#browser.break-mode .thumbnail-image img,
+#browser.break-mode .thumbnail-image svg,
+#browser.break-mode .UrlBar-UrlField,
+#browser.break-mode .UrlBar-SearchField .searchfield-input,
+#browser.break-mode .UrlFragment-Wrapper,
+#browser.break-mode .button-popup:not(.BreakModePopup),
+#browser.break-mode .MailSearchField .searchfield-input,
+#browser.break-mode .StatusInfo,
+#browser.break-mode .ClockButton,
+#browser.break-mode .modal-faded-background,
+#browser.break-mode .modal-wrapper {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+opacity: 0.65;
+}
+#browser.break-mode .tab-position {
+  color: transparent;
+  pointer-events: none;
+}
+
+margin-top: 5px;
+}
+.tab-min-width label {
+  align-items: center;
+}
+
+.tab-min-width input[type='range'] {
+  width: 130px;
+  position: relative;
+}
+
+.tab-min-width input[type='range']:after {
+  content: '';
+  position: absolute;
+  left: 7px;
+  height: 6px;
+  width: 123px;
+  margin-top: 8px;
+  opacity: 0.3;
+  overflow: hidden;
+  background-image: repeating-linear-gradient(90deg, var(--colorFg), var(--colorFg) 1px, transparent 1px, transparent 23.2px);
+}
+
+.vivaldi-settings .tab-stacking label {
+  flex-wrap: wrap;
+}
+
+.vivaldi-settings .tab-stacking .img-setting {
+  margin-top: 0;
+}
+
+display: none;
+}
+.topmenu + #tabs-tabbar-container.top {
+  padding: 2px 0 0 6px;
+}
+
+background-color: var(--colorBgDarker);
+}
+.transparent-tabbar:not(.acc-dark.bg-dark.color-accent-from-page.color-behind-tabs-on) .vivaldi:hover,
+.transparent-tabbar:not(.acc-dark.bg-dark.color-accent-from-page.color-behind-tabs-on) .vivaldi:focus-visible {
+  background-color: var(--colorImageBgAlpha, var(--colorBgAlpha));
+}
+
+display: inline-block;
+  position: relative;
+  margin: 6px;
+  width: 200px;
+  height: 140px;
+  background-size: cover;
+  background-color: var(--colorBgInverser);
+  border-radius: var(--radiusHalf);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+}
+.tabswitcher .visual-tabs .visual-tab.active-page {
+  background-blend-mode: soft-light;
+}
+
+overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--colorFg);
+  font-size: 16px;
+  justify-content: center;
+  position: absolute;
+  bottom: 12px;
+  display: flex;
+  left: 12px;
+  right: 12px;
+}
+.tabswitcher .visual-tab-switcher-title > .tab-audio {
+  flex-shrink: 0;
+}
+
+display: flex;
+  margin: 2px 12px 2px 0;
+  padding: 3px;
+  border-radius: var(--radiusRounded);
+  color: var(--colorFg);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.tabswitcher.list li > .tab-audio {
+  flex-shrink: 0;
+}
+
+opacity: 0.5;
+}
+#browser.first-start-animate #header,
+#browser.first-start-animate .mainbar,
+#browser.first-start-animate .tabbar-wrapper {
+  animation: dropfade 400ms ease-out;
+}
+
+animation: pullfade 400ms ease-out;
+}
+#browser.first-start #panels-container,
+#browser.first-start .mainbar,
+#browser.first-start .vivaldi,
+#browser.first-start .tabbar-wrapper,
+#browser.first-start .toolbar-statusbar {
+  display: none !important;
+}
+
+background-color: var(--colorWindowBg, var(--colorBg));
+  background-size: cover;
+  width: inherit;
+  border-radius: inherit;
+  display: inline-grid;
+  grid-template-columns: 50px 1fr;
+  grid-template-rows: 21px 14px 1fr;
+  gap: 0;
+  outline: unset;
+  grid-template-areas: 'TabBar TabBar' 'AddressBar AddressBar' 'Panel Content';
+}
+.ThemePreview-Image .ThemePreview-Browser--Loading {
+  position: absolute;
+  grid-template: unset;
+  inset: 0;
+  background-color: var(--colorBg);
+  z-index: 2;
+}
+
+content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  outline: 2px solid var(--colorHighlightBg);
+  outline-offset: -1px;
+  bottom: 38px;
+  border-radius: var(--innerRadius);
+}
+.ThemePreview-TabBar {
+  position: relative;
+  padding: 6px;
+  gap: 3px;
+  display: flex;
+  flex-direction: row;
+  grid-area: TabBar;
+  height: 100%;
+  overflow: hidden;
+}
+
+.ThemePreview-TabBar-Tab {
+  width: 50px;
+  max-width: 34%;
+  background-color: var(--colorBg);
+  border-radius: var(--radius);
+  opacity: 0.5;
+  z-index: 1;
+}
+
+.ThemePreview-Browser.ui-transparent-tabs .ThemePreview-TabBar-Tab:not(.ThemePreview-TabBar-Tab--Active) {
+  opacity: 0;
+}
+
+.ThemePreview-TabBar-Tab--Active {
+  opacity: 1;
+}
+
+.ThemePreview-Browser.color-behind-tabs-on .ThemePreview-AddressBar,
+.ThemePreview-Browser.color-behind-tabs-on .ThemePreview-TabBar-Tab {
+  background-color: var(--colorBg);
+  color: var(--colorFg);
+}
+
+.ThemePreview-Browser:not(.color-behind-tabs-on.color-accent-from-page.transparent-tabbar, .unified-ui) .ThemePreview-TabBar {
+  background-color: var(--colorTabBar);
+}
+
+.ThemePreview-Browser.color-behind-tabs-on.color-accent-from-page.transparent-tabbar:not(.unified-ui) .ThemePreview-TabBar:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: var(--colorAccentBg);
+  mix-blend-mode: multiply;
+  z-index: 0;
+}
+
+border-color: var(--colorBorder);
+}
+.ThemePreview-Browser.color-behind-tabs-off .ThemePreview-AddressBar,
+.ThemePreview-Browser.color-behind-tabs-off .ThemePreview-TabBar-Tab {
+  background-color: var(--colorAccentBg);
+  color: var(--colorAccentFg);
+}
+
+padding: 3px 6px;
+}
+.ThemePreview-Browser.unified-ui .ThemePreview-TabBar-Tab {
+  background-color: var(--colorBg);
+}
+
+.ThemePreview-Browser.unified-ui .ThemePreview-TabBar-Tab--Active {
+  background-color: var(--colorAccentBg);
+  color: var(--colorAccentFg);
+}
+
+height: 18px;
+  margin-top: 1px;
+  border-radius: var(--radius);
+  padding: 0 6px;
+  background-color: var(--colorFgFaded);
+  color: var(--colorBg);
+}
+.color-behind-tabs-off .mainbar .UrlField--KeywordBadge,
+.color-behind-tabs-on #tabs-tabbar-container .UrlField--KeywordBadge {
+  background-color: var(--colorAccentBgFadedMore);
+  color: var(--colorAccentFg);
+}
+
+overflow: visible;
+}
+.tabs-bottom footer:has(.tabbar-wrapper) {
+  color: var(--colorImageBottomFg, var(--colorAccentFg));
+  background-color: var(--colorTabBar, transparent);
+}
+
+.transparent-tabbar.tabs-bottom footer {
+  --colorImageFg: var(--colorImageBottomFg);
+  --colorImageBg: var(--colorImageBottomBg);
+  --colorImageBgAlpha: var(--colorImageBottomBgAlpha);
+  --colorImageBgAlphaHeavy: var(--colorImageBottomBgAlphaHeavy);
+}
+
+.tabs-bottom footer #tabs-tabbar-container .button-toolbar > button:disabled > .button-title,
+.tabs-bottom footer > .toolbar-statusbar .button-toolbar > button:disabled > .button-title {
+  color: inherit;
+  opacity: 0.5;
+}
+
+.color-behind-tabs-on.tabs-bottom footer #tabs-tabbar-container,
+.color-behind-tabs-on.tabs-bottom footer > .toolbar-statusbar {
+  color: var(--colorImageFg, var(--colorAccentFg));
+}
+
+.transparent-tabbar.color-accent-from-page.acc-dark.bg-dark.color-behind-tabs-on.tabs-bottom footer #tabs-tabbar-container,
+.transparent-tabbar.color-accent-from-page.acc-dark.bg-dark.color-behind-tabs-on.tabs-bottom footer > .toolbar-statusbar {
+  color: var(--colorAccentFg);
+  fill: var(--colorAccentFg);
+}
+
+.color-behind-tabs-on.tabs-bottom footer #tabs-tabbar-container > button:not(.SlideBar):active,
+.color-behind-tabs-on.tabs-bottom footer > .toolbar-statusbar > button:not(.SlideBar):active,
+.color-behind-tabs-on.tabs-bottom footer #tabs-tabbar-container > button:not(.SlideBar).button-pressed,
+.color-behind-tabs-on.tabs-bottom footer > .toolbar-statusbar > button:not(.SlideBar).button-pressed {
+  background-color: var(--colorImageBgAlphaHeavy, var(--colorAccentBgDark));
+}
+
+.color-behind-tabs-on.tabs-bottom footer #tabs-tabbar-container > button:not(.SlideBar).button-pressed:active,
+.color-behind-tabs-on.tabs-bottom footer > .toolbar-statusbar > button:not(.SlideBar).button-pressed:active {
+  background-color: var(--colorImageBAlpha, var(--colorAccentBgDarker));
+}
+
+.color-behind-tabs-off.tabs-bottom footer #tabs-tabbar-container,
+.color-behind-tabs-off.tabs-bottom footer > .toolbar-statusbar {
+  color: var(--colorImageFg, var(--colorFg));
+}
+
+.color-behind-tabs-off.tabs-bottom footer #tabs-tabbar-container > .button-toolbar > button:active,
+.color-behind-tabs-off.tabs-bottom footer > .toolbar-statusbar > .button-toolbar > button:active,
+.color-behind-tabs-off.tabs-bottom footer #tabs-tabbar-container > .button-toolbar > button.button-pressed,
+.color-behind-tabs-off.tabs-bottom footer > .toolbar-statusbar > .button-toolbar > button.button-pressed {
+  background-color: var(--colorImageBgAlphaHeavy, var(--colorBgDark));
+}
+
+.color-behind-tabs-off.tabs-bottom footer #tabs-tabbar-container > .button-toolbar > button.button-pressed:active,
+.color-behind-tabs-off.tabs-bottom footer > .toolbar-statusbar > .button-toolbar > button.button-pressed:active {
+  background-color: var(--colorImageBgAlpha, var(--colorBgDarker));
+}

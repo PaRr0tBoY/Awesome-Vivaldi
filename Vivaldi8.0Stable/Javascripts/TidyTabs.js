@@ -26,7 +26,7 @@
     model: "glm-4-flash",
     timeout: 0,
     temperature: 0,
-    maxTokens: 2048,
+    maxTokens: 8192,
   };
   const MOD_AI_CONFIG_KEY = "tidyTabs";
   const MOD_AI_CONFIG_FILE = "config.json";
@@ -53,7 +53,10 @@
       const fileHandle = await dir.getFileHandle(MOD_AI_CONFIG_FILE, { create: false });
       const file = await fileHandle.getFile();
       applySharedAiConfig(JSON.parse(await file.text()));
-    } catch (_error) {}
+      console.log("[TidyTabs] [AI] Shared config loaded. apiKey configured:", !!AI_CONFIG.apiKey, "endpoint:", AI_CONFIG.apiEndpoint, "model:", AI_CONFIG.model);
+    } catch (_error) {
+      console.log("[TidyTabs] [AI] No shared config file found (config.json missing). apiKey configured:", !!AI_CONFIG.apiKey);
+    }
   }
 
   loadSharedAiConfig();
@@ -64,6 +67,7 @@
   // ==================== Script Configuration ====================
 
   const CONFIG = {
+    debug: false,
     autoStackWorkspaces: [],
     enableAIGrouping: true,
     enableStackColor: false,
@@ -163,11 +167,58 @@
     Hindi: "अन्य",
   };
 
+  const SUGGESTED_CLOSE_MAP = {
+    Chinese: "建议关闭的标签页",
+    Japanese: "閉じる提案",
+    English: "Suggested to Close",
+    French: "Fermer suggéré",
+    German: "Schließen vorgeschlagen",
+    Spanish: "Cerrar sugerido",
+    Italian: "Chiudere suggerito",
+  };
+
+  const SUGGESTED_PIN_MAP = {
+    Chinese: "建议固定的标签页",
+    Japanese: "固定する提案",
+    English: "Suggested to Pin",
+    French: "Épingler suggéré",
+    German: "Anheften vorgeschlagen",
+    Spanish: "Fijar sugerido",
+    Italian: "Fissare suggerito",
+  };
+
+  const SUGGESTED_CLOSE_NAMES = Object.values(SUGGESTED_CLOSE_MAP);
+  const SUGGESTED_PIN_NAMES = Object.values(SUGGESTED_PIN_MAP);
+
+  const getSuggestedCloseName = () => {
+    const lang = getLanguageName(getBrowserLanguage());
+    return SUGGESTED_CLOSE_MAP[lang] || "Suggested to Close";
+  };
+
+  const getSuggestedPinName = () => {
+    const lang = getLanguageName(getBrowserLanguage());
+    return SUGGESTED_PIN_MAP[lang] || "Suggested to Pin";
+  };
+
+  const isSpecialCategory = (name) =>
+    SUGGESTED_CLOSE_NAMES.includes(name) || SUGGESTED_PIN_NAMES.includes(name) || OTHERS_NAMES.includes(name);
+
+  const debugLog = (...args) => { if (CONFIG.debug) console.log(...args); };
+  const debugWarn = (...args) => { if (CONFIG.debug) console.warn(...args); };
+
   let debounceTimer = null;
   const processingSeparators = new Set();
   const TIDY_TABS_STACK_OWNER = "TidyTabs";
 
   // ==================== Utility Functions ====================
+
+  const parseVivExtData = (tab) => {
+    if (!tab?.vivExtData) return {};
+    if (typeof tab.vivExtData === "string") {
+      try { return JSON.parse(tab.vivExtData); } catch (_) { return {}; }
+    }
+    return tab.vivExtData;
+  };
 
   const getBrowserLanguage = () =>
     chrome.i18n?.getUILanguage?.() || navigator.language || "zh-CN";
@@ -178,6 +229,321 @@
   const getOthersName = () => {
     const lang = getLanguageName(getBrowserLanguage());
     return OTHERS_MAP[lang] || "Others";
+  };
+
+  // ==================== Tab Scoring for "Suggested to Close" ====================
+
+  const CLOSE_SCORE = {
+    DISCARDED: 30,
+    IDLE_24H: 25,
+    SEARCH_RESULT: 20,
+    DUPLICATE_URL: 15,
+    AGE_7D: 10,
+    NO_STACK: 5,
+    AUDIBLE: -30,
+    ACTIVE: -50,
+  };
+  const CLOSE_THRESHOLD = 40;
+
+  const SEARCH_URL_PATTERNS = [
+    /google\.[a-z.]+\/search/i,
+    /baidu\.com\/s\b/i,
+    /bing\.com\/search/i,
+    /duckduckgo\.com\/\?q=/i,
+    /yahoo\.com\/search/i,
+    /yandex\.[a-z]+\/search/i,
+    /sogou\.com\/web/i,
+    /so\.com\/s\b/i,
+    /zhihu\.com\/search/i,
+    /bilibili\.com\/search/i,
+    /youtube\.com\/results/i,
+    /github\.com\/search/i,
+    /stackoverflow\.com\/search/i,
+  ];
+
+  const isSearchResultPage = (url) => {
+    if (!url) return false;
+    return SEARCH_URL_PATTERNS.some((p) => p.test(url));
+  };
+
+  // ── Tab age tracking via OPFS ──────────────────────────────────────────
+
+  const TAB_AGE_FILE = "tabAge.json";
+
+  const loadTabAgeData = async () => {
+    try {
+      const root = await navigator.storage.getDirectory();
+      const dir = await root.getDirectoryHandle(MOD_AI_CONFIG_DIR, { create: true });
+      const fh = await dir.getFileHandle(TAB_AGE_FILE, { create: true });
+      const file = await fh.getFile();
+      const text = await file.text();
+      return text ? JSON.parse(text) : {};
+    } catch (_) { return {}; }
+  };
+
+  const saveTabAgeData = async (data) => {
+    try {
+      const root = await navigator.storage.getDirectory();
+      const dir = await root.getDirectoryHandle(MOD_AI_CONFIG_DIR, { create: true });
+      const fh = await dir.getFileHandle(TAB_AGE_FILE, { create: true });
+      const writable = await fh.createWritable();
+      await writable.write(JSON.stringify(data));
+      await writable.close();
+    } catch (_) { /* non-critical */ }
+  };
+
+  // Record current activation time for open tabs (call periodically)
+  const recordTabActivation = async () => {
+    try {
+      const tabs = await new Promise((r) => chrome.tabs.query({ currentWindow: true }, r));
+      const data = await loadTabAgeData();
+      const now = Date.now();
+      let changed = false;
+      for (const tab of tabs) {
+        if (tab.id < 0 || !tab.url || tab.pinned) continue;
+        const key = String(tab.id);
+        if (!data[key]) { data[key] = { created: now, lastActive: now, activationCount: 0, totalActiveMs: 0 }; changed = true; }
+      }
+      if (changed) await saveTabAgeData(data);
+    } catch (_) { /* non-critical */ }
+  };
+
+  let currentActiveTabId = null;
+  let currentActiveSince = null;
+
+  const updateTabActiveTime = async (tabId, isActivating = true) => {
+    try {
+      const data = await loadTabAgeData();
+      const key = String(tabId);
+      const now = Date.now();
+      if (!data[key]) data[key] = { created: now, lastActive: now, activationCount: 0, totalActiveMs: 0 };
+      if (isActivating) {
+        data[key].activationCount = (data[key].activationCount || 0) + 1;
+      }
+      data[key].lastActive = now;
+      await saveTabAgeData(data);
+    } catch (_) { /* non-critical */ }
+  };
+
+  // Track active time: when switching away from a tab, record how long it was active
+  const flushActiveTime = async () => {
+    if (currentActiveTabId == null || currentActiveSince == null) return;
+    const elapsed = Date.now() - currentActiveSince;
+    if (elapsed < 1000) return; // ignore <1s
+    try {
+      const data = await loadTabAgeData();
+      const key = String(currentActiveTabId);
+      if (!data[key]) data[key] = { created: Date.now(), lastActive: Date.now(), activationCount: 0, totalActiveMs: 0 };
+      data[key].totalActiveMs = (data[key].totalActiveMs || 0) + elapsed;
+      await saveTabAgeData(data);
+    } catch (_) { /* non-critical */ }
+  };
+
+  chrome.tabs?.onActivated?.addListener(async (activeInfo) => {
+    if (activeInfo.tabId && activeInfo.tabId !== -1) {
+      await flushActiveTime();
+      currentActiveTabId = activeInfo.tabId;
+      currentActiveSince = Date.now();
+      updateTabActiveTime(activeInfo.tabId, true);
+    }
+  });
+
+  // ── Score a single tab ──────────────────────────────────────────────────
+
+  const scoreTab = (tab, allTabs, stacksMap, ageData) => {
+    if (!tab || tab.pinned) return -999; // pinned tabs excluded
+    let score = 0;
+    const reasons = [];
+
+    // Positive signals
+    if (tab.discarded) { score += CLOSE_SCORE.DISCARDED; reasons.push("discarded"); }
+
+    const key = String(tab.id);
+    const age = ageData[key];
+    const idleMs = age ? Date.now() - age.lastActive : 0;
+    if (idleMs > 24 * 60 * 60 * 1000) { score += CLOSE_SCORE.IDLE_24H; reasons.push("idle>24h"); }
+
+    if (isSearchResultPage(tab.url)) { score += CLOSE_SCORE.SEARCH_RESULT; reasons.push("searchResult"); }
+
+    const dupes = allTabs.filter((t) => t.url === tab.url && t.id !== tab.id);
+    if (dupes.length > 0) { score += CLOSE_SCORE.DUPLICATE_URL; reasons.push("duplicateUrl"); }
+
+    const createdMs = age ? Date.now() - age.created : 0;
+    if (createdMs > 7 * 24 * 60 * 60 * 1000) { score += CLOSE_SCORE.AGE_7D; reasons.push("age>7d"); }
+
+    if (!stacksMap.has(tab.id)) { score += CLOSE_SCORE.NO_STACK; reasons.push("noStack"); }
+
+    // Negative signals (only subtract, never add for absence)
+    if (tab.audible) { score += CLOSE_SCORE.AUDIBLE; reasons.push("audible"); }
+    if (tab.active) { score += CLOSE_SCORE.ACTIVE; reasons.push("active"); }
+
+    return { score, reasons };
+  };
+
+  // ── Build a map of tabId → stackId for all tabs ────────────────────────
+
+  const buildStackMap = (allTabs) => {
+    const map = new Map();
+    for (const tab of allTabs) {
+      try {
+        const viv = typeof tab.vivExtData === "string" ? JSON.parse(tab.vivExtData) : (tab.vivExtData || {});
+        if (viv.group) map.set(tab.id, viv.group);
+      } catch (_) { /* skip */ }
+    }
+    return map;
+  };
+
+  // ── Score all tabs and return those above threshold ─────────────────────
+
+  const findSuggestedCloseTabs = async (tabs) => {
+    const allTabs = await new Promise((r) => chrome.tabs.query({ currentWindow: true }, r));
+    const stacksMap = buildStackMap(allTabs);
+    const ageData = await loadTabAgeData();
+    const scored = tabs.map((tab) => ({ tab, ...scoreTab(tab, allTabs, stacksMap, ageData) }));
+    const closeTabs = new Set();
+
+    // 1. Handle duplicate URLs: keep the best one (most recently active), close the rest
+    const urlGroups = new Map();
+    for (const s of scored) {
+      const url = s.tab.url;
+      if (!url) continue;
+      if (!urlGroups.has(url)) urlGroups.set(url, []);
+      urlGroups.get(url).push(s);
+    }
+    for (const [, group] of urlGroups) {
+      if (group.length < 2) continue;
+      // Sort by: not discarded first, then most recently active, then highest score (least close-worthy)
+      group.sort((a, b) => {
+        if (a.tab.discarded !== b.tab.discarded) return a.tab.discarded ? 1 : -1;
+        const aActive = (ageData[String(a.tab.id)]?.lastActive) || 0;
+        const bActive = (ageData[String(b.tab.id)]?.lastActive) || 0;
+        return bActive - aActive; // most recent first
+      });
+      // Keep the first (best) one, close the rest
+      for (let i = 1; i < group.length; i++) {
+        closeTabs.add(group[i].tab);
+      }
+      console.log("[TidyTabs] [scoring] Duplicate URL — keeping tab", group[0].tab.id, "closing", group.length - 1, "duplicates");
+    }
+
+    // 2. Score-based: tabs above threshold (that aren't already from duplicates)
+    for (const s of scored) {
+      if (closeTabs.has(s.tab)) continue;
+      if (s.score >= CLOSE_THRESHOLD) {
+        closeTabs.add(s.tab);
+      }
+    }
+
+    const result = [...closeTabs];
+    if (result.length > 0) {
+      const details = result.map((t) => {
+        const s = scored.find((x) => x.tab.id === t.id);
+        return { id: t.id, score: s?.score, reasons: s?.reasons };
+      });
+      console.log("[TidyTabs] [scoring] Suggested close tabs:", details);
+    }
+    return result;
+  };
+
+  // ── Behavior-based "Suggested to Pin" scoring ──────────────────────────
+
+  const PIN_SCORE = {
+    RESTORED: 35,         // Tab survived browser restart (restoreStatus)
+    HIGH_ACTIVATION: 25,  // Activated many times
+    LONG_ACTIVE_TIME: 20, // Spent significant time on this tab
+    OLD_AGE: 15,          // Tab created long ago, never closed
+    FREQUENT_URL: 5,      // URL also appears frequently in history (weak signal)
+  };
+  const PIN_THRESHOLD = 40;
+
+  const scoreTabForPin = (tab, ageData, frequentUrls) => {
+    if (!tab || tab.pinned) return { score: -999, reasons: [] };
+    let score = 0;
+    const reasons = [];
+
+    // 1. Restored tab (survived browser restart — user chose not to close it)
+    try {
+      const viv = typeof tab.vivExtData === "string" ? JSON.parse(tab.vivExtData) : (tab.vivExtData || {});
+      if (viv.restoreStatus === "restored") { score += PIN_SCORE.RESTORED; reasons.push("restored"); }
+    } catch (_) { /* skip */ }
+
+    // 2. Activation count
+    const key = String(tab.id);
+    const age = ageData[key];
+    const activations = age?.activationCount || 0;
+    if (activations >= 10) { score += PIN_SCORE.HIGH_ACTIVATION; reasons.push("activations:" + activations); }
+
+    // 3. Total active time
+    const activeMs = age?.totalActiveMs || 0;
+    if (activeMs > 30 * 60 * 1000) { score += PIN_SCORE.LONG_ACTIVE_TIME; reasons.push("activeTime>30m"); }
+
+    // 4. Tab age (always open, never closed)
+    const createdMs = age ? Date.now() - age.created : 0;
+    if (createdMs > 14 * 24 * 60 * 60 * 1000) { score += PIN_SCORE.OLD_AGE; reasons.push("age>14d"); }
+
+    // 5. Frequent URL (weak auxiliary signal)
+    if (frequentUrls?.length) {
+      const urlSet = new Set(frequentUrls);
+      try { if (urlSet.has(new URL(tab.url).href)) { score += PIN_SCORE.FREQUENT_URL; reasons.push("frequentUrl"); } }
+      catch (_) { /* skip */ }
+    }
+
+    return { score, reasons };
+  };
+
+  // Weak auxiliary signal — frequent URLs from history
+  const getFrequentUrls = async (minVisits = 8, daysBack = 14) => {
+    try {
+      if (!vivaldi?.historyPrivate?.visitSearch) return [];
+      const now = Date.now();
+      const startTime = now - daysBack * 24 * 60 * 60 * 1000;
+      const historyItems = await new Promise((resolve) => {
+        vivaldi.historyPrivate.visitSearch({ startTime, endTime: now }, (result) => {
+          resolve(chrome.runtime.lastError ? [] : (result || []));
+        });
+      }).catch(() => []);
+      if (!historyItems?.length) return [];
+      const count = {};
+      for (const item of historyItems) {
+        if (!item.url) continue;
+        count[item.url] = (count[item.url] || 0) + 1;
+      }
+      return Object.entries(count)
+        .filter(([, c]) => c >= minVisits)
+        .map(([url]) => url);
+    } catch (_) { return []; }
+  };
+
+  const findSuggestedPinTabs = (tabs, ageData, frequentUrls) => {
+    const scored = tabs.map((tab) => ({ tab, ...scoreTabForPin(tab, ageData, frequentUrls) }));
+    const qualifying = scored.filter((s) => s.score >= PIN_THRESHOLD);
+
+    // Deduplicate by URL: keep only the best tab per URL
+    const urlGroups = new Map();
+    for (const s of qualifying) {
+      const url = s.tab.url || "";
+      if (!urlGroups.has(url)) urlGroups.set(url, []);
+      urlGroups.get(url).push(s);
+    }
+    const deduped = [];
+    for (const [, group] of urlGroups) {
+      if (group.length > 1) {
+        // Keep highest score; tie-break by most recent activation
+        group.sort((a, b) => {
+          if (b.score !== a.score) return b.score - a.score;
+          const aActive = (ageData[String(a.tab.id)]?.lastActive) || 0;
+          const bActive = (ageData[String(b.tab.id)]?.lastActive) || 0;
+          return bActive - aActive;
+        });
+        console.log("[TidyTabs] [scoring] Pin URL dedup — keeping tab", group[0].tab.id, "dropping", group.length - 1, "duplicate(s) of", url.substring(0, 50));
+      }
+      deduped.push(group[0]);
+    }
+
+    if (deduped.length > 0) {
+      console.log("[TidyTabs] [scoring] Suggested pin tabs:", deduped.map((s) => ({ id: s.tab.id, score: s.score, reasons: s.reasons })));
+    }
+    return deduped.map((s) => s.tab);
   };
 
   const getUrlFragments = (url) => {
@@ -352,7 +718,7 @@
           if (chrome.runtime.lastError) {
             console.error("[TidyTabs] [chrome.tabs.update] Error:", chrome.runtime.lastError.message);
           } else {
-            console.log(`[TidyTabs] [updateTabProperties] Updated tabId=${tabId} vivExtData:`, JSON.stringify(viv));
+            debugLog(`[TidyTabs] [updateTabProperties] Updated tabId=${tabId}`);
           }
           resolve();
         });
@@ -361,7 +727,7 @@
   };
 
   const addTabToStack = async (tabId, stackId, stackName, stackColor, parentExtId) => {
-    console.log(`[TidyTabs] [addTabToStack] Starting for tabId=${tabId}, stackId=${stackId}, stackName="${stackName}", stackColor="${stackColor}", parentExtId="${parentExtId || ''}"`);
+    debugLog(`[TidyTabs] [addTabToStack] tabId=${tabId}, stackId=${stackId}, stackName="${stackName}"`);
     
     const freshTab = await getTab(tabId);
     let viv = {};
@@ -388,7 +754,7 @@
     await updateTabProperties(tabId, fields);
     
     const verifyTab = await getTab(tabId);
-    console.log(`[TidyTabs] [addTabToStack] Verified tabId=${tabId} vivExtData after update:`, JSON.stringify(verifyTab?.vivExtData));
+    debugLog(`[TidyTabs] [addTabToStack] Verified tabId=${tabId}`);
     
     return extId;
   };
@@ -406,6 +772,72 @@
         window.location.assign("vivaldi://settings/?path=appearance");
       }
     });
+  };
+
+  // ==================== Existing Stack Detection ====================
+
+  // Detect named stacks (user set a title) from a set of tabs
+  const detectNamedStacks = (tabs) => {
+    const stacksMap = new Map();
+    for (const tab of tabs) {
+      let viv;
+      try { viv = typeof tab.vivExtData === "string" ? JSON.parse(tab.vivExtData) : (tab.vivExtData || {}); } catch (_) { continue; }
+      if (!viv.group) continue;
+      if (!stacksMap.has(viv.group)) {
+        stacksMap.set(viv.group, {
+          id: viv.group,
+          name: viv.fixedGroupTitle || null,
+          tabIds: [],
+        });
+      }
+      stacksMap.get(viv.group).tabIds.push(tab.id);
+    }
+    return [...stacksMap.values()].filter((s) => s.name && s.tabIds.length >= 2);
+  };
+
+  // Find unnamed stack group IDs (stacks without a custom title)
+  const findUnnamedStackIds = (tabs) => {
+    const stackInfo = new Map();
+    for (const tab of tabs) {
+      let viv;
+      try { viv = typeof tab.vivExtData === "string" ? JSON.parse(tab.vivExtData) : (tab.vivExtData || {}); } catch (_) { continue; }
+      if (!viv.group) continue;
+      if (!stackInfo.has(viv.group)) {
+        stackInfo.set(viv.group, { named: !!viv.fixedGroupTitle, count: 0 });
+      }
+      stackInfo.get(viv.group).count++;
+    }
+    return [...stackInfo.entries()]
+      .filter(([, info]) => !info.named && info.count >= 2)
+      .map(([id]) => id);
+  };
+
+  // Dismantle an unnamed stack, returning its tabs back to the pool
+  const dismantleStack = async (groupId) => {
+    // Collect tab IDs BEFORE dismantling
+    const allTabs = await new Promise((r) => chrome.tabs.query({ currentWindow: true }, r));
+    const stackTabIds = allTabs.filter((t) => {
+      try {
+        const viv = typeof t.vivExtData === "string" ? JSON.parse(t.vivExtData) : (t.vivExtData || {});
+        return viv.group === groupId;
+      } catch (_) { return false; }
+    }).map((t) => t.id);
+
+    if (stackTabIds.length < 2) return stackTabIds;
+
+    // Dismantle via vivaldi.tabsPrivate.unstack
+    if (vivaldi?.tabsPrivate?.unstack) {
+      try {
+        const unstackResult = vivaldi.tabsPrivate.unstack(groupId);
+        if (unstackResult && typeof unstackResult.then === "function") {
+          await unstackResult;
+        }
+        console.log("[TidyTabs] Dismantled unnamed stack:", groupId.slice(0, 8), "→", stackTabIds.length, "tabs freed");
+      } catch (e) {
+        console.warn("[TidyTabs] unstack exception:", e.message);
+      }
+    }
+    return stackTabIds;
   };
 
   // ==================== AI Grouping ====================
@@ -439,15 +871,33 @@
 
     const othersName = getOthersName();
 
-    return `You are a meticulous expert organizer who follows instructions concisely. I have some tabs! Please help me sort them into groups. I'll provide you with a list of tabs, with their IDs (e.g. google.com/3), their titles, and the tab they were opened from if applicable (e.g. \u21b3 google.com/0). Think about the groupings of my browsing, and then choose a descriptive group name for each. Group based on keywords in common, domain, website purpose, and referring tab. If a tab has a unique keyword in common with tabs in a group, include it in that group. Use the unique keyword in the group name. Some tabs may be in a group of their own, but you should try to include each tab in a group if possible.
+    let prompt = `You are a meticulous expert organizer who follows instructions concisely. I have some tabs! Please help me sort them into groups. I'll provide you with a list of tabs, with their IDs (e.g. google.com/3), their titles, and the tab they were opened from if applicable (e.g. \u21b3 google.com/0).
 
-Treat every tab below as raw material for a fresh regrouping. Ignore any previous browser tab stack membership or previous stack names.
+IMPORTANT \u2014 Group primarily by page CONTENT and TOPIC, not by domain. Domain names in the IDs are for identification only. Example: "github.com/1: React docs" and "example.com/5: React tutorial" should group together under "React", NOT under separate "Github" and "Example" domain groups. Look at TITLES to find semantic connections. Domain is the LAST thing you should consider \u2014 only use it when titles have absolutely nothing in common. If a tab has a unique keyword in common with tabs in a group, include it in that group. Use the most descriptive keyword as the group name. Some tabs may be in a group of their own, but you should try to include each tab in a group if possible.
 
-My tabs:
+`;
+
+    if (existingStacks && existingStacks.length > 0) {
+      prompt += `Some tabs already belong to user-named stacks. These stacks should be preserved — you may add matching ungrouped tabs into them:
+`;
+      for (const s of existingStacks) {
+        prompt += `- "${s.name}": currently has tab_ids [${s.existingTabIds.join(",")}]
+`;
+      }
+      prompt += `If ungrouped tabs fit these existing stacks' themes, assign them to those stacks using the exact same name. Do NOT create new stacks with these names.
+
+`;
+    } else {
+      prompt += `Treat every tab below as raw material for a fresh regrouping. Ignore any previous browser tab stack membership or previous stack names.
+
+`;
+    }
+
+    prompt += `My tabs:
 ${tabLines}
 
 **Rules:**
-1. Create new groups from the supplied tabs only.
+1. ${existingStacks?.length ? "Preserve existing named stacks; create new groups for remaining tabs." : "Create new groups from the supplied tabs only."}
 2. Group names: concise, specific, in ${languageName}.
 3. Tabs that don't fit any group go to "${othersName}".
 4. Each tab in exactly one group.
@@ -456,29 +906,44 @@ ${tabLines}
 {"groups":[{"name":"Group name","tab_ids":[0,1,2]},{"name":"${othersName}","tab_ids":[3]}]}
 
 The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \u2192 tab_id is 3).`;
+    return prompt;
   };
 
   const parseAIResponse = (content) => {
     let s = content.trim();
-    if (!s) return null;
+    if (!s) {
+      console.warn("[TidyTabs] [AI] parseAIResponse: empty content");
+      return null;
+    }
     const m = s.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
     if (m) s = m[1].trim();
     const first = s.indexOf("{"),
       last = s.lastIndexOf("}");
     if (first !== -1 && last !== -1) s = s.substring(first, last + 1);
     try {
-      return JSON.parse(s);
+      const parsed = JSON.parse(s);
+      console.log("[TidyTabs] [AI] parseAIResponse success — groups:", parsed.groups?.length, "keys:", Object.keys(parsed));
+      return parsed;
     } catch (e) {
-      console.error("[TidyTabs] JSON parse error:", e.message, "Content:", s.substring(0, 200));
+      console.error("[TidyTabs] [AI] JSON parse error:", e.message, "Content:", s.substring(0, 200));
       return null;
     }
   };
 
   const validateAIGroups = (result) => {
-    if (!result?.groups || !Array.isArray(result.groups)) return false;
-    return result.groups.every(
-      (g) => g.name && typeof g.name === "string" && Array.isArray(g.tab_ids)
+    if (!result?.groups || !Array.isArray(result.groups)) {
+      console.warn("[TidyTabs] [AI] validateAIGroups failed: missing or invalid 'groups' array. result keys:", result ? Object.keys(result) : "null");
+      return false;
+    }
+    const invalid = result.groups.filter(
+      (g) => !g.name || typeof g.name !== "string" || !Array.isArray(g.tab_ids)
     );
+    if (invalid.length > 0) {
+      console.warn("[TidyTabs] [AI] validateAIGroups failed:", invalid.length, "invalid group(s):", JSON.stringify(invalid));
+      return false;
+    }
+    console.log("[TidyTabs] [AI] validateAIGroups passed —", result.groups.length, "groups");
+    return true;
   };
 
   const mapAIResultsToGroups = (aiResult, tabs, existingStacks) => {
@@ -526,8 +991,20 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
     }
   };
 
+  const applyProviderPayloadOptions = (payload) => {
+    if (AI_CONFIG.apiEndpoint?.includes("openrouter.ai")) {
+      payload.include_reasoning = false;
+    } else {
+      payload.thinking = { type: "disabled" };
+    }
+    return payload;
+  };
+
   const getAIGrouping = async (tabs, existingStacks = []) => {
+    console.log("[TidyTabs] [AI] getAIGrouping called — tabs:", tabs.length, "existingStacks:", existingStacks.length, "apiKey configured:", !!AI_CONFIG.apiKey);
+
     if (!AI_CONFIG.apiKey) {
+      console.warn("[TidyTabs] [AI] Skipped — no API key configured. Will fall back to domain grouping.");
       showToast("AI API key Unconfigured", {
         type: "error",
         button: { text: "Go to Settings", action: openSettings },
@@ -549,27 +1026,22 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
           ? setTimeout(() => controller.abort(), AI_CONFIG.timeout)
           : null;
 
-      const isGLM = AI_CONFIG.apiEndpoint?.includes("bigmodel.cn");
-      const isOpenRouter = AI_CONFIG.apiEndpoint?.includes("openrouter.ai");
-      const payload = {
+      const promptText = buildAIPrompt(tabs, existingStacks, languageName);
+
+      const payload = applyProviderPayloadOptions({
         model: AI_CONFIG.model,
         messages: [
           {
             role: "user",
-            content: buildAIPrompt(tabs, existingStacks, languageName),
+            content: promptText,
           },
         ],
         temperature: AI_CONFIG.temperature,
         max_tokens: AI_CONFIG.maxTokens,
         stream: false,
         response_format: { type: "json_object" },
-      };
-      if (isGLM) {
-        payload.thinking = { type: "disabled" };
-      } else if (isOpenRouter) {
-        payload.include_reasoning = false;
-      }
-
+      });
+      console.log("[TidyTabs] [AI] Sending request...");
       const response = await fetch(AI_CONFIG.apiEndpoint, {
         method: "POST",
         headers: {
@@ -584,21 +1056,48 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
 
       if (timeoutId) clearTimeout(timeoutId);
 
+      console.log("[TidyTabs] [AI] Response status:", response.status);
+
       if (!response.ok) throw new Error(`API error: ${response.status}`);
 
       const data = await response.json();
       if (data?.error) throw new Error(`API error: ${data.error.message || JSON.stringify(data.error)}`);
 
-      const raw = data.choices?.[0]?.message?.content || "";
+      const msg = data.choices?.[0]?.message || {};
+      // Try content first, then reasoning_content (DeepSeek reasoning models put output there),
+      // then check if content was cut off (finish_reason === "length" means max_tokens exceeded)
+      let raw = msg.content || "";
+      if (!raw && msg.reasoning_content) {
+        console.log("[TidyTabs] [AI] content is empty, attempting to extract JSON from reasoning_content");
+        raw = msg.reasoning_content;
+      }
+      if (!raw) {
+        console.warn("[TidyTabs] [AI] Both content and reasoning_content are empty. finish_reason:", data.choices?.[0]?.finish_reason, "usage:", JSON.stringify(data.usage));
+        // If model hit token limit, the JSON was never generated — return null to fall back
+        return null;
+      }
+
+      debugLog("[TidyTabs] [AI] Raw output (first 500 chars):", raw.substring(0, 500));
+      debugLog("[TidyTabs] [AI] finish_reason:", data.choices?.[0]?.finish_reason, "completion_tokens:", data.usage?.completion_tokens);
       const cleaned = raw.replace(/<(thought|reasoning)>[\s\S]*?<\/\1>/gi, "").trim();
       const result = parseAIResponse(cleaned);
-      if (!result || !validateAIGroups(result)) return null;
+      debugLog("[TidyTabs] [AI] Parsed result:", JSON.stringify(result));
+      if (!result) {
+        console.warn("[TidyTabs] [AI] parseAIResponse returned null. Will fall back to domain grouping.");
+        return null;
+      }
+      if (!validateAIGroups(result)) {
+        console.warn("[TidyTabs] [AI] validateAIGroups failed. Result structure:", JSON.stringify(result));
+        return null;
+      }
 
       const groups = mapAIResultsToGroups(result, tabs, existingStacks);
+      debugLog("[TidyTabs] [AI] Mapped groups:", groups.map(g => ({ name: g.name, tabCount: g.tabs.length, isExisting: g.isExisting })));
       handleOrphanTabs(groups, tabs, existingStacks);
-      return groups.length > 0 ? groups : null;
+      const final = groups.length > 0 ? groups : null;
+      return final;
     } catch (error) {
-      console.error("[TidyTabs] AI error:", error.message);
+      console.error("[TidyTabs] [AI] Error:", error.message);
       showToast(`AI call failed: ${error.message}`, {
         type: "error",
         copyText: error.message,
@@ -610,12 +1109,13 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
   };
 
   const groupByDomain = (tabs) => {
+    console.log("[TidyTabs] [fallback] groupByDomain called — grouping", tabs.length, "tabs by hostname only (no AI)");
     const byHost = {};
     tabs.forEach((tab) => {
       const host = getHostname(tab.url);
       (byHost[host] ||= []).push(tab);
     });
-    return Object.entries(byHost)
+    const groups = Object.entries(byHost)
       .filter(([, t]) => t.length > 1)
       .map(([, t]) => {
         const base = getBaseDomain(t[0].url).split(".")[0];
@@ -626,6 +1126,8 @@ The tab_ids correspond to the number after the domain slash (e.g. google.com/3 \
           isExisting: false,
         };
       });
+    console.log("[TidyTabs] [fallback] groupByDomain result:", groups.map(g => ({ name: g.name, tabCount: g.tabs.length })));
+    return groups;
   };
 
   const generateStackName = async (tabs) => {
@@ -643,20 +1145,14 @@ ${tabInfo}
 Return JSON strictly in this format, with no markdown backticks: {"name":"the group name"}`;
 
     try {
-      const isGLM = AI_CONFIG.apiEndpoint?.includes("bigmodel.cn");
-      const payload = {
+      const payload = applyProviderPayloadOptions({
         model: AI_CONFIG.model,
         messages: [{ role: "user", content: prompt }],
         temperature: 0.3,
-        max_tokens: 64,
+        max_tokens: 128,
         stream: false,
         response_format: { type: "json_object" },
-      };
-      if (isGLM) {
-        payload.thinking = { type: "disabled" };
-      } else if (AI_CONFIG.apiEndpoint?.includes("openrouter.ai")) {
-        payload.include_reasoning = false;
-      }
+      });
 
       const controller = AI_CONFIG.timeout > 0 ? new AbortController() : null;
       const timeoutId = AI_CONFIG.timeout > 0
@@ -678,7 +1174,11 @@ Return JSON strictly in this format, with no markdown backticks: {"name":"the gr
         const data = await response.json();
         if (!response.ok || data?.error) return null;
 
-        const raw = data.choices?.[0]?.message?.content || "";
+        const msg = data.choices?.[0]?.message || {};
+        let raw = msg.content || "";
+        if (!raw && msg.reasoning_content) raw = msg.reasoning_content;
+        if (!raw) return null;
+
         const cleaned = raw.replace(/<(thought|reasoning)>[\s\S]*?<\/\1>/gi, "").trim();
         const m = cleaned.match(/\{[\s\S]*?\}/);
         if (m) {
@@ -790,6 +1290,68 @@ Return JSON strictly in this format, with no markdown backticks: {"name":"the gr
     }
   };
 
+  // Add tabs to an existing named stack (without recreating it)
+  const addTabsToExistingStack = async (groupId, groupName, newTabs) => {
+    if (!newTabs.length) return;
+    // Get existing stack tabs to find target position
+    const allTabs = await new Promise((r) => chrome.tabs.query({ currentWindow: true }, r));
+    const existingTabs = allTabs.filter((t) => {
+      try {
+        const viv = typeof t.vivExtData === "string" ? JSON.parse(t.vivExtData) : (t.vivExtData || {});
+        return viv.group === groupId;
+      } catch (_) { return false; }
+    });
+    const targetTab = existingTabs[existingTabs.length - 1] || newTabs[0];
+    if (!targetTab) return;
+
+    // Move new tabs adjacent to the existing stack (right after the last tab)
+    const targetIndex = targetTab.index;
+    for (let i = 0; i < newTabs.length; i++) {
+      await new Promise((resolve) => {
+        chrome.tabs.move(newTabs[i].id, { index: targetIndex + 1 + i }, () => {
+          if (chrome.runtime.lastError) console.warn("[TidyTabs] move failed:", chrome.runtime.lastError.message);
+          resolve();
+        });
+      });
+    }
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // Re-group: move all tabs (existing + new) together to recreate the stack
+    const allIds = [...existingTabs.map((t) => t.id), ...newTabs.map((t) => t.id)];
+    const firstId = existingTabs[0]?.id || newTabs[0]?.id;
+    if (vivaldi?.tabsPrivate?.move && allIds.length >= 2) {
+      try {
+        const newGroupId = await new Promise((resolve) => {
+          const promiseOrVal = vivaldi.tabsPrivate.move({
+            tabIds: allIds,
+            target: firstId,
+            tweaks: ["do-not-reparent", "create-new-group", "target-is-tab"],
+            debug: "TidyTabs.addToExisting"
+          }, (res) => resolve(chrome.runtime.lastError ? null : (res?.group || null)));
+          if (promiseOrVal && typeof promiseOrVal.then === "function") {
+            promiseOrVal.then((res) => resolve(res?.group || null));
+          }
+        });
+        // Re-apply group properties if group was recreated
+        if (newGroupId && groupName && vivaldi?.tabsPrivate?.setGroupProperties) {
+          vivaldi.tabsPrivate.setGroupProperties({ groupExtId: String(newGroupId), groupTitle: groupName }, () => {});
+        }
+        // Update vivExtData for new tabs
+        for (const tab of newTabs) {
+          await updateTabProperties(tab.id, {
+            group: newGroupId || groupId,
+            fixedGroupTitle: groupName,
+            tidyStackOwner: TIDY_TABS_STACK_OWNER,
+            tidyStackId: newGroupId || groupId,
+          });
+        }
+        console.log(`[TidyTabs] [stacks] Added ${newTabs.length} tabs to stack "${groupName}"`);
+      } catch (e) {
+        console.warn("[TidyTabs] [stacks] Failed to add tabs to existing stack:", e.message);
+      }
+    }
+  };
+
   // ==================== Tab Stack Operations ====================
 
   const createTabStacks = async (groups) => {
@@ -817,7 +1379,7 @@ Return JSON strictly in this format, with no markdown backticks: {"name":"the gr
 
       // 3. Group tabs natively using Vivaldi's private tabsPrivate.move stacking API
       const tabIds = group.tabs.map((t) => t.id);
-      console.log(`[TidyTabs] Grouping tabIds natively via tabsPrivate.move:`, JSON.stringify(tabIds));
+      debugLog(`[TidyTabs] Grouping tabIds natively via tabsPrivate.move:`, JSON.stringify(tabIds));
       
       const vivaldiGroupId = await new Promise(async (resolve) => {
         try {
@@ -1169,29 +1731,213 @@ Return JSON strictly in this format, with no markdown backticks: {"name":"the gr
     document.querySelectorAll(SELECTORS.SEPARATOR).forEach((separator) => {
       decorateSeparator(separator);
     });
+    injectStackActionButtons();
+  };
+
+  // ==================== Stack Action Buttons (Pin / Close Stack) ====================
+
+  const STACK_BTN = {
+    PIN: "tidy-pin-stack-btn",
+    CLOSE: "tidy-close-stack-btn",
+  };
+
+  const getStackTabIds = async (tabId) => {
+    try {
+      const tab = await getTab(tabId);
+      if (!tab) return [];
+      const viv = typeof tab.vivExtData === "string" ? JSON.parse(tab.vivExtData) : (tab.vivExtData || {});
+      const groupId = viv.group;
+      if (!groupId) return [];
+      const allTabs = await new Promise((r) => chrome.tabs.query({ currentWindow: true }, r));
+      return allTabs.filter((t) => {
+        try {
+          const v = typeof t.vivExtData === "string" ? JSON.parse(t.vivExtData) : (t.vivExtData || {});
+          return v.group === groupId;
+        } catch (_) { return false; }
+      }).map((t) => t.id);
+    } catch (_) { return []; }
+  };
+
+  const pinTabStack = async (tabId) => {
+    const stackIds = await getStackTabIds(tabId);
+    if (stackIds.length === 0) return;
+    const tab = await getTab(tabId);
+    const groupId = tab?.vivExtData?.group;
+    const stackName = tab?.vivExtData?.fixedGroupTitle || "";
+    const isSuggestedPin = SUGGESTED_PIN_NAMES.includes(stackName);
+    // Pin all tabs
+    for (const id of stackIds) {
+      await new Promise((r) => chrome.tabs.update(id, { pinned: true }, r));
+    }
+    // Only dismantle "建议固定" stacks — regular named stacks stay stacked
+    if (isSuggestedPin && groupId && vivaldi?.tabsPrivate?.unstack) {
+      try {
+        const result = vivaldi.tabsPrivate.unstack(groupId);
+        if (result && typeof result.then === "function") await result;
+      } catch (_) { /* non-critical */ }
+    }
+    showToast(`📌 Pinned ${stackIds.length} tabs${isSuggestedPin ? "" : " (stack kept)"}`, { type: "success" });
+  };
+
+  const closeEntireStack = async (tabId) => {
+    const stackIds = await getStackTabIds(tabId);
+    if (stackIds.length === 0) return;
+    await new Promise((r) => chrome.tabs.remove(stackIds, r));
+    showToast(`Closed ${stackIds.length} tabs`, { type: "success" });
+  };
+
+  const injectStackActionButtons = async () => {
+    const stackEls = document.querySelectorAll(`${SELECTORS.SUBSTACK}`);
+    debugLog("[TidyTabs] [buttons] injectStackActionButtons: found", stackEls.length, "stack elements");
+    if (!stackEls.length) return;
+
+    // Pre-fetch all tabs once to map ext_id → tab.id for stack elements
+    const allTabs = await new Promise((r) => chrome.tabs.query({ currentWindow: true }, r));
+    const extIdToTabId = new Map();
+    const groupToTabMap = new Map(); // group → first tab.id
+    for (const t of allTabs) {
+      try {
+        const viv = parseVivExtData(t);
+        if (viv.ext_id) extIdToTabId.set(viv.ext_id, t.id);
+        if (viv.group && !groupToTabMap.has(viv.group)) groupToTabMap.set(viv.group, t.id);
+      } catch (_) { /* skip */ }
+    }
+    debugLog("[TidyTabs] [buttons] extIdToTabId map size:", extIdToTabId.size, "groupToTabMap size:", groupToTabMap.size);
+
+    for (const stackEl of stackEls) {
+      // Already injected?
+      if (stackEl.querySelector(`.${STACK_BTN.PIN}`)) continue;
+
+      const tabWrapper = stackEl.querySelector(SELECTORS.TAB_WRAPPER);
+      if (!tabWrapper) continue;
+
+      const dataId = tabWrapper.getAttribute("data-id")?.replace("tab-", "");
+      const elementId = tabWrapper.getAttribute("id")?.replace("tab-", "");
+
+      if (!dataId && !elementId) continue;
+
+      const uuid = dataId || elementId;
+      let tabId = Number(uuid);
+
+      if (!Number.isFinite(tabId) || tabId <= 0) {
+        // UUID format — try ext_id lookup first, then group lookup
+        tabId = extIdToTabId.get(uuid);
+        if (!tabId) {
+          // Try matching by group: find the tab where vivExtData.group matches
+          for (const t of allTabs) {
+            try {
+              const viv = parseVivExtData(t);
+              if (viv.ext_id === uuid || viv.group === uuid) { tabId = t.id; break; }
+            } catch (_) { /* skip */ }
+          }
+        }
+      }
+
+      if (!Number.isFinite(tabId) || tabId <= 0) continue;
+
+      // Check if the parent tab is pinned — if so, hide buttons
+      const parentTab = allTabs.find((t) => t.id === tabId);
+      if (parentTab?.pinned) continue;
+
+      // Inject into .tab-header, before .stack-counter (natural flow, no overlap)
+      const tabHeader = stackEl.querySelector(".tab-header");
+      const stackCounter = stackEl.querySelector(SELECTORS.STACK_COUNTER);
+      if (!tabHeader) continue;
+
+      const btnContainer = document.createElement("span");
+      btnContainer.className = "tidy-stack-actions";
+
+      // Pin button
+      const pinBtn = document.createElement("span");
+      pinBtn.className = STACK_BTN.PIN;
+      pinBtn.title = "Pin tab stack";
+      pinBtn.innerHTML = '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAABGUlEQVR4nO2UvWoCURCFvxDskk4X0scmVYpg5wNY2fsCYl4ghdhYWecN8gDxCezyBP6AnaCNTSQRLIKQKANHGJZNXPenigeW3b137jecmeHCf1YLCPKCPwI7YJxXkgCY5ZXkAngCvpXAnilwkwX8CngV1BJ0Bc/Eya0gBlsDda0bdJLEiZ+SGvAhiMHKodi2K1csJ35Kuq7efeA6FFsFtsAPMFecnf9TgSvHTgk6arCXlWOpmJ7OmfNY8kk+gfvQfgF40/4AuCSBSsBIEOvBg9t71vpCcYl153rwLicN/X8BlTTwIjB0fbD3Ctjou5kVfCgnvvEvaeClELwY0ZPE18Nv8KjpOjrvp8IPOmnevUYx4KmUK/wsorQHoDJfgvBzBQEAAAAASUVORK5CYII=" alt="pin" width="14" height="14">';
+      pinBtn.addEventListener("click", (e) => { e.stopPropagation(); e.preventDefault(); pinTabStack(tabId); });
+
+      // Close stack button — simple X SVG
+      const closeStackBtn = document.createElement("span");
+      closeStackBtn.className = STACK_BTN.CLOSE;
+      closeStackBtn.title = "Close tab stack";
+      closeStackBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 16 16"><path d="M2.146 2.854a.5.5 0 11.708-.708L8 7.293l5.146-5.147a.5.5 0 01.708.708L8.707 8l5.147 5.146a.5.5 0 01-.708.708L8 8.707l-5.146 5.147a.5.5 0 01-.708-.708L7.293 8 2.146 2.854z" fill="currentColor"/></svg>';
+      closeStackBtn.addEventListener("click", (e) => { e.stopPropagation(); e.preventDefault(); closeEntireStack(tabId); });
+
+      btnContainer.append(pinBtn, closeStackBtn);
+      // Insert before .stack-counter (or at end of .tab-header if no counter)
+      if (stackCounter) {
+        stackCounter.before(btnContainer);
+      } else {
+        tabHeader.appendChild(btnContainer);
+      }
+    }
   };
 
   // ==================== Core ====================
+
+  const buildSpecialGroups = (pinTabs, closeTabs) => {
+    const groups = [];
+    if (pinTabs.length > 0) {
+      groups.push({ name: getSuggestedPinName(), tabs: pinTabs, stackId: crypto.randomUUID(), isExisting: false, isSpecial: true });
+    }
+    if (closeTabs.length > 0) {
+      groups.push({ name: getSuggestedCloseName(), tabs: closeTabs, stackId: crypto.randomUUID(), isExisting: false, isSpecial: true });
+    }
+    return groups;
+  };
 
   const autoStackWorkspace = async (workspaceId) => {
     if (!(await isAutoStackAllowed(workspaceId))) return;
     const tabs = await getTabsByWorkspace(workspaceId);
     if (tabs.length < 2) return;
 
-    let groups =
-      CONFIG.enableAIGrouping && AI_CONFIG.apiKey
-        ? (await getAIGrouping(tabs))
-        : null;
-    if (!groups) {
-      groups = groupByDomain(tabs);
-      handleOrphanTabs(groups, tabs);
+    console.log("[TidyTabs] [decision] autoStackWorkspace — enableAIGrouping:", CONFIG.enableAIGrouping, "apiKey:", !!AI_CONFIG.apiKey, "tabs:", tabs.length);
+
+    // Step 1: Extract special stacks (建议固定, 建议关闭)
+    const ageData = await loadTabAgeData();
+    const frequentUrls = await getFrequentUrls();
+    const suggestedPinTabs = findSuggestedPinTabs(tabs, ageData, frequentUrls);
+    const remainingAfterPin = suggestedPinTabs.length
+      ? tabs.filter((t) => !suggestedPinTabs.find((p) => p.id === t.id))
+      : tabs;
+    const suggestedCloseTabs = await findSuggestedCloseTabs(remainingAfterPin);
+    const remainingTabs = suggestedCloseTabs.length
+      ? remainingAfterPin.filter((t) => !suggestedCloseTabs.find((c) => c.id === t.id))
+      : remainingAfterPin;
+
+    // Step 2: Build special groups
+    const specialGroups = buildSpecialGroups(suggestedPinTabs, suggestedCloseTabs);
+
+    // Step 3: AI-group remaining tabs
+    let aiGroups = null;
+    if (remainingTabs.length >= 2) {
+      aiGroups =
+        CONFIG.enableAIGrouping && AI_CONFIG.apiKey
+          ? (await getAIGrouping(remainingTabs))
+          : null;
+    }
+    if (!aiGroups) {
+      if (remainingTabs.length >= 2) {
+        aiGroups = groupByDomain(remainingTabs);
+        handleOrphanTabs(aiGroups, remainingTabs);
+      } else {
+        // Single remaining tab — put it in Others
+        aiGroups = [];
+        if (remainingTabs.length === 1) {
+          aiGroups.push({ name: getOthersName(), tabs: remainingTabs, stackId: crypto.randomUUID(), isExisting: false });
+        }
+      }
     }
 
-    if (groups.length > 0) {
-      const othersGroup = groups.find((g) => OTHERS_NAMES.includes(g.name));
-      await createTabStacks(groups);
+    // Step 4: Create stacks, then move special stacks to bottom
+    const othersGroup = aiGroups.find((g) => OTHERS_NAMES.includes(g.name));
+    const normalGroups = aiGroups.filter((g) => !OTHERS_NAMES.includes(g.name));
+    const allGroups = [...normalGroups, ...specialGroups, ...(othersGroup ? [othersGroup] : [])];
+    if (allGroups.length > 0) {
+      await createTabStacks(allGroups);
+      for (const g of [...specialGroups].reverse()) {
+        await moveGroupToEnd(g);
+      }
       if (othersGroup) await moveGroupToEnd(othersGroup);
-      showToast(`Successfully grouped ${groups.length} stacks`, { type: "success" });
+      showToast(`Successfully grouped ${allGroups.length} stacks`, { type: "success" });
     }
   };
 
@@ -1214,20 +1960,158 @@ Return JSON strictly in this format, with no markdown backticks: {"name":"the gr
       ).filter(Boolean);
       if (tabs.length < 1) return;
 
-      let groups =
-        CONFIG.enableAIGrouping && AI_CONFIG.apiKey
-          ? (await getAIGrouping(tabs, []))
-          : null;
-      if (!groups) {
-        groups = groupByDomain(tabs);
-        handleOrphanTabs(groups, tabs, []);
+      console.log("[TidyTabs] [decision] tidyTabsBelow — enableAIGrouping:", CONFIG.enableAIGrouping, "apiKey:", !!AI_CONFIG.apiKey, "tabs:", tabs.length);
+
+      // Step 0: Handle existing stacks — dismantle unnamed, preserve named
+      let namedStacks = detectNamedStacks(tabs);
+      const unnamedIds = findUnnamedStackIds(tabs);
+      let pool = tabs;
+      if (unnamedIds.length > 0) {
+        console.log("[TidyTabs] [stacks] Dismantling", unnamedIds.length, "unnamed stack(s)");
+        for (const gid of unnamedIds) await dismantleStack(gid);
+        // Re-fetch tabs after dismantling (vivExtData.group may be cleared)
+        const refreshed = (await Promise.all(pool.map((t) => getTab(t.id)))).filter(Boolean);
+        pool = refreshed;
+      }
+      // Exclude tabs in named stacks from the grouping pool
+      if (namedStacks.length > 0) {
+        const namedTabIds = new Set(namedStacks.flatMap((s) => s.tabIds));
+        pool = pool.filter((t) => !namedTabIds.has(t.id));
+        console.log("[TidyTabs] [stacks] Preserving", namedStacks.length, "named stack(s), excluding", namedTabIds.size, "tabs from pool. Pool size:", pool.length);
+        for (const s of namedStacks) {
+          console.log(`[TidyTabs] [stacks]   Named stack "${s.name}": tabs [${s.tabIds.join(",")}]`);
+        }
       }
 
-      if (groups.length > 0) {
-        const othersGroup = groups.find((g) => OTHERS_NAMES.includes(g.name));
-        await createTabStacks(groups);
+      // Step 1: Extract special stacks from pool AND from inside named stacks
+      const ageData = await loadTabAgeData();
+      const frequentUrls = await getFrequentUrls();
+
+      // Scan pool tabs — PIN takes priority over CLOSE
+      const suggestedPinTabs = findSuggestedPinTabs(pool, ageData, frequentUrls);
+      const remainingAfterPin = suggestedPinTabs.length
+        ? pool.filter((t) => !suggestedPinTabs.find((p) => p.id === t.id))
+        : pool;
+      const suggestedCloseTabs = await findSuggestedCloseTabs(remainingAfterPin);
+      const remainingTabs = suggestedCloseTabs.length
+        ? remainingAfterPin.filter((t) => !suggestedCloseTabs.find((c) => c.id === t.id))
+        : remainingAfterPin;
+
+      // Detect tabs that qualified for both PIN and CLOSE (PIN wins)
+      if (suggestedPinTabs.length > 0) {
+        const bothCheck = await findSuggestedCloseTabs(suggestedPinTabs);
+        if (bothCheck.length > 0) {
+          console.log("[TidyTabs] [scoring] ⚠️", bothCheck.length, "tab(s) qualify for both PIN & CLOSE → PIN takes priority:",
+            bothCheck.map((t) => ({ id: t.id, title: (t.title || "").substring(0, 50) })));
+        }
+      }
+
+      // Scan inside named stacks — extract tabs that should be closed or pinned
+      if (namedStacks.length > 0) {
+        const allNamedTabIds = new Set(namedStacks.flatMap((s) => s.tabIds));
+        const namedTabs = tabs.filter((t) => allNamedTabIds.has(t.id));
+        if (namedTabs.length > 0) {
+          console.log("[TidyTabs] [stacks] Scanning", namedTabs.length, "tabs inside named stacks for close/pin suggestions...");
+          const namedPin = findSuggestedPinTabs(namedTabs, ageData, frequentUrls);
+          const namedClose = await findSuggestedCloseTabs(
+            namedTabs.filter((t) => !namedPin.find((p) => p.id === t.id))
+          );
+
+          // Track which named stacks had tabs extracted
+          const extractedIds = new Set([...namedPin.map((t) => t.id), ...namedClose.map((t) => t.id)]);
+          const modifiedStackIds = new Set();
+
+          for (const s of namedStacks) {
+            const before = s.tabIds.length;
+            s.tabIds = s.tabIds.filter((id) => !extractedIds.has(id));
+            if (s.tabIds.length !== before) {
+              modifiedStackIds.add(s.id);
+              console.log(`[TidyTabs] [stacks]   "${s.name}": extracted ${before - s.tabIds.length} tabs, ${s.tabIds.length} remain`);
+            }
+          }
+
+          // Dismantle modified stacks — put remaining tabs back in the pool
+          for (const s of namedStacks) {
+            if (!modifiedStackIds.has(s.id)) continue;
+            await dismantleStack(s.id);
+            for (const tabId of s.tabIds) {
+              const t = namedTabs.find((nt) => nt.id === tabId);
+              if (t && !remainingTabs.find((rt) => rt.id === t.id)) {
+                remainingTabs.push(t);
+              }
+            }
+          }
+
+          // Remove dismantled stacks from namedStacks
+          namedStacks = namedStacks.filter((s) => !modifiedStackIds.has(s.id));
+
+          // Add extracted tabs to special categories
+          if (namedPin.length > 0) {
+            console.log("[TidyTabs] [stacks]   →", namedPin.length, "tabs moved to 建议固定");
+            suggestedPinTabs.push(...namedPin);
+          }
+          if (namedClose.length > 0) {
+            console.log("[TidyTabs] [stacks]   →", namedClose.length, "tabs moved to 建议关闭");
+            suggestedCloseTabs.push(...namedClose);
+          }
+          console.log("[TidyTabs] [stacks] After scanning,", namedStacks.length, "named stacks remain, pool size:", remainingTabs.length + suggestedPinTabs.length + suggestedCloseTabs.length - namedPin.length - namedClose.length);
+        }
+      }
+
+      // Step 2: Build special groups
+      const specialGroups = buildSpecialGroups(suggestedPinTabs, suggestedCloseTabs);
+
+      // Step 3: AI-group remaining tabs, passing named stacks so AI can add tabs to them
+      // Build existingStacks for AI with existingTabIds for prompt
+      const aiExistingStacks = namedStacks.map((s) => ({ id: s.id, name: s.name, existingTabIds: s.tabIds }));
+      let aiGroups = null;
+      if (remainingTabs.length >= 2) {
+        aiGroups =
+          CONFIG.enableAIGrouping && AI_CONFIG.apiKey
+            ? (await getAIGrouping(remainingTabs, aiExistingStacks))
+            : null;
+      }
+      if (!aiGroups) {
+        if (remainingTabs.length >= 2) {
+          console.log("[TidyTabs] [decision] AI grouping returned null, falling back to groupByDomain");
+          aiGroups = groupByDomain(remainingTabs);
+          handleOrphanTabs(aiGroups, remainingTabs, []);
+        } else {
+          aiGroups = [];
+          if (remainingTabs.length === 1) {
+            aiGroups.push({ name: getOthersName(), tabs: remainingTabs, stackId: crypto.randomUUID(), isExisting: false });
+          }
+        }
+      } else {
+        console.log("[TidyTabs] [decision] Using AI-generated groups:", aiGroups.map(g => g.name));
+      }
+
+      // Step 4: Combine — special groups first, then AI groups
+      // Handle named stack groups: they need to merge into existing stacks, not create new ones
+      const newAiGroups = [];
+      for (const g of aiGroups) {
+        if (g.isExisting) {
+          // Tabs assigned by AI to an existing named stack — add them to it
+          console.log("[TidyTabs] [stacks] Adding", g.tabs.length, "tabs to existing stack:", g.name);
+          await addTabsToExistingStack(g.stackId, g.name, g.tabs);
+        } else {
+          newAiGroups.push(g);
+        }
+      }
+
+      // Create all stacks, then move special stacks to bottom
+      const othersGroup = newAiGroups.find((g) => OTHERS_NAMES.includes(g.name));
+      const normalGroups = newAiGroups.filter((g) => !OTHERS_NAMES.includes(g.name));
+      const allGroups = [...normalGroups, ...specialGroups, ...(othersGroup ? [othersGroup] : [])];
+      if (allGroups.length > 0) {
+        await createTabStacks(allGroups);
+        // Move to bottom in order: 建议固定 → 建议关闭 → Others
+        // Move to bottom: 建议固定 first, then 建议关闭, then Others last
+        for (const g of specialGroups) {
+          await moveGroupToEnd(g);
+        }
         if (othersGroup) await moveGroupToEnd(othersGroup);
-        showToast(`Successfully grouped ${groups.length} stacks`, { type: "success" });
+        showToast(`Successfully grouped ${allGroups.length} stacks`, { type: "success" });
       }
 
       // Name any existing stacks that lack fixedGroupTitle
@@ -1348,8 +2232,13 @@ Return JSON strictly in this format, with no markdown backticks: {"name":"the gr
     }).observe(root, { childList: true, subtree: true });
   };
 
+  // Periodic refresh of tab age data (every 5 minutes)
+  setInterval(recordTabActivation, 5 * 60 * 1000);
+
   const init = () => {
     console.log("[TidyTabs] ✓ Initialization complete");
+    // Initial tab age snapshot
+    recordTabActivation();
     setTimeout(attachButtons, CONFIG.delays.init);
 
     // Try binding current .tab-strip first

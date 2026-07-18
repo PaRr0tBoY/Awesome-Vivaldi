@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>r});var a=n(48868);const r={call:function(e){const t=[a.Z.messages,a.Z.searchList,a.Z.threading,a.Z.viewIds,a.Z.messageSubjects,a.Z.messagePreviews];return a.Z.transaction("rw",[...t,a.Z.hasRaw],(()=>{t.forEach((t=>t.bulkDelete(e))),a.Z.hasRaw.where("searchListId").anyOf(e).delete()}))}}

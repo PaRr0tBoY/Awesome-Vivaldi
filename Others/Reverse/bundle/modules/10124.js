@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>s});var i=n(7064);async function s(e){const t=["attached-pending"];try{const n=await i.Z.mailPrivate.readMessageFileToBuffer(t,e);return new Uint8Array(n)}catch(t){throw new Error(`Failed to read attachment buffer (${e}) from disk: ${t}`)}}

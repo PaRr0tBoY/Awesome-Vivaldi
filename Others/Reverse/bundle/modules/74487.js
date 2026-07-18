@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>o});var i=n(68827),s=n(67294);function o(e,t){const n=(0,i.c)(6);let o;n[0]!==e?(o=e.getState(),n[0]=e,n[1]=o):o=n[1];const[a,r]=(0,s.useState)(o);let l,c;return n[2]!==t||n[3]!==e?(l=()=>{const n=function(){r(e.getState())};return e.addListener(n,t),()=>e.removeListener(n)},c=[e,t],n[2]=t,n[3]=e,n[4]=l,n[5]=c):(l=n[4],c=n[5]),(0,s.useEffect)(l,c),a}

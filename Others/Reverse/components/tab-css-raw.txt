@@ -1,0 +1,1226 @@
+456:.tab-strip .tab-position,
+460:.tab-group-indicator,
+476:#browser.native.stacks-off #tabs-tabbar-container {
+486:#browser.native.mac #tabs-tabbar-container {
+490:#browser.native.mac.tabs-bottom #tabs-tabbar-container {
+493:#browser.native.linux #browser.native.win.normal #tabs-tabbar-container.top {
+500:#browser.native.linux #browser.native.win.normal:not(.alt) #tabs-tabbar-container.top {
+503:#browser.native.linux #browser.native.win.alt #tabs-tabbar-container.top {
+620:#browser .tabbar-wrapper,
+628:.transparent-tabbar#browser .tabbar-wrapper,
+635:.color-behind-tabs-on#browser .tabbar-wrapper,
+640:.auto-hide.color-behind-tabs-on#browser .tabbar-wrapper,
+645:.color-behind-tabs-off#browser .tabbar-wrapper,
+650:.transparent-tabbar.color-accent-from-page.acc-dark.bg-dark.color-behind-tabs-on#browser .tabbar-wrapper,
+655:.auto-hide.transparent-tabbar.color-accent-from-page.acc-dark.bg-dark.color-behind-tabs-on#browser .tabbar-wrapper,
+723:#browser.win .topmenu + #tabs-tabbar-container.top,
+724:#browser.linux .topmenu + #tabs-tabbar-container.top {
+798:.tabs-right#browser.win .window-buttongroup button:not(.on-mainbar) .tabs-left#browser.win .window-buttongroup button:not(.on-mainbar),
+802:.color-behind-tabs-off.tabs-right#browser.win .window-buttongroup button:not(.on-mainbar) .tabs-left#browser.win .window-buttongroup button:not(.on-mainbar),
+862:#browser.mac.disable-titlebar #header:has(#tabs-tabbar-container.none) {
+881:#browser.mac.macos26:not(.RTL, .fullscreen, .native) #tabs-container:not(.none).top .window-buttongroup {
+950:#browser.linux.alt .topmenu + #tabs-tabbar-container.top {
+965:#browser.isblurred.dim-blurred .tabbar-wrapper {
+989:#browser.isblurred.dim-blurred .tabbar-wrapper img,
+1001:#browser.isblurred.dim-blurred .tabbar-wrapper svg {
+1015:.color-behind-tabs-on:not(.transparent-tabbar)#browser.isblurred.dim-blurred .tabbar-wrapper {
+1029:.color-behind-tabs-off:not(.transparent-tabbar)#browser.isblurred.dim-blurred .tabbar-wrapper {
+1053:#browser.isblurred.dim-blurred #tabs-tabbar-container .favicon img,
+1055:#browser.isblurred.dim-blurred #tabs-tabbar-container .favicon svg {
+1062:#browser.isblurred.dim-blurred #tabs-tabbar-container .favicon,
+1063:#browser.isblurred.dim-blurred #tabs-tabbar-container .tab:not(.active) .title,
+1064:#browser.isblurred.dim-blurred .tabbar-workspace-button .button-icon,
+1065:#browser.isblurred.dim-blurred .tabbar-workspace-button .button-title {
+1132:  #browser.tabs-left .tabbar-wrapper .workspace-popup,
+1133:  #browser.tabs-right .tabbar-wrapper .workspace-popup,
+1148:  #browser #tabs-container .tab.active,
+1149:  #browser #tabs-subcontainer .tab.active {
+1153:  .address-top#browser #tabs-container.top,
+1157:  #browser #tabs-container.top .tab,
+1158:  #browser #tabs-subcontainer.top .tab {
+1163:  #browser #tabs-container.bottom,
+1167:  #browser #tabs-container.bottom .tab,
+1168:  #browser #tabs-subcontainer.bottom .tab {
+1174:  .tabs-left#browser .tabbar-wrapper {
+1178:  .tabs-right#browser .tabbar-wrapper {
+1188:.tab-tile-targets {
+1198:.tab-tile-targets div {
+1210:.theme-dark .tab-tile-targets div {
+1214:.tab-tile-targets .selected {
+1219:.tab-tile-targets .top,
+1220:.tab-tile-targets .bottom {
+1223:.tab-tile-targets .left,
+1224:.tab-tile-targets .right,
+1225:.tab-tile-targets .move {
+1228:.tab-dropzone {
+1235:.tab-dropzone h1 {
+1251:.tab-dropzone.movingtile.dropcenter h1 {
+1255:.theme-dark .tab-dropzone.movingtile.dropcenter h1 {
+1259:.tab-dropzone.dropleft > h1 {
+1262:.tab-dropzone.dropright > h1 {
+1265:.tab-dropzone.droptop > h1 {
+1268:.tab-dropzone.dropbottom > h1 {
+1271:.tab-dropzone.dropcenter:not(.movingtile) > h1 {
+1278:.tab-dropzone .dropzone-title {
+1284:.tab-dropzone .dropzone-icon {
+1882:#browser.mac.transparent-tabbar:not(.acc-dark.bg-dark.color-accent-from-page.color-behind-tabs-on) .tab-strip::-webkit-scrollbar-thumb,
+1883:#browser.simple-scrollbar.transparent-tabbar:not(.acc-dark.bg-dark.color-accent-from-page.color-behind-tabs-on) .tab-strip::-webkit-scrollbar-thumb,
+1890:#browser.mac.transparent-tabbar:not(.acc-dark.bg-dark.color-accent-from-page.color-behind-tabs-on) .tab-strip::-webkit-scrollbar-thumb:hover,
+1891:#browser.simple-scrollbar.transparent-tabbar:not(.acc-dark.bg-dark.color-accent-from-page.color-behind-tabs-on) .tab-strip::-webkit-scrollbar-thumb:hover,
+1896:#browser.mac.transparent-tabbar:not(.acc-dark.bg-dark.color-accent-from-page.color-behind-tabs-on) .tab-strip::-webkit-scrollbar-thumb:active,
+1897:#browser.simple-scrollbar.transparent-tabbar:not(.acc-dark.bg-dark.color-accent-from-page.color-behind-tabs-on) .tab-strip::-webkit-scrollbar-thumb:active,
+2019:.mosaic-tile .title {
+2601:.toolbar-large .button-toolbar .button-icon:not(.favicon),
+2603:.toolbar-medium .button-toolbar .button-icon:not(.favicon),
+2608:.toolbar-divider.button-toolbar .button-icon:not(.favicon),
+2610:.toolbar-insideinput .button-toolbar .button-icon:not(.favicon),
+2615:.button-icon.favicon {
+3056:#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.top .toolbar:not(.expecting-drop) .toolbar-spacer,
+3057:#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.bottom .toolbar:not(.expecting-drop) .toolbar-spacer,
+3063:#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.top .toolbar:not(.expecting-drop) .toolbar-spacer-flexible,
+3064:#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.bottom .toolbar:not(.expecting-drop) .toolbar-spacer-flexible,
+3070:#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.top .toolbar:not(.expecting-drop) .toolbar-spacer-panel,
+3071:#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.bottom .toolbar:not(.expecting-drop) .toolbar-spacer-panel,
+3077:#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.top .toolbar:not(.expecting-drop) .toolbar-divider,
+3078:#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.bottom .toolbar:not(.expecting-drop) .toolbar-divider,
+3084:#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.top .toolbar:not(.expecting-drop) .toolbar-spacer button,
+3085:#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.bottom .toolbar:not(.expecting-drop) .toolbar-spacer button,
+3091:#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.top .toolbar:not(.expecting-drop) .toolbar-spacer-flexible button,
+3092:#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.bottom .toolbar:not(.expecting-drop) .toolbar-spacer-flexible button,
+3098:#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.top .toolbar:not(.expecting-drop) .toolbar-spacer-panel button,
+3099:#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.bottom .toolbar:not(.expecting-drop) .toolbar-spacer-panel button,
+3105:#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.top .toolbar:not(.expecting-drop) .toolbar-divider button,
+3106:#app #browser:not(.toolbar-edit-mode, .fullscreen):not(:has(.toolbar.dragging, #capture-area)) #tabs-tabbar-container.bottom .toolbar:not(.expecting-drop) .toolbar-divider button {
+3130:#browser.fullscreen #tabs-container:is(.top, .bottom) .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after,
+3131:#browser.win.maximized #tabs-container:is(.top, .bottom) .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after,
+3132:#browser.linux.maximized #tabs-container:is(.top, .bottom) .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after,
+3140:#browser.fullscreen #tabs-container.top .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after,
+3141:#browser.win.maximized #tabs-container.top .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after,
+3142:#browser.linux.maximized #tabs-container.top .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after {
+3153:#browser.fullscreen #tabs-container.bottom .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after,
+3154:#browser.win.maximized #tabs-container.bottom .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after,
+3155:#browser.linux.maximized #tabs-container.bottom .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible, .toolbar-divider) button:after,
+3634:.tabs-left .tabbar-wrapper,
+3635:.tabs-right .tabbar-wrapper {
+3641:.tabbar-wrapper:empty {
+3644:#browser.color-behind-tabs-on .tabbar-wrapper .tab-strip::-webkit-scrollbar-thumb {
+3708:#tabs-tabbar-container .toolbar-tabbar-before,
+3709:#tabs-tabbar-container .toolbar-tabbar-after {
+3714:.toolbar-edit-mode #tabs-tabbar-container .toolbar-tabbar-before,
+3715:.toolbar-edit-mode #tabs-tabbar-container .toolbar-tabbar-after {
+3720:.tabs-left #tabs-tabbar-container .toolbar-tabbar-before,
+3721:.tabs-left #tabs-tabbar-container .toolbar-tabbar-after,
+3722:.tabs-right #tabs-tabbar-container .toolbar-tabbar-before,
+3723:.tabs-right #tabs-tabbar-container .toolbar-tabbar-after {
+3728:.tabs-top #tabs-tabbar-container .toolbar-tabbar-before,
+3729:.tabs-top #tabs-tabbar-container .toolbar-tabbar-after,
+3730:.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-before,
+3731:.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-after {
+3734:.tabs-top #tabs-tabbar-container .toolbar-tabbar-before:empty,
+3735:.tabs-top #tabs-tabbar-container .toolbar-tabbar-after:empty,
+3736:.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-before:empty,
+3737:.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-after:empty {
+3743:.tabs-top #tabs-tabbar-container .toolbar-tabbar-before:empty.modifier,
+3744:.tabs-top #tabs-tabbar-container .toolbar-tabbar-after:empty.modifier,
+3745:.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-before:empty.modifier,
+3746:.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-after:empty.modifier,
+3747:.toolbar-edit-mode.tabs-top #tabs-tabbar-container .toolbar-tabbar-before:empty,
+3748:.toolbar-edit-mode.tabs-top #tabs-tabbar-container .toolbar-tabbar-after:empty,
+3749:.toolbar-edit-mode.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-before:empty,
+3750:.toolbar-edit-mode.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-after:empty {
+3753:.toolbar-edit-mode.tabs-top #tabs-tabbar-container .toolbar-tabbar-before:empty,
+3754:.toolbar-edit-mode.tabs-top #tabs-tabbar-container .toolbar-tabbar-after:empty,
+3755:.toolbar-edit-mode.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-before:empty,
+3756:.toolbar-edit-mode.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-after:empty {
+3760:.tabs-top #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField,
+3761:.tabs-top #tabs-tabbar-container .toolbar-tabbar-after .UrlBar-AddressField,
+3762:.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-before .UrlBar-AddressField,
+3763:.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-after .UrlBar-AddressField {
+3768:.tabs-top #tabs-tabbar-container .toolbar-tabbar-before,
+3769:.tabs-top #tabs-tabbar-container .toolbar-tabbar-after {
+3772:.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-before,
+3773:.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-after {
+3776:#tabs-tabbar-container .toolbar-tabbar-before > div > .button-toolbar > button,
+3777:#tabs-tabbar-container .toolbar-tabbar-after > div > .button-toolbar > button,
+3778:#tabs-tabbar-container .toolbar-tabbar-before > .button-toolbar > button,
+3779:#tabs-tabbar-container .toolbar-tabbar-after > .button-toolbar > button {
+3785:.color-behind-tabs-on #tabs-tabbar-container .toolbar-tabbar-before > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]),
+3786:.color-behind-tabs-on #tabs-tabbar-container .toolbar-tabbar-after > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]) {
+3789:.color-behind-tabs-on #tabs-tabbar-container .toolbar-tabbar-before > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]):hover,
+3790:.color-behind-tabs-on #tabs-tabbar-container .toolbar-tabbar-after > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]):hover,
+3791:.color-behind-tabs-on #tabs-tabbar-container .toolbar-tabbar-before > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]).button-pressed,
+3792:.color-behind-tabs-on #tabs-tabbar-container .toolbar-tabbar-after > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]).button-pressed {
+3795:.color-behind-tabs-on #tabs-tabbar-container .toolbar-tabbar-before > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]):active,
+3796:.color-behind-tabs-on #tabs-tabbar-container .toolbar-tabbar-after > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]):active {
+3799:.unified-ui-transparent #tabs-tabbar-container .toolbar-tabbar-before > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]),
+3800:.unified-ui-transparent #tabs-tabbar-container .toolbar-tabbar-after > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]) {
+3803:.unified-ui-transparent #tabs-tabbar-container .toolbar-tabbar-before > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]):hover,
+3804:.unified-ui-transparent #tabs-tabbar-container .toolbar-tabbar-after > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]):hover,
+3805:.unified-ui-transparent #tabs-tabbar-container .toolbar-tabbar-before > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]).button-pressed,
+3806:.unified-ui-transparent #tabs-tabbar-container .toolbar-tabbar-after > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]).button-pressed {
+3809:.unified-ui-transparent #tabs-tabbar-container .toolbar-tabbar-before > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]):active,
+3810:.unified-ui-transparent #tabs-tabbar-container .toolbar-tabbar-after > .button-toolbar:not(.toolbar-spacer, .toolbar-spacer-flexible) > button:not([disabled]):active {
+3813:.tabs-left #tabs-tabbar-container .toolbar-spacer-flexible + .button-toolbar.newtab:last-of-type,
+3814:.tabs-right #tabs-tabbar-container .toolbar-spacer-flexible + .button-toolbar.newtab:last-of-type,
+3815:.tabs-left #tabs-tabbar-container .button-toolbar.newtab:first-of-type:has(+ .toolbar-spacer-flexible),
+3816:.tabs-right #tabs-tabbar-container .button-toolbar.newtab:first-of-type:has(+ .toolbar-spacer-flexible),
+3817:.tabs-left #tabs-tabbar-container .button-toolbar.workspace-popup,
+3818:.tabs-right #tabs-tabbar-container .button-toolbar.workspace-popup {
+3822:.tabs-left #tabs-tabbar-container .UrlBar-AddressField,
+3823:.tabs-right #tabs-tabbar-container .UrlBar-AddressField,
+3824:.tabs-left #tabs-tabbar-container .UrlBar-SearchField,
+3825:.tabs-right #tabs-tabbar-container .UrlBar-SearchField {
+3833:.tabs-left #tabs-tabbar-container .button-popup,
+3834:.tabs-right #tabs-tabbar-container .button-popup,
+3835:.tabs-left #tabs-tabbar-container .OmniDropdown,
+3836:.tabs-right #tabs-tabbar-container .OmniDropdown,
+3837:.tabs-left #tabs-tabbar-container .menu,
+3838:.tabs-right #tabs-tabbar-container .menu {
+3841:.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField,
+3842:.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField,
+3843:.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField,
+3844:.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField {
+3847:#browser:not(.toolbar-edit-mode).tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:focus-within,
+3848:#browser:not(.toolbar-edit-mode).tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:focus-within,
+3849:#browser:not(.toolbar-edit-mode).tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:focus-within,
+3850:#browser:not(.toolbar-edit-mode).tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:focus-within {
+3856:.tabs-left:not(.toolbar-edit-mode)#browser:not(.toolbar-edit-mode).tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:focus-within,
+3857:.tabs-left:not(.toolbar-edit-mode)#browser:not(.toolbar-edit-mode).tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:focus-within,
+3858:.tabs-left:not(.toolbar-edit-mode)#browser:not(.toolbar-edit-mode).tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:focus-within,
+3859:.tabs-left:not(.toolbar-edit-mode)#browser:not(.toolbar-edit-mode).tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:focus-within {
+3863:.tabs-right:not(.toolbar-edit-mode)#browser:not(.toolbar-edit-mode).tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:focus-within,
+3864:.tabs-right:not(.toolbar-edit-mode)#browser:not(.toolbar-edit-mode).tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:focus-within,
+3865:.tabs-right:not(.toolbar-edit-mode)#browser:not(.toolbar-edit-mode).tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:focus-within,
+3866:.tabs-right:not(.toolbar-edit-mode)#browser:not(.toolbar-edit-mode).tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:focus-within {
+3871:#browser:not(.toolbar-edit-mode).tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:focus-within:has(.OmniDropdown, .menu),
+3872:#browser:not(.toolbar-edit-mode).tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:focus-within:has(.OmniDropdown, .menu),
+3873:#browser:not(.toolbar-edit-mode).tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:focus-within:has(.OmniDropdown, .menu),
+3874:#browser:not(.toolbar-edit-mode).tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:focus-within:has(.OmniDropdown, .menu) {
+3878:.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField .UrlBar-UrlObfuscationWarning,
+3879:.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField .UrlBar-UrlObfuscationWarning,
+3880:.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField .UrlBar-UrlObfuscationWarning,
+3881:.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField .UrlBar-UrlObfuscationWarning,
+3882:.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField .pageload-ticker,
+3883:.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField .pageload-ticker,
+3884:.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField .pageload-ticker,
+3885:.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField .pageload-ticker {
+3888:.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within),
+3889:.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within),
+3890:.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within),
+3891:.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) {
+3894:.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .UrlBar-UrlFieldWrapper + .toolbar .button-toolbar:not(
+3898:.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .UrlBar-UrlFieldWrapper + .toolbar .button-toolbar:not(
+3902:.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .UrlBar-UrlFieldWrapper + .toolbar .button-toolbar:not(
+3906:.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .UrlBar-UrlFieldWrapper + .toolbar .button-toolbar:not(
+3910:.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .UrlFragments > .UrlFragment--Lowlight,
+3911:.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .UrlFragments > .UrlFragment--Lowlight,
+3912:.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .UrlFragments > .UrlFragment--Lowlight,
+3913:.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .UrlFragments > .UrlFragment--Lowlight,
+3914:.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .ContentBlocker-Control:not([aria-expanded='true']),
+3915:.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .ContentBlocker-Control:not([aria-expanded='true']),
+3916:.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .ContentBlocker-Control:not([aria-expanded='true']),
+3917:.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .ContentBlocker-Control:not([aria-expanded='true']),
+3918:.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .BookmarkButton,
+3919:.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .BookmarkButton,
+3920:.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .BookmarkButton,
+3921:.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .BookmarkButton,
+3922:.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .drop-down-menu,
+3923:.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .drop-down-menu,
+3924:.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .drop-down-menu,
+3925:.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .drop-down-menu {
+3929:.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .UrlBar-UrlFieldWrapper,
+3930:.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .UrlBar-UrlFieldWrapper,
+3931:.tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .UrlBar-UrlFieldWrapper,
+3932:.tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .UrlBar-UrlFieldWrapper {
+3935:#browser:not(.linux).tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .UrlFragment-Wrapper,
+3936:#browser:not(.linux).tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .UrlFragment-Wrapper,
+3937:#browser:not(.linux).tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .UrlFragment-Wrapper,
+3938:#browser:not(.linux).tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .UrlFragment-Wrapper {
+3941:#browser:not(.linux).tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .UrlBar-UrlFieldWrapper,
+3942:#browser:not(.linux).tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-AddressField:not(:focus-within) .UrlBar-UrlFieldWrapper,
+3943:#browser:not(.linux).tabs-left #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .UrlBar-UrlFieldWrapper,
+3944:#browser:not(.linux).tabs-right #tabs-tabbar-container:not(.wide) .UrlBar-SearchField:not(:focus-within) .UrlBar-UrlFieldWrapper {
+3948:#tabs-tabbar-container .toolbar-tabbar-after {
+3953:.tabs-top #tabs-tabbar-container .toolbar-tabbar-after,
+3954:.tabs-bottom #tabs-tabbar-container .toolbar-tabbar-after {
+3957:.tabs-left #tabs-tabbar-container .toolbar-tabbar-after,
+3958:.tabs-right #tabs-tabbar-container .toolbar-tabbar-after {
+3961:.tabs-left #tabs-tabbar-container .toolbar-tabbar-after .toolbar-spacer-flexible,
+3962:.tabs-right #tabs-tabbar-container .toolbar-tabbar-after .toolbar-spacer-flexible {
+3967:.tabs-left #tabs-tabbar-container .toolbar-tabbar-after .toolbar-spacer-flexible button,
+3968:.tabs-right #tabs-tabbar-container .toolbar-tabbar-after .toolbar-spacer-flexible button {
+3971:.tabs-left #tabs-tabbar-container .toolbar-tabbar-after .toolbar-spacer-flexible .button-dragover:after,
+3972:.tabs-right #tabs-tabbar-container .toolbar-tabbar-after .toolbar-spacer-flexible .button-dragover:after {
+3976:.tabs-left #tabs-tabbar-container .toolbar-tabbar-after .toolbar-spacer-flexible ~ .toolbar-spacer-flexible,
+3977:.tabs-right #tabs-tabbar-container .toolbar-tabbar-after .toolbar-spacer-flexible ~ .toolbar-spacer-flexible {
+3981:.tabs-left #tabs-tabbar-container.narrow .toolbar-tabbar-before .UrlBar-AddressField,
+3982:.tabs-right #tabs-tabbar-container.narrow .toolbar-tabbar-before .UrlBar-AddressField,
+3983:.tabs-left #tabs-tabbar-container.narrow .toolbar-tabbar-after .UrlBar-AddressField,
+3984:.tabs-right #tabs-tabbar-container.narrow .toolbar-tabbar-after .UrlBar-AddressField,
+3985:.tabs-left #tabs-tabbar-container.narrow .toolbar-tabbar-before .UrlBar-SearchField,
+3986:.tabs-right #tabs-tabbar-container.narrow .toolbar-tabbar-before .UrlBar-SearchField,
+3987:.tabs-left #tabs-tabbar-container.narrow .toolbar-tabbar-after .UrlBar-SearchField,
+3988:.tabs-right #tabs-tabbar-container.narrow .toolbar-tabbar-after .UrlBar-SearchField {
+3992:.tabs-left #tabs-tabbar-container.narrow .toolbar-tabbar-before .SearchField-SlideBar,
+3993:.tabs-right #tabs-tabbar-container.narrow .toolbar-tabbar-before .SearchField-SlideBar,
+3994:.tabs-left #tabs-tabbar-container.narrow .toolbar-tabbar-after .SearchField-SlideBar,
+3995:.tabs-right #tabs-tabbar-container.narrow .toolbar-tabbar-after .SearchField-SlideBar {
+3998:.tabs-left .tabbar-workspace-button + .toolbar-divider,
+3999:.tabs-right .tabbar-workspace-button + .toolbar-divider {
+4002:.tabs-left .tabbar-workspace-button + .toolbar-divider .ToolbarButton-Button,
+4003:.tabs-right .tabbar-workspace-button + .toolbar-divider .ToolbarButton-Button {
+4007:.tabs-left .tabbar-workspace-button + .toolbar-divider .ToolbarButton-Button .button-icon,
+4008:.tabs-right .tabbar-workspace-button + .toolbar-divider .ToolbarButton-Button .button-icon {
+4011:.tabs-left .tabbar-workspace-button + .toolbar-divider .ToolbarButton-Button svg,
+4012:.tabs-right .tabbar-workspace-button + .toolbar-divider .ToolbarButton-Button svg {
+4024:.tabs-left:not(.toolbar-edit-mode) .toolbar-tabbar-before,
+4025:.tabs-right:not(.toolbar-edit-mode) .toolbar-tabbar-before {
+4028:.tabs-left:not(.toolbar-edit-mode) .toolbar-tabbar-after,
+4029:.tabs-right:not(.toolbar-edit-mode) .toolbar-tabbar-after {
+4041:.color-behind-tabs-off #tabs-tabbar-container .toolbar:not(.toolbar-small) > .button-toolbar,
+4042:.color-behind-tabs-off #tabs-tabbar-container .toolbar:not(.toolbar-small) > div > .button-toolbar,
+4043:.color-behind-tabs-off #tabs-tabbar-container .toolbar:not(.toolbar-small) > .button-toolbar:hover,
+4044:.color-behind-tabs-off #tabs-tabbar-container .toolbar:not(.toolbar-small) > div > .button-toolbar:hover {
+4047:.color-behind-tabs-on #tabs-tabbar-container .toolbar:not(.toolbar-small) > .button-toolbar,
+4048:.color-behind-tabs-on #tabs-tabbar-container .toolbar:not(.toolbar-small) > div > .button-toolbar,
+4049:.color-behind-tabs-on #tabs-tabbar-container .toolbar:not(.toolbar-small) > .button-toolbar:hover,
+4050:.color-behind-tabs-on #tabs-tabbar-container .toolbar:not(.toolbar-small) > div > .button-toolbar:hover {
+4053:.color-behind-tabs-on.color-accent-from-page #tabs-tabbar-container .toolbar:not(.toolbar-small) > .button-toolbar,
+4054:.color-behind-tabs-on.color-accent-from-page #tabs-tabbar-container .toolbar:not(.toolbar-small) > div > .button-toolbar,
+4055:.color-behind-tabs-on.color-accent-from-page #tabs-tabbar-container .toolbar:not(.toolbar-small) > .button-toolbar:hover,
+4056:.color-behind-tabs-on.color-accent-from-page #tabs-tabbar-container .toolbar:not(.toolbar-small) > div > .button-toolbar:hover {
+4059:.color-behind-tabs-on.color-accent-from-page.transparent-tabbar:not(.acc-dark.bg-dark) #tabs-tabbar-container .toolbar:not(.toolbar-small) > .button-toolbar,
+4060:.color-behind-tabs-on.color-accent-from-page.transparent-tabbar:not(.acc-dark.bg-dark) #tabs-tabbar-container .toolbar:not(.toolbar-small) > div > .button-toolbar,
+4061:.color-behind-tabs-on.color-accent-from-page.transparent-tabbar:not(.acc-dark.bg-dark) #tabs-tabbar-container .toolbar:not(.toolbar-small) > .button-toolbar:hover,
+4062:.color-behind-tabs-on.color-accent-from-page.transparent-tabbar:not(.acc-dark.bg-dark) #tabs-tabbar-container .toolbar:not(.toolbar-small) > div > .button-toolbar:hover {
+4065:#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .UrlBar-AddressField:not(:focus-within),
+4066:#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .UrlBar-SearchField:not(:focus-within),
+4067:#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .SiteInfoButton.warning:not(:focus-within) {
+4073:#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .UrlBar-AddressField:not(:focus-within) .SiteInfoButton.warning:not(:focus-within),
+4074:#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .UrlBar-SearchField:not(:focus-within) .SiteInfoButton.warning:not(:focus-within),
+4075:#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .SiteInfoButton.warning:not(:focus-within) .SiteInfoButton.warning:not(:focus-within) {
+4078:#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .UrlBar-AddressField:not(:focus-within) .UrlFragment-Wrapper,
+4079:#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .UrlBar-SearchField:not(:focus-within) .UrlFragment-Wrapper,
+4080:#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .SiteInfoButton.warning:not(:focus-within) .UrlFragment-Wrapper,
+4081:#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .UrlBar-AddressField:not(:focus-within) .UrlFragment-Wrapper--ShouldHighlight,
+4082:#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .UrlBar-SearchField:not(:focus-within) .UrlFragment-Wrapper--ShouldHighlight,
+4083:#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .SiteInfoButton.warning:not(:focus-within) .UrlFragment-Wrapper--ShouldHighlight {
+4087:#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .UrlBar-AddressField:not(:focus-within) .BookmarkButton:not(:hover) .bookmark-outline,
+4088:#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .UrlBar-SearchField:not(:focus-within) .BookmarkButton:not(:hover) .bookmark-outline,
+4089:#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .SiteInfoButton.warning:not(:focus-within) .BookmarkButton:not(:hover) .bookmark-outline {
+4092:#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .UrlBar-AddressField:not(:focus-within) .BookmarkButton:not(:hover) .bookmark-animated-fill,
+4093:#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .UrlBar-SearchField:not(:focus-within) .BookmarkButton:not(:hover) .bookmark-animated-fill,
+4094:#browser.color-behind-tabs-on:not(.transparent-tabbar) #tabs-tabbar-container .SiteInfoButton.warning:not(:focus-within) .BookmarkButton:not(:hover) .bookmark-animated-fill {
+4098:#browser.unified-ui:not(.is-settingspage) .tabbar-wrapper:before,
+4102:#browser.unified-ui:not(.is-settingspage) #tabs-tabbar-container {
+4670:.vivaldi-tree .tree-row .tab-audio {
+4746:.vivaldi-tree .tree-row label .title {
+4752:.vivaldi-tree .tree-row label .close {
+4757:.vivaldi-tree .tree-row label .close svg {
+4762:.vivaldi-tree .tree-row label .close svg:hover {
+4765:.vivaldi-tree .tree-row label .item-count + .close {
+4768:.vivaldi-tree .tree-row:hover .close {
+5044:.close {
+5058:.close:hover {
+5062:.close:active {
+5065:.close svg {
+6318:#modal-bg.default-browser .SuggestDefault .close {
+6336:#modal-bg .CrashReporting .close {
+6789:#app #modal-bg.context-anchor .dialog-title:has(button.close:only-child) {
+7291:.readinglist-item-large .readinglist-name .title {
+7316:.reading-list-dialog .readinglist-item-large .title {
+7464:.tabbar-wrapper .button-toolbar.workspace-popup.tabbar-workspace-button button {
+7470:.density-on .tabbar-wrapper .button-toolbar.workspace-popup.tabbar-workspace-button button {
+7473:.tabs-top .button-toolbar.workspace-popup.tabbar-workspace-button,
+7474:.tabs-bottom .button-toolbar.workspace-popup.tabbar-workspace-button {
+7479:.density-on.tabs-top .button-toolbar.workspace-popup.tabbar-workspace-button button,
+7480:.density-on.tabs-bottom .button-toolbar.workspace-popup.tabbar-workspace-button button {
+7483:.tabs-left .button-toolbar.workspace-popup.tabbar-workspace-button,
+7484:.tabs-right .button-toolbar.workspace-popup.tabbar-workspace-button {
+7491:#app .tabs-left .button-toolbar.workspace-popup.tabbar-workspace-button button,
+7492:#app .tabs-right .button-toolbar.workspace-popup.tabbar-workspace-button button {
+7495:.tabs-left .button-toolbar.workspace-popup.tabbar-workspace-button:has(.override) button,
+7496:.tabs-right .button-toolbar.workspace-popup.tabbar-workspace-button:has(.override) button {
+7499:.transparent-tabbar.tabs-top:not(.density-on) .button-toolbar.workspace-popup.tabbar-workspace-button button {
+7503:.transparent-tabbar.tabs-bottom:not(.density-on) .button-toolbar.workspace-popup.tabbar-workspace-button button {
+7507:.button-toolbar.workspace-popup.tabbar-workspace-button .button-toolbar-menu-indicator {
+7526:.WorkspacePopup-Items .title:not(:has(input)) {
+7531:.WorkspacePopup-Items .title input {
+7534:.WorkspacePopup-Items .title p:not(.tab-count) {
+7634:.WorkspacePopup-Items .workspace-item-wrapper .title,
+7635:.WorkspacePopup-Items .this-window .title {
+7638:.WorkspacePopup-Items .workspace-item-wrapper .title .tab-count,
+7639:.WorkspacePopup-Items .this-window .title .tab-count {
+7745:#browser .tabbar-workspace-button > button,
+7748:#browser .tabbar-workspace-button > button:active,
+7751:#browser .tabbar-workspace-button > button.button-pressed {
+7756:#browser .tabbar-workspace-button .button-icon,
+7759:#browser .tabbar-workspace-button .button-icon svg {
+7765:#browser .tabbar-workspace-button .button-icon.override,
+7768:#browser .tabbar-workspace-button .button-icon.override svg {
+7904:  .tabbar-workspace-button:has(.button-icon.audio) .button-icon:not(.audio) {
+8098:.selectbox .selectbox-image .tab-preview {
+8103:.selectbox .selectbox-image .tab-preview .thumb-preview-colorBg {
+8106:.selectbox .selectbox-image .tab-preview .thumb-preview-colorAccentBg {
+8109:.selectbox .selectbox-image .tab-preview .thumb-preview-colorBgDark {
+8112:.selectbox .selectbox-image .tab-preview .thumb-preview-colorBgLightIntense {
+8115:.selectbox .selectbox-image .tab-preview .thumb-preview-non-active-tab {
+8118:.theme-dark .selectbox .selectbox-image .tab-preview .thumb-preview-non-active-tab {
+8153:.tabbar-position .selectbox {
+8496:.tab .button-badge {
+9427:.toolbar-edit-mode.hasfocus #tabs-container .toolbar-droptarget > *:not(
+9471:.toolbar-edit-mode.hasfocus #tabs-container .toolbar-droptarget > *:not(
+9517:.toolbar-edit-mode.hasfocus #tabs-container .toolbar-droptarget > *:not(
+9561:.toolbar-edit-mode.hasfocus #tabs-container .toolbar-droptarget > *:not(
+9607:.toolbar-edit-mode.hasfocus #tabs-container .toolbar-droptarget > *:not(
+9651:.toolbar-edit-mode.hasfocus #tabs-container .toolbar-droptarget > *:not(
+9697:.toolbar-edit-mode.hasfocus #tabs-container .toolbar-droptarget > *:not(
+9741:.toolbar-edit-mode.hasfocus #tabs-container .toolbar-droptarget > *:not(
+9827:.notes-cardwrapper .upper-half .title-and-address,
+9828:.addbookmark-cardwrapper .upper-half .title-and-address {
+9833:.internal-page .notes-cardwrapper .upper-half .title-and-address,
+9834:.internal-page .addbookmark-cardwrapper .upper-half .title-and-address {
+9949:.cardview .downloads-panel-actions .download-panel.title {
+9956:.cardview .downloads-panel-actions .download-panel.title .DownloadItem-FileName-Name {
+10288:#browser.fullscreen.inner .tabbar-wrapper,
+10376:).color-accent-from-page.color-behind-tabs-on.transparent-tabbar.tabs-left .inner > .tabbar-wrapper:before,
+10379:).color-accent-from-page.color-behind-tabs-on.transparent-tabbar.tabs-right .inner > .tabbar-wrapper:before,
+10453:#browser.tabs-left #webview-container #webpage-stack,
+10458:#browser.tabs-right #webview-container #webpage-stack,
+10698:.tabbar-wrapper {
+10701:.density-on:not(.tabs-at-edge) .tabbar-wrapper,
+10702:.unified-ui:not(.tabs-at-edge) .tabbar-wrapper {
+10705:.tab-position {
+10714:.tabs-left #tabs-tabbar-container.resizing .tab-position:not(.accordion-toggle-arrow),
+10715:.tabs-right #tabs-tabbar-container.resizing .tab-position:not(.accordion-toggle-arrow) {
+10718:.tabs-top #tabs-tabbar-container.resizing .tab-position:not(.accordion-toggle-arrow),
+10719:.tabs-bottom #tabs-tabbar-container.resizing .tab-position:not(.accordion-toggle-arrow) {
+10722:.tab-position.is-substack > .tab.active {
+10774:.tab {
+10783:.tabs-top.density-on.tabs-at-edge .tab:not(.tab-in-accordion).active,
+10784:.tabs-top:not(.density-on) .tab:not(.tab-in-accordion).active,
+10785:.tabs-bottom.density-on.tabs-at-edge .tab:not(.tab-in-accordion).active,
+10786:.tabs-bottom:not(.density-on) .tab:not(.tab-in-accordion).active {
+10789:.unified-ui .tab {
+10793::not(.ui-transparent-tabs).unified-ui .tab {
+10796:.unified-ui-transparent:not(.ui-transparent-tabs).unified-ui .tab {
+10799:.unified-ui .tab:hover {
+10802:.color-behind-tabs-on .tab {
+10805:#browser.color-behind-tabs-on .tab.active.active {
+10809:.color-behind-tabs-on:not(.ui-transparent-tabs) .tab,
+10810:.color-behind-tabs-on.ui-transparent-tabs .tab-wrapper:hover .tab:not(.active) {
+10813:.color-behind-tabs-on:not(.ui-transparent-tabs) .tab-wrapper:hover .tab:not(.active) {
+10816:.color-behind-tabs-off .tab,
+10817:.unified-ui:not(.unified-ui-transparent) .tab {
+10820:#browser.color-behind-tabs-off .tab.active.active,
+10821:#browser.unified-ui:not(.unified-ui-transparent) .tab.active.active {
+10824:.color-behind-tabs-off:not(.ui-transparent-tabs) .tab,
+10825:.color-behind-tabs-off.ui-transparent-tabs .tab-wrapper:hover .tab:not(.active),
+10826:.tab .unified-ui:not(.unified-ui-transparent, .ui-transparent-tabs),
+10827:.unified-ui.ui-transparent-tabs:not(.unified-ui-transparent) .tab-wrapper:hover .tab:not(.active) {
+10830:.color-behind-tabs-off:not(.ui-transparent-tabs) .tab-wrapper:hover .tab:not(.active),
+10831:.unified-ui:not(.unified-ui-transparent) .tab-wrapper:hover .tab:not(.active) {
+10834:.transparent-tabbar:not(.acc-dark.bg-dark.color-accent-from-page.color-behind-tabs-on) .tab {
+10837::not(.ui-transparent-tabs).transparent-tabbar:not(.acc-dark.bg-dark.color-accent-from-page.color-behind-tabs-on) .tab {
+10840:.transparent-tabbar:not(.acc-dark.bg-dark.color-accent-from-page.color-behind-tabs-on) .tab-wrapper:hover .tab:not(.active) {
+10843:#browser#browser .tab.tab-acceptsdrop {
+10849:#browser#browser .tab.tab-acceptsdrop:after {
+10860:.tabs-top:not(.density-on)#browser#browser .tab.tab-acceptsdrop.active:after {
+10863:.tabs-bottom:not(.density-on)#browser#browser .tab.tab-acceptsdrop.active:after {
+10866:.tab .spinner {
+10869:.ui-transparent-tabs .tab {
+10872:#browser .tab.active {
+10877:.color-behind-tabs-off#browser .tab.active.insubstrip {
+10881:.tab-wrapper:hover .tab:not(.active) {
+10884:#browser.unified-ui-transparent .tab-wrapper:hover .tab:not(.active),
+10885:#browser.transparent-tabbar .tab-wrapper:hover .tab:not(.active) {
+10889:.tab-wrapper[aria-hidden=true] .tab {
+10892:.tabs-top.tabs-at-edge:not(.unified-ui) .tab-position:not(.is-substack) .tab.active,
+10893:.tabs-top:not(.density-on, .unified-ui) .tab-position:not(.is-substack) .tab.active {
+10896:.tabs-bottom.tabs-at-edge:not(.unified-ui) .tab-position:not(.is-substack) .tab.active,
+10897:.tabs-bottom:not(.density-on, .unified-ui) .tab-position:not(.is-substack) .tab.active {
+10902:.tabs-top .tab:not(.active),
+10903:.tabs-bottom .tab:not(.active) {
+10906:.tabs-top:not(.density-on) .tab,
+10907:.tabs-bottom:not(.density-on) .tab {
+10910:.tabs-top.density-on .tab:not(.tab-in-accordion, .tab-accordion),
+10911:.tabs-bottom.density-on .tab:not(.tab-in-accordion, .tab-accordion) {
+10914:.tabs-top.density-on .tab:not(.tab-in-accordion, .tab-accordion).tab-small,
+10915:.tabs-bottom.density-on .tab:not(.tab-in-accordion, .tab-accordion).tab-small {
+10918:.tabs-bottom .is-substack .tab.active,
+10919:.tabs-bottom .tab:not(.tab-in-accordion, .tab-accordion, .active),
+10920:.tabs-bottom.density-on:not(.tabs-at-edge) .tab:not(.tab-in-accordion, .tab-accordion),
+10921:.tabs-bottom.unified-ui .tab:not(.tab-in-accordion, .tab-accordion),
+10922:.tabs-top .tab:not(.tab-in-accordion, .tab-accordion) {
+10926:.tabs-top .is-substack .tab.active,
+10927:.tabs-top .tab:not(.tab-in-accordion, .tab-accordion, .active),
+10928:.tabs-top.density-on:not(.tabs-at-edge) .tab:not(.tab-in-accordion, .tab-accordion),
+10929:.tabs-top.unified-ui .tab:not(.tab-in-accordion, .tab-accordion),
+10930:.tabs-bottom .tab:not(.tab-in-accordion, .tab-accordion) {
+10934:.tabs-left .tab:not(.tab-in-accordion, .tab-accordion),
+10935:.tabs-right .tab:not(.tab-in-accordion, .tab-accordion) {
+10938:.tabs-left .tab.tab-in-accordion.tab-first-in-group,
+10939:.tabs-right .tab.tab-in-accordion.tab-first-in-group,
+10940:.tabs-left .tab.tab-accordion,
+10941:.tabs-right .tab.tab-accordion {
+10945:.tabs-left .tab:is(.tab-accordion, .tab-in-accordion) .tab-header,
+10946:.tabs-right .tab:is(.tab-accordion, .tab-in-accordion) .tab-header {
+10949:.tabs-left .tab:not(.tab-accordion, .tab-in-accordion),
+10950:.tabs-right .tab:not(.tab-accordion, .tab-in-accordion) {
+10953:.tabs-left .tab:not(.tab-accordion, .tab-in-accordion):has(+ .tab-group-indicator),
+10954:.tabs-right .tab:not(.tab-accordion, .tab-in-accordion):has(+ .tab-group-indicator) {
+10957:.tab.insubstrip {
+10960:.tabs-top.tabs-at-edge .tab.insubstrip.active:not(.marked),
+10961:.tabs-top:not(.density-on, .unified-ui) .tab.insubstrip.active:not(.marked) {
+10965:.tabs-bottom.tabs-at-edge .tab.insubstrip.active:not(.marked),
+10966:.tabs-bottom:not(.density-on, .unified-ui) .tab.insubstrip.active:not(.marked) {
+10970:.tab:not(.active) .svg-tab-selection .inner {
+10973:.tab.tab-in-accordion .svg-tab-selection .inner {
+10977:.tab.marked:not(.tab-first-in-group):not(.tab-accordion) {
+10980:.tab.pinned .close,
+10981:.tab.pinned:hover .close {
+10984:.tab.pinned .favicon,
+10985:.tab.pinned:hover .favicon {
+10988:.tab.unread {
+10993:.color-behind-tabs-on .tab.unread {
+10996:.tabs-bottom .tab.unread {
+10999:.color-behind-tabs-on.tabs-bottom .tab.unread {
+11002:.tabs-bottom .tab.unread .thumbnail-image {
+11005:.tab .tab-header {
+11013:.tab .tab-header.expecting-drop {
+11016:.tab .favicon,
+11017:.tab .close {
+11022:.tab .stack-counter {
+11035:.color-behind-tabs.on .tab .stack-counter {
+11039:.color-behind-tabs-off .tab .stack-counter {
+11043:.tab.active .stack-counter {
+11047:.color-behind-tabs-off .tab.active .stack-counter {
+11051:.tab.tab-small .stack-counter {
+11054:.tab .favicon.progress {
+11073:.tab .favicon.progress.infinite-spin {
+11077:.tab .favicon {
+11087:.tab .favicon.hidden {
+11090:.tab .favicon.svg span {
+11094:.tab .close {
+11098:.alt-tabs .tab .close {
+11101:.tab .close svg {
+11104:.tab .title {
+11115:.tab .title:not(.editing) {
+11119:.tab .title input {
+11126:.linux .tab .title {
+11132:.linux .tab:not(.tab-small, .active) .title {
+11137:.tab .progress-indicator[value='0']::-webkit-progress-value {
+11140:.tab .thumbnail-image {
+11152:.tab .thumbnail-image svg {
+11157:.tab.highlighted:focus-visible,
+11158:.tab.uifocusstop:not(.marked):focus-visible,
+11159:.tab:focus-visible:not(.marked) {
+11164:.tabs-left .tab.highlighted:focus-visible,
+11165:.tabs-left .tab.uifocusstop:not(.marked):focus-visible,
+11166:.tabs-left .tab:focus-visible:not(.marked),
+11167:.tabs-right .tab.highlighted:focus-visible,
+11168:.tabs-right .tab.uifocusstop:not(.marked):focus-visible,
+11169:.tabs-right .tab:focus-visible:not(.marked) {
+11173:.tab:hover,
+11174:.tab.force-hover {
+11179:.tab:hover.tab-small .close,
+11180:.tab.force-hover.tab-small .close,
+11181:.tab:hover.tab-mini:not(.button-off).active .favicon,
+11182:.tab.force-hover.tab-mini:not(.button-off).active .favicon,
+11183:.tab:hover.tab-mini:not(.button-off).active .button-badge,
+11184:.tab.force-hover.tab-mini:not(.button-off).active .button-badge,
+11185:#browser:not(.alt-tabs) .tab:hover.tab:not(.button-off, .force-hover) .stack-counter,
+11186:#browser:not(.alt-tabs) .tab.force-hover.tab:not(.button-off, .force-hover) .stack-counter,
+11187:.alt-tabs .tab:hover.tab:not(.button-off) .favicon,
+11188:.alt-tabs .tab.force-hover.tab:not(.button-off) .favicon,
+11189:.alt-tabs .tab:hover.tab:not(.button-off) .button-badge,
+11190:.alt-tabs .tab.force-hover.tab:not(.button-off) .button-badge {
+11193:.tab:hover .close,
+11194:.tab.force-hover .close,
+11195:.tab:hover.active.tab-small .close,
+11196:.tab.force-hover.active.tab-small .close,
+11197:.tab:hover.tab.pinned .favicon,
+11198:.tab.force-hover.tab.pinned .favicon,
+11199:.alt-tabs .tab:hover.tab.pinned .favicon,
+11200:.alt-tabs .tab.force-hover.tab.pinned .favicon,
+11201:.alt-tabs .tab:hover.tab-small:not(.active) .favicon,
+11202:.alt-tabs .tab.force-hover.tab-small:not(.active) .favicon {
+11205:#browser:not(.alt-tabs) .tab:hover.tab-small:not(.tab-mini).active .favicon,
+11206:#browser:not(.alt-tabs) .tab.force-hover.tab-small:not(.tab-mini).active .favicon {
+11213:#browser:not(.alt-tabs) .tab:hover.tab-small:not(.tab-mini).active .title,
+11214:#browser:not(.alt-tabs) .tab.force-hover.tab-small:not(.tab-mini).active .title {
+11217:#browser:not(.alt-tabs) .tab:hover.tab-small:not(.tab-mini).active .close,
+11218:#browser:not(.alt-tabs) .tab.force-hover.tab-small:not(.tab-mini).active .close {
+11221:.tab.active .tab-header input.tab-title-edit {
+11230:.color-behind-tabs-on .tab.active .tab-header input.tab-title-edit {
+11235:.transparent-tabbar .tab.active .tab-header .favicon:not(.svg),
+11236:.theme-dark .tab.active .tab-header .favicon:not(.svg),
+11237:.acc-dark.unified-ui .tab.active .tab-header .favicon:not(.svg),
+11238:.acc-dark.color-behind-tabs-off .tab.active .tab-header .favicon:not(.svg) {
+11241:.tab.active .thumbnail-image {
+11244:.tab.active:not(.marked, .tab-mini):after {
+11247:.density-on:not(.tabs-at-edge) .tab.active:not(.tab-in-accordion, .tab-accordion),
+11248:.unified-ui:not(.tabs-at-edge) .tab.active:not(.tab-in-accordion, .tab-accordion) {
+11251:.tab-strip {
+11255:.tab-strip > span {
+11258:.tabs-top.density-on:not(.tabs-at-edge) #tabs-subcontainer .tab-strip,
+11259:.tabs-bottom.density-on:not(.tabs-at-edge) #tabs-subcontainer .tab-strip {
+11262:.tab-strip.horizontal-scrolling {
+11267:.tab-strip.horizontal-scrolling.horizontal-scrolling-smooth {
+11270:.stacks-substrip.tabs-top #tabs-container .tab-strip.horizontal-scrolling,
+11271:.stacks-dotted.tabs-top #tabs-container .tab-strip.horizontal-scrolling {
+11275:.stacks-substrip.tabs-bottom #tabs-container .tab-strip.horizontal-scrolling,
+11276:.stacks-dotted.tabs-bottom #tabs-container .tab-strip.horizontal-scrolling {
+11279:.stacks-substrip.tabs-bottom #tabs-container .tab-strip.horizontal-scrolling .tab-position,
+11280:.stacks-dotted.tabs-bottom #tabs-container .tab-strip.horizontal-scrolling .tab-position {
+11283:.tab-strip.horizontal-scrolling::-webkit-scrollbar {
+11286:.svg-tab-stack,
+11294:.tab-indicator .svg-tab-stack,
+11295:.tab-indicator .svg-tab-selection {
+11298:.svg-tab-stack line,
+11300:.svg-tab-stack rect,
+11305:.svg-tab-stack rect,
+11310:.tabs-top .svg-tab-stack,
+11312:.tabs-bottom .svg-tab-stack,
+11317:.tabs-top .tab-small + .svg-tab-stack,
+11318:.tabs-top .tab-small + .svg-tab-selection,
+11319:.tabs-bottom .tab-small + .svg-tab-stack,
+11320:.tabs-bottom .tab-small + .svg-tab-selection {
+11323:.tabs-top .tab:is(.tab-accordion, .tab-in-accordion) + .svg-tab-stack,
+11324:.tabs-top .tab:is(.tab-accordion, .tab-in-accordion) + .svg-tab-selection,
+11325:.tabs-bottom .tab:is(.tab-accordion, .tab-in-accordion) + .svg-tab-stack,
+11326:.tabs-bottom .tab:is(.tab-accordion, .tab-in-accordion) + .svg-tab-selection {
+11329:.tabs-left .svg-tab-stack,
+11330:.tabs-left .svg-tab-selection,
+11331:.tabs-right .svg-tab-stack,
+11332:.tabs-right .svg-tab-selection {
+11337:.tabs-left .tab:not(.tab-accordion, .tab-in-accordion) + .svg-tab-stack,
+11338:.tabs-left .tab:not(.tab-accordion, .tab-in-accordion) + .svg-tab-selection,
+11339:.tabs-right .tab:not(.tab-accordion, .tab-in-accordion.tab-first-in-group) + .svg-tab-stack,
+11340:.tabs-right .tab:not(.tab-accordion, .tab-in-accordion.tab-first-in-group) + .svg-tab-selection {
+11343:.density-on.tabs-left .tab:not(.tab-accordion, .tab-in-accordion) + .svg-tab-stack,
+11344:.density-on.tabs-left .tab:not(.tab-accordion, .tab-in-accordion) + .svg-tab-selection,
+11345:.density-on.tabs-right .tab:not(.tab-accordion, .tab-in-accordion.tab-first-in-group) + .svg-tab-stack,
+11346:.density-on.tabs-right .tab:not(.tab-accordion, .tab-in-accordion.tab-first-in-group) + .svg-tab-selection {
+11349:.tabs-left .tab.tab-group + .svg-tab-stack,
+11350:.tabs-left .tab.tab-group + .svg-tab-selection,
+11351:.tabs-right .tab.tab-group + .svg-tab-stack,
+11352:.tabs-right .tab.tab-group + .svg-tab-selection {
+11355:.svg-tab-stack .stack-frame,
+11359:.color-behind-tabs-on .svg-tab-stack .stack-frame,
+11363:.unified-ui-transparent .svg-tab-stack .stack-frame,
+11365:.transparent-tabbar .svg-tab-stack .stack-frame,
+11369:.svg-tab-stack:not(.svg-tab-selection) .inner,
+11371:.svg-tab-stack:not(.svg-tab-selection) .outer,
+11384:#app .svg-tab-selection:not(.svg-tab-stack) {
+11387:#app .svg-tab-selection:not(.svg-tab-stack) .stack-frame {
+11390:#app .svg-tab-selection:not(.svg-tab-stack) line {
+11393:#app .tab-indicator .svg-tab-selection:not(.svg-tab-stack) {
+11397:#app .tab-indicator .svg-tab-selection:not(.svg-tab-stack) .stack-frame {
+11400:#app .tab-indicator .svg-tab-selection:not(.svg-tab-stack) line {
+11412:.tabs-left .subcontainer-lock,
+11413:.tabs-right .subcontainer-lock {
+11426:.tab-audio {
+11433:.tabs-left .tab-audio,
+11434:.tabs-right .tab-audio {
+11437:.alt-tabs .tab-audio,
+11438:.alt-tabs .tab-audio {
+11441:#app #browser .tab-audio:hover {
+11448:#tabs-container {
+11451:#tabs-container .resize {
+11458:.tabs-top #tabs-container .resize,
+11459:.tabs-bottom #tabs-container .resize {
+11462:#tabs-container .resize .tab-strip,
+11463:#tabs-container .resize .tab-position,
+11464:#tabs-container .resize .toolbar-tabbar {
+11468:#tabs-container.left .resize,
+11469:#tabs-container.right .resize {
+11474:#tabs-container:not(.top) {
+11477:#tabs-container .tab-captured .audio-on .tab-audio,
+11478:#tabs-container .audio-muted .tab-audio.tab-audio {
+11481:#tabs-container .tab.isdiscarded .favicon {
+11485:#tabs-container .tab.isdiscarded:hover .favicon {
+11488:#tabs-container .tab.iscut {
+11491:#browser:not(.alt-tabs) #tabs-container .tab-audio,
+11492:#browser:not(.alt-tabs) #tabs-container .tab.pinned:not(.active) .tab-audio {
+11498:#browser:not(.alt-tabs) #tabs-container .tab:not(.audio-on, .tab-captured) .tab-audio {
+11501:#browser:not(.alt-tabs) #tabs-container .favicon,
+11502:#browser:not(.alt-tabs) #tabs-container .tab.pinned:not(.active) .favicon {
+11507:#browser:not(.alt-tabs) #tabs-container .tab:not(.tab-mini) .close {
+11510:#browser:not(.alt-tabs) #tabs-container .tab:not(.pinned, .tab-small).audio-on .tab-audio,
+11511:#browser:not(.alt-tabs) #tabs-container .tab:not(.pinned, .tab-small).audio-muted .tab-audio,
+11512:#browser:not(.alt-tabs) #tabs-container .tab:not(.pinned, .tab-small).tab-captured .tab-audio {
+11516:#browser:not(.alt-tabs) #tabs-container .tab:not(.pinned, .tab-small).audio-on .favicon,
+11517:#browser:not(.alt-tabs) #tabs-container .tab:not(.pinned, .tab-small).audio-muted .favicon,
+11518:#browser:not(.alt-tabs) #tabs-container .tab:not(.pinned, .tab-small).tab-captured .favicon {
+11522:.alt-tabs #tabs-container .tab-audio {
+11526:.alt-tabs #tabs-container .tab.audio-on .tab-audio,
+11527:.alt-tabs #tabs-container .tab.audio-muted .tab-audio .tab-captured {
+11531:#browser #tabs-container .tab.tab-small.audio-on .tab-audio,
+11532:#browser #tabs-container .tab.pinned.audio-on .tab-audio,
+11533:#browser #tabs-container .tab.tab-small.audio-muted .tab-audio,
+11534:#browser #tabs-container .tab.pinned.audio-muted .tab-audio,
+11535:#browser #tabs-container .tab.tab-small.tab-captured .tab-audio,
+11536:#browser #tabs-container .tab.pinned.tab-captured .tab-audio {
+11550:#browser #tabs-container .tab.tab-small.audio-on .tab-audio:hover,
+11551:#browser #tabs-container .tab.pinned.audio-on .tab-audio:hover,
+11552:#browser #tabs-container .tab.tab-small.audio-muted .tab-audio:hover,
+11553:#browser #tabs-container .tab.pinned.audio-muted .tab-audio:hover,
+11554:#browser #tabs-container .tab.tab-small.tab-captured .tab-audio:hover,
+11555:#browser #tabs-container .tab.pinned.tab-captured .tab-audio:hover {
+11558:#tabs-container .tab.tab-small.tab-mini .tab-header,
+11559:#tabs-container .tab.pinned.tab-mini .tab-header {
+11566:#tabs-container .tab.tab-small.tab-mini .tab-header .stack-counter,
+11567:#tabs-container .tab.pinned.tab-mini .tab-header .stack-counter,
+11568:#tabs-container .tab.tab-small.tab-mini .tab-header .title,
+11569:#tabs-container .tab.pinned.tab-mini .tab-header .title {
+11572:#tabs-container .tab.tab-small.tab-mini .tab-header .tab-audio,
+11573:#tabs-container .tab.pinned.tab-mini .tab-header .tab-audio {
+11576:#tabs-container .SlideBar--FullWidth {
+11580:#tabs-container.none + .SlideBar--FullWidth {
+11583:.tabs-right .tabbar-wrapper {
+11586:.tabs-left .tabbar-wrapper {
+11589:#tabs-tabbar-container {
+11597:#tabs-tabbar-container.none {
+11600:#tabs-tabbar-container #tabs-container,
+11601:#tabs-tabbar-container #tabs-subcontainer,
+11602:#tabs-tabbar-container .SlideBar,
+11603:#tabs-tabbar-container .separator {
+11606:.tabs-top:not(.density-on) #tabs-tabbar-container #tabs-container,
+11607:.tabs-top.tabs-at-edge #tabs-tabbar-container #tabs-container {
+11610:.tabs-bottom:not(.density-on) #tabs-tabbar-container #tabs-container,
+11611:.tabs-bottom.tabs-at-edge #tabs-tabbar-container #tabs-container {
+11614:.tabs-top.density-on:not(.tabs-at-edge) #tabs-tabbar-container:not(:has(#tabs-subcontainer)) {
+11618:.tabs-bottom.density-on:not(.tabs-at-edge) #tabs-tabbar-container:not(:has(#tabs-subcontainer)) {
+11621:#browser:not(.transparent-tabbar) #tabs-tabbar-container {
+11624:.unified-ui-transparent > #header #tabs-tabbar-container.top {
+11627:.unified-ui-transparent > #header #tabs-tabbar-container.left {
+11630:.unified-ui-transparent > #header #tabs-tabbar-container.right {
+11633:.unified-ui-transparent > #header #tabs-tabbar-container.bottom {
+11636:.color-behind-tabs-off.transparent-tabbar #tabs-tabbar-container {
+11639:.color-behind-tabs-on.transparent-tabbar #tabs-tabbar-container {
+11642:.color-behind-tabs-on.color-accent-from-page.transparent-tabbar #tabs-tabbar-container {
+11645:.color-behind-tabs-on.color-accent-from-page.transparent-tabbar:not(.acc-dark.bg-dark).transparent-tabbar #tabs-tabbar-container {
+11648:#tabs-tabbar-container.top {
+11652:.tabs-at-edge #tabs-tabbar-container.top {
+11656:.win.normal .topmenu + #tabs-tabbar-container.top,
+11657:.linux.normal .topmenu + #tabs-tabbar-container.top {
+11660:#tabs-tabbar-container.bottom {
+11666:.tabs-at-edge #tabs-tabbar-container.bottom {
+11670:#tabs-tabbar-container.left,
+11671:#tabs-tabbar-container.right {
+11674:#tabs-tabbar-container.left .tab-position:not(.accordion-toggle-arrow),
+11675:#tabs-tabbar-container.right .tab-position:not(.accordion-toggle-arrow) {
+11678:#browser:not(.unified-ui) #tabs-tabbar-container.left,
+11679:#browser:not(.unified-ui) #tabs-tabbar-container.right,
+11680:#browser:not(.unified-ui).auto-hide > .auto-hide-wrapper #tabs-tabbar-container.left,
+11681:#browser:not(.unified-ui).auto-hide > .auto-hide-wrapper #tabs-tabbar-container.right {
+11684:#browser.unified-ui.auto-hide > .auto-hide-wrapper #tabs-tabbar-container.left,
+11685:#browser.unified-ui.auto-hide > .auto-hide-wrapper #tabs-tabbar-container.right {
+11688:#tabs-tabbar-container.right {
+11691:#browser:not(.theme-dark) #tabs-tabbar-container.top {
+11694:#browser:not(.theme-dark) #tabs-tabbar-container.top.color-behind-tabs-off {
+11697:#browser:not(.theme-dark) #tabs-tabbar-container.right {
+11700:#browser:not(.theme-dark) #tabs-tabbar-container.bottom {
+11703:#browser:not(.theme-dark) #tabs-tabbar-container.bottom.color-behind-tabs-off {
+11706:#browser:not(.theme-dark) #tabs-tabbar-container.left {
+11725:#browser.unified-ui.tabs-left,
+11726:#browser.transparent-tabbar.tabs-left {
+11732:#browser.unified-ui.tabs-right,
+11733:#browser.transparent-tabbar.tabs-right {
+11739:/* The #tabs-container is responsible for positioning the tabbar
+11741:.win .tabbar-wrapper:has(.window-buttongroup) #tabs-container:not(.none).top {
+11744:.linux .tabbar-wrapper:has(.window-buttongroup) #tabs-container:not(.none).top {
+11747:.alt #tabs-container:not(.none).top {
+11751:.horizontal-menu #tabs-container:not(.none).top {
+11755:.mac.native #tabs-container:not(.none).top {
+11758:.native #tabs-container:not(.none).top {
+11761:.native.alt #tabs-container:not(.none).top {
+11765:#tabs-container:not(.none).bottom {
+11768:#tabs-container {
+11772:#tabs-container.none {
+11775:#tabs-container.bottom {
+11778:#tabs-container.left,
+11779:#tabs-container.right {
+11782:#tabs-container.left:has(.tab-strip.overflow),
+11783:#tabs-container.right:has(.tab-strip.overflow) {
+11786:#tabs-container.left .tab-strip,
+11787:#tabs-container.right .tab-strip {
+11794:#tabs-container.left .tab-strip .thumbnail-image,
+11795:#tabs-container.right .tab-strip .thumbnail-image {
+11799:#tabs-container.left .tab-strip.overflow,
+11800:#tabs-container.right .tab-strip.overflow {
+11807:#tabs-container.left:focus-within,
+11808:#tabs-container.right:focus-within {
+11811:#tabs-container.left > .toolbar > *:focus-within,
+11812:#tabs-container.right > .toolbar > *:focus-within {
+11815:#tabs-container.left > .toolbar > *:focus-within ~ .SlideBar,
+11816:#tabs-container.right > .toolbar > *:focus-within ~ .SlideBar {
+11819:#tabs-container.bottom:focus-within {
+11822:#tabs-container.top > .toolbar > *:focus-within,
+11823:#tabs-container.bottom > .toolbar > *:focus-within {
+11826:#tabs-container.top > .toolbar > *:focus-within ~ .SlideBar,
+11827:#tabs-container.bottom > .toolbar > *:focus-within ~ .SlideBar {
+11830:.tabs-top:not(.tabs-at-edge) #tabs-container:has(~ #tabs-subcontainer) {
+11833:.tabs-bottom:not(.tabs-at-edge) #tabs-container:has(~ #tabs-subcontainer) {
+11855:#tabs-subcontainer .resize .tab-strip,
+11856:#tabs-subcontainer .resize .tab-position,
+11870:#tabs-subcontainer .tab-captured .audio-on .tab-audio,
+11871:#tabs-subcontainer .audio-muted .tab-audio.tab-audio {
+11874:#tabs-subcontainer .tab.isdiscarded .favicon {
+11878:#tabs-subcontainer .tab.isdiscarded:hover .favicon {
+11881:#tabs-subcontainer .tab.iscut {
+11884:#browser:not(.alt-tabs) #tabs-subcontainer .tab-audio,
+11885:#browser:not(.alt-tabs) #tabs-subcontainer .tab.pinned:not(.active) .tab-audio {
+11891:#browser:not(.alt-tabs) #tabs-subcontainer .tab:not(.audio-on, .tab-captured) .tab-audio {
+11894:#browser:not(.alt-tabs) #tabs-subcontainer .favicon,
+11895:#browser:not(.alt-tabs) #tabs-subcontainer .tab.pinned:not(.active) .favicon {
+11900:#browser:not(.alt-tabs) #tabs-subcontainer .tab:not(.tab-mini) .close {
+11903:#browser:not(.alt-tabs) #tabs-subcontainer .tab:not(.pinned, .tab-small).audio-on .tab-audio,
+11904:#browser:not(.alt-tabs) #tabs-subcontainer .tab:not(.pinned, .tab-small).audio-muted .tab-audio,
+11905:#browser:not(.alt-tabs) #tabs-subcontainer .tab:not(.pinned, .tab-small).tab-captured .tab-audio {
+11909:#browser:not(.alt-tabs) #tabs-subcontainer .tab:not(.pinned, .tab-small).audio-on .favicon,
+11910:#browser:not(.alt-tabs) #tabs-subcontainer .tab:not(.pinned, .tab-small).audio-muted .favicon,
+11911:#browser:not(.alt-tabs) #tabs-subcontainer .tab:not(.pinned, .tab-small).tab-captured .favicon {
+11915:.alt-tabs #tabs-subcontainer .tab-audio {
+11919:.alt-tabs #tabs-subcontainer .tab.audio-on .tab-audio,
+11920:.alt-tabs #tabs-subcontainer .tab.audio-muted .tab-audio .tab-captured {
+11924:#browser #tabs-subcontainer .tab.tab-small.audio-on .tab-audio,
+11925:#browser #tabs-subcontainer .tab.pinned.audio-on .tab-audio,
+11926:#browser #tabs-subcontainer .tab.tab-small.audio-muted .tab-audio,
+11927:#browser #tabs-subcontainer .tab.pinned.audio-muted .tab-audio,
+11928:#browser #tabs-subcontainer .tab.tab-small.tab-captured .tab-audio,
+11929:#browser #tabs-subcontainer .tab.pinned.tab-captured .tab-audio {
+11943:#browser #tabs-subcontainer .tab.tab-small.audio-on .tab-audio:hover,
+11944:#browser #tabs-subcontainer .tab.pinned.audio-on .tab-audio:hover,
+11945:#browser #tabs-subcontainer .tab.tab-small.audio-muted .tab-audio:hover,
+11946:#browser #tabs-subcontainer .tab.pinned.audio-muted .tab-audio:hover,
+11947:#browser #tabs-subcontainer .tab.tab-small.tab-captured .tab-audio:hover,
+11948:#browser #tabs-subcontainer .tab.pinned.tab-captured .tab-audio:hover {
+11951:#tabs-subcontainer .tab.tab-small.tab-mini .tab-header,
+11952:#tabs-subcontainer .tab.pinned.tab-mini .tab-header {
+11959:#tabs-subcontainer .tab.tab-small.tab-mini .tab-header .stack-counter,
+11960:#tabs-subcontainer .tab.pinned.tab-mini .tab-header .stack-counter,
+11961:#tabs-subcontainer .tab.tab-small.tab-mini .tab-header .title,
+11962:#tabs-subcontainer .tab.pinned.tab-mini .tab-header .title {
+11965:#tabs-subcontainer .tab.tab-small.tab-mini .tab-header .tab-audio,
+11966:#tabs-subcontainer .tab.pinned.tab-mini .tab-header .tab-audio {
+11986:#tabs-subcontainer.left:has(.tab-strip.overflow),
+11987:#tabs-subcontainer.right:has(.tab-strip.overflow) {
+11990:#tabs-subcontainer.left .tab-strip,
+11991:#tabs-subcontainer.right .tab-strip {
+11998:#tabs-subcontainer.left .tab-strip .thumbnail-image,
+11999:#tabs-subcontainer.right .tab-strip .thumbnail-image {
+12003:#tabs-subcontainer.left .tab-strip.overflow,
+12004:#tabs-subcontainer.right .tab-strip.overflow {
+12034:#tabs-subcontainer .tab-strip {
+12084:.tabs-top:not(.density-on, .unified-ui) .tab-strip:not(.horizontal-scrolling) .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after,
+12085:.tabs-top:not(.density-on, .unified-ui) .tab-strip:not(.horizontal-scrolling) .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):before,
+12086:.tabs-top.density-on.tabs-at-edge .tab-strip:not(.horizontal-scrolling) .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after,
+12087:.tabs-top.density-on.tabs-at-edge .tab-strip:not(.horizontal-scrolling) .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):before,
+12088:.tabs-bottom:not(.density-on, .unified-ui) .tab-strip:not(.horizontal-scrolling) .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after,
+12089:.tabs-bottom:not(.density-on, .unified-ui) .tab-strip:not(.horizontal-scrolling) .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):before,
+12090:.tabs-bottom.density-on.tabs-at-edge .tab-strip:not(.horizontal-scrolling) .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after,
+12091:.tabs-bottom.density-on.tabs-at-edge .tab-strip:not(.horizontal-scrolling) .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):before {
+12099:.tabs-top .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after,
+12100:.tabs-top .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):before {
+12104:.tabs-bottom .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after,
+12105:.tabs-bottom .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):before {
+12109:.is-substack .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after,
+12110:.is-substack .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):before {
+12113:.tab.active:before {
+12116:.tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after {
+12119:#browser:not(.unified-ui) .tab.tab-accordion.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after,
+12120:#browser:not(.unified-ui) .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after {
+12123:.tabs-top#browser:not(.unified-ui) .tab.tab-accordion.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after,
+12124:.tabs-top#browser:not(.unified-ui) .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after {
+12127:.tabs-bottom#browser:not(.unified-ui) .tab.tab-accordion.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after,
+12128:.tabs-bottom#browser:not(.unified-ui) .tab.active:not(.marked, .tab-mini, .tab-in-accordion, .tab-acceptsdrop):after {
+12131:#browser:not(.unified-ui) .tab.active:not(.marked):not(.tab-mini):before {
+12134:#browser:not(.unified-ui) .tab.active:not(.marked):not(.tab-mini).insubstrip:before {
+12137:.tab-yield-space {
+12182:.tab-sync-qr-code {
+12191:.tab-wrapper {
+12198:.tab-wrapper:focus-visible {
+12201:.tabs-left .tab-wrapper,
+12202:.tabs-right .tab-wrapper {
+12205:.tabs-top .tab-wrapper,
+12206:.tabs-bottom .tab-wrapper {
+12209:#browser.maximized:not(.mac).tabs-left .tab-strip,
+12210:#browser.fullscreen.tabs-left .tab-strip,
+12211:#browser.maximized:not(.mac).tabs-right .tab-strip,
+12212:#browser.fullscreen.tabs-right .tab-strip {
+12216:#browser.maximized:not(.mac).tabs-left .tab-strip .tab-position,
+12217:#browser.fullscreen.tabs-left .tab-strip .tab-position,
+12218:#browser.maximized:not(.mac).tabs-right .tab-strip .tab-position,
+12219:#browser.fullscreen.tabs-right .tab-strip .tab-position {
+12224:#browser.maximized:not(.mac) .tab-wrapper.extended:before,
+12225:#browser.fullscreen .tab-wrapper.extended:before {
+12232:.tabs-top#browser.maximized:not(.mac) .tab-wrapper.extended:before,
+12233:.tabs-top#browser.fullscreen .tab-wrapper.extended:before {
+12241:.tabs-bottom#browser.maximized:not(.mac) .tab-wrapper.extended:before,
+12242:.tabs-bottom#browser.fullscreen .tab-wrapper.extended:before {
+12248:.tabs-left#browser.maximized:not(.mac) .accordion-toggle-arrow:before,
+12249:.tabs-left#browser.fullscreen .accordion-toggle-arrow:before,
+12250:.tabs-left#browser.maximized:not(.mac) .tab-wrapper.extended:before,
+12251:.tabs-left#browser.fullscreen .tab-wrapper.extended:before {
+12257:.tabs-right#browser.maximized:not(.mac) .accordion-toggle-arrow:before,
+12258:.tabs-right#browser.fullscreen .accordion-toggle-arrow:before,
+12259:.tabs-right#browser.maximized:not(.mac) .tab-wrapper.extended:before,
+12260:.tabs-right#browser.fullscreen .tab-wrapper.extended:before {
+12269:#browser.density-on:not(.tabs-at-edge) #tabs-tabbar-container:has(#tabs-subcontainer) {
+12273:#browser.density-on:not(.tabs-at-edge):not(.tabs-at-edge, .unified-ui) .tab-wrapper:after {
+12279:.tabs-top#browser.density-on:not(.tabs-at-edge):not(.tabs-at-edge, .unified-ui) .tab-wrapper:after {
+12285:.tabs-bottom#browser.density-on:not(.tabs-at-edge):not(.tabs-at-edge, .unified-ui) .tab-wrapper:after {
+12290:.tabs-left#browser.density-on:not(.tabs-at-edge):not(.tabs-at-edge, .unified-ui) .accordion-toggle-arrow:after,
+12291:.tabs-left#browser.density-on:not(.tabs-at-edge):not(.tabs-at-edge, .unified-ui) .tab-wrapper:after {
+12297:.tabs-right#browser.density-on:not(.tabs-at-edge):not(.tabs-at-edge, .unified-ui) .accordion-toggle-arrow:after,
+12298:.tabs-right#browser.density-on:not(.tabs-at-edge):not(.tabs-at-edge, .unified-ui) .tab-wrapper:after {
+12304:#browser .tab-position.colored .tab-wrapper:hover .tab:not(.active) {
+12308:#browser .tab-position.colored.accordion-toggle-arrow,
+12309:#browser .tab-position.colored .tab-indicator,
+12310:#browser .tab-position.colored .tab:not(.active) {
+12314:#browser .tab-position.colored.accordion-toggle-arrow:hover,
+12315:#browser .tab-position.colored .tab-indicator:hover,
+12316:#browser .tab-position.colored .tab:not(.active):hover {
+12320:#browser .tab-position.colored .tab:not(.marked) + svg .stack-frame {
+12323:#browser .tab-position.colored .tab + .tab-group-indicator .tab-indicator:not(:hover) {
+12326:.tabs-at-edge:is(.fullscreen, .maximized)#browser .tab-position.colored .tab:not(.active) + .tab-group-indicator .tab-indicator:not(:hover, .active) {
+12329:#browser .tab-position.colored .stack-counter {
+12333:#browser .tab-position.colored .tab.active + .tab-group-indicator .tab-indicator.active {
+12336:.color-behind-tabs-on#browser .tab-position.colored .tab.active + .tab-group-indicator .tab-indicator.active {
+12339:#browser .tab-position.colored .tab-wrapper.accordion,
+12340:#browser .tab-position.colored .tab-wrapper.in-accordion {
+12343:.tabs-top#browser .tab-position.colored .tab-wrapper.accordion .tab,
+12344:.tabs-top#browser .tab-position.colored .tab-wrapper.in-accordion .tab,
+12345:.tabs-bottom#browser .tab-position.colored .tab-wrapper.accordion .tab,
+12346:.tabs-bottom#browser .tab-position.colored .tab-wrapper.in-accordion .tab {
+12349:.tabs-top#browser .tab-position.colored .tab-wrapper.accordion .tab:not(.active),
+12350:.tabs-top#browser .tab-position.colored .tab-wrapper.in-accordion .tab:not(.active),
+12351:.tabs-bottom#browser .tab-position.colored .tab-wrapper.accordion .tab:not(.active),
+12352:.tabs-bottom#browser .tab-position.colored .tab-wrapper.in-accordion .tab:not(.active) {
+12355:.tabs-top#browser .tab-position.colored .tab-wrapper.accordion .tab.active.tab-accordion,
+12356:.tabs-top#browser .tab-position.colored .tab-wrapper.in-accordion .tab.active.tab-accordion,
+12357:.tabs-bottom#browser .tab-position.colored .tab-wrapper.accordion .tab.active.tab-accordion,
+12358:.tabs-bottom#browser .tab-position.colored .tab-wrapper.in-accordion .tab.active.tab-accordion {
+12361:.tabs-top#browser .tab-position.colored .tab-wrapper.accordion .tab:before,
+12362:.tabs-top#browser .tab-position.colored .tab-wrapper.in-accordion .tab:before,
+12363:.tabs-bottom#browser .tab-position.colored .tab-wrapper.accordion .tab:before,
+12364:.tabs-bottom#browser .tab-position.colored .tab-wrapper.in-accordion .tab:before,
+12365:.tabs-top#browser .tab-position.colored .tab-wrapper.accordion .tab:after,
+12366:.tabs-top#browser .tab-position.colored .tab-wrapper.in-accordion .tab:after,
+12367:.tabs-bottom#browser .tab-position.colored .tab-wrapper.accordion .tab:after,
+12368:.tabs-bottom#browser .tab-position.colored .tab-wrapper.in-accordion .tab:after {
+12371:.tabs-top#browser .tab-position.colored .tab-wrapper.accordion .tab-accordion,
+12372:.tabs-top#browser .tab-position.colored .tab-wrapper.in-accordion .tab-accordion,
+12373:.tabs-top#browser .tab-position.colored .tab-wrapper.accordion .tab-first-in-group:not(.active),
+12374:.tabs-top#browser .tab-position.colored .tab-wrapper.in-accordion .tab-first-in-group:not(.active) {
+12377:.tabs-bottom#browser .tab-position.colored .tab-wrapper.accordion .tab-accordion,
+12378:.tabs-bottom#browser .tab-position.colored .tab-wrapper.in-accordion .tab-accordion,
+12379:.tabs-bottom#browser .tab-position.colored .tab-wrapper.accordion .tab-first-in-group:not(.active),
+12380:.tabs-bottom#browser .tab-position.colored .tab-wrapper.in-accordion .tab-first-in-group:not(.active) {
+12383:#browser .tab-position.colored.accordion-toggle-arrow {
+12387:.tabs-top#browser .tab-position.colored.accordion-toggle-arrow,
+12388:.tabs-bottom#browser .tab-position.colored.accordion-toggle-arrow {
+12486:.color-behind-tabs-off:not(.transparent-tabbar) .tab-in-accordion {
+12489:.tabs-top .tab-accordion {
+12492:.density-on:not(.tabs-at-edge).tabs-top .tab-accordion {
+12495:.tabs-bottom .tab-accordion {
+12498:.density-on:not(.tabs-at-edge).tabs-bottom .tab-accordion {
+12501:.tabs-top .tab-accordion.active,
+12502:.tabs-top .tab-in-accordion.tab-first-in-group {
+12505:.density-on:not(.tabs-at-edge).tabs-top .tab-accordion.active,
+12506:.density-on:not(.tabs-at-edge).tabs-top .tab-in-accordion.tab-first-in-group {
+12509:.tabs-bottom .tab-accordion.active,
+12510:.tabs-bottom .tab-in-accordion.tab-first-in-group {
+12513:.density-on:not(.tabs-at-edge).tabs-bottom .tab-accordion.active,
+12514:.density-on:not(.tabs-at-edge).tabs-bottom .tab-in-accordion.tab-first-in-group {
+12517:.tabs-left .tab-accordion.active,
+12518:.tabs-left .tab-in-accordion.tab-first-in-group,
+12519:.tabs-right .tab-accordion.active,
+12520:.tabs-right .tab-in-accordion.tab-first-in-group {
+12524:.tabs-top .tab-in-accordion:not(.tab-first-in-group),
+12525:.tabs-bottom .tab-in-accordion:not(.tab-first-in-group) {
+12528:.tabs-top .tab.active.tab-accordion,
+12529:.tabs-bottom .tab.active.tab-accordion {
+12532:.tabs-top .tab.active.tab-accordion:after,
+12533:.tabs-bottom .tab.active.tab-accordion:after {
+12536:.tabs-left .tab.active.tab-accordion,
+12537:.tabs-right .tab.active.tab-accordion {
+12540:.tab-in-accordion + .svg-tab-selection .inner,
+12541:.tab-in-accordion + .svg-tab-selection .outer {
+12544:.tabs-top .tab-in-accordion + .svg-tab-selection .inner,
+12545:.tabs-top .tab-in-accordion + .svg-tab-selection .outer,
+12546:.tabs-bottom .tab-in-accordion + .svg-tab-selection .inner,
+12547:.tabs-bottom .tab-in-accordion + .svg-tab-selection .outer {
+12553:.tabs-left .tab-in-accordion + .svg-tab-selection .inner,
+12554:.tabs-left .tab-in-accordion + .svg-tab-selection .outer,
+12555:.tabs-right .tab-in-accordion + .svg-tab-selection .inner,
+12556:.tabs-right .tab-in-accordion + .svg-tab-selection .outer {
+12562:.tabs-top .tab-first-in-group.tab-in-accordion + .svg-tab-selection .inner,
+12563:.tabs-top .tab-first-in-group.tab-in-accordion + .svg-tab-selection .outer,
+12564:.tabs-bottom .tab-first-in-group.tab-in-accordion + .svg-tab-selection .inner,
+12565:.tabs-bottom .tab-first-in-group.tab-in-accordion + .svg-tab-selection .outer {
+12571:.tabs-left .tab-first-in-group.tab-in-accordion + .svg-tab-selection .inner,
+12572:.tabs-left .tab-first-in-group.tab-in-accordion + .svg-tab-selection .outer,
+12573:.tabs-right .tab-first-in-group.tab-in-accordion + .svg-tab-selection .inner,
+12574:.tabs-right .tab-first-in-group.tab-in-accordion + .svg-tab-selection .outer {
+12580:.tab-in-accordion + .svg-tab-selection .svg-tab-stack {
+12592:.transparent-tabbar .accordion-toggle-arrow:not(.closed.active) {
+12595:.acc-dark.bg-dark.color-accent-from-page.color-behind-tabs-on.transparent-tabbar .accordion-toggle-arrow:not(.closed.active) {
+12602:.accordion-toggle-arrow.closed.active {
+12606:.unified-ui .accordion-toggle-arrow.closed.active,
+12607:.unified-ui-transparent .accordion-toggle-arrow.closed.active,
+12608:.color-behind-tabs-off .accordion-toggle-arrow.closed.active {
+12635:.tabs-left .accordion-toggle-arrow,
+12636:.tabs-right .accordion-toggle-arrow {
+12657:.tab-group-indicator {
+12666:.tabs-top .tab-group-indicator,
+12667:.tabs-left .tab-group-indicator,
+12668:.tabs-right .tab-group-indicator {
+12671:.tabs-bottom .tab-group-indicator {
+12674:.tab-indicator {
+12682:.tab-indicator + .tab-indicator {
+12685:.tabs-bottom .tab-indicator {
+12689:.tab-indicator:first-of-type {
+12692:.tabs-bottom .tab-indicator:first-of-type {
+12696:.tab-indicator:last-of-type {
+12699:.tabs-bottom .tab-indicator:last-of-type {
+12703:.tabs-top .tab-indicator:last-of-type,
+12704:.tabs-bottom .tab-indicator:last-of-type {
+12707:.tab-indicator.active {
+12711:.tabs-bottom .tab-indicator.active {
+12715:.tab-indicator.marked {
+12720:.tabs-bottom .tab-indicator.marked + .tab-group-indicator .svg-tab-selection {
+12723:.tab-indicator.marked.active.tab-indicator.marked:after {
+12733:.tabs-bottom .tab-indicator.marked.active.tab-indicator.marked:after {
+12736:.tab.marked:not(.active) + .tab-group-indicator .tab-indicator.marked.active.tab-indicator.marked:after {
+12739:.tab-indicator.hidden-for-drag {
+12742:#app .tab-indicator .svg-tab-selection {
+12745:#app .tab-indicator .svg-tab-selection .outer {
+12748:.stacks-dotted.tabs-right .tab-wrapper.group,
+12749:.substrip-tabs-on.tabs-right .tab-wrapper.group,
+12750:.stacks-dotted.tabs-left .tab-wrapper.group,
+12751:.substrip-tabs-on.tabs-left .tab-wrapper.group {
+12755:.unified-ui .tab-indicator,
+12756:.color-behind-tabs-off .tab-indicator {
+12759:.unified-ui .tab-indicator:hover,
+12760:.color-behind-tabs-off .tab-indicator:hover {
+12763:.unified-ui .tab-indicator.active,
+12764:.color-behind-tabs-off .tab-indicator.active {
+12767:.unified-ui .tab.active + .tab-group-indicator .tab-indicator.active,
+12768:.color-behind-tabs-off .tab.active + .tab-group-indicator .tab-indicator.active {
+12771:.color-behind-tabs-on .tab-indicator {
+12774:.color-behind-tabs-on .tab-indicator:hover {
+12777:.color-behind-tabs-on .tab-indicator.active {
+12780:.color-behind-tabs-on .tab.active + .tab-group-indicator .tab-indicator.active {
+12783:.color-behind-tabs-on .tab:not(.active):hover .tab-indicator.active {
+12786:.tabs-at-edge.stacks-dotted.tabs-bottom .tab-group-indicator,
+12787:.tabs-at-edge.substrip-tabs-on.tabs-bottom .tab-group-indicator {
+12790:.tabs-at-edge.stacks-dotted.tabs-bottom .tab-group-indicator .tab-indicator,
+12791:.tabs-at-edge.substrip-tabs-on.tabs-bottom .tab-group-indicator .tab-indicator {
+12798:.tabs-at-edge.stacks-dotted:not(.tabs-bottom) .tab-group-indicator,
+12799:.tabs-at-edge.substrip-tabs-on:not(.tabs-bottom) .tab-group-indicator {
+12802:.tabs-at-edge.stacks-dotted:not(.tabs-bottom) .tab-group-indicator .tab-indicator,
+12803:.tabs-at-edge.substrip-tabs-on:not(.tabs-bottom) .tab-group-indicator .tab-indicator {
+12810:.tabs-at-edge.stacks-dotted .tab-group-indicator,
+12811:.tabs-at-edge.substrip-tabs-on .tab-group-indicator {
+12815:.color-behind-tabs-on.tabs-at-edge.stacks-dotted .tab-indicator,
+12816:.color-behind-tabs-on.tabs-at-edge.substrip-tabs-on .tab-indicator {
+12819:.color-behind-tabs-off.tabs-at-edge.stacks-dotted .tab-indicator,
+12820:.color-behind-tabs-off.tabs-at-edge.substrip-tabs-on .tab-indicator {
+12823:.tabs-at-edge.stacks-dotted .tab-indicator.active,
+12824:.tabs-at-edge.substrip-tabs-on .tab-indicator.active {
+12833:.StackEditor .tab-title-edit {
+12926:#vivaldi-tooltip .tooltip .tooltip-item .thumbnail-text .title {
+12933:#vivaldi-tooltip .tooltip .tooltip-item .thumbnail-text .title:has(~ .info.size) {
+12982:#vivaldi-tooltip .tooltip .tooltip-item .close {
+12986:#vivaldi-tooltip .tooltip .tab-solo .tooltip-item {
+12992:#vivaldi-tooltip .tooltip .tab-solo .tooltip-item .close {
+12996:#vivaldi-tooltip .tooltip .tab-solo .tooltip-item .thumbnail-image {
+13000:#vivaldi-tooltip .tooltip .tab-group {
+13005:#vivaldi-tooltip .tooltip .tab-group .tooltip-item {
+13017:#vivaldi-tooltip .tooltip .tab-group .tooltip-item > * {
+13020:#vivaldi-tooltip .tooltip .tab-group .thumbnail-image {
+13025:#vivaldi-tooltip .tooltip .tab-group .thumbnail-caption {
+13030:#vivaldi-tooltip .tooltip .tab-group .thumbnail-buttons {
+13037:#vivaldi-tooltip .tooltip .tab-group .thumbnail-buttons .favicon {
+13041:#vivaldi-tooltip .tooltip .tab-group .thumbnail-buttons .close {
+13045:#vivaldi-tooltip .tooltip .tab-group .tooltip-item:hover .favicon {
+13048:#vivaldi-tooltip .tooltip .tab-group .tooltip-item:hover .close {
+13052:#vivaldi-tooltip .tooltip .tab-group .thumbnail-text {
+13057:#vivaldi-tooltip .tooltip .tab-group .close {
+13060:.tabs-right #vivaldi-tooltip .tooltip .tab-group {
+13063:.tabs-bottom #vivaldi-tooltip .tooltip .tab-group {
+13066:#browser.alt-tabs #vivaldi-tooltip .tooltip .tab-group .thumbnail-image {
+13069:#browser.alt-tabs #vivaldi-tooltip .tooltip .tab-group .thumbnail-buttons {
+13072:#vivaldi-tooltip .tooltip .tab-group .tooltip-item:hover,
+13073:#vivaldi-tooltip .tooltip .tab-group .tooltip-item:active,
+13074:#vivaldi-tooltip .tooltip .tab-group .tooltip-item.active,
+13075:#vivaldi-tooltip .tooltip .tab-group .tooltip-item.last-active {
+13078:#vivaldi-tooltip .tooltip .tab-group .tooltip-item:hover .thumbnail-image,
+13079:#vivaldi-tooltip .tooltip .tab-group .tooltip-item:active .thumbnail-image,
+13080:#vivaldi-tooltip .tooltip .tab-group .tooltip-item.active .thumbnail-image,
+13081:#vivaldi-tooltip .tooltip .tab-group .tooltip-item.last-active .thumbnail-image {
+13084:#vivaldi-tooltip .tooltip .tab-group .tooltip-item.last-active .thumbnail-image,
+13085:#vivaldi-tooltip .tooltip .tab-group .tooltip-item.active .thumbnail-image {
+13515:.panel > header h1 .close {
+13721:#window-panel .vivaldi-tree .title {
+13725:#window-panel .vivaldi-tree .title.active:before,
+13726:#window-panel .vivaldi-tree .title.unread:before {
+13736:#window-panel .vivaldi-tree .title.active:before {
+13739:#window-panel .vivaldi-tree .title.unread {
+13742:#window-panel .vivaldi-tree .title.unread:before {
+13745:#window-panel .vivaldi-tree .title .text {
+13751:#window-panel .vivaldi-tree .title .pill {
+13767:.counter-indicator + #window-panel .vivaldi-tree .title .pill {
+13770:#window-panel .vivaldi-tree .title .pill.counter-unseen {
+13777:#window-panel .vivaldi-tree .title .pill.counter-unseen + .counter-unread {
+13782:.hasfocus .VivaldiList:focus-within .tree-row[data-selected] #window-panel .vivaldi-tree .title .pill {
+13786:.hasfocus .VivaldiList:focus-within .tree-row[data-selected] #window-panel .vivaldi-tree .title .pill.counter-unseen {
+13791:.hasfocus .VivaldiList:focus-within .tree-row[data-selected] .mail-panel-category-container #window-panel .vivaldi-tree .title .pill {
+13794:.hasfocus .VivaldiList:focus-within .tree-row[data-selected] .mail-panel-category-container #window-panel .vivaldi-tree .title .pill.counter-unseen {
+13798:.hasfocus .VivaldiList:focus-within .tree-row[data-selected] .mail-panel-category-container #window-panel .vivaldi-tree .title .pill.counter-unread {
+13803:.hasfocus #window-panel .vivaldi-tree:focus-within .tree-row[data-selected] .title:before {
+13807:.hasfocus #window-panel .vivaldi-tree:focus-within .tree-row[data-selected] .title.active:before {
+13844:#window-panel .vivaldi-tree .close {
+13941:.download-popout .close {
+14059:#browser.auto-hide.unified-ui.tabs-top:has(> #header > .tabbar-wrapper) {
+14064:#browser.auto-hide.unified-ui.tabs-bottom:has(> #footer > .tabbar-wrapper),
+14068:#browser.auto-hide.unified-ui.tabs-left:has(> #main > .inner > .tabbar-wrapper),
+14072:#browser.auto-hide.unified-ui.tabs-right:has(> #main > .inner > .tabbar-wrapper),
+14220:.auto-hide .auto-hide-wrapper #tabs-tabbar-container,
+14436:.PrivacyDash .close {
+14771:#browser.break-mode .tab-header progress,
+14772:#browser.break-mode .tab-header .title,
+14773:#browser.break-mode .tab-header .stack-counter,
+14774:#browser.break-mode .tab-header .favicon svg,
+14775:#browser.break-mode .tab-header .favicon img,
+14776:#browser.break-mode .tabbar-workspace-button .button-title,
+14778:#browser.break-mode .tabbar-workspace-button .button-icon,
+14804:#browser.break-mode .tab-position {
+15364:.vivaldi-settings .ContentBlocker-Sources .item .ContentBlocker-SourceItem .title {
+15369:.vivaldi-settings .ContentBlocker-Sources .item .ContentBlocker-SourceItem .title,
+15632:.bookmark-bar button .title {
+15947:#panels .webpanel-stack .webpanel .webpanel-header .close {
+16197:.SpeedDial .close,
+16214:.SpeedDial .close:hover,
+16219:.SpeedDial .close svg,
+16225:.SpeedDial .close {
+16240:.SpeedDial:not(.dragging, .dragover):hover .close,
+16241:.SpeedDial:not(.dragging, .dragover):active .close,
+16250:.SpeedDial:not(.dragging, .dragover):hover .close:hover,
+16251:.SpeedDial:not(.dragging, .dragover):active .close:hover,
+16259:.SpeedDial:not(.dragging, .dragover):hover .close:active,
+16260:.SpeedDial:not(.dragging, .dragover):active .close:active,
+16365:.SpeedDial--Thumbnail .thumbnail-title:has(img, .favicon) {
+16383:.SpeedDial--Icon .favicon,
+16391:.SpeedDial--Icon .favicon.SpeedDialAddButton-Favicon,
+16396:.SpeedDial--Icon .thumbnail-favicon .favicon,
+16402:.SpeedDial--Icon .thumbnail-favicon .favicon svg,
+16420:.SpeedDial--Icon .thumbnail-favicon-folder .thumbnail-favicon-children .favicon {
+16425:.SpeedDial--Icon .thumbnail-favicon .favicon,
+16432:.SpeedDial--Icon .thumbnail-favicon .favicon {
+16440:.SpeedDials-Wrapper:not(.dragging-disabled) .SpeedDial--Icon .thumbnail-favicon .favicon:hover {
+16446:.dragging .SpeedDial--Icon .thumbnail-favicon .favicon {
+16451:.theme-light .SpeedDial--Icon.dragover .thumbnail-favicon .favicon,
+16458:.theme-light .SpeedDial--Icon.dragover .thumbnail-favicon .favicon .thumbnail-image,
+16464:.theme-dark .SpeedDial--Icon.dragover .thumbnail-favicon .favicon,
+16471:.theme-dark .SpeedDial--Icon.dragover .thumbnail-favicon .favicon .thumbnail-image,
+16489:.SpeedDial--Icon.SpeedDial--NoTitle:focus-visible .thumbnail-favicon .favicon {
+16899:.tracker-warning button.close {
+17402:.startpage #modal-bg.startpage-drawer .close {
+18293:.vivaldi-settings .menu-lists .menu-items .vivaldi-tree .title,
+18294:.vivaldi-settings .menu-lists .menu-commands .vivaldi-tree .title {
+18681:.tab-min-width label {
+18684:.tab-min-width input[type='range'] {
+18688:.tab-min-width input[type='range']:after {
+18699:.vivaldi-settings .tab-stacking label {
+18702:.vivaldi-settings .tab-stacking .img-setting {
+20314:.multiinput .multiinput-item .close {
+20806:.quick-command-container .quick-command-tip-content .close-tip {
+21261:#history-panel .title {
+21267:#history-panel .title.link {
+24668:.download-editor.download-editor input.title {
+25147:.webpageview #mail_view .list-wrapper .closeContainer {
+25151:.theme-dark .webpageview #mail_view .list-wrapper .closeContainer {
+26484:.vpn-alert .FormFeedback .close,
+26485:#mail_composer > .FormFeedback .close {
+26497:#mail_composer > .FormFeedback .close {
+26501:.vpn-alert .FormFeedback .close {
+28634:.topmenu + #tabs-tabbar-container.top {
+29173:.tabswitcher .visual-tabs .visual-tab.active-page {
+29219:.tabswitcher .visual-tab-switcher-title > .tab-audio {
+29249:.tabswitcher.list li > .tab-audio {
+30019:#browser.first-start-animate .tabbar-wrapper {
+30031:#browser.first-start .tabbar-wrapper,
+30055:.welcome-panel .title-container {
+30061:.welcome-panel .title-container h1 {
+30064:.welcome-panel .title-container p {
+31167:.page-confirm-info-bar .infobar-controls .close {
+31172:.page-confirm-info-bar .infobar-controls .close svg {
+31806:.SiteInfo-Header .favicon {
+32914:.color-behind-tabs-on #tabs-tabbar-container .UrlField--KeywordBadge {
+33153:.tabs-bottom footer:has(.tabbar-wrapper) {
+33163:.tabs-bottom footer #tabs-tabbar-container .button-toolbar > button:disabled > .button-title,
+33168:.color-behind-tabs-on.tabs-bottom footer #tabs-tabbar-container,
+33172:.transparent-tabbar.color-accent-from-page.acc-dark.bg-dark.color-behind-tabs-on.tabs-bottom footer #tabs-tabbar-container,
+33177:.color-behind-tabs-on.tabs-bottom footer #tabs-tabbar-container > button:not(.SlideBar):active,
+33179:.color-behind-tabs-on.tabs-bottom footer #tabs-tabbar-container > button:not(.SlideBar).button-pressed,
+33183:.color-behind-tabs-on.tabs-bottom footer #tabs-tabbar-container > button:not(.SlideBar).button-pressed:active,
+33187:.color-behind-tabs-off.tabs-bottom footer #tabs-tabbar-container,
+33191:.color-behind-tabs-off.tabs-bottom footer #tabs-tabbar-container > .button-toolbar > button:active,
+33193:.color-behind-tabs-off.tabs-bottom footer #tabs-tabbar-container > .button-toolbar > button.button-pressed,
+33197:.color-behind-tabs-off.tabs-bottom footer #tabs-tabbar-container > .button-toolbar > button.button-pressed:active,
+33752:.vivaldi-extension-banner .controls .close {
+33756:.vivaldi-extension-banner .controls .close :hover {
+34154:.Dashboard-Widgets .dashboard-widget-header .title {
+34164:.Dashboard-Widgets .dashboard-widget-header .title span {
+34263:#browser .Dashboard-PrivacyStatsWidget .privacy-stats-wrapper .counter-wrapper > div .title {
+34393:.Dashboard .feed-wrapper .unread.unseen .title,
+34394:.Dashboard .email-wrapper .unread.unseen .title {
+34397:.Dashboard .feed-wrapper .unread .data-row .title,
+34398:.Dashboard .email-wrapper .unread .data-row .title,
+34399:.Dashboard .feed-wrapper .unread .title-row .title,
+34400:.Dashboard .email-wrapper .unread .title-row .title {
+34422:.Dashboard .feed-wrapper .feed-row.title-only,
+34423:.Dashboard .email-wrapper .feed-row.title-only {
+34427:.Dashboard .feed-wrapper .feed-row.title-only .subject-row .title,
+34428:.Dashboard .email-wrapper .feed-row.title-only .subject-row .title {
+34435:.Dashboard .feed-wrapper .feed-row.title-only .preview-image,
+34436:.Dashboard .email-wrapper .feed-row.title-only .preview-image {
+34439:.Dashboard .feed-wrapper .feed-row.title-only .content-row,
+34440:.Dashboard .email-wrapper .feed-row.title-only .content-row {
+34453:.Dashboard .feed-wrapper .feed-row.focus-first .subject-row .title,
+34454:.Dashboard .email-wrapper .feed-row.focus-first .subject-row .title {
+34487:.Dashboard .feed-wrapper .feed-row .title-row,
+34488:.Dashboard .email-wrapper .feed-row .title-row {
+34494:.Dashboard .feed-wrapper .feed-row .title-row .title,
+34495:.Dashboard .email-wrapper .feed-row .title-row .title {
+34500:.Dashboard .feed-wrapper .feed-row .title-row .date,
+34501:.Dashboard .email-wrapper .feed-row .title-row .date {
+34511:.Dashboard .feed-wrapper .feed-row .subject-row .title,
+34512:.Dashboard .email-wrapper .feed-row .subject-row .title {
+34562:.Dashboard .feed-wrapper .email-item .data-row .title,
+34563:.Dashboard .email-wrapper .email-item .data-row .title {
+34579:.Dashboard .feed-wrapper .email-item .subject-row .title,
+34580:.Dashboard .email-wrapper .email-item .subject-row .title {
+35007:.Dashboard-CurrencyWidget .dashboard-widget-header .title {
+36190:.TabButtonPopup .quick-commands > .VivaldiList .close {
+36207:.TabButtonPopup .quick-commands > .VivaldiList .quick-command:hover .close {
+36437:.TabButtonPopup label.window-entry .title {
+36442:.TabButtonPopup label.window-entry .title .text {
+36448:.TabButtonPopup label.window-entry .title .pill {
+36466:.counter-indicator + .TabButtonPopup label.window-entry .title .pill {
+36469:.TabButtonPopup label.window-entry .title .pill.counter-unseen {
+36476:.TabButtonPopup label.window-entry .title .pill.counter-unseen + .counter-unread {
+36481:.hasfocus .VivaldiList:focus-within .tree-row[data-selected] .TabButtonPopup label.window-entry .title .pill {
+36485:.hasfocus .VivaldiList:focus-within .tree-row[data-selected] .TabButtonPopup label.window-entry .title .pill.counter-unseen {
+36490:.hasfocus .VivaldiList:focus-within .tree-row[data-selected] .mail-panel-category-container .TabButtonPopup label.window-entry .title .pill {
+36493:.hasfocus .VivaldiList:focus-within .tree-row[data-selected] .mail-panel-category-container .TabButtonPopup label.window-entry .title .pill.counter-unseen {
+36497:.hasfocus .VivaldiList:focus-within .tree-row[data-selected] .mail-panel-category-container .TabButtonPopup label.window-entry .title .pill.counter-unread {
+36502:.TabButtonPopup label.window-entry .close {
+36505:.TabButtonPopup label.window-entry:hover .close {
+36516:.TabButtonPopup input[type='button'].close-button {
+36553:.TabButtonPopupSuggestion header .title {
+36559:.TabButtonPopupSuggestion header .close {

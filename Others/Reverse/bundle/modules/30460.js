@@ -1,0 +1,1 @@
+"use strict";n.d(t,{p:()=>i});const i="http://bookmark.placeholder.url/"

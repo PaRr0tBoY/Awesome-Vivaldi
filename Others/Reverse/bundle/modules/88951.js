@@ -1,0 +1,1 @@
+"use strict";function i(e){const t=e?e.substring(e.indexOf("@")+1):"vivaldi.com",n=new Uint32Array(2);return crypto.getRandomValues(n),Date.now()+"."+n.join(".")+"@"+t}n.d(t,{Z:()=>i})

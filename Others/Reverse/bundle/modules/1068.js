@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>o});var i=n(67294),s=n(48521);const o=function(e,t=1e3){return function({disabled:n,...o}){const[a,r]=i.useState(!0),l=i.useRef(n),c=e||"input";return i.useEffect((()=>{if(n)return void r(!0);if(l.current)return void r(!1);const e=setTimeout((()=>r(!1)),t);return()=>clearTimeout(e)}),[n]),(0,s.jsx)(c,{...o,disabled:a})}}

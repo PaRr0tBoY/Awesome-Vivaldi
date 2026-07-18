@@ -1,0 +1,1 @@
+"use strict";n.d(t,{B:()=>i,Y:()=>o});var a=n(5863);function r(e,t,n,a){return{signon_realm:`m3_${e}_${t}`,origin:`${e}://${t}`,username:n,password:a}}function i(e){const{MAIL_EMAIL:t,MAIL_USER:n="",MAIL_PASSWORD:i="",accountType:o}=e;return r(o===a.s9.IMAP?"imap":"pop",t,n,i)}function o(e){const{MAIL_EMAIL:t,MAIL_SMTP_USER:n="",MAIL_SMTP_PASSWORD:a=""}=e;return r("smtp",t,n,a)}

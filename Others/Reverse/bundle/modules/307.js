@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>o});var i=n(59322),s=n(44850);function o(e,t,n){var o="message/"+t.id,a=t.subject,r=s.urls.internalUrl("mailpage",o,a);n?i.ZP.openURL(e,r,n):i.ZP.openURL(e,r)}

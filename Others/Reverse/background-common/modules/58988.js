@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>r});var a=n(5272);function r(e,t){return function(){var n=arguments.length;if(0===n)return t();var r=arguments[n-1];return(0,a.Z)(r)||"function"!=typeof r[e]?t.apply(this,arguments):r[e].apply(r,Array.prototype.slice.call(arguments,0,n-1))}}

@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>i});var a=n(58746),r=n(89122);const i=function(e){if(!(0,r.Z)(e))return!1;var t=(0,a.Z)(e);return"[object Function]"==t||"[object GeneratorFunction]"==t||"[object AsyncFunction]"==t||"[object Proxy]"==t}

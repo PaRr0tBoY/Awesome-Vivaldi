@@ -1,0 +1,1 @@
+"use strict";function a(){let e=Promise.resolve();return async function(){const t=e;let n;if(e=new Promise((e=>n=e)),await t,!n)throw new Error("createMutex.lock: Expected release to be defined");return n}}n.d(t,{M:()=>a})

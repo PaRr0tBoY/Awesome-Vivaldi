@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>r});var a=n(48868);const r={add:function(e){return a.Z.searchDbQueue.bulkAdd(e)},remove:function(e){return a.Z.searchDbQueue.bulkDelete(e)},count:function(){return a.Z.searchDbQueue.count()},getLatestRequests:function(e){return a.Z.searchDbQueue.orderBy("sentDate").reverse().limit(e).toArray()}}

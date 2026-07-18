@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>i});const i={kNone:-1,kLeft:0,kCenter:1,kRight:2,kBack:3,kForward:4,isContextMenuButton:e=>2===e,isNavigationButton:e=>3===e||4===e,isNoModifierPressed:e=>!(e.altKey||e.shiftKey||e.ctrlKey||e.metaKey),setWebviewPointerEvents:(e,t)=>{const n=e?"":"none",i=t.getElementsByTagName("WEBVIEW");for(const e of i)e.style.pointerEvents=n}}

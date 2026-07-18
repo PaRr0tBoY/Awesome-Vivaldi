@@ -1,0 +1,1 @@
+"use strict";function a(e,t){return`Basic ${btoa(unescape(encodeURIComponent(`${e}:${t}`)))}`}n.d(t,{Z:()=>a})

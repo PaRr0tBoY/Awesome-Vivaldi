@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>i});var a=n(26067),r=n(7064);const i={call:function(e,t,n,i){if(i.buffer.detached)throw new Error("Cannot write a detached ArrayBuffer to disk");const{pathArray:o,fileName:s}=(0,a.ZP)(e,t,n);return r.Z.mailPrivate.writeBufferToMessageFile(o,s,i)}}

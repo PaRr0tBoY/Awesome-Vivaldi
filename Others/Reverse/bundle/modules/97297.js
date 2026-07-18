@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>o});var i=n(24602);class s extends i.Z{getInitialState(){return""}reduce(e,t){switch(t.actionType){case"TOOLBAR_EDIT_MODE":return t.toolbar;case"TOOLBAR_STOP_EDIT_MODE":return"";default:return e}}}const o=new s

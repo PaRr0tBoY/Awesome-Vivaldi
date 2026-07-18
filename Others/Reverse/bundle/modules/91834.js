@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>i});const i={updateCounterFolders:function(e,t,n,i){i.forEach((({viewIntersections:i,counter:s})=>{let o=!1,a=!1,r=!1;for(const n of t){if(!o){i.total.get(n)?.every((t=>e.has(t)))&&(o=!0)}if(!a){i.unseen.get(n)?.every((t=>e.has(t)))&&(a=!0)}if(!r){i.unread.get(n)?.every((t=>e.has(t)))&&(r=!0)}}o&&(s.total+=n),a&&(s.unseen+=n),r&&(s.unread+=n)}))}}

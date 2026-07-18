@@ -1,0 +1,1 @@
+"use strict";function a(e){var t=String(e).match(/^function (\w*)/);return null==t?"":t[1]}n.d(t,{Z:()=>a})

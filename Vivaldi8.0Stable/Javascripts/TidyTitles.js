@@ -824,7 +824,7 @@ Write responses (but not JSON keys) in ${languageName}.`;
         }
 
         const viv = parseVivExtData(tab.vivExtData);
-        if (viv.group !== stackId || tab.pinned || viv.panelId) {
+        if (viv.group !== stackId || viv.panelId) {
           removeTabFromStackIndex(tabId);
           if (viv.group) setTabStack(tab.id, viv.group);
           resolve(null);

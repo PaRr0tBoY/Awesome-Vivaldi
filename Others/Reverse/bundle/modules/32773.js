@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>r});var i=n(33638),s=n(63153),o=n(15341),a=n(62803);const r=new class{edit(e,t){i.Z.dispatch({actionType:"TOOLBAR_EDIT_MODE",toolbar:e}),(0,o.Yt)()&&(s.Z.updateAutoHideVisibility(t,"top",{visible:!1}),(0,a.L0)(t))}stopEditing(e){i.Z.dispatch({actionType:"TOOLBAR_STOP_EDIT_MODE"}),(0,o.Yt)()&&(0,a.L0)(e)}}

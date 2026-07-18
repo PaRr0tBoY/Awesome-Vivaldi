@@ -1,0 +1,1 @@
+"use strict";n.d(t,{Z:()=>s});var i=n(33638);const s=new class{updateState(e,t){i.Z.dispatch({actionType:"URLFIELD_UPDATE_STATE",pageId:e,state:t})}reset(e){i.Z.dispatch({actionType:"URLFIELD_RESET",pageId:e})}}

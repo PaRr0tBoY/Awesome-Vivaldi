@@ -2,6 +2,9 @@
 .DS_Store
 Desktop.ini
 
+# Development artifacts (IDE backups, temp files)
+*.backup-*
+
 # Thumbnail cache files
 ._*
 Thumbs.db
