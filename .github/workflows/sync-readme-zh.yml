@@ -61,14 +61,17 @@ jobs:
           OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
           SOURCE_COMMIT: ${{ steps.detect.outputs.main_source_sha }}
         run: |
+          set +e
           python3 .github/scripts/translate-readme.py \
             README.md \
             /tmp/translated_main.md \
             main
+          TRANSLATE_EXIT=$?
+          set -e
 
-          if [ ! -s /tmp/translated_main.md ]; then
-            echo "::error::Translation produced empty output"
-            exit 1
+          if [ $TRANSLATE_EXIT -ne 0 ] || [ ! -s /tmp/translated_main.md ]; then
+            echo "::warning::main README translation failed or produced empty output"
+            exit 0
           fi
 
           mv /tmp/translated_main.md Doc/READMEZH/READMEMAIN.md
@@ -81,14 +84,17 @@ jobs:
           OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
           SOURCE_COMMIT: ${{ steps.detect.outputs.v80_source_sha }}
         run: |
+          set +e
           python3 .github/scripts/translate-readme.py \
             Vivaldi8.0Stable/README.md \
             /tmp/translated_80.md \
             80
+          TRANSLATE_EXIT=$?
+          set -e
 
-          if [ ! -s /tmp/translated_80.md ]; then
-            echo "::error::Translation produced empty output"
-            exit 1
+          if [ $TRANSLATE_EXIT -ne 0 ] || [ ! -s /tmp/translated_80.md ]; then
+            echo "::warning::v80 README translation failed or produced empty output"
+            exit 0
           fi
 
           mv /tmp/translated_80.md Doc/READMEZH/README80.md

@@ -205,7 +205,12 @@ This is the file layout of the project. Use this to understand what paths are va
         sys.exit(1)
 
     if not translated or translated == 'null':
-        print("::error::Translation returned empty content", file=sys.stderr)
+        print("::warning::Translation returned empty content", file=sys.stderr)
+        # Print finish_reason for debugging
+        finish = data.get('choices', [{}])[0].get('finish_reason', 'unknown')
+        print(f"::warning::Finish reason: {finish}, model: {model}", file=sys.stderr)
+        # Print first 500 chars of raw response for debugging
+        print(f"::debug::Raw response snippet: {body[:300]}", file=sys.stderr)
         sys.exit(1)
 
     # Step 6: Detokenize — restore original paths
