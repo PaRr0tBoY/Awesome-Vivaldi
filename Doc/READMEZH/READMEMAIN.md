@@ -1,3 +1,4 @@
+<!-- source-commit: 26e5714338d0d9f75afbdc944531c9c5d93019f1 -->
 <div align="center">
     <img width="200" height="200" src="./Others/assets/IMG5682.png">
     <h1>Awesome Vivaldi</h1>
@@ -12,7 +13,7 @@
 </div>
 
 <div align="center">
-    <p>Vivaldi 浏览器精选社区修改包</p>
+    <p>A Curated Community Mod Pack for Vivaldi Browser</p>
 </div>
 
 <div align="center">
@@ -32,201 +33,211 @@
 
 ## 目录
 
-- [简介](#简介)
-- [***安装***](#安装)
-- [最新更新](#最新更新)
-- [功能展示](#功能展示)
-- [Vivaldi Max (AI 功能)](#vivaldi-maxai-功能)
-- [修改列表](#修改列表)
-- [社区修改](#社区修改)
+- [Introduction](#introduction)
+- [***Installation](#installation)
+- [Latest Updates](#latest-updates)
+- [Feature Showcase](#feature-showcase)
+- [Vivaldi Max (AI Features)](#vivaldi-maxai-features)
+- [Mod List](#mod-list)
+- [Community Mods](#community-mods)
+- [Documentation](#documentation)
 
 ## 简介
 
-本整合包始终支持最新版本的 Vivaldi，目前 [Vivaldi 8 最新版](./Vivaldi8.0Stable) 为最新支持版本。
+此模组包始终随 Vivaldi 浏览器更新，[Vivaldi 8 latest](./Vivaldi8.0Stable) 目前受支持。
 
-> 您正在使用的 Vivaldi 浏览器版本是什么？如果您不确定，可以在地址栏中输入 `vivaldi:about` 进行查看。
+> 使用哪个版本的 Vivaldi 浏览器？如果不确定，可在 `vivaldi:about` 查看。
 
 ## 安装
 
-1. 一键安装脚本 (***实验性***)
+1. 一键安装脚本（***实验性***)
 
-Windows (PowerShell)
+Windows（PowerShell）
 ```powershell
 
 irm https://raw.githubusercontent.com/PaRr0tBoY/Awesome-Vivaldi/main/install.ps1 | iex
 ```
 
-macOS (bash)
+macOS（bash）
 ```bash
 curl -fsSL https://raw.githubusercontent.com/PaRr0tBoY/Awesome-Vivaldi/main/install.sh | bash
 ```
 
-要卸载，请再次运行脚本。
+卸载时再运行一次脚本。
 
 <img width="919" height="469" alt="image" src="https://github.com/user-attachments/assets/2084ca97-4712-4c12-b3f8-ad79ba124cfb" />
 
-2. 或者，如果您的电脑上安装了 claude code 等代理程序，可以要求它：
+2. 或者如果您电脑上有类似 claude code 的代理，请让它：
 
 ```
-Install https://github.com/PaRr0tBoY/Awesome-Vivaldi for me.
+为我安装 https://github.com/PaRr0tBoY/Awesome-Vivaldi。
 ```
 
-3. 或者 [点击我](./Vivaldi8.0Stable/README.md) 访问手动安装指南。
+3. 或者 [Click me](./Vivaldi8.0Stable/README.md) 前往手动安装指南。
 
 ## 最新更新
 
-| 展示                                                    | 修改                                   |
-| ----------------------------------------------------------- | -------------------------------------- |
-|![VividToast](./Others/assets/toast.gif)                    | `VividToast.css` + `VividToast.js` |
-|![VividPeek](./Others/assets/VividPeekUpdate.gif)           | `VividPeek.js`                       |
-|![Restore Pinned Tab](./Others/assets/restorepinnedtab.gif) | `restorepinnedtab.js`                |
+| Showcase                                            | Mods                                   |
+| --------------------------------------------------- | -------------------------------------- |
+| ![VividToast](./Others/assets/toast.gif)                    | `VividToast.css` + `VividToast.js` |
+| ![VividPeek](./Others/assets/VividPeekUpdate.gif)           | `VividPeek.js`                       |
+| ![Restore Pinned Tab](./Others/assets/restorepinnedtab.gif) | `restorepinnedtab.js`                |
 
 ## 功能展示
 
-| 展示                                            | 修改                                     |
+| Showcase                                            | Mods                                     |
 | --------------------------------------------------- | ---------------------------------------- |
-|![VividPeek](./Others/assets/ArcPeek.gif)           | `VividPeek.css` + `VividPeek.js`     |
-|![VividPlayer](./Others/assets/VividPlayer.gif)     | `VividPlayer.css` + `VividPlayer.js` |
-|![FavouriteTabs](./Others/assets/FavouriteTabs.gif) | `FavouriteTabs.css`                    |
-|![PeekTabbar](./Others/assets/PeekTabbar.gif)       | `PeekTabbar.css`                       |
-|![Quietify](./Others/assets/Quietify.gif)           | `Quietify.css`                         |
+| ![VividPeek](./Others/assets/ArcPeek.gif)           | `VividPeek.css` + `VividPeek.js`     |
+| ![VividPlayer](./Others/assets/VividPlayer.gif)     | `VividPlayer.css` + `VividPlayer.js` |
+| ![FavouriteTabs](./Others/assets/FavouriteTabs.gif) | `FavouriteTabs.css`                    |
+| ![PeekTabbar](./Others/assets/PeekTabbar.gif)       | `PeekTabbar.css`                       |
+| ![Quietify](./Others/assets/Quietify.gif)           | `Quietify.css`                         |
 
-## Vivaldi Max (AI 功能)
+## Vivaldi Max（AI 功能）
 
-| 展示                                            | 修改                                                   |
+| Showcase                                            | Mods                                                   |
 | --------------------------------------------------- | ------------------------------------------------------ |
-|![TidyTabs](./Others/assets/VivaldiMax.gif)         | `TidyTabs.css` + `TidyTabs.js` + `TidyTitles.js` |
-|![TidyDownloads](./Others/assets/TidyDownloads.gif) | `TidyDownloads.js`                                   |
-|![TidyAddress](./Others/assets/tidyaddress.gif)     | `TidyAddress.js`                                     |
-|![AskOnPage](./Others/assets/AskInPage.png)         | `AskOnPage.js`                                       |
+| ![TidyTabs](./Others/assets/VivaldiMax.gif)         | `TidyTabs.css` + `TidyTabs.js` + `TidyTitles.js` |
+| ![TidyDownloads](./Others/assets/TidyDownloads.gif) | `TidyDownloads.js`                                   |
+| ![TidyAddress](./Others/assets/tidyaddress.gif)     | `TidyAddress.js`                                     |
+| ![AskOnPage](./Others/assets/AskInPage.png)         | `AskOnPage.js`                                       |
 
-## 修改列表
+## 模组列表
+
+&nbsp;
 
 ### CSS
 
-| 文件                  | 描述                                                 |
+| File                  | Description                                                 |
 | --------------------- | ----------------------------------------------------------- |
-| `AdaptiveBF.css`      | 隐藏不必要的后退/前进按钮                                  |
-| `VividPeek.css`       | 弧形 peek 体��（搭配 `VividPeek.js`���              |
-| `BetterAnimation.css` | 更流畅的 overscroll 动画                                 |
-| `BtnHoverAnime.css`   | 按钮悬停动画 *(默认禁用)*                               |
-| `DownloadPanel.css`   | 下载面板样式设定                                      |
-| `Extensions.css`      | 扩展程序下拉菜单列表显示，处理溢出情况              |
-| `FavouriteTabs.css`   | 弧形风格收藏标签页网格（前 9 个固定标签）               |
-| `FindInPage.css`      | 浮动查找栏                                             |
-| `VividQC.css`         | 弧形风格快速命令样式设置                              |
-| `LineBreak.css`       | 工具类/可忽略项                                      |
-| `PeekTabbar.css`      | 鼠标悬停时显示 Peek 标签栏，带 2 级堆叠              |
-| `Quietify.css`        | 更简洁的音频指示器                                    |
-| `RemoveClutter.css`   | 隐藏滚动条和视觉杂乱                                  |
-| `TabsTrail.css`       | 激活/悬停标签页时显示绿色轨迹                         |
-| `TidyTabs.css`        | AI 标签分组 *(需要搭配* `TidyTabs.js`*)*               |
-| `VivalArc.css`        | 弧形主题端口 *(与本整合包不兼容)*                      |
+| `AdaptiveBF.css`      | 在不必要时隐藏后退/前进按钮                               |
+| `VividPeek.css`       | Arc 窥视体验（需搭配 `VividPeek.js`）                       |
+| `BetterAnimation.css` | 更平滑的滚动动画                                          |
+| `BtnHoverAnime.css`   | 按钮悬停动画 *(默认禁用)*                                   |
+| `DownloadPanel.css`   | 下载面板主题                                                |
+| `Extensions.css`      | 扩展下拉列表呈现为列表，处理溢出                           |
+| `FavouriteTabs.css`   | 类似 Arc 的收藏标签网格（前 9 个固定标签）                 |
+| `FindInPage.css`      | 浮动查找栏                                                  |
+| `VividQC.css`         | 类似 Arc 的快速命令样式                                     |
+| `LineBreak.css`       | 实用工具 / 可省略                                           |
+| `PeekTabbar.css`      | 以 2 级堆叠方式在悬停时显示窥视标签栏                      |
+| `Quietify.css`        | 更简洁的音频指示器                                          |
+| `RemoveClutter.css`   | 隐藏滚动条与视觉杂乱                                         |
+| `TabsTrail.css`       | 活动/悬停标签上的绿色轨迹                                   |
+| `TidyTabs.css`        | AI 标签分组 *(需* `TidyTabs.js`*)*                           |
+| `VivalArc.css`        | Arc 主题移植 *(与此模组包不兼容)*                           |
 
 ### Javascripts
 
-| 文件                     | 描述                                                     |
+| File                     | Description                                                     |
 | ------------------------ | --------------------------------------------------------------- |
-| `VividPeek.js`           | [弧形 peek 对话框支持](./Doc/mod/VividPeek.md) *(搭配* `VividPeek.css`*)* |
-| `AskOnPage.js`           | [AI 侧边栏，用于页面问题、摘要和重写](./Doc/mod/AskOnPage.md) |
-| `AutoHidePanel.js`       | [自动隐藏侧边栏](./Doc/mod/AutoHidePanel.md) |
-| `EasyFiles.js`           | [受 Opera 启发的剪贴板和下载文件附件](./Doc/mod/EasyFiles.md) |
-| `ModConfig.js`           | [共享 AI 密钥和支持修改面板的设置](./Doc/mod/ModConfig.md) |
-| `MonochromeIcons.js`     | [单色网页面板图标，减少视觉干扰](./Doc/mod/MonochromeIcons.md) |
-| `QuickCapture.js`        | [自动选择捕获区域，支持剪贴板/文件/默认模式](./Doc/mod/QuickCapture.md) |
-| `TidyDownloads.js`       | [AI 下载文件名清理](./Doc/mod/TidyDownloads.md) |
-| `TidyTabs.js`            | [AI 标签分组](./Doc/mod/TidyTabs.md) *(搭配* `TidyTabs.css`*)* |
-| `TidyTitles.js`          | [AI 标签标题清理](./Doc/mod/TidyTitles.md) |
-| `TabManager.js`          | [工作区面板，用于查看和管理工作区标签](./Doc/mod/TabManager.md) |
-| `TidyAddress.js`         | [将可见 URL 后缀重写为 AI 生成的链接](./Doc/mod/TidyAddress.md) |
-| `VividToast.js`          | [Toast 通知逻辑](./Doc/mod/VividToast.md) *(搭配* `VividToast.css`*)* |
+| `VividPeek.js`           | [Arc peek dialog support](./Doc/mod/VividPeek.md) *(需搭配* `VividPeek.css`*)* |
+| `AskOnPage.js`           | [AI side panel for page questions, summaries, and rewrites](./Doc/mod/AskOnPage.md) |
+| `AutoHidePanel.js`       | [Auto-hide side panel](./Doc/mod/AutoHidePanel.md) |
+| `EasyFiles.js`           | [Opera-inspired file attachment via clipboard &amp; downloads](./Doc/mod/EasyFiles.md) |
+| `ModConfig.js`           | [Shared settings panel for AI keys and supported mods](./Doc/mod/ModConfig.md) |
+| `MonochromeIcons.js`     | [Monochrome web panel icons to reduce visual noise](./Doc/mod/MonochromeIcons.md) |
+| `QuickCapture.js`        | [Auto-select capture area with clipboard/file/default modes](./Doc/mod/QuickCapture.md) |
+| `TidyDownloads.js`       | [AI download filename cleanup](./Doc/mod/TidyDownloads.md) |
+| `TidyTabs.js`            | [AI tab grouping](./Doc/mod/TidyTabs.md) *(需搭配* `TidyTabs.css`*)* |
+| `TidyTitles.js`          | [AI tab title cleanup](./Doc/mod/TidyTitles.md) |
+| `TabManager.js`          | [Workspace Board panel for viewing and managing workspace tabs](./Doc/mod/TabManager.md) |
+| `TidyAddress.js`         | [Rewrites the visible URL suffix into an AI-generated slug](./Doc/mod/TidyAddress.md) |
+| `VividToast.js`          | [Toast notification logic](./Doc/mod/VividToast.md) *(需搭配* `VividToast.css`*)* |
 
 
 <details>
-<summary><h2>社区修改</h2></summary>
+<summary><h2>社区模组</h2></summary>
 
-### 本整合包中包含的社区 JS 和 CSS 修改
+### 本模组包包含的社区 JS 模组和 CSS
 
-[📸 元素捕获](https://forum.vivaldi.net/topic/103686/element-capture?_=1758777284963)
+[📸 Element Capture](https://forum.vivaldi.net/topic/103686/element-capture?_=1758777284963)
 
-> 此修改添加了在截屏时自动选择区域进行捕获的功能。
+> 该模组在截图时自动选择捕获区域。
 
-[彩色标签页](https://forum.vivaldi.net/topic/96586/colorful-tabs?_=1758775816485)
+[Colorful tabs](https://forum.vivaldi.net/topic/96586/colorful-tabs?_=1758775816485)
 
-> 从图标计算颜色的部分代码
+> 计算图标颜色的代码部分
 
-[单色图标](https://forum.vivaldi.net/topic/102661/monochrome-icons?_=1758775889576)
+[Monochrome icons](https://forum.vivaldi.net/topic/102661/monochrome-icons?_=1758775889576)
 
-> 此修改更改所有网页面板图标的色调，使其成为单色。网页面板会使面板变得过于繁忙，颜色到处都是，因此稍微降低它们的色调并让它们更好地融合是有意义的。
+> 该修改更改了所有网页面板图标的色调并使其单色化。由于网页面板会显得非常繁忙且颜色杂乱无章，因此适当地调低色调并让它们更融合更合适。
 
-[导入导出命令链](https://forum.vivaldi.net/topic/93964/import-export-command-chains?page=1)
+[Import Export Command Chains](https://forum.vivaldi.net/topic/93964/import-export-command-chains?page=1)
 
-> 此修改帮助导入和导出 Vivaldi 的命令链。
-> 此修改附带通过 Vivaldi 论坛的代码块 (```) 直接安装导出代码的功能。
+> 该模组帮助导入和导出 Vivaldi 的命令链。
+> 该模组附带从 Vivaldi 论坛代码块（```）导出的直接安装代码的功能。
 
-[📂 简便文件](https://forum.vivaldi.net/topic/94531/easy-files?page=1)
+[📂 Easy Files](https://forum.vivaldi.net/topic/94531/easy-files?page=1)
 
-> 此修改受 Opera 启发。通过显示剪贴板中的文件和下载的文件，使附加文件更容易。
+> 该模组灵感来自 Opera。通过显示剪贴板中的文件和已下载的文件，使附加文件更容易。
 
-[点击添加阻止列表](https://forum.vivaldi.net/topic/45735/click-to-add-blocking-list)
+[Click to add Blocking list](https://forum.vivaldi.net/topic/45735/click-to-add-blocking-list)
 
-> 此修改添加了通过点击网站中的链接来添加阻止列表的支持，类似其他广告拦截器。
+> 该模组支持通过点击类似其他广告拦截器的站点链接来添加屏蔽列表。
 
-[全局媒体控制面板](https://forum.vivaldi.net/topic/66803/global-media-controls-panel)
+[Global Media Controls Panel](https://forum.vivaldi.net/topic/66803/global-media-controls-panel)
 
-> 此修改将在 vivaldi 的面板中添加全局媒体控制，类似于 Chrome 中的全局媒体控制。
+> 该模组将在 Vivaldi 的面板中添加类似 Chrome 中全局媒体控制的全局媒体控制。
 
-[笔记的 Markdown 编辑器](https://forum.vivaldi.net/topic/35644/markdown-editor-for-notes)
+[Markdown Editor for Notes](https://forum.vivaldi.net/topic/35644/markdown-editor-for-notes)
 
-> 笔记编辑器的简单 Markdown 编辑器。
+> 简易 Markdown 编辑器用于笔记编辑器
 
-[鼠标悬停时打开面板](https://forum.vivaldi.net/topic/28413/open-panels-on-mouse-over/22?_=1593504963587)
+[Open panels on mouse-over.](https://forum.vivaldi.net/topic/28413/open-panels-on-mouse-over/22?_=1593504963587)
 
-> 鼠标悬停到正文时自动关闭
-> 如果在超时期限前鼠标退出屏幕则不打开
-> 基于情况的独特延迟
+> 当鼠标悬停在 body 上时自动关闭
+> 如果鼠标在超时期间之前离开屏幕则不打开
+> 根据情况独特的延迟
 
-[仪表板伪装：仪表板网页的主题集成](https://forum.vivaldi.net/topic/102173/dashboard-camo-theme-integration-for-dashboard-webpages/3)
+[Dashboard Camo: Theme Integration for Dashboard Webpages](https://forum.vivaldi.net/topic/102173/dashboard-camo-theme-integration-for-dashboard-webpages/3)
 
-> 它获取 Vivaldi 根据你的主题设置的所有自定义 CSS 属性，并将它们传递给所有网页小部件，你可以在其中使用它们来设置你的自定义小部件的样式。
+> 将 Vivaldi 根据主题设置的所有自定义 CSS 属性传递给所有网页小部件，您可以在其中用于样式化自定义小部件。
 
-[彩色顶部加载栏](https://forum.vivaldi.net/topic/111621/colorful-top-loading-bar?_=1758776810153)
+[Colorful Top Loading Bar](https://forum.vivaldi.net/topic/111621/colorful-top-loading-bar?_=1758776810153)
 
-> 使 Vivaldi 的标题栏在网页加载时视觉上吸引人的 JS 和 CSS。
+> 当网页加载时，使 Vivaldi 标题栏在视觉上更吸引人。
 
-[Feed 图标](https://forum.vivaldi.net/topic/73001/feed-icons?_=1758776884927)
+[Feed icons](https://forum.vivaldi.net/topic/73001/feed-icons?_=1758776884927)
 
-> 这是一个将 feed 图标转换为网站图标的小修改。
+> 该小模组将源文件图标转换为网站图标。
 
-[类似 Yandex 浏览器的地址栏](https://forum.vivaldi.net/topic/96072/address-bar-like-in-yandex-browser?_=1758776929535)
+[Address Bar like in Yandex Browser](https://forum.vivaldi.net/topic/96072/address-bar-like-in-yandex-browser?_=1758776929535)
 
-> 使地址栏显示当前页面的标题和域，点击该域可进入网站的主页。
+> 使地址栏显示当前页面的标题和域名，单击后跳转到网站首页。
 
-[在对话框中打开修改](https://forum.vivaldi.net/topic/92501/open-in-dialog-mod/95?_=1758776959371)
+[Open in Dialog mod](https://forum.vivaldi.net/topic/92501/open-in-dialog-mod/95?_=1758776959371)
 
-> 在对话框弹出窗口中打开链接或搜索的修改。
+> 在对话框弹出窗口中打开链接或搜索。
 
-[两级标签堆栈的自动展开和折叠标签栏：重做](https://forum.vivaldi.net/topic/111893/auto-expand-and-collapse-tabbar-for-two-level-tab-stack-rework?_=1758777265037)
-
-> 自动展开和折叠标签栏
-
-[两级标签堆栈的自动展开和折叠标签栏：重做](https://forum.vivaldi.net/topic/111893/auto-expand-and-collapse-tabbar-for-two-level-tab-stack-rework?_=1758777265037)
+[Auto expand and collapse tabbar for two-level tab stack: Rework](https://forum.vivaldi.net/topic/111893/auto-expand-and-collapse-tabbar-for-two-level-tab-stack-rework?_=1758777265037)
 
 > 自动展开和折叠标签栏
 
-[主题预览增强 | Vivaldi 论坛](https://forum.vivaldi.net/topic/103422/theme-previews-plus?_=1759122196203)
+[Auto expand and collapse tabbar for two-level tab stack: Rework](https://forum.vivaldi.net/topic/111893/auto-expand-and-collapse-tabbar-for-two-level-tab-stack-rework?_=1758777265037)
 
-> 使主题预览正确反映你的标签栏、地址栏和面板栏的实际位置，以及在启用时显示浮动标签页。
+> 自动展开和折叠标签栏
+
+[Theme Previews Plus | Vivaldi Forum](https://forum.vivaldi.net/topic/103422/theme-previews-plus?_=1759122196203)
+
+> 为了正确反映您的标签栏、地址栏和面板栏的实际位置，使主题预览正常工作，同时在启用浮动标签时显示它们。
 >
-> 注意：此修改仅在设置页面在标签页中打开时有效（在 vivaldi://settings/appearance/ 中启用"在标签页中打开设置"）。
+> 注意：此模组仅在设置页面以标签页打开时工作（vivaldi://settings/appearance/ 中启用了“以标签页形式打开设置”）。
 
-[tovifun/VivalArc: 只需几个调整，你就可以给 Vivaldi 那种酷炫的 Arc 感觉](https://github.com/tovifun/VivalArc)
+[tovifun/VivalArc: With just a few tweaks, you can give Vivaldi that cool Arc vibe](https://github.com/tovifun/VivalArc)
 
-> 使用了此仓库中的部分代码。
+> 本仓库的部分代码被用于。
 
 </details>
 
 ---
 
-[![](https://api.star-history.com/svg?repos=PaRr0tBoY/Awesome-Vivaldi&type=Timeline&theme=dark)](https://github.com/PaRr0tBoY/Awesome-Vivaldi)
+## 文档
+
+请在 **[Doc](https://parr0tboy.github.io/docs/)** 浏览完整文档门户——设计哲学、模组架构深入分析、API 参考以及逆向工程的 Vivaldi 内部结构。
+
+---
+
 ![Alt](https://repobeats.axiom.co/api/embed/4a30f8a4b398404c3c773f672d36c2b52f7865c3.svg "Repobeats analytics image")
+
+```
