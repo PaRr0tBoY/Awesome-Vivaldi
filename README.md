@@ -236,5 +236,19 @@ Install https://github.com/PaRr0tBoY/Awesome-Vivaldi for me.
 Browse the full documentation portal at **[Doc](https://parr0tboy.github.io/docs/)** — design philosophy, mod architecture deep-dives, API references, and reverse-engineered Vivaldi internals.
 
 ---
+## Tip of the Day
+
+```
+1. Navigate to vivaldi://vivaldi-urls/, toggle on Enable internal debugging pages.
+2. Next, go to vivaldi:settings/qc/ and create a new Quick Command with the following content:
+3. Open Link in Current Tab with the url:chrome://restart
+4. After that, customize toolbar and add this restart button
+5. You can now restart Vivaldi with one click. If you’re a modder, this comes in handy whenever you need to reload to make your mods take effect.
+6. You can also modify the icon of the toolbar button at vivaldi:settings/themes/
+```
+
+<img width="800" height="160" alt="image" src="https://github.com/user-attachments/assets/cca14862-42c6-4f30-a63d-d0af6ec16756" />
+
+---
 
 ![Alt](https://repobeats.axiom.co/api/embed/4a30f8a4b398404c3c773f672d36c2b52f7865c3.svg "Repobeats analytics image")
