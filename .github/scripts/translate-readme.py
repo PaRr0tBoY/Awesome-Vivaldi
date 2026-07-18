@@ -96,8 +96,10 @@ if not api_key:
     print("::error::OPENROUTER_KEY is not set", file=sys.stderr)
     sys.exit(1)
 
+model = os.environ.get('OPENROUTER_MODEL', 'openrouter/free')
+
 payload = json.dumps({
-    "model": "openrouter/quasar-alpha",
+    "model": model,
     "messages": [{"role": "user", "content": prompt}]
 })
 

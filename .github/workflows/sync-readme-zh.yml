@@ -32,7 +32,7 @@ jobs:
         if: contains(steps.detect.outputs.changed, 'main')
         env:
           OPENROUTER_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          DIFF: ${{ steps.detect.outputs.changed && 'set' || '' }}
+          OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
         run: |
           export DIFF="$(git diff HEAD~1 HEAD -- README.md)"
           export ZH_CURRENT="$(cat Doc/READMEZH/READMEMAIN.md)"
@@ -53,6 +53,7 @@ jobs:
         if: contains(steps.detect.outputs.changed, '80')
         env:
           OPENROUTER_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
         run: |
           export DIFF="$(git diff HEAD~1 HEAD -- Vivaldi8.0Stable/README.md)"
           export MODE="80"
