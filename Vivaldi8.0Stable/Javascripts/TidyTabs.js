@@ -825,18 +825,8 @@
 
     if (stackTabIds.length < 2) return stackTabIds;
 
-    // Dismantle via vivaldi.tabsPrivate.unstack
-    if (vivaldi?.tabsPrivate?.unstack) {
-      try {
-        const unstackResult = vivaldi.tabsPrivate.unstack(groupId);
-        if (unstackResult && typeof unstackResult.then === "function") {
-          await unstackResult;
-        }
-        console.log("[TidyTabs] Dismantled unnamed stack:", groupId.slice(0, 8), "→", stackTabIds.length, "tabs freed");
-      } catch (e) {
-        console.warn("[TidyTabs] unstack exception:", e.message);
-      }
-    }
+    await _unstackGroup(groupId);
+    console.log("[TidyTabs] Dismantled unnamed stack:", groupId.slice(0, 8), "→", stackTabIds.length, "tabs freed");
     return stackTabIds;
   };
 
@@ -1737,6 +1727,8 @@ Return JSON strictly in this format, with no markdown backticks: {"name":"the gr
   // ==================== Stack Action Buttons (Pin / Close Stack) ====================
 
   const STACK_BTN = {
+    EDIT: "tidy-edit-stack-btn",
+    UNSTACK: "tidy-unstack-stack-btn",
     PIN: "tidy-pin-stack-btn",
     CLOSE: "tidy-close-stack-btn",
   };
@@ -1745,38 +1737,50 @@ Return JSON strictly in this format, with no markdown backticks: {"name":"the gr
     try {
       const tab = await getTab(tabId);
       if (!tab) return [];
-      const viv = typeof tab.vivExtData === "string" ? JSON.parse(tab.vivExtData) : (tab.vivExtData || {});
-      const groupId = viv.group;
+      const { group: groupId } = parseVivExtData(tab);
       if (!groupId) return [];
       const allTabs = await new Promise((r) => chrome.tabs.query({ currentWindow: true }, r));
       return allTabs.filter((t) => {
-        try {
-          const v = typeof t.vivExtData === "string" ? JSON.parse(t.vivExtData) : (t.vivExtData || {});
-          return v.group === groupId;
-        } catch (_) { return false; }
+        try { return parseVivExtData(t).group === groupId; } catch (_) { return false; }
       }).map((t) => t.id);
     } catch (_) { return []; }
   };
 
-  const pinTabStack = async (tabId) => {
+  // Shared unstack helper — hoisted function so all callers can use it
+  async function _unstackGroup(groupId) {
+    if (!groupId || !vivaldi?.tabsPrivate?.unstack) return;
+    try {
+      const result = vivaldi.tabsPrivate.unstack(groupId);
+      if (result && typeof result.then === "function") await result;
+    } catch (_) { /* non-critical */ }
+  }
+
+  const togglePinTabStack = async (tabId, pinBtn) => {
     const stackIds = await getStackTabIds(tabId);
     if (stackIds.length === 0) return;
     const tab = await getTab(tabId);
+    const isPinned = tab?.pinned;
     const groupId = tab?.vivExtData?.group;
     const stackName = tab?.vivExtData?.fixedGroupTitle || "";
     const isSuggestedPin = SUGGESTED_PIN_NAMES.includes(stackName);
-    // Pin all tabs
-    for (const id of stackIds) {
-      await new Promise((r) => chrome.tabs.update(id, { pinned: true }, r));
+    const newPinned = !isPinned;
+
+    await Promise.all(stackIds.map((id) =>
+      new Promise((r) => chrome.tabs.update(id, { pinned: newPinned }, r))
+    ));
+
+    if (newPinned) {
+      if (isSuggestedPin) await _unstackGroup(groupId);
+      showToast(`📌 Pinned ${stackIds.length} tabs${isSuggestedPin ? "" : " (stack kept)"}`, { type: "success" });
+    } else {
+      showToast(`Unpinned ${stackIds.length} tabs`, { type: "success" });
     }
-    // Only dismantle "建议固定" stacks — regular named stacks stay stacked
-    if (isSuggestedPin && groupId && vivaldi?.tabsPrivate?.unstack) {
-      try {
-        const result = vivaldi.tabsPrivate.unstack(groupId);
-        if (result && typeof result.then === "function") await result;
-      } catch (_) { /* non-critical */ }
+
+    // Update button visual state directly — no DOM query needed
+    if (pinBtn) {
+      pinBtn.classList.toggle("is-pinned", newPinned);
+      pinBtn.title = newPinned ? "Unpin tab stack" : "Pin tab stack";
     }
-    showToast(`📌 Pinned ${stackIds.length} tabs${isSuggestedPin ? "" : " (stack kept)"}`, { type: "success" });
   };
 
   const closeEntireStack = async (tabId) => {
@@ -1784,6 +1788,31 @@ Return JSON strictly in this format, with no markdown backticks: {"name":"the gr
     if (stackIds.length === 0) return;
     await new Promise((r) => chrome.tabs.remove(stackIds, r));
     showToast(`Closed ${stackIds.length} tabs`, { type: "success" });
+  };
+
+  const unstackTabStack = async (tabId) => {
+    const tab = await getTab(tabId);
+    const groupId = tab?.vivExtData?.group;
+    if (!groupId) return;
+    const freed = await dismantleStack(groupId);
+    showToast(`Dissolved stack, ${freed.length} tabs kept`, { type: "success" });
+  };
+
+  const editStackProperties = (groupId) => {
+    // Walk React fiber tree from .tab-strip to trigger Vivaldi's native StackEditor
+    if (!groupId) return;
+    const tabStrip = document.querySelector(".tab-strip");
+    if (!tabStrip) return;
+    const fiberKey = Object.keys(tabStrip).find((k) => k.startsWith("__reactFiber$") || k.startsWith("__reactInternalInstance$"));
+    if (!fiberKey) return;
+
+    let fiber = tabStrip[fiberKey];
+    for (let depth = 0; fiber && depth < 50; depth++, fiber = fiber.return) {
+      if (fiber.stateNode && typeof fiber.stateNode.setAwaitingEdit === "function") {
+        fiber.stateNode.setAwaitingEdit(groupId, true);
+        return;
+      }
+    }
   };
 
   const injectStackActionButtons = async () => {
@@ -1805,25 +1834,19 @@ Return JSON strictly in this format, with no markdown backticks: {"name":"the gr
     debugLog("[TidyTabs] [buttons] extIdToTabId map size:", extIdToTabId.size, "groupToTabMap size:", groupToTabMap.size);
 
     for (const stackEl of stackEls) {
-      // Already injected?
       if (stackEl.querySelector(`.${STACK_BTN.PIN}`)) continue;
 
       const tabWrapper = stackEl.querySelector(SELECTORS.TAB_WRAPPER);
       if (!tabWrapper) continue;
-
       const dataId = tabWrapper.getAttribute("data-id")?.replace("tab-", "");
       const elementId = tabWrapper.getAttribute("id")?.replace("tab-", "");
-
       if (!dataId && !elementId) continue;
 
       const uuid = dataId || elementId;
       let tabId = Number(uuid);
-
       if (!Number.isFinite(tabId) || tabId <= 0) {
-        // UUID format — try ext_id lookup first, then group lookup
         tabId = extIdToTabId.get(uuid);
         if (!tabId) {
-          // Try matching by group: find the tab where vivExtData.group matches
           for (const t of allTabs) {
             try {
               const viv = parseVivExtData(t);
@@ -1832,42 +1855,54 @@ Return JSON strictly in this format, with no markdown backticks: {"name":"the gr
           }
         }
       }
-
       if (!Number.isFinite(tabId) || tabId <= 0) continue;
 
-      // Check if the parent tab is pinned — if so, hide buttons
-      const parentTab = allTabs.find((t) => t.id === tabId);
-      if (parentTab?.pinned) continue;
-
-      // Inject into .tab-header, before .stack-counter (natural flow, no overlap)
+      const isPinned = allTabs.find((t) => t.id === tabId)?.pinned || false;
+      const tabData = allTabs.find((t) => t.id === tabId);
+      const groupId = tabData ? parseVivExtData(tabData).group : null;
       const tabHeader = stackEl.querySelector(".tab-header");
       const stackCounter = stackEl.querySelector(SELECTORS.STACK_COUNTER);
       if (!tabHeader) continue;
 
+      const block = (e) => { e.stopPropagation(); e.preventDefault(); };
       const btnContainer = document.createElement("span");
       btnContainer.className = "tidy-stack-actions";
 
-      // Pin button
-      const pinBtn = document.createElement("span");
+      const PIN_ICON = '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAABGUlEQVR4nO2UvWoCURCFvxDskk4X0scmVYpg5wNY2fsCYl4ghdhYWecN8gDxCezyBP6AnaCNTSQRLIKQKANHGJZNXPenigeW3b137jecmeHCf1YLCPKCPwI7YJxXkgCY5ZXkAngCvpXAnilwkwX8CngV1BJ0Bc/Eya0gBlsDda0bdJLEiZ+SGvAhiMHKodi2K1csJ35Kuq7efeA6FFsFtsAPMFecnf9TgSvHTgk6arCXlWOpmJ7OmfNY8kk+gfvQfgF40/4AuCSBSsBIEOvBg9t71vpCcYl153rwLicN/X8BlTTwIjB0fbD3Ctjou5kVfCgnvvEvaeClELwY0ZPE18Nv8KjpOjrvp8IPOmnevUYx4KmUK/wsorQHoDJfgvBzBQEAAAAASUVORK5CYII=" alt="pin" width="12" height="12">';
+      const UNSTACK_ICON = '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAABVklEQVR4nO2YQWrCQBiFX8xBWvQOehM9SjcW3Nmd1k1X9Qz2GvEK3SoeoJUuhMiUP/CTjjKx8zJE/g8GEknemy8xIQlgGK3QA7AC8AXgVdY705EBeANQqrGOLJGxOnzBsSUyVse14FgSGasjJPi/ErQOt+F7LSBkvYkEtWN5YUf9m28CiwYC1I7jBWsd5DuK3w0EqB0vAH7EVp+yenhVsJDt5w0E2uj4gy88NiWzwwQCKE3gCiYQQGkC9yxwUuE5IT9X+a4rOntV0CfkD1T+jpCPD1UwJeQ/q/wNIR+T2kPVMGL2SDKr/DEIuIeqbU1iKqf+lmvC7TOQI68nX5A+GvzyCODgeWOKNQ4AHliT1xIFYfKFZLdCT66Jjdwx9C02dLh9dpIxZv5tbmWmJuuWO8fMBBJjAqkxgdSYQGpMIDUmkBoTSM2TEnDLnaMP4FMG4zOMYSACZ6f6URZiN6bcAAAAAElFTkSuQmCC" alt="split" width="12" height="12">';
+      const EDIT_ICON = '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAABVUlEQVR4nO2ZMU7DMBSGvwzkGOUa7GUAJi6DYIIJDkBRVS4Ct2CDsYXCiih7pYcieTIJJH7PMUjvk96UyP4/x44jBxzHcZzvVMAF8AE8AXso2QUWwCuwBURZK+Dwh/A30f2PmvD7wKdB6LiawegTvql3zcjnCN8mUAGzjnvPUwUWmcIvgYOe4WfhehLrqLETYAdbqlzhaVmwNf8oPC2NWtKEu+4If2sRPqfAKOFzCYwWPofAqOGtBYYs2CPgLVTXjj2qwNCRX0V7RlGBlGkjVk9e21DqnJe/IKBZsFJaQPu2kdICx8rPAyktcKV8z0tpgXvlJiWlBR6AO+AyTKehO6yUFtAiLhBwgUTEBQIukIi4wEjHKm3UUZ9NBqwOtk4zS9TAWdTns6bBXEeLQ2quEch5uNunNsAEJdNCEpvQtwmT8ChfjH5wdNU29DG3GHnHcRyH3/gCgfr8P+7Sf1YAAAAASUVORK5CYII=" alt="edit" width="12" height="12">';
+      const CLOSE_ICON = '<svg width="10" height="10" viewBox="0 0 16 16"><path d="M2.146 2.854a.5.5 0 11.708-.708L8 7.293l5.146-5.147a.5.5 0 01.708.708L8.707 8l5.147 5.146a.5.5 0 01-.708.708L8 8.707l-5.146 5.147a.5.5 0 01-.708-.708L7.293 8 2.146 2.854z" fill="currentColor"/></svg>';
+
+      // Button factory — data-driven to avoid copy-paste
+      const makeBtn = (cls, title, html, handler) => {
+        const btn = document.createElement("span");
+        btn.className = cls;
+        btn.title = title;
+        btn.innerHTML = html;
+        btn.addEventListener("mousedown", block);
+        btn.addEventListener("click", (e) => { block(e); handler(); });
+        return btn;
+      };
+
+      let pinBtn;
+      const buttons = [
+        makeBtn(STACK_BTN.EDIT, "Edit stack name / color", EDIT_ICON, () => editStackProperties(groupId)),
+        makeBtn(STACK_BTN.UNSTACK, "Dissolve tab stack", UNSTACK_ICON, () => unstackTabStack(tabId)),
+      ];
+      // Pin button needs special handling (toggle state, pass ref for live update)
+      pinBtn = document.createElement("span");
       pinBtn.className = STACK_BTN.PIN;
-      pinBtn.title = "Pin tab stack";
-      pinBtn.innerHTML = '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAABGUlEQVR4nO2UvWoCURCFvxDskk4X0scmVYpg5wNY2fsCYl4ghdhYWecN8gDxCezyBP6AnaCNTSQRLIKQKANHGJZNXPenigeW3b137jecmeHCf1YLCPKCPwI7YJxXkgCY5ZXkAngCvpXAnilwkwX8CngV1BJ0Bc/Eya0gBlsDda0bdJLEiZ+SGvAhiMHKodi2K1csJ35Kuq7efeA6FFsFtsAPMFecnf9TgSvHTgk6arCXlWOpmJ7OmfNY8kk+gfvQfgF40/4AuCSBSsBIEOvBg9t71vpCcYl153rwLicN/X8BlTTwIjB0fbD3Ctjou5kVfCgnvvEvaeClELwY0ZPE18Nv8KjpOjrvp8IPOmnevUYx4KmUK/wsorQHoDJfgvBzBQEAAAAASUVORK5CYII=" alt="pin" width="14" height="14">';
-      pinBtn.addEventListener("click", (e) => { e.stopPropagation(); e.preventDefault(); pinTabStack(tabId); });
+      pinBtn.title = isPinned ? "Unpin tab stack" : "Pin tab stack";
+      if (isPinned) pinBtn.classList.add("is-pinned");
+      pinBtn.innerHTML = PIN_ICON;
+      pinBtn.addEventListener("mousedown", block);
+      pinBtn.addEventListener("click", (e) => { block(e); togglePinTabStack(tabId, pinBtn); });
+      buttons.push(pinBtn);
+      buttons.push(makeBtn(STACK_BTN.CLOSE, "Close tab stack", CLOSE_ICON, () => closeEntireStack(tabId)));
 
-      // Close stack button — simple X SVG
-      const closeStackBtn = document.createElement("span");
-      closeStackBtn.className = STACK_BTN.CLOSE;
-      closeStackBtn.title = "Close tab stack";
-      closeStackBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 16 16"><path d="M2.146 2.854a.5.5 0 11.708-.708L8 7.293l5.146-5.147a.5.5 0 01.708.708L8.707 8l5.147 5.146a.5.5 0 01-.708.708L8 8.707l-5.146 5.147a.5.5 0 01-.708-.708L7.293 8 2.146 2.854z" fill="currentColor"/></svg>';
-      closeStackBtn.addEventListener("click", (e) => { e.stopPropagation(); e.preventDefault(); closeEntireStack(tabId); });
-
-      btnContainer.append(pinBtn, closeStackBtn);
-      // Insert before .stack-counter (or at end of .tab-header if no counter)
-      if (stackCounter) {
-        stackCounter.before(btnContainer);
-      } else {
-        tabHeader.appendChild(btnContainer);
-      }
+      btnContainer.append(...buttons);
+      if (stackCounter) stackCounter.before(btnContainer);
+      else tabHeader.appendChild(btnContainer);
     }
   };
 

@@ -177,27 +177,27 @@
 .tidy-stack-actions {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  margin-right: 4px;
+  gap: 2px;
+  margin-right: 3px;
+  flex-shrink: 0;
   opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.15s ease, visibility 0.15s ease;
-  pointer-events: none;
+  transition: opacity 0.15s ease;
 }
 
+/* Reserve space: buttons always occupy layout, just transparent when idle */
 .tab-position:hover .tidy-stack-actions {
   opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
 }
 
+.tidy-edit-stack-btn,
+.tidy-unstack-stack-btn,
 .tidy-pin-stack-btn,
 .tidy-close-stack-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   cursor: pointer;
   border-radius: var(--radiusHalf, 3px);
   color: var(--colorFgFaded, #a8aca4);
@@ -210,45 +210,55 @@
   opacity: 0.55;
 }
 
+.tidy-edit-stack-btn img,
+.tidy-unstack-stack-btn img,
 .tidy-pin-stack-btn img,
 .tidy-close-stack-btn svg {
   display: block;
   transition: opacity 0.15s ease, filter 0.15s ease;
 }
 
-/* Pin PNG: force silhouette matching text color, visible on any theme */
+/* ── Normal: all icons same subtle grey ── */
+.tidy-edit-stack-btn img,
+.tidy-unstack-stack-btn img,
 .tidy-pin-stack-btn img {
-  filter: brightness(0) saturate(100%) invert(75%);
+  --icon-mono: brightness(0) saturate(100%);
+  filter: var(--icon-mono) invert(75%);
   opacity: 0.75;
 }
 
-.tidy-pin-stack-btn:hover img {
-  filter: brightness(0) saturate(100%) invert(62%) sepia(30%) saturate(800%) hue-rotate(85deg);
-  opacity: 1;
-}
+.tidy-close-stack-btn svg { opacity: 0.75; }
 
-/* Close SVG: already uses currentColor, just control opacity */
-.tidy-close-stack-btn svg {
-  opacity: 0.75;
-}
-
-.tidy-close-stack-btn:hover svg {
-  opacity: 1;
-}
-
-/* Hover — shared light background ring */
+/* ── Hover: shared light background ring ── */
+.tidy-edit-stack-btn:hover,
+.tidy-unstack-stack-btn:hover,
 .tidy-pin-stack-btn:hover,
 .tidy-close-stack-btn:hover {
   opacity: 1;
   background-color: var(--colorFgAlpha, rgba(255, 255, 255, 0.1)) !important;
 }
 
-/* Pin — green accent on hover */
-.tidy-pin-stack-btn:hover {
-  color: var(--colorHighlightBg, #729b79) !important;
+/* ── Hover icons: full opacity, accent via variable suffix ── */
+.tidy-edit-stack-btn:hover img,
+.tidy-unstack-stack-btn:hover img,
+.tidy-pin-stack-btn:hover img { opacity: 1; }
+
+.tidy-edit-stack-btn:hover img {
+  filter: var(--icon-mono) invert(62%) sepia(40%) saturate(500%) hue-rotate(165deg);
+}
+.tidy-unstack-stack-btn:hover img {
+  filter: var(--icon-mono) invert(65%) sepia(30%) saturate(700%) hue-rotate(345deg);
+}
+.tidy-pin-stack-btn:hover img {
+  filter: var(--icon-mono) invert(62%) sepia(30%) saturate(800%) hue-rotate(85deg);
 }
 
-/* Close — warm red on hover */
-.tidy-close-stack-btn:hover {
-  color: var(--colorErrorBg, #b56357) !important;
+.tidy-close-stack-btn:hover svg {
+  color: var(--colorErrorBg, #b56357);
+  opacity: 1;
+}
+
+.tidy-pin-stack-btn.is-pinned img {
+  filter: var(--icon-mono) invert(62%) sepia(30%) saturate(800%) hue-rotate(85deg) !important;
+  opacity: 1 !important;
 }
