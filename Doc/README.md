@@ -20,8 +20,9 @@ Doc/
 │
 ├── mod/                   ← Mod Documentation (English)
 │   ├── ArcPeek.md         │   Arc Peek internal architecture
-│   ├── AskOnPage.md       │   AI sidebar
+│   ├── AskOnPage.md       │   Ctrl+F AI page search
 │   ├── AutoHidePanel.md   │   Auto-collapse side panel
+│   ├── Diabar.md          │   AI sidebar chat panel
 │   ├── EasyFiles.md       │   Quick file attach
 │   ├── InteractionFeedback.md│  Click micro-feedback animations
 │   ├── ModConfig.md       │   Shared settings system

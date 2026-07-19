@@ -179,7 +179,7 @@ $Script:Loc = @{
 		mod_desc_DownloadPanel   = "Download panel dark theme adaptation"
 		mod_desc_Extensions      = "Compact list layout for extensions menu"
 		mod_desc_FavouriteTabs   = "First 9 pinned tabs displayed as grid (Arc-style)"
-		mod_desc_FindInPage      = "Floating find-in-page bar"
+		mod_desc_AskOnPage_CSS   = "Ask on Page — Ctrl+F AI find bar"
 		mod_desc_LineBreak       = "Long text auto-wrap (useful for small screens)"
 		mod_desc_PeekTabbar      = "Slide-out tab bar on hover when hidden"
 		mod_desc_Quietify        = "Subtle audio indicator, less visual noise"
@@ -198,7 +198,8 @@ $Script:Loc = @{
 
 		# ── Mod descriptions (JS) ──
 		mod_desc_ModConfig              = "*Core* Shared settings panel (AI keys / mod params)"
-		mod_desc_AskOnPage              = "AI sidebar: page Q&A, summary, rewrite"
+		mod_desc_Diabar                 = "AI sidebar: page Q&A, summary, rewrite"
+		mod_desc_AskOnPage              = "Ctrl+F AI page search — find or ask anything"
 		mod_desc_AutoHidePanel          = "Auto-collapse side panel on mouse leave"
 		mod_desc_EasyFiles              = "Quick file attach via clipboard & downloads"
 		mod_desc_MonochromeIcons        = "Unified monochrome web panel icons"
@@ -252,7 +253,7 @@ $Script:ModCssFiles = @(
 	"DownloadPanel.css",
 	"Extensions.css",
 	"FavouriteTabs.css",
-	"FindInPage.css",
+	"AskOnPage.css",
 	"InteractionFeedback.css",
 	"LineBreak.css",
 	"PeekTabbar.css",
@@ -268,6 +269,7 @@ $Script:ModCssFiles = @(
 	"VividToast.css"
 )
 $Script:ModJsFiles = @(
+	"Diabar.js",
 	"AskOnPage.js",
 	"AutoHidePanel.js",
 	"EasyFiles.js",

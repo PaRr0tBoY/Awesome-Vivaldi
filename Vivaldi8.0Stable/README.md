@@ -114,7 +114,7 @@ To install, Just copy all the content under ./Javascripts/ to your `<YOURVIVALDI
     <script src="TidyTitles.js"></script>
     <script src="TidyTabs.js"></script>
     <script src="TidyDownloads.js"></script>
-    <script src="AskOnPage.js"></script>
+    <script src="Diabar.js"></script>
     <script src="TabScroll.js"></script>
     <script src="MonochromeIcons.js"></script>
     <script src="VividAddress.js"></script>

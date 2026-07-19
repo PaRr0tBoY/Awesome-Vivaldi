@@ -116,7 +116,7 @@ Install https://github.com/PaRr0tBoY/Awesome-Vivaldi for me.
 | `DownloadPanel.css`   | Download panel theming                                      |
 | `Extensions.css`      | Extensions dropdown as list, overflow handling              |
 | `FavouriteTabs.css`   | Arc-like favorite tabs grid (first 9 pinned tabs)           |
-| `FindInPage.css`      | Floating find bar                                           |
+| `AskOnPage.css`      | Ask on Page styling — floating AI find bar              |
 | `VividQC.css`         | Arc-like quick command styling                              |
 | `LineBreak.css`       | Utility / omit it                                           |
 | `PeekTabbar.css`      | Peek tabbar on hover with 2-level stacking                  |
@@ -131,7 +131,8 @@ Install https://github.com/PaRr0tBoY/Awesome-Vivaldi for me.
 | File                     | Description                                                     |
 | ------------------------ | --------------------------------------------------------------- |
 | `VividPeek.js`           | [Arc peek dialog support](./Doc/mod/VividPeek.md) *(pairs with* `VividPeek.css`*)* |
-| `AskOnPage.js`           | [AI side panel for page questions, summaries, and rewrites](./Doc/mod/AskOnPage.md) |
+| `AskOnPage.js`           | Ctrl+F AI page search — find or ask anything, inline citations |
+| `Diabar.js`              | AI sidebar chat — page Q&A, summaries, rewrites |
 | `AutoHidePanel.js`       | [Auto-hide side panel](./Doc/mod/AutoHidePanel.md) |
 | `EasyFiles.js`           | [Opera-inspired file attachment via clipboard &amp; downloads](./Doc/mod/EasyFiles.md) |
 | `ModConfig.js`           | [Shared settings panel for AI keys and supported mods](./Doc/mod/ModConfig.md) |

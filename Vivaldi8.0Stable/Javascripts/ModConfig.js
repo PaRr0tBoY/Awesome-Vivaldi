@@ -21,12 +21,13 @@
 
   const MODULES = [
     { key: COMMON_KEY, label: "Common AI Config" },
-    { key: "askInPage", label: "Ask in Page" },
+    { key: "askInPage", label: "Diabar" },
     { key: "tidyTabs", label: "Tidy Tabs" },
     { key: "tidyTitles", label: "Tidy Titles" },
     { key: "tidyDownloads", label: "Tidy Downloads" },
     { key: "tidyAddress", label: "Tidy Address" },
     { key: "arcPeek", label: "Arc Peek" },
+    { key: "askOnPage", label: "Ask on Page" },
   ];
 
   const CONFIG_PANELS = [
