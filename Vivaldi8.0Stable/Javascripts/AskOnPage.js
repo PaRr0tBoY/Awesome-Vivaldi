@@ -57,9 +57,9 @@
   // ==================== Shared AI Config ====================
   function applySharedAiConfig(raw) {
     const aiRoot = raw?.ai && typeof raw.ai === "object" ? raw.ai : raw || {};
-    const base = aiRoot.default && typeof raw.ai.default === "object" ? raw.ai.default : aiRoot;
-    const override = aiRoot.overrides?.[MOD_AI_CONFIG_KEY] && typeof raw.ai.overrides[MOD_AI_CONFIG_KEY] === "object"
-      ? raw.ai.overrides[MOD_AI_CONFIG_KEY]
+    const base = aiRoot.default && typeof aiRoot.default === "object" ? aiRoot.default : aiRoot;
+    const override = aiRoot.overrides?.[MOD_AI_CONFIG_KEY] && typeof aiRoot.overrides[MOD_AI_CONFIG_KEY] === "object"
+      ? aiRoot.overrides[MOD_AI_CONFIG_KEY]
       : {};
     const source = Object.assign({}, base, override);
     ["apiEndpoint", "apiKey", "model"].forEach((key) => {
