@@ -166,7 +166,7 @@ ESC   = 取消安装
   [✓] DownloadPanel.css              下载面板适配暗色主题
   [✓] Extensions.css                 扩展菜单改为紧凑列表布局
   [✓] FavouriteTabs.css              前9个固定标签以网格展示 (Arc 风格)
-  [✓] FindInPage.css                 页内搜索栏改为浮动悬浮式
+  [✓] AskOnPage.css                  Ctrl+F to ask the page anything. Floating query panel styles.
   [✓] LineBreak.css                  长文本自动换行 (小屏幕实用)
   [✓] PeekTabbar.css                 标签栏隐藏时鼠标触边滑出
   [✓] Quietify.css                   静音图标淡化，减少视觉干扰
@@ -202,7 +202,7 @@ ESC   = 取消安装
   [✓] (全选/全不选)                  一键切换所有 JS 模组
   ──────────────────────────────────────────
   [✓] ModConfig.js                   *核心* 共享设置面板 (AI Key / 模组参数)
-  [✓] AskOnPage.js                   AI 侧边栏：网页问答、摘要、改写
+  [✓] Diabar.js                      AI 侧边栏：网页问答、摘要、改写
   [✓] AutoHidePanel.js               侧边栏鼠标离开后自动收起
   [✓] EasyFiles.js                   附件拖拽时自动列出剪贴板+下载文件
   [✓] MonochromeIcons.js             Web 面板图标统一为单色风格
@@ -239,11 +239,11 @@ ESC   = 取消安装
   路径: C:\Program Files\Vivaldi\Application\8.0.4033.57\resources\vivaldi\
 
   CSS 模组 (14 个):  AdaptiveBF, BetterAnimation, BtnHoverAnime, DownloadPanel,
-                     Extensions, FindInPage, PeekTabbar, Quietify, RemoveClutter,
+                     Extensions, AskOnPage, PeekTabbar, Quietify, RemoveClutter,
                      TabsTrail, VividQC, TidyTabs (联动), VividPeek (联动),
                      VividToast (联动)
 
-  JS 模组 (17 个):   ModConfig, AskOnPage, AutoHidePanel, EasyFiles,
+  JS 模组 (17 个):   ModConfig, Diabar, AutoHidePanel, EasyFiles,
                      MonochromeIcons, QuickCapture, TabManager, TidyAddress,
                      TidyDownloads, TidyTitles, WorkspaceThemeSwitcher,
                      TidyTabs, VividPeek, VividPlayer, VividToast,
@@ -534,7 +534,7 @@ tr("mod_desc_AdaptiveBF")   →  "Auto-hide back/forward buttons when unnecessar
 | `mod_desc_DownloadPanel` | `Download panel dark theme adaptation` | `下载面板适配暗色主题` |
 | `mod_desc_Extensions` | `Compact list layout for extensions menu` | `扩展菜单改为紧凑列表布局` |
 | `mod_desc_FavouriteTabs` | `First 9 pinned tabs displayed as grid (Arc-style)` | `前9个固定标签以网格展示 (Arc 风格)` |
-| `mod_desc_FindInPage` | `Floating find-in-page bar` | `页内搜索栏改为浮动悬浮式` |
+| `mod_desc_AskOnPage_CSS` | `Ask on Page — Ctrl+F AI find bar` | `Ask on Page — Ctrl+F AI find bar` |
 | `mod_desc_LineBreak` | `Long text auto-wrap (useful for small screens)` | `长文本自动换行 (小屏幕实用)` |
 | `mod_desc_PeekTabbar` | `Slide-out tab bar on hover when hidden` | `标签栏隐藏时鼠标触边滑出` |
 | `mod_desc_Quietify` | `Subtle audio indicator, less visual noise` | `静音图标淡化，减少视觉干扰` |
@@ -554,7 +554,7 @@ tr("mod_desc_AdaptiveBF")   →  "Auto-hide back/forward buttons when unnecessar
 | Key | English | 简体中文 |
 |---|---|---|
 | `mod_desc_ModConfig` | `*Core* Shared settings panel (AI keys / mod params)` | `*核心* 共享设置面板 (AI Key / 模组参数)` |
-| `mod_desc_AskOnPage` | `AI sidebar: page Q&A, summary, rewrite` | `AI 侧边栏：网页问答、摘要、改写` |
+| `mod_desc_Diabar` | `AI sidebar: page Q&A, summary, rewrite` | `AI 侧边栏：网页问答、摘要、改写` |
 | `mod_desc_AutoHidePanel` | `Auto-collapse side panel on mouse leave` | `侧边栏鼠标离开后自动收起` |
 | `mod_desc_EasyFiles` | `Quick file attach via clipboard & downloads` | `附件拖拽时自动列出剪贴板+下载文件` |
 | `mod_desc_MonochromeIcons` | `Unified monochrome web panel icons` | `Web 面板图标统一为单色风格` |
@@ -676,7 +676,7 @@ Install-AwesomeVivaldi
   "version": "8.0",
   "installed_at": "2026-07-07T12:00:00",
   "css_mods": ["AdaptiveBF.css", "BetterAnimation.css", ...],
-  "js_mods": ["ModConfig.js", "AskOnPage.js", ...]
+  "js_mods": ["ModConfig.js", "Diabar.js", ...]
 }
 ```
 

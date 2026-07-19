@@ -117,6 +117,7 @@ CSS 文件不能有空格在文件名中，否则无法工作。目录/路径名
     <script src="TidyTitles.js"></script>
     <script src="TidyTabs.js"></script>
     <script src="TidyDownloads.js"></script>
+    <script src="Diabar.js"></script>
     <script src="AskOnPage.js"></script>
     <script src="TabScroll.js"></script>
     <script src="MonochromeIcons.js"></script>

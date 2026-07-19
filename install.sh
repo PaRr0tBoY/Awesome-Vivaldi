@@ -189,7 +189,7 @@ tr() {
             mod_desc_DownloadPanel)   echo "下载面板适配暗色主题" ;;
             mod_desc_Extensions)      echo "扩展菜单改为紧凑列表布局" ;;
             mod_desc_FavouriteTabs)   echo "前9个固定标签以网格展示 (Arc 风格)" ;;
-            mod_desc_FindInPage)      echo "页内搜索栏改为浮动悬浮式" ;;
+            mod_desc_AskOnPage_CSS)   echo "Ctrl+F AI 搜索栏浮动悬浮样式" ;;
             mod_desc_LineBreak)       echo "长文本自动换行 (小屏幕实用)" ;;
             mod_desc_PeekTabbar)      echo "标签栏隐藏时鼠标触边滑出" ;;
             mod_desc_Quietify)        echo "静音图标淡化, 减少视觉干扰" ;;
@@ -204,7 +204,8 @@ tr() {
             mod_desc_InteractionFeedback_CSS) echo "按钮点击等交互反馈动效" ;;
             mod_desc_VividPeek_CSS)          echo "Arc Peek 弹出窗口样式" ;;
             mod_desc_ModConfig)              echo "*核心* 共享设置面板 (AI Key / 模组参数)" ;;
-            mod_desc_AskOnPage)              echo "AI 侧边栏: 网页问答、摘要、改写" ;;
+            mod_desc_Diabar)                 echo "AI 侧边栏: 网页问答、摘要、改写" ;;
+            mod_desc_AskOnPage)              echo "Ctrl+F 唤起 AI 页面搜索 — 查找或提问任意内容" ;;
             mod_desc_AutoHidePanel)          echo "侧边栏鼠标离开后自动收起" ;;
             mod_desc_EasyFiles)              echo "附件拖拽时自动列出剪贴板+下载文件" ;;
             mod_desc_MonochromeIcons)        echo "Web 面板图标统一为单色风格" ;;
@@ -332,7 +333,7 @@ tr() {
             mod_desc_DownloadPanel)   echo "Download panel dark theme adaptation" ;;
             mod_desc_Extensions)      echo "Compact list layout for extensions menu" ;;
             mod_desc_FavouriteTabs)   echo "First 9 pinned tabs displayed as grid (Arc-style)" ;;
-            mod_desc_FindInPage)      echo "Floating find-in-page bar" ;;
+            mod_desc_AskOnPage_CSS)   echo "Ask on Page — Ctrl+F AI find bar" ;;
             mod_desc_LineBreak)       echo "Long text auto-wrap (useful for small screens)" ;;
             mod_desc_PeekTabbar)      echo "Slide-out tab bar on hover when hidden" ;;
             mod_desc_Quietify)        echo "Subtle audio indicator, less visual noise" ;;
@@ -347,7 +348,8 @@ tr() {
             mod_desc_InteractionFeedback_CSS) echo "Button click micro-feedback animation" ;;
             mod_desc_VividPeek_CSS)          echo "Arc Peek popup window styling" ;;
             mod_desc_ModConfig)              echo "*Core* Shared settings panel (AI keys / mod params)" ;;
-            mod_desc_AskOnPage)              echo "AI sidebar: page Q&A, summary, rewrite" ;;
+            mod_desc_Diabar)                 echo "AI sidebar: page Q&A, summary, rewrite" ;;
+            mod_desc_AskOnPage)              echo "Ctrl+F AI page search — find or ask anything" ;;
             mod_desc_AutoHidePanel)          echo "Auto-collapse side panel on mouse leave" ;;
             mod_desc_EasyFiles)              echo "Quick file attach via clipboard & downloads" ;;
             mod_desc_MonochromeIcons)        echo "Unified monochrome web panel icons" ;;
@@ -575,13 +577,13 @@ find_mod_source() {
     # File manifests (keep in sync with Vivaldi8.0Stable/)
     local css_files=(
         "AdaptiveBF.css" "BetterAnimation.css" "BtnHoverAnime.css" "DownloadPanel.css"
-        "Extensions.css" "FavouriteTabs.css" "FindInPage.css" "InteractionFeedback.css"
+        "Extensions.css" "FavouriteTabs.css" "AskOnPage.css" "InteractionFeedback.css"
         "LineBreak.css" "PeekTabbar.css" "PinnedTabRestore.css" "Quietify.css"
         "RemoveClutter.css" "TabsTrail.css" "TidyTabs.css" "VivalArc.css"
         "VividPeek.css" "VividPlayer.css" "VividQC.css" "VividToast.css"
     )
     local js_files=(
-        "AskOnPage.js" "AutoHidePanel.js" "EasyFiles.js" "InteractionFeedback.js"
+        "Diabar.js" "AskOnPage.js" "AutoHidePanel.js" "EasyFiles.js" "InteractionFeedback.js"
         "ModConfig.js" "MonochromeIcons.js" "PinnedTabRestore.js" "QuickCapture.js"
         "TabManager.js" "TidyAddress.js" "TidyDownloads.js" "TidyTabs.js"
         "TidyTitles.js" "VividPeek.js" "VividPlayer.js" "VividToast.js"
@@ -1006,6 +1008,12 @@ deploy_mod_files() {
         [ -f "$f" ] || continue
         local bn; bn="$(basename "$f")"
         [ -f "$source_css_dir/$bn" ] && { rm -f "$f"; cleaned=$((cleaned + 1)); }
+    done
+    # Clean up renamed/removed mods that no longer exist in source
+    for orphan in "FindInPage.css"; do
+        [ -f "$user_css_dir/$orphan" ] || continue
+        rm -f "$user_css_dir/$orphan"
+        cleaned=$((cleaned + 1))
     done
     for f in "$user_js_dir"/*.js; do
         [ -f "$f" ] || continue

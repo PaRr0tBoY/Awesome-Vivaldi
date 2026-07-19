@@ -67,7 +67,7 @@ Use only when Vivaldi native variables lack the needed semantics. Unified `--vmo
 | `--vmod-button-bg` | `var(--colorBgLight)` | Button default background |
 | `--vmod-button-bg-hover` | `var(--colorBgLighter)` | Button hover background |
 
-### AskOnPage (AI Sidebar) Color Variables
+### Diabar (AI Sidebar) Color Variables
 
 The AI sidebar uses independent `--aip-` prefix, parallel semantics to Vivaldi native but managed independently.
 
@@ -212,7 +212,7 @@ Audio button state management via canvas overlay + state detection:
 - `:not([title="Exit PiP"])` excludes PiP buttons
 - `background-color` only set in state-specific selectors; generic `::after` defines structure only
 
-### AI Sidebar (AskOnPage)
+### AI Sidebar (Diabar)
 
 Independent WebPanel registration system using `--aip-*` prefix variables. Radius uses `--aip-r-md` / `--aip-r-lg`, parallel to Vivaldi native `--radius` but independently managed.
 

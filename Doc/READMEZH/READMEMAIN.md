@@ -117,7 +117,7 @@ Install https://github.com/PaRr0tBoY/Awesome-Vivaldi for me.
 | `DownloadPanel.css`   | 下载面板主题化                                               |
 | `Extensions.css`      | 扩展下拉以列表显示，溢出处理                                 |
 | `FavouriteTabs.css`   | 类 Arc 收藏标签页网格（前 9 个固定标签页）                   |
-| `FindInPage.css`      | 浮动查找栏                                                 |
+| `AskOnPage.css`      | Ask on Page styling — floating AI find bar              |
 | `VividQC.css`         | 类 Arc 快速命令样式                                         |
 | `LineBreak.css`       | 工具类 / 可忽略                                             |
 | `PeekTabbar.css`      | 悬停时预览标签栏，带两级堆叠                                 |
@@ -132,7 +132,8 @@ Install https://github.com/PaRr0tBoY/Awesome-Vivaldi for me.
 | 文件                     | 描述                                                     |
 | ------------------------ | --------------------------------------------------------------- |
 | `VividPeek.js`           | [Arc peek dialog support](./Doc/mod/VividPeek.md) *（需配合* `VividPeek.css`*）* |
-| `AskOnPage.js`           | [AI side panel for page questions, summaries, and rewrites](./Doc/mod/AskOnPage.md) |
+| `AskOnPage.js`           | Ctrl+F AI page search — find or ask anything, inline citations |
+| `Diabar.js`              | AI sidebar chat — page Q&A, summaries, rewrites |
 | `AutoHidePanel.js`       | [Auto-hide side panel](./Doc/mod/AutoHidePanel.md) |
 | `EasyFiles.js`           | [Opera-inspired file attachment via clipboard &amp; downloads](./Doc/mod/EasyFiles.md) |
 | `ModConfig.js`           | [Shared settings panel for AI keys and supported mods](./Doc/mod/ModConfig.md) |
