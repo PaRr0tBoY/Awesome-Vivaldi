@@ -2556,6 +2556,16 @@
       const currentUrl = this.getPeekUrl(webviewId);
       if (!currentUrl) return null;
 
+      // Check source tab pinned state once — applied to whichever path succeeds.
+      const sourceTabId = this.getOwningTabId(data);
+      let sourcePinned = false;
+      if (sourceTabId) {
+        try {
+          const sourceTab = await this.getTab(sourceTabId);
+          sourcePinned = !!sourceTab?.pinned;
+        } catch (_) {}
+      }
+
       // Best case: parallel tab exists and is valid
       if (data?.parallelTabId) {
         await this._moveParallelTabToMainWindow(webviewId);
@@ -2563,6 +2573,9 @@
         if (tab?.id) {
           if (active) {
             await this.updateTab(tab.id, { active: true });
+          }
+          if (sourcePinned && !tab.pinned) {
+            await this.updateTab(tab.id, { pinned: true });
           }
           this.logOpenAction("parallel-tab:reused", {
             webviewId,
@@ -2584,6 +2597,9 @@
           reason: "open-action",
         });
         if (adopted?.adopted && adopted?.tab?.id) {
+          if (sourcePinned && !adopted.tab.pinned) {
+            await this.updateTab(adopted.tab.id, { pinned: true });
+          }
           return { tab: adopted.tab, usedAdoption: true };
         }
       }
@@ -2592,7 +2608,7 @@
       this._dispatchFlag("vmod-suppress-tab-toast", "suppress", true);
       let tab;
       try {
-        tab = await this.createTab({ url: currentUrl, active });
+        tab = await this.createTab({ url: currentUrl, active, pinned: sourcePinned });
       } finally {
         this._dispatchFlag("vmod-suppress-tab-toast", "suppress", false);
       }
