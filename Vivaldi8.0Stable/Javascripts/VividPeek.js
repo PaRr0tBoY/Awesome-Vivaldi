@@ -5779,32 +5779,23 @@
         tabId: sourceTabId,
       });
 
-      // Close the source tab and switch to the pre-loaded parallel tab.
-      const result = await this.ensureParallelTab(webviewId, { active: true });
-      const usedTabId = result?.tab?.id || null;
-
-      if (usedTabId) {
-        try { await this.removeTab(sourceTabId); } catch (_) {}
-      } else {
-        // Fallback: no parallel tab available, just update the source tab's URL
-        await this.updateTab(sourceTabId, { url, active: true });
-      }
+      // Navigate the source tab to the peek URL.
+      await this.updateTab(sourceTabId, { url, active: true });
 
       this.logOpenAction("open-action:source-tab:done", {
         webviewId,
         sourceTabId,
-        usedTabId,
-        usedParallel: !!result?.usedParallel,
+        usedTabId: sourceTabId,
+        usedParallel: false,
         error: chrome.runtime.lastError?.message || "",
       });
 
       await this.disposePeek(webviewId, {
         animated: false,
         closeRuntimeTab: true,
-        closeParallelTab: false,
+        closeParallelTab: true,
       });
-      const targetTabId = usedTabId || sourceTabId;
-      void this.holdSnapshotUntilTabReady(overlay, targetTabId);
+      void this.holdSnapshotUntilTabReady(overlay, sourceTabId);
     }
 
     isArcPeekSplitTab(tab, ownerTabId = null) {
