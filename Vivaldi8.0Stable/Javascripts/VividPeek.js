@@ -5708,6 +5708,16 @@
           await this._moveParallelTabToMainWindow(webviewId);
           const tab = await this.resolveParallelTab(webviewId);
           if (tab?.id) {
+            // Sync pinned state from source tab.
+            const sourceTabId = this.getOwningTabId(data);
+            if (sourceTabId) {
+              try {
+                const sourceTab = await this.getTab(sourceTabId);
+                if (sourceTab?.pinned && !tab.pinned) {
+                  await this.updateTab(tab.id, { pinned: true });
+                }
+              } catch (_) {}
+            }
             const panelRect = data.divContainer
               ?.querySelector(".peek-panel")
               ?.getBoundingClientRect?.();
@@ -5795,8 +5805,9 @@
         tabId: sourceTabId,
       });
 
-      // Navigate the source tab to the peek URL.
-      await this.updateTab(sourceTabId, { url, active: true });
+      // Navigate the source tab to the peek URL, preserving pinned state.
+      const sourceTab = await this.getTab(sourceTabId);
+      await this.updateTab(sourceTabId, { url, active: true, pinned: !!sourceTab?.pinned });
 
       this.logOpenAction("open-action:source-tab:done", {
         webviewId,
