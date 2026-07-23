@@ -583,6 +583,7 @@ find_mod_source() {
         "VividPeek.css" "VividPlayer.css" "VividQC.css" "VividToast.css"
     )
     local js_files=(
+        "VividAI.js" "VividMarkdown.js"
         "Diabar.js" "AskOnPage.js" "AutoHidePanel.js" "EasyFiles.js" "InteractionFeedback.js"
         "ModConfig.js" "MonochromeIcons.js" "PinnedTabRestore.js" "QuickCapture.js"
         "TabManager.js" "TidyAddress.js" "TidyDownloads.js" "TidyTabs.js"
@@ -717,8 +718,7 @@ scan_mods() {
     local css_dir="$source_dir/CSS"; local js_dir="$source_dir/Javascripts"
     STANDALONE_CSS=(); BUNDLED_CSS=(); STANDALONE_JS=(); BUNDLED_JS=()
     local css_names=(); local js_names=()
-    if [ -d "$css_dir" ]; then for f in "$css_dir"/*.css; do [ -f "$f" ] && css_names+=("$(basename "$f" .css)"); done; fi
-    if [ -d "$js_dir" ]; then for f in "$js_dir"/*.js; do [ -f "$f" ] || continue; local n="$(basename "$f")"; [ "$n" = "ModConfig.js" ] && continue; js_names+=("$(basename "$f" .js)"); done; fi
+    if [ -d "$js_dir" ]; then for f in "$js_dir"/*.js; do [ -f "$f" ] || continue; local n="$(basename "$f")"; [ "$n" = "ModConfig.js" ] && continue; [ "$n" = "VividAI.js" ] && continue; [ "$n" = "VividMarkdown.js" ] && continue; js_names+=("$(basename "$f" .js)"); done; fi
     local bundled_keys=()
     for cb in "${css_names[@]}"; do for jb in "${js_names[@]}"; do [ "$cb" = "$jb" ] && bundled_keys+=("$cb"); done; done
     _in_array() { local k="$1"; shift; for v in "$@"; do [ "$v" = "$k" ] && return 0; done; return 1; }
@@ -728,8 +728,7 @@ scan_mods() {
         else STANDALONE_CSS+=("$name|$base"); fi; done
     [ "${#STANDALONE_CSS[@]}" -gt 0 ] && { IFS=$'\n'; STANDALONE_CSS=($(sort <<<"${STANDALONE_CSS[*]}")); unset IFS; }
     [ "${#BUNDLED_CSS[@]}" -gt 0 ]    && { IFS=$'\n'; BUNDLED_CSS=($(sort <<<"${BUNDLED_CSS[*]}")); unset IFS; }
-    # JS
-    for f in "$js_dir"/*.js; do [ -f "$f" ] || continue; local name="$(basename "$f")"; local base="${name%.js}"; [ "$name" = "ModConfig.js" ] && continue
+    for f in "$js_dir"/*.js; do [ -f "$f" ] || continue; local name="$(basename "$f")"; local base="${name%.js}"; [ "$name" = "ModConfig.js" ] && continue; [ "$name" = "VividAI.js" ] && continue; [ "$name" = "VividMarkdown.js" ] && continue
         if _in_array "$base" "${bundled_keys[@]}"; then BUNDLED_JS+=("$name|$base|${name%.js}.css")
         else STANDALONE_JS+=("$name|$base|"); fi; done
     [ "${#STANDALONE_JS[@]}" -gt 0 ]  && { IFS=$'\n'; STANDALONE_JS=($(sort <<<"${STANDALONE_JS[*]}")); unset IFS; }
@@ -982,15 +981,30 @@ backup_window_html() {
     [ -n "$persistent_dir" ] && mkdir -p "$persistent_dir" && cp "$html_path" "$persistent_dir/window.html.orig" 2>/dev/null || true
 }
 
+verify_window_html() {
+    local vivaldi_dir="$1"; local html_path="$vivaldi_dir/window.html"
+    [ -f "$html_path" ] || return 0
+    # Check: stale script tags (any <script src="...js"> except injectMods.js)
+    local stale; stale=$(grep -c '<script[^>]*src="[^"]*\.js"' "$html_path" 2>/dev/null || true)
+    local injector; injector=$(grep -c 'injectMods\.js' "$html_path" 2>/dev/null || true)
+    stale=$(( stale - injector ))
+    [ "$stale" -gt 0 ] && echo "  ⚠ $stale stale script tag(s) in window.html — run installer again to clean"
+    [ "$injector" -eq 0 ] && echo "  ⚠ injectMods.js missing from window.html"
+}
+
 inject_mod_loader() {
     local vivaldi_dir="$1"; local html_path="$vivaldi_dir/window.html"
     echo "$(tr deploy_inject_start)"
     # Strip old manual <script> tags (except injectMods.js) leftover from pre-installer installs
     sed -i '/<script[^>]*src="[^"]*\.js"/{ /injectMods\.js/!d; }' "$html_path" 2>/dev/null || true
-    if grep -q 'injectMods\.js' "$html_path" 2>/dev/null; then echo "$(tr deploy_inject_skip)"; return; fi
-    { sed -i '' '/<body[^>]*>/a\
+    if grep -q 'injectMods\.js' "$html_path" 2>/dev/null; then
+        echo "$(tr deploy_inject_skip)"
+    else
+        { sed -i '' '/<body[^>]*>/a\
   <script src="injectMods.js"></script>' "$html_path" 2>/dev/null; } || { sed -i '/<body[^>]*>/a\  <script src="injectMods.js"></script>' "$html_path" 2>/dev/null; } || true
-    echo "$(tr deploy_inject_done)"
+        echo "$(tr deploy_inject_done)"
+    fi
+    verify_window_html "$vivaldi_dir"
 }
 
 deploy_mod_files() {
@@ -1018,8 +1032,14 @@ deploy_mod_files() {
     for f in "$user_js_dir"/*.js; do
         [ -f "$f" ] || continue
         local bn; bn="$(basename "$f")"
-        [ "$bn" = "ModConfig.js" ] && continue
+        [ "$bn" = "ModConfig.js" ] && continue; [ "$bn" = "VividAI.js" ] && continue; [ "$bn" = "VividMarkdown.js" ] && continue
         [ -f "$source_js_dir/$bn" ] && { rm -f "$f"; cleaned=$((cleaned + 1)); }
+    done
+    # Clean up renamed/removed mods that no longer exist in source
+    for orphan in "TabManager.js" "FindInPage.js"; do
+        [ -f "$user_js_dir/$orphan" ] || continue
+        rm -f "$user_js_dir/$orphan"
+        cleaned=$((cleaned + 1))
     done
     [ "$cleaned" -gt 0 ] && echo "$(trf deploy_cleaned "$cleaned")"
 
@@ -1257,7 +1277,7 @@ install_flow() {
                     case "$line" in JS:*) jjs="$jjs ${line#JS:}" ;; CSS:*) jcss="$jcss ${line#CSS:}" ;; esac
                 done <<< "$selected_js_result"
                 final_css="$(echo "$selected_css $jcss" | command tr ' ' '\n' | sort -u | command tr '\n' ' ' | sed 's/^ *//;s/ *$//')"
-                final_js="ModConfig.js $(echo "$jjs" | command tr ' ' '\n' | sort -u | command tr '\n' ' ' | sed 's/^ *//;s/ *$//')"
+                final_js="ModConfig.js VividAI.js VividMarkdown.js $(echo "$jjs" | command tr ' ' '\n' | sort -u | command tr '\n' ' ' | sed 's/^ *//;s/ *$//')"
 
                 set_step_info 2 "$total_pages" "$step_labels"
                 PAGES_CONFIRMED=("${pages_confirmed[@]}")
@@ -1270,7 +1290,7 @@ install_flow() {
                     sb+="  $(tr summary_target): $app_path"$'\n'
                     local css_count; css_count="$(echo "$final_css" | wc -w | command tr -d ' ')"
                     local js_count; js_count="$(echo "$final_js" | wc -w | command tr -d ' ')"
-                    js_count=$((js_count - 1))  # exclude ModConfig.js
+                    js_count=$((js_count - 3))  # exclude ModConfig.js, VividAI.js, VividMarkdown.js
                     sb+="  ${e}[32m$(tr summary_css_mods) ($css_count)${e}[0m: $(echo "$final_css" | sed 's/\.css//g')"$'\n'
                     sb+="  ${e}[32m$(tr summary_js_mods) ($js_count)${e}[0m: $(echo "$final_js" | sed 's/\.js//g')"$'\n'
                     sb+=""$'\n'
@@ -1368,7 +1388,7 @@ manage_flow() {
                     case "$line" in JS:*) jjs="$jjs ${line#JS:}" ;; CSS:*) jcss="$jcss ${line#CSS:}" ;; esac
                 done <<< "$selected_js_result"
                 local final_css; final_css="$(echo "$selected_css $jcss" | command tr ' ' '\n' | sort -u | command tr '\n' ' ' | sed 's/^ *//;s/ *$//')"
-                local final_js="ModConfig.js $(echo "$jjs" | command tr ' ' '\n' | sort -u | command tr '\n' ' ' | sed 's/^ *//;s/ *$//')"
+                local final_js="ModConfig.js VividAI.js VividMarkdown.js $(echo "$jjs" | command tr ' ' '\n' | sort -u | command tr '\n' ' ' | sed 's/^ *//;s/ *$//')"
 
                 local new_css=""; local removed_css=""; local unchanged_css=""
                 # bash 3.2 compat: guard array expansions against empty arrays + set -u
@@ -1524,6 +1544,10 @@ do_update() {
     local updated=0
     for mod in $chosen_css; do [ -z "$mod" ] && continue; [ -f "$source_css_dir/$mod" ] && { cp "$source_css_dir/$mod" "$user_css_dir/$mod"; echo "  ${e}[32m[$(tr update_updated_mod)]${e}[0m $mod"; updated=$((updated + 1)); }; done
     for mod in $chosen_js; do [ -z "$mod" ] && continue; [ -f "$source_js_dir/$mod" ] && { cp "$source_js_dir/$mod" "$user_js_dir/$mod"; echo "  ${e}[32m[$(tr update_updated_mod)]${e}[0m $mod"; updated=$((updated + 1)); }; done
+    # Always deploy core modules (they may not be in old state files)
+    for core in "ModConfig.js" "VividAI.js" "VividMarkdown.js"; do
+        [ -f "$source_js_dir/$core" ] && { cp "$source_js_dir/$core" "$user_js_dir/$core"; echo "  ${e}[32m[$(tr update_updated_mod)]${e}[0m $core"; updated=$((updated + 1)); }
+    done
     # Update Import.css (match PS1: rewrites @import paths)
     local import_src="$source_dir/Import.css"; [ ! -f "$import_src" ] && import_src="$source_css_dir/Import.css"
     if [ -f "$import_src" ]; then
