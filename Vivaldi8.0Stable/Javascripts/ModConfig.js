@@ -143,7 +143,7 @@
       default: {
         provider: "openrouter",
         apiEndpoint: "https://openrouter.ai/api/v1/chat/completions",
-        apiKey: "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",
+        apiKey: "",
         model: "openrouter/free",
       },
       overrides: {},
@@ -164,7 +164,7 @@
   function isTargetSettingsUrl(url) {
     const value = String(url || "");
     return value.includes(SETTINGS_PATH_TOKEN)
-      || value.includes("vivaldi:settings/appearance")
+      || value.includes("vivaldi://settings/appearance")
       || value.includes("chrome://settings/appearance");
   }
 
