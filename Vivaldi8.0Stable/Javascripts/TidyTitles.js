@@ -22,7 +22,7 @@
   // DeepSeek: https://api.deepseek.com/chat/completions
   const AI_CONFIG = {
     apiEndpoint: "https://openrouter.ai/api/v1/chat/completions",
-    apiKey: "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",
+    apiKey: "",
     model: "openrouter/free",
     timeout: 0,
     temperature: 0.1,
