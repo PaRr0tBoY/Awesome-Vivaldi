@@ -32,7 +32,7 @@
 
 **统一配置面板**
 - 注入到 Vivaldi 设置页面的 "Appearance" 区域下方
-- 多面板切换：AI Config、Quick Capture、Arc Peek、Auto Hide Panel、Tidy Series、Workspace Theme
+- 多面板切换：AI Config、Quick Capture、Arc Peek、Auto Hide Panel、Slim Bookmarks、Tidy Series、Workspace Theme
 - 面板通过下拉菜单切换，每个面板管理对应模组的设置
 
 **AI 配置管理**

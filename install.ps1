@@ -242,6 +242,7 @@ $Script:Loc = @{
 		mod_desc_MonochromeIcons     = "Unified monochrome web panel icons"
 		mod_desc_PinnedTabRestore    = "Right-click to restore recently closed pinned tabs"
 		mod_desc_QuickCapture        = "Smart area selection for screenshots"
+		mod_desc_SlimBookmarks       = "Compact bookmark bar inside the address bar toolbar"
 		mod_desc_VividPlayer         = "Floating video player popup"
 		mod_desc_VividToast          = "Toast-style notification popups"
 		# Function mods
@@ -429,6 +430,7 @@ $Script:Loc = @{
 		mod_desc_MonochromeIcons     = "统一的单色网页面板图标"
 		mod_desc_PinnedTabRestore    = "右键恢复最近关闭的固定标签"
 		mod_desc_QuickCapture        = "智能区域截图选取"
+		mod_desc_SlimBookmarks       = "地址栏内嵌紧凑书签栏: 文件夹菜单、拖拽、右键编辑"
 		mod_desc_VividPlayer         = "浮动视频播放器弹窗"
 		mod_desc_VividToast          = "Toast 风格通知弹窗"
 		mod_desc_AdaptiveBF          = "自动隐藏前进/后退按钮"
@@ -483,6 +485,7 @@ $Script:DefaultOff = @{
 	"Diabar.js"             = $true
 	"TidyAddress.js"        = $true
 	"TabManager.js"         = $true
+	"SlimBookmarks.js"      = $true
     "PinnedTabRestore.js"  = $true
     "PinnedTabRestore.css" = $true
 }
@@ -515,6 +518,7 @@ $Script:ModCategoryMap = @{
 	"MonochromeIcons"     = "Style"
 	"PinnedTabRestore"    = "Style"
 	"QuickCapture"        = "Style"
+	"SlimBookmarks"       = "Style"
 	"VividPlayer"         = "Style"
 	"VividToast"          = "Style"
 	# ── Function ──
@@ -574,6 +578,7 @@ $Script:ModJsFiles = @(
 	"MonochromeIcons.js",
 	"PinnedTabRestore.js",
 	"QuickCapture.js",
+	"SlimBookmarks.js",
 	"TabManager.js",
 	"TidyAddress.js",
 	"TidyDownloads.js",

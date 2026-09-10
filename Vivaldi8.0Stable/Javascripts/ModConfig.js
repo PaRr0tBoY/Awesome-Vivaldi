@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ModConfig
 // @description  Injects shared AI configuration controls into Vivaldi settings.
-// @version      2026.5.7
+// @version      2026.8.27
 // @author       PaRr0tBoY
 // ==/UserScript==
 
@@ -38,6 +38,7 @@
     { key: "quickCapture", label: "Quick Capture" },
     { key: "arcPeek", label: "Arc Peek" },
     { key: "autoHidePanel", label: "Auto Hide Panel" },
+    { key: "slimBookmarks", label: "Slim Bookmarks" },
     { key: "tidySeries", label: "Tidy Series" },
   ];
 
@@ -75,6 +76,21 @@
         { key: "switch_delay", label: "Switch Delay", type: "number", min: 0, step: 10, defaultValue: 40, unit: "ms", help: "Delay before switching between panel buttons." },
         { key: "close_delay", label: "Close Delay", type: "number", min: 0, step: 10, defaultValue: 280, unit: "ms", help: "Delay before closing an overlay panel." },
         { key: "close_delay_fixed", label: "Fixed Close Delay", type: "number", min: 0, step: 10, defaultValue: 3000, unit: "ms", help: "Delay before closing a fixed panel when fixed close is enabled." },
+      ],
+    },
+    slimBookmarks: {
+      title: "Slim Bookmarks",
+      hint: "Width limits, display mode and timings for the inline bookmark bar. Vivaldi's own Bookmarks settings still apply on top — see the Vivaldi Settings note at the bottom of this panel.",
+      fields: [
+        { key: "maxBarWidth", label: "Max Bar Width", type: "number", min: 120, max: 4000, step: 10, defaultValue: 600, unit: "px", help: "Ceiling for the whole bar inside the address bar toolbar. The bar never grows past this, so the address field keeps its room; anything that does not fit moves under the » button at the end." },
+        { key: "barLabelWidth", label: "Bar Title Width", type: "number", min: 0, max: 600, step: 5, defaultValue: 105, unit: "px", help: "Ceiling for one bar button's title. Longer titles are cut with an ellipsis; the full title and URL stay in the tooltip. This width holds at every bar width: a bar out of room hides whole buttons under the » button instead of narrowing the titles that stay." },
+        { key: "menuLabelWidth", label: "Menu Title Width", type: "number", min: 80, max: 1200, step: 10, defaultValue: 300, unit: "px", help: "Ceiling for one row's title inside the dropdown menus. This is what sets how wide a folder menu can get." },
+        { key: "displayMode", label: "Display Mode", type: "select", options: ["vivaldi", "titleAndIcon", "titleOnly", "iconOnly", "iconExceptFolders"], defaultValue: "vivaldi", help: "vivaldi follows Settings > Bookmarks > Bookmark Bar > Display, so the mod looks like whatever you picked for Vivaldi's own bar. The other four force one look regardless of that setting." },
+        { key: "hoverDelay", label: "Hover Speed", type: "select", options: ["fast", "medium", "slow"], defaultValue: "medium", help: "How long the pointer must rest on a folder before its menu opens, and before hovering a neighbour switches menus. fast opens almost on touch; slow lets you cross a folder without it opening. medium is the long-standing default." },
+        { key: "dragOpenDelay", label: "Drag Open Speed", type: "select", options: ["fast", "medium", "slow"], defaultValue: "medium", help: "How long a dragged bookmark must hover a folder before that folder opens, so it can be dropped inside. Slower than Hover Speed on purpose: while dragging you pass over folders on the way to somewhere else. medium is the long-standing default." },
+        { key: "barFolderId", label: "Bar Folder ID", type: "text", defaultValue: "", placeholder: "leave empty to auto-detect", help: "Overrides which bookmark folder the bar is built from. Leave empty unless auto-detection picks the wrong folder: normally the folder is taken from Vivaldi's own Bookmark Bar setting. The id is the number in the address of vivaldi://bookmarks/?id=..." },
+        { key: "barAnchor", label: "Bar Position", type: "text", defaultValue: "AddressField", placeholder: "AddressField", help: "Which toolbar item the bar stands after, by the internal name Vivaldi uses for it — AddressField, Reload, Spacer, Extensions and so on; <start> puts the bar before everything. Normally you never type this: right-click the toolbar, pick Customize Toolbars and drag the bar itself, which writes the value here. It also decides which side of the bar a toolbar button dropped onto it lands on." },
+        { key: "vivaldiPrefs", label: "Vivaldi Settings", type: "note", help: "These are Vivaldi's own settings, not the mod's. Change them in Settings > Bookmarks; the bar picks the change up without a restart.", text: "The mod follows Vivaldi's own Bookmarks settings instead of duplicating them:\n• Open Bookmark in New Tab — decides whether a click opens in this tab or a new one.\n• Bookmark Bar > Display — the source for Display Mode above, while it is set to vivaldi.\n• Bookmark Bar > Folder — which folder the bar shows, unless Bar Folder ID overrides it.\nNot used: Bar visibility and position (this bar sits in the address bar toolbar), the Open All Bookmarks confirmation (there is no such action here), and the manager/panel sorting settings." },
       ],
     },
     tidySeries: {
@@ -160,6 +176,7 @@
       quickCapture: {},
       arcPeek: {},
       autoHidePanel: {},
+      slimBookmarks: {},
       tidySeries: {},
       workspaceThemeSwitcher: {},
     },
@@ -279,7 +296,8 @@
     if (!schema) {
       return {};
     }
-    return Object.fromEntries(schema.fields.map((field) => [
+    // note fields are read-only prose — they hold no value to default
+    return Object.fromEntries(schema.fields.filter((field) => field.type !== "note").map((field) => [
       field.key,
       cloneSettingDefault(field.defaultValue),
     ]));
@@ -293,6 +311,9 @@
     }
     const output = Object.assign({}, defaults);
     schema.fields.forEach((field) => {
+      if (field.type === "note") {
+        return;
+      }
       const value = raw[field.key];
       if (field.type === "boolean") {
         if (typeof value === "boolean") {
@@ -1012,6 +1033,14 @@
         </div>
       `;
     }
+    if (field.type === "note") {
+      // read-only prose, not an input: it documents settings that live
+      // elsewhere (Vivaldi's own pages) and has nothing to collect or persist
+      return `
+        ${label}
+        <div class="mod-config-note">${escapeHtml(field.text || "")}</div>
+      `;
+    }
     if (field.type === "workspaceThemeMap") {
       return `
         ${label}
@@ -1071,6 +1100,9 @@
     }
     const output = {};
     schema.fields.forEach((field) => {
+      if (field.type === "note") {
+        return;
+      }
       if (field.type === "workspaceThemeMap") {
         output[field.key] = collectWorkspaceThemeMap(section);
         return;
@@ -1504,6 +1536,19 @@
       #${SECTION_ID} .mod-config-inline-field .mod-config-input {
         min-width: 0;
       }
+      #${SECTION_ID} .mod-config-note {
+        width: 430px;
+        max-width: 430px;
+        box-sizing: border-box;
+        padding: 8px 10px;
+        border: 1px solid var(--colorBorder);
+        border-radius: var(--radiusHalf);
+        background: var(--colorBgDark);
+        color: var(--colorFgFaded);
+        font-size: 12px;
+        line-height: 1.5;
+        white-space: pre-line;
+      }
       #${SECTION_ID} .mod-config-unit {
         color: var(--colorFgFaded);
         font-size: 12px;
@@ -1729,6 +1774,7 @@
         #${SECTION_ID} .mod-config-api-key-label {
           justify-content: flex-start;
         }
+        #${SECTION_ID} .mod-config-note,
         #${SECTION_ID} .mod-config-key-wrap,
         #${SECTION_ID} .mod-config-model-wrap,
         #${SECTION_ID} .mod-config-inline-field,

@@ -218,6 +218,7 @@ tr() {
             mod_desc_EasyFiles)              echo "附件拖拽时自动列出剪贴板+下载文件" ;;
             mod_desc_MonochromeIcons)        echo "Web 面板图标统一为单色风格" ;;
             mod_desc_QuickCapture)           echo "截图时自动识别并选中网页区域" ;;
+            mod_desc_SlimBookmarks)          echo "地址栏内嵌紧凑书签栏: 文件夹菜单、拖拽、右键编辑" ;;
             mod_desc_TabManager)             echo "工作区标签管理面板, 批量操作标签" ;;
             mod_desc_TidyAddress)            echo "AI 将地址栏 URL 改写为短标题" ;;
             mod_desc_TidyDownloads)          echo "AI 自动清理下载文件名中的乱码" ;;
@@ -362,6 +363,7 @@ tr() {
             mod_desc_EasyFiles)              echo "Quick file attach via clipboard & downloads" ;;
             mod_desc_MonochromeIcons)        echo "Unified monochrome web panel icons" ;;
             mod_desc_QuickCapture)           echo "Smart area selection for screenshots" ;;
+            mod_desc_SlimBookmarks)          echo "Compact bookmark bar inside the address bar toolbar" ;;
             mod_desc_TabManager)             echo "Workspace tab management panel" ;;
             mod_desc_TidyAddress)            echo "AI rewrites address bar URLs to short titles" ;;
             mod_desc_TidyDownloads)          echo "AI cleans up garbled download filenames" ;;
@@ -383,7 +385,7 @@ trf() { local msg="$(tr "$1")"; echo "$msg" | sed "s/{0}/${2:-}/g; s/{1}/${3:-}/
 # ── Default-off mods ──────────────────────────────────────────
 is_default_off() {
     case "$1" in
-        FavouriteTabs.css|FavouriteTabs.js|InteractionFeedback.js|InteractionFeedback.css|TidyAddress.js|TabManager.js) return 0 ;;
+        FavouriteTabs.css|FavouriteTabs.js|InteractionFeedback.js|InteractionFeedback.css|TidyAddress.js|TabManager.js|SlimBookmarks.js) return 0 ;;
         *) return 1 ;;
     esac
 }
@@ -673,7 +675,7 @@ find_mod_source() {
         "VividAI.js" "VividMarkdown.js"
         "Diabar.js" "AskOnPage.js" "AutoHidePanel.js" "EasyFiles.js" "InteractionFeedback.js"
         "ModConfig.js" "MonochromeIcons.js" "PinnedTabRestore.js" "QuickCapture.js"
-        "TabManager.js" "TidyAddress.js" "TidyDownloads.js" "TidyTabs.js"
+        "SlimBookmarks.js" "TabManager.js" "TidyAddress.js" "TidyDownloads.js" "TidyTabs.js"
         "TidyTitles.js" "VividPeek.js" "VividPlayer.js" "VividToast.js"
         "WorkspaceThemeSwitcher.js"
     )

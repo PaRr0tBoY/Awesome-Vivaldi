@@ -32,7 +32,7 @@ This document is based on [ModConfig.js](/Vivaldi7.9Stable/Javascripts/ModConfig
 
 **Unified Configuration Panel**
 - Injected below the "Appearance" section in the Vivaldi settings page
-- Multi-panel switching: AI Config, Quick Capture, Arc Peek, Auto Hide Panel, Tidy Series, Workspace Theme
+- Multi-panel switching: AI Config, Quick Capture, Arc Peek, Auto Hide Panel, Slim Bookmarks, Tidy Series, Workspace Theme
 - Panels switch via a dropdown menu; each panel manages its corresponding mod's settings
 
 **AI Configuration Management**
@@ -44,7 +44,8 @@ This document is based on [ModConfig.js](/Vivaldi7.9Stable/Javascripts/ModConfig
 - Model selection: click "Fetch Models" to pull available model list from the API endpoint
 
 **Mod Settings Management**
-- Schema-based settings rendering: each input type (text, number, toggle, select, slider) is automatically rendered as the corresponding UI
+- Schema-based settings rendering: each input type (text, number, toggle, select, multiSelect, list, filePath, note) is automatically rendered as the corresponding UI
+- `note` is read-only prose rather than an input: it documents settings that live elsewhere (e.g. Vivaldi's own settings pages) and is skipped by defaults, normalization and collection
 - Independent settings panel for each mod (defined via `CONFIG_PANELS`)
 - Settings changes are saved to OPFS in real-time
 
