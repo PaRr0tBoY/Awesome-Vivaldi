@@ -385,7 +385,7 @@ trf() { local msg="$(tr "$1")"; echo "$msg" | sed "s/{0}/${2:-}/g; s/{1}/${3:-}/
 # ── Default-off mods ──────────────────────────────────────────
 is_default_off() {
     case "$1" in
-        FavouriteTabs.css|FavouriteTabs.js|InteractionFeedback.js|InteractionFeedback.css|TidyAddress.js|TabManager.js) return 0 ;;
+        FavouriteTabs.css|FavouriteTabs.js|InteractionFeedback.js|InteractionFeedback.css|TidyAddress.js|TabManager.js|SlimBookmarks.js) return 0 ;;
         *) return 1 ;;
     esac
 }

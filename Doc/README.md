@@ -29,6 +29,7 @@ Doc/
 │   ├── MonochromeIcons.md │   Web panel monochrome icons
 │   ├── PinnedTabRestore.md│   Pinned tab restore
 │   ├── QuickCapture.md    │   Smart screenshot area selection
+│   ├── SlimBookmarks.md   │   Bookmark bar inside the address bar
 │   ├── TabManager.md      │   Tab management panel
 │   ├── tabtree.md         │   Tab tree data structure
 │   ├── TidyAddress.md     │   AI URL rewriting

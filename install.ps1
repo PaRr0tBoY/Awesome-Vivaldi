@@ -485,6 +485,7 @@ $Script:DefaultOff = @{
 	"Diabar.js"             = $true
 	"TidyAddress.js"        = $true
 	"TabManager.js"         = $true
+	"SlimBookmarks.js"      = $true
     "PinnedTabRestore.js"  = $true
     "PinnedTabRestore.css" = $true
 }

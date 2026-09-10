@@ -58,6 +58,7 @@ To uninstall, run the same script again.
 | ![VividPeek](./Others/assets/ArcPeek.gif)       | `VividPeek.css` + `VividPeek.js`     | Arc-style peek dialog — preview tabs in a floating overlay without leaving your current page |
 | ![VividPlayer](./Others/assets/VividPlayer.gif) | `VividPlayer.css` + `VividPlayer.js` | Media player popover with progress bar, artwork, and playback controls                       |
 | ![PeekTabbar](./Others/assets/PeekTabbar.gif)   | `PeekTabbar.css`                     | Auto-hide tabbar that expands on hover, with two-level stacking                              |
+| ![SlimBookmarks](./Others/assets/SlimBookmarks.gif) | `SlimBookmarks.js`                   | Bookmark bar folded into the address bar toolbar — folder menus, drag & drop, no extra row   |
 
 ---
 
@@ -115,6 +116,7 @@ Requires an [OpenAI-compatible API key](https://github.com/cheahjs/free-llm-api-
 | `ModConfig.js`       | [Shared settings panel](./Doc/mod/ModConfig.md) for AI keys and mod config |
 | `VividToast.js`      | [Toast notification logic](./Doc/mod/VividToast.md)                        |
 | `QuickCapture.js`    | [Auto-select capture area](./Doc/mod/QuickCapture.md)                      |
+| `SlimBookmarks.js`   | [Bookmark bar in the address bar](./Doc/mod/SlimBookmarks.md)              |
 | `MonochromeIcons.js` | [Monochrome web panel icons](./Doc/mod/MonochromeIcons.md)                 |
 | `EasyFiles.js`       | [Opera-inspired file attachment](./Doc/mod/EasyFiles.md)                   |
 | `TabManager.js`      | [Workspace board panel](./Doc/mod/TabManager.md)                           |
